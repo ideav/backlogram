@@ -208,6 +208,8 @@ export default function Home() {
         </div>
       </section>
 
+      <div className="border-t border-slate-200 dark:border-slate-800" />
+
       {/* 2b. For Whom Section */}
       <section id="for-whom" className="py-24 bg-slate-50 dark:bg-slate-900/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
