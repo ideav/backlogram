@@ -250,6 +250,10 @@ export default function Home() {
             ))}
           </div>
 
+          <p className="text-center text-sm text-slate-400 dark:text-slate-500">
+            Оптимальное решение для компаний со штатом до 700 сотрудников — с собственным ИТ-отделом или специалистами на аутсорсинге
+          </p>
+          
           <div className="text-center mt-10">
             <a
               href="#cta"
@@ -259,9 +263,6 @@ export default function Home() {
             </a>
           </div>
           
-          <p className="text-center text-sm text-slate-400 dark:text-slate-500">
-            Оптимальное решение для компаний со штатом до 700 сотрудников — с собственным ИТ-отделом или специалистами на аутсорсинге
-          </p>
         </div>
       </section>
 
