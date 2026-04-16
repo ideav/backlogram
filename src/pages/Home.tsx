@@ -236,7 +236,7 @@ export default function Home() {
               { icon: TrendingUp,    label: 'Финансовые компании' },
               { icon: Truck,         label: 'Логистика' },
               { icon: Wrench,        label: 'Технический сервис' },
-              { icon: Users,         label: 'Любой бизнес с процессами' },
+              { icon: Users,         label: 'Сообщества и фонды' },
             ].map(({ icon: Icon, label }) => (
               <div
                 key={label}
@@ -250,6 +250,17 @@ export default function Home() {
             ))}
           </div>
 
+          <div className="text-center mt-10">
+            <a
+              href="#cta"
+              target="start"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium underline underline-offset-4 transition-colors"
+            >
+              У меня особый случай!
+            </a>
+          </div>
+          
           <p className="text-center text-sm text-slate-400 dark:text-slate-500">
             Оптимальное решение для компаний со штатом до 700 сотрудников — с собственным ИТ-отделом или специалистами на аутсорсинге
           </p>
