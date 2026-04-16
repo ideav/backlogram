@@ -253,8 +253,6 @@ export default function Home() {
           <div className="text-center mt-10">
             <a
               href="#cta"
-              target="start"
-              rel="noopener noreferrer"
               className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium underline underline-offset-4 transition-colors"
             >
               У меня особый случай!
@@ -907,7 +905,7 @@ export default function Home() {
       </section>
 
       {/* 12. Final CTA Form */}
-      <section id="cta" className="py-24 border-t border-slate-200 dark:border-slate-900 relative">
+      <section id="cta" className="scroll-mt-24 py-24 border-t border-slate-200 dark:border-slate-900 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center bg-white dark:bg-slate-950 px-3 py-6 sm:p-8 lg:p-12 rounded-2xl lg:rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-xl dark:shadow-2xl overflow-hidden relative">
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-[100px] rounded-full -z-10" />
