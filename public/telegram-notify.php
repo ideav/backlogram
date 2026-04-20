@@ -70,6 +70,38 @@ $company = trim($data['company'] ?? '');
 $contact = trim($data['contact'] ?? '');
 $task    = trim($data['task']    ?? '');
 
+// ── SmartCaptcha verification ─────────────────────────────────────────────────
+function verifyCaptcha(string $token): bool {
+    $serverKey = defined('SMARTCAPTCHA_SERVER_KEY') ? SMARTCAPTCHA_SERVER_KEY : '';
+    if ($serverKey === '' || $serverKey === 'ysc2_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX') return true;
+    if ($token === '') return false;
+    $url = 'https://smartcaptcha.yandexcloud.net/validate';
+    $params = http_build_query([
+        'secret' => $serverKey,
+        'token'  => $token,
+        'ip'     => $_SERVER['REMOTE_ADDR'] ?? '',
+    ]);
+    $context = stream_context_create([
+        'http' => [
+            'method'  => 'POST',
+            'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
+            'content' => $params,
+            'timeout' => 5,
+        ],
+    ]);
+    $result = @file_get_contents($url, false, $context);
+    if ($result === false) return false;
+    $res_data = json_decode($result, true);
+    return isset($res_data['status']) && $res_data['status'] === 'ok';
+}
+
+$captchaToken = trim($data['captcha_token'] ?? '');
+if (!verifyCaptcha($captchaToken)) {
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'Проверка капчи не пройдена. Попробуйте ещё раз.']);
+    exit;
+}
+
 if ($contact === '' && $task === '') {
     http_response_code(400);
     echo json_encode(['ok' => false, 'error' => 'At least contact or task must be provided.']);
