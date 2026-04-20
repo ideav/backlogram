@@ -38,21 +38,82 @@ import {
 import { Link } from 'react-router-dom'
 import ClientLogos from '@/components/ClientLogos'
 
+declare global {
+  interface Window {
+    smartCaptcha?: {
+      getResponse: (widgetId: number) => string
+      reset: (widgetId: number) => void
+      render: (container: HTMLElement | string, params: {
+        sitekey: string
+        callback?: (token: string) => void
+        'error-callback'?: () => void
+        'expired-callback'?: () => void
+      }) => number
+      destroy: (widgetId: number) => void
+    }
+  }
+}
+
 type FormState = 'idle' | 'sending' | 'success' | 'error'
+
+const CAPTCHA_CLIENT_KEY = (import.meta.env.VITE_SMARTCAPTCHA_CLIENT_KEY as string | undefined) ?? ''
 
 export default function Home() {
   const [formState, setFormState] = React.useState<FormState>('idle')
   const [errorMsg, setErrorMsg]   = React.useState('')
   const [consentChecked, setConsentChecked] = React.useState(false)
+  const [captchaToken, setCaptchaToken] = React.useState('')
+  const captchaContainerRef = React.useRef<HTMLDivElement>(null)
+  const captchaWidgetIdRef = React.useRef<number | null>(null)
+
+  React.useEffect(() => {
+    if (!CAPTCHA_CLIENT_KEY) return
+
+    function initCaptcha() {
+      if (!captchaContainerRef.current || !window.smartCaptcha) return
+      captchaWidgetIdRef.current = window.smartCaptcha.render(captchaContainerRef.current, {
+        sitekey: CAPTCHA_CLIENT_KEY,
+        callback: (token: string) => setCaptchaToken(token),
+        'expired-callback': () => setCaptchaToken(''),
+        'error-callback': () => setCaptchaToken(''),
+      })
+    }
+
+    if (window.smartCaptcha) {
+      initCaptcha()
+      return
+    }
+
+    const script = document.createElement('script')
+    script.src = 'https://smartcaptcha.yandexcloud.net/captcha.js'
+    script.defer = true
+    script.onload = initCaptcha
+    document.head.appendChild(script)
+
+    return () => {
+      if (captchaWidgetIdRef.current !== null && window.smartCaptcha) {
+        window.smartCaptcha.destroy(captchaWidgetIdRef.current)
+      }
+    }
+  }, [])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const form = e.currentTarget
-    const data = {
+    const data: Record<string, string> = {
       name:    (form.elements.namedItem('name')    as HTMLInputElement).value,
       company: (form.elements.namedItem('company') as HTMLInputElement).value,
       contact: (form.elements.namedItem('contact') as HTMLInputElement).value,
       task:    (form.elements.namedItem('task')    as HTMLTextAreaElement).value,
+    }
+
+    if (CAPTCHA_CLIENT_KEY) {
+      if (!captchaToken) {
+        setErrorMsg('Пожалуйста, пройдите проверку капчи.')
+        setFormState('error')
+        return
+      }
+      data.captcha_token = captchaToken
     }
 
     setFormState('sending')
@@ -68,9 +129,17 @@ export default function Home() {
       if (json.ok) {
         setFormState('success')
         form.reset()
+        setCaptchaToken('')
+        if (captchaWidgetIdRef.current !== null && window.smartCaptcha) {
+          window.smartCaptcha.reset(captchaWidgetIdRef.current)
+        }
       } else {
         setFormState('error')
         setErrorMsg(json.error ?? 'Произошла ошибка. Попробуйте позже.')
+        if (captchaWidgetIdRef.current !== null && window.smartCaptcha) {
+          window.smartCaptcha.reset(captchaWidgetIdRef.current)
+          setCaptchaToken('')
+        }
       }
     } catch {
       setFormState('error')
@@ -968,6 +1037,10 @@ export default function Home() {
                 )}
                 {formState === 'error' && (
                   <div className="text-red-500 dark:text-red-400 text-sm font-medium">{errorMsg}</div>
+                )}
+
+                {CAPTCHA_CLIENT_KEY && (
+                  <div ref={captchaContainerRef} />
                 )}
 
                 <label className="flex items-start gap-3 cursor-pointer">
