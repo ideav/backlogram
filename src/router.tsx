@@ -4,6 +4,7 @@ import NotFound from './pages/NotFound'
 import Success from './pages/Success'
 import Fail from './pages/Fail'
 import Tokens from './pages/Tokens'
+import AdImages from './pages/AdImages'
 import App from './App'
 
 export const router = createBrowserRouter([
@@ -26,6 +27,10 @@ export const router = createBrowserRouter([
       {
         path: 'tokens.html',
         element: <Tokens />,
+      },
+      {
+        path: 'ad-images.html',
+        element: <AdImages />,
       },
       {
         path: '*',
