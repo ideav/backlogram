@@ -124,7 +124,8 @@ if ($task !== '')    $lines[] = "📝 *Задача:*\n" . esc($task);
 $message = implode("\n", $lines);
 
 // ── Send to Telegram ──────────────────────────────────────────────────────────
-$url     = 'https://api.telegram.org/bot' . TELEGRAM_BOT_TOKEN . '/sendMessage';
+$base = defined('TELEGRAM_API_BASE') ? rtrim(TELEGRAM_API_BASE, '/') : 'https://api.telegram.org';
+$url = $base . '/bot' . TELEGRAM_BOT_TOKEN . '/sendMessage';
 $payload = json_encode([
     'chat_id'    => TELEGRAM_CHAT_ID,
     'text'       => $message,
