@@ -7,7 +7,7 @@ const CLIENTS = [
   { name: "Domino's", logo: '/logos/dominos.svg' },
   { name: 'Audi', logo: '/logos/audi.svg', small: true },
   { name: 'HRlink', logo: '/logos/hrlink.png', small: true },
-  { name: 'UpSound', logo: '/logos/upsound.png' },
+  { name: 'UpSound', logo: '/logos/upsound.png', large: true },
   { name: 'ПраВь МСК', logo: '/logos/pravmsk.png' },
   { name: 'Долина Овощей', logo: '/logos/dolina-ovoshchey.png' },
   { name: 'Недорогокупили', logo: '/logos/tyan.png', small: true },
@@ -19,7 +19,7 @@ const CLIENTS = [
   { name: 'ГидроБот', logo: '/logos/gidrobot.png' },
 ]
 
-type Client = { name: string; logo: string; small?: boolean }
+type Client = { name: string; logo: string; small?: boolean; large?: boolean }
 
 // Triple the list for infinite loop
 const ITEMS: Client[] = [...CLIENTS, ...CLIENTS, ...CLIENTS]
@@ -118,7 +118,7 @@ export default function ClientLogos() {
                   <img
                     src={client.logo}
                     alt={client.name}
-                    className={`object-contain ${client.small ? 'w-3/4 h-3/4' : 'w-full h-full'}`}
+                    className={`object-contain ${client.small ? 'w-3/4 h-3/4' : client.large ? 'w-4/3 h-4/3' : 'w-full h-full'}`}
                     draggable={false}
                   />
                 </div>
