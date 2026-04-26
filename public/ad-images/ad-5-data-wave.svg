@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="628" viewBox="0 0 1200 628">
+  <defs>
+    <linearGradient id="bg5" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#040a18"/>
+      <stop offset="100%" stop-color="#080418"/>
+    </linearGradient>
+    <linearGradient id="wave1Grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0"/>
+      <stop offset="30%" stop-color="#6366f1"/>
+      <stop offset="70%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="wave2Grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0"/>
+      <stop offset="30%" stop-color="#8b5cf6"/>
+      <stop offset="70%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="wave3Grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0"/>
+      <stop offset="40%" stop-color="#10b981"/>
+      <stop offset="60%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="fillGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="fillGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="waveBlur">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+    <filter id="waveBigBlur">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="628" fill="url(#bg5)"/>
+
+  <!-- Background glow -->
+  <ellipse cx="600" cy="320" rx="500" ry="200" fill="#6366f1" opacity="0.04" filter="url(#waveBigBlur)"/>
+
+  <!-- Vertical bar chart / histogram -->
+  <g opacity="0.15">
+    <rect x="60" y="400" width="20" height="80" fill="#6366f1"/>
+    <rect x="90" y="360" width="20" height="120" fill="#6366f1"/>
+    <rect x="120" y="380" width="20" height="100" fill="#6366f1"/>
+    <rect x="150" y="340" width="20" height="140" fill="#6366f1"/>
+    <rect x="180" y="300" width="20" height="180" fill="#8b5cf6"/>
+    <rect x="210" y="320" width="20" height="160" fill="#8b5cf6"/>
+    <rect x="240" y="280" width="20" height="200" fill="#8b5cf6"/>
+    <rect x="270" y="260" width="20" height="220" fill="#8b5cf6"/>
+    <rect x="300" y="240" width="20" height="240" fill="#6366f1"/>
+    <rect x="330" y="220" width="20" height="260" fill="#6366f1"/>
+    <rect x="360" y="240" width="20" height="240" fill="#6366f1"/>
+    <rect x="390" y="200" width="20" height="280" fill="#06b6d4"/>
+    <rect x="420" y="180" width="20" height="300" fill="#06b6d4"/>
+    <rect x="450" y="200" width="20" height="280" fill="#06b6d4"/>
+    <rect x="480" y="160" width="20" height="320" fill="#06b6d4"/>
+    <rect x="510" y="140" width="20" height="340" fill="#10b981"/>
+    <rect x="540" y="120" width="20" height="360" fill="#10b981"/>
+    <rect x="570" y="100" width="20" height="380" fill="#10b981"/>
+    <rect x="600" y="120" width="20" height="360" fill="#10b981"/>
+    <rect x="630" y="100" width="20" height="380" fill="#10b981"/>
+    <rect x="660" y="80" width="20" height="400" fill="#10b981"/>
+    <rect x="690" y="100" width="20" height="380" fill="#10b981"/>
+    <rect x="720" y="120" width="20" height="360" fill="#06b6d4"/>
+    <rect x="750" y="140" width="20" height="340" fill="#06b6d4"/>
+    <rect x="780" y="160" width="20" height="320" fill="#06b6d4"/>
+    <rect x="810" y="140" width="20" height="340" fill="#3b82f6"/>
+    <rect x="840" y="120" width="20" height="360" fill="#3b82f6"/>
+    <rect x="870" y="100" width="20" height="380" fill="#3b82f6"/>
+    <rect x="900" y="80" width="20" height="400" fill="#3b82f6"/>
+    <rect x="930" y="100" width="20" height="380" fill="#3b82f6"/>
+    <rect x="960" y="120" width="20" height="360" fill="#6366f1"/>
+    <rect x="990" y="140" width="20" height="340" fill="#6366f1"/>
+    <rect x="1020" y="160" width="20" height="320" fill="#6366f1"/>
+    <rect x="1050" y="200" width="20" height="280" fill="#8b5cf6"/>
+    <rect x="1080" y="220" width="20" height="260" fill="#8b5cf6"/>
+    <rect x="1110" y="260" width="20" height="220" fill="#8b5cf6"/>
+  </g>
+
+  <!-- Wave 1 (bottom) -->
+  <path d="M 0,420 C 100,380 150,440 250,410 C 350,380 400,430 500,400 C 600,370 650,430 750,400 C 850,370 900,420 1000,390 C 1100,360 1150,400 1200,380 L 1200,628 L 0,628 Z"
+    fill="url(#fillGrad2)" opacity="0.6"/>
+  <path d="M 0,420 C 100,380 150,440 250,410 C 350,380 400,430 500,400 C 600,370 650,430 750,400 C 850,370 900,420 1000,390 C 1100,360 1150,400 1200,380"
+    fill="none" stroke="url(#wave2Grad)" stroke-width="2.5" opacity="0.7"/>
+
+  <!-- Wave 2 (middle) -->
+  <path d="M 0,350 C 80,300 160,370 280,330 C 400,290 460,360 560,320 C 660,280 720,360 820,320 C 920,280 980,350 1080,310 C 1140,285 1180,330 1200,300 L 1200,628 L 0,628 Z"
+    fill="url(#fillGrad1)" opacity="0.5"/>
+  <path d="M 0,350 C 80,300 160,370 280,330 C 400,290 460,360 560,320 C 660,280 720,360 820,320 C 920,280 980,350 1080,310 C 1140,285 1180,330 1200,300"
+    fill="none" stroke="url(#wave1Grad)" stroke-width="3" opacity="0.9"/>
+  <!-- Glow on main wave -->
+  <path d="M 0,350 C 80,300 160,370 280,330 C 400,290 460,360 560,320 C 660,280 720,360 820,320 C 920,280 980,350 1080,310 C 1140,285 1180,330 1200,300"
+    fill="none" stroke="url(#wave1Grad)" stroke-width="6" opacity="0.25" filter="url(#waveBlur)"/>
+
+  <!-- Wave 3 (top, thinner) -->
+  <path d="M 0,260 C 60,230 120,270 200,250 C 300,225 380,265 480,240 C 580,215 640,255 740,230 C 840,205 900,240 1000,215 C 1080,195 1140,225 1200,210"
+    fill="none" stroke="url(#wave3Grad)" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Data points on main wave -->
+  <circle cx="280" cy="330" r="5" fill="#6366f1"/>
+  <circle cx="280" cy="330" r="10" fill="#6366f1" opacity="0.3" filter="url(#waveBlur)"/>
+  <line x1="280" y1="280" x2="280" y2="330" stroke="#6366f1" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"/>
+  <text x="280" y="272" font-family="'Courier New', monospace" font-size="11" fill="#6366f1" text-anchor="middle">+42%</text>
+
+  <circle cx="560" cy="320" r="5" fill="#06b6d4"/>
+  <circle cx="560" cy="320" r="10" fill="#06b6d4" opacity="0.3" filter="url(#waveBlur)"/>
+  <line x1="560" y1="270" x2="560" y2="320" stroke="#06b6d4" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"/>
+  <text x="560" y="262" font-family="'Courier New', monospace" font-size="11" fill="#06b6d4" text-anchor="middle">×3 быстрее</text>
+
+  <circle cx="820" cy="320" r="5" fill="#10b981"/>
+  <circle cx="820" cy="320" r="10" fill="#10b981" opacity="0.3" filter="url(#waveBlur)"/>
+  <line x1="820" y1="270" x2="820" y2="320" stroke="#10b981" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"/>
+  <text x="820" y="262" font-family="'Courier New', monospace" font-size="11" fill="#10b981" text-anchor="middle">-60% ошибок</text>
+
+  <circle cx="1080" cy="310" r="5" fill="#8b5cf6"/>
+  <circle cx="1080" cy="310" r="10" fill="#8b5cf6" opacity="0.3" filter="url(#waveBlur)"/>
+  <line x1="1080" y1="260" x2="1080" y2="310" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"/>
+  <text x="1080" y="252" font-family="'Courier New', monospace" font-size="11" fill="#8b5cf6" text-anchor="middle">ROI 300%</text>
+
+  <!-- Headline -->
+  <text x="600" y="140" font-family="'Arial', sans-serif" font-size="44" fill="white" text-anchor="middle" font-weight="900" letter-spacing="-1" opacity="0.95">АВТОМАТИЗАЦИЯ</text>
+  <text x="600" y="185" font-family="'Arial', sans-serif" font-size="20" fill="#94a3b8" text-anchor="middle" font-weight="400" letter-spacing="8">МЕНЯЕТ ПОКАЗАТЕЛИ</text>
+
+  <!-- Bottom bar -->
+  <rect x="0" y="570" width="1200" height="58" fill="#040a18" opacity="0.95"/>
+  <text x="60" y="603" font-family="'Arial', sans-serif" font-size="28" fill="white" font-weight="700">Backlogram</text>
+  <text x="60" y="622" font-family="'Arial', sans-serif" font-size="11" fill="#94a3b8" letter-spacing="2">ДАННЫЕ ГОВОРЯТ ЗА СЕБЯ</text>
+  <text x="1140" y="610" font-family="'Arial', sans-serif" font-size="12" fill="#10b981" text-anchor="end" letter-spacing="1">backlogram.ru</text>
+</svg>
