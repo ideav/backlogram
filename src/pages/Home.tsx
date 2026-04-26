@@ -1124,7 +1124,7 @@ export default function Home() {
                   '3 000 токенов в месяц',
                   'Один пользователь',
                   '~2 часа активной работы в день',
-                  'Навсегда бесплатно',
+                  'Бесплатно навсегда',
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
                     <CheckCircle2 size={14} className="text-blue-500 shrink-0" />
