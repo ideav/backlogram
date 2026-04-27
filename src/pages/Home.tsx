@@ -63,11 +63,12 @@ export default function Home() {
   const [errorMsg, setErrorMsg]   = React.useState('')
   const [consentChecked, setConsentChecked] = React.useState(false)
   const [captchaToken, setCaptchaToken] = React.useState('')
+  const [isCaptchaRequested, setIsCaptchaRequested] = React.useState(false)
   const captchaContainerRef = React.useRef<HTMLDivElement>(null)
   const captchaWidgetIdRef = React.useRef<number | null>(null)
 
   React.useEffect(() => {
-    if (!CAPTCHA_CLIENT_KEY) return
+    if (!CAPTCHA_CLIENT_KEY || !isCaptchaRequested) return
 
     function initCaptcha() {
       if (!captchaContainerRef.current || !window.smartCaptcha) return
@@ -93,9 +94,10 @@ export default function Home() {
     return () => {
       if (captchaWidgetIdRef.current !== null && window.smartCaptcha) {
         window.smartCaptcha.destroy(captchaWidgetIdRef.current)
+        captchaWidgetIdRef.current = null
       }
     }
-  }, [])
+  }, [isCaptchaRequested])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -130,7 +132,8 @@ export default function Home() {
         setFormState('success')
         form.reset()
         setCaptchaToken('')
-        if (captchaWidgetIdRef.current !== null && window.smartCaptcha) {
+        setIsCaptchaRequested(false)
+        if (captchaWidgetIdRef.current !== null && window.smartCaptcha && captchaContainerRef.current) {
           window.smartCaptcha.reset(captchaWidgetIdRef.current)
         }
       } else {
@@ -1022,7 +1025,7 @@ export default function Home() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1">Email / Telegram</label>
-                  <input name="contact" type="text" className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 sm:py-3 text-slate-800 dark:text-slate-100 focus:border-blue-500 outline-none transition-all" placeholder="@username" />
+                  <input name="contact" type="text" onInput={() => setIsCaptchaRequested(true)} className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 sm:py-3 text-slate-800 dark:text-slate-100 focus:border-blue-500 outline-none transition-all" placeholder="@username" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1">Задача (коротко)</label>
@@ -1039,7 +1042,7 @@ export default function Home() {
                   <div className="text-red-500 dark:text-red-400 text-sm font-medium">{errorMsg}</div>
                 )}
 
-                {CAPTCHA_CLIENT_KEY && (
+                {CAPTCHA_CLIENT_KEY && isCaptchaRequested && (
                   <div ref={captchaContainerRef} />
                 )}
 
