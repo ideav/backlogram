@@ -32,3 +32,8 @@ test('special case CTA link stays in the current tab and lands below the fixed h
     'CTA target needs scroll margin so the fixed header does not cover it',
   )
 })
+
+test('AI section exposes an in-page anchor for ad links', () => {
+  const aiSection = homeSource.match(/\/\* 6\. AI Section \*\/[\s\S]*?<section\s+id="ai"\s+className="([^"]+)"/)
+  assert.ok(aiSection, 'Expected the AI section to expose id="ai"')
+})
