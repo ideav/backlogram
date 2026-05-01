@@ -58,17 +58,22 @@ type FormState = 'idle' | 'sending' | 'success' | 'error'
 
 const CAPTCHA_CLIENT_KEY = (import.meta.env.VITE_SMARTCAPTCHA_CLIENT_KEY as string | undefined) ?? ''
 
+function hasIdbCookie(): boolean {
+  return document.cookie.split(';').some(c => c.trimStart().startsWith('idb_'))
+}
+
 export default function Home() {
   const [formState, setFormState] = React.useState<FormState>('idle')
   const [errorMsg, setErrorMsg]   = React.useState('')
   const [consentChecked, setConsentChecked] = React.useState(false)
   const [captchaToken, setCaptchaToken] = React.useState('')
   const [isCaptchaRequested, setIsCaptchaRequested] = React.useState(false)
+  const [idbCookieFound] = React.useState(() => hasIdbCookie())
   const captchaContainerRef = React.useRef<HTMLDivElement>(null)
   const captchaWidgetIdRef = React.useRef<number | null>(null)
 
   React.useEffect(() => {
-    if (!CAPTCHA_CLIENT_KEY || !isCaptchaRequested) return
+    if (!CAPTCHA_CLIENT_KEY || !isCaptchaRequested || idbCookieFound) return
 
     function initCaptcha() {
       if (!captchaContainerRef.current || !window.smartCaptcha) return
@@ -109,7 +114,7 @@ export default function Home() {
       task:    (form.elements.namedItem('task')    as HTMLTextAreaElement).value,
     }
 
-    if (CAPTCHA_CLIENT_KEY) {
+    if (CAPTCHA_CLIENT_KEY && !idbCookieFound) {
       if (!captchaToken) {
         setErrorMsg('Пожалуйста, пройдите проверку капчи.')
         setFormState('error')
@@ -1042,7 +1047,7 @@ export default function Home() {
                   <div className="text-red-500 dark:text-red-400 text-sm font-medium">{errorMsg}</div>
                 )}
 
-                {CAPTCHA_CLIENT_KEY && isCaptchaRequested && (
+                {CAPTCHA_CLIENT_KEY && !idbCookieFound && isCaptchaRequested && (
                   <div ref={captchaContainerRef} />
                 )}
 
