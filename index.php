@@ -7998,7 +7998,8 @@ switch($a)  # Check actions, which don't require authentication
 			$GLOBALS["tzone"] = round(((int)$_POST["tzone"] - time() - date("Z"))/1800)*1800; # Round the time zone shift to 30 min
 			setcookie("tzone", $GLOBALS["tzone"], time() + COOKIES_EXPIRE, "/"); # 30 days
 		}
-		if(isset($_POST["smart-token"]) && !verifyCaptcha($_POST["smart-token"])){
+		$hasAnyIdbCookie = (bool)preg_grep('/^idb_/', array_keys($_COOKIE));
+		if(isset($_POST["smart-token"]) && !$hasAnyIdbCookie && !verifyCaptcha($_POST["smart-token"])){
 			$captchaMsg = t9n("[RU]Проверка капчи не пройдена. Пожалуйста, попробуйте снова.[EN]Captcha verification failed. Please try again.");
 			if(isApi()){
 				header("HTTP/1.0 403 Forbidden");
