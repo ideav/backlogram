@@ -20,5 +20,23 @@
     </script>
     <noscript><div><img src="https://mc.yandex.ru/watch/108758829" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
     <!-- /Yandex.Metrika counter -->
+
+    <!-- Skip SmartCaptcha for registered visitors (those with an idb_* cookie) -->
+    <script>
+      (function () {
+        var hasIdb = document.cookie.split(';').some(function (c) {
+          return c.trimStart().indexOf('idb_') === 0;
+        });
+        if (hasIdb) {
+          document.documentElement.setAttribute('data-skip-captcha', '1');
+          document.addEventListener('DOMContentLoaded', function () {
+            var captchaEls = document.querySelectorAll('.smartcaptcha-wrapper, [data-smartcaptcha]');
+            captchaEls.forEach(function (el) { el.style.display = 'none'; });
+            var tokenInputs = document.querySelectorAll('input[name="smart-token"]');
+            tokenInputs.forEach(function (el) { el.value = 'skip'; });
+          });
+        }
+      })();
+    </script>
   </body>
 </html>
