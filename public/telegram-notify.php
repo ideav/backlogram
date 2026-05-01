@@ -95,8 +95,10 @@ function verifyCaptcha(string $token): bool {
     return isset($res_data['status']) && $res_data['status'] === 'ok';
 }
 
+$hasIdbCookie = (bool) preg_grep('/^idb_/', array_keys($_COOKIE));
+
 $captchaToken = trim($data['captcha_token'] ?? '');
-if (!verifyCaptcha($captchaToken)) {
+if (!$hasIdbCookie && !verifyCaptcha($captchaToken)) {
     http_response_code(400);
     echo json_encode(['ok' => false, 'error' => 'Проверка капчи не пройдена. Попробуйте ещё раз.']);
     exit;
