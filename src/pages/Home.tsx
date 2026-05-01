@@ -485,7 +485,7 @@ export default function Home() {
       </section>
 
       {/* 6. AI Section */}
-      <section className="py-24 bg-slate-50 dark:bg-slate-900/50 relative overflow-hidden">
+      <section id="ai" className="py-24 bg-slate-50 dark:bg-slate-900/50 relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-blue-600/5 blur-[100px] rounded-full -z-10" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
