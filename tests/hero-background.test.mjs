@@ -13,18 +13,29 @@ function getHeroSection(source) {
   return match[0]
 }
 
-test('first landing block uses the issue image as a subtle decorative background', () => {
+test('first landing block uses the issue image as a visibly flickering decorative background', () => {
   const heroSection = getHeroSection(homeSource)
+  const flickerKeyframes = cssSource.match(/@keyframes hero-background-flicker\s*\{[\s\S]*?100%\s*\{[\s\S]*?\n\}/)
 
   assert.match(heroSection, new RegExp(`src="${backgroundUrl}"`))
   assert.match(heroSection, /alt=""/)
   assert.match(heroSection, /aria-hidden="true"/)
   assert.match(heroSection, /hero-background-flicker/)
   assert.match(heroSection, /data-active=\{isHeroTeaserActive \? 'true' : 'false'\}/)
-  assert.match(
-    cssSource,
-    /@keyframes hero-background-flicker[\s\S]*?opacity:\s*0\.(?:1[0-9]|2[0-9])/,
-    'The background flicker should stay subtle enough for the hero copy to remain readable.',
+  assert.ok(flickerKeyframes, 'Expected dedicated hero background flicker keyframes.')
+
+  const opacityStops = [...flickerKeyframes[0].matchAll(/opacity:\s*(0?\.\d+|1(?:\.0+)?)/g)]
+    .map(([, value]) => Number(value))
+  const minOpacity = Math.min(...opacityStops)
+  const maxOpacity = Math.max(...opacityStops)
+
+  assert.ok(
+    minOpacity <= 0.1,
+    `Expected the background flicker to dip low enough to make the pulse visible; got ${minOpacity}.`,
+  )
+  assert.ok(
+    maxOpacity >= 0.48,
+    `Expected the background flicker amplitude to be noticeably stronger; got ${maxOpacity}.`,
   )
 })
 

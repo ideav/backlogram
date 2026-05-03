@@ -58,14 +58,14 @@ test('hero background flicker is a slow light-blue cycle', () => {
   assert.doesNotMatch(homeSource, /data-shimmer=/)
 })
 
-test('automation teaser keeps a light contrast state without flickering text', () => {
+test('automation teaser hover uses light text without flickering text', () => {
   const badgeRule = cssSource.match(/\.hero-teaser-badge\s*\{[\s\S]*?\n[ ]*\}/)
   const badgeActiveRule = cssSource.match(/\.hero-teaser-badge\[data-active="true"\]\s*\{[\s\S]*?\n[ ]*\}/)
   const triggerRule = cssSource.match(/\.hero-teaser-trigger\s*\{[\s\S]*?\n[ ]*\}/)
   const activeRule = cssSource.match(/\.hero-teaser-trigger\[data-active="true"\]\s*\{[\s\S]*?\n[ ]*\}/)
 
   assert.ok(badgeRule, 'Expected the full teaser pill to have a dedicated surface.')
-  assert.ok(badgeActiveRule, 'Expected hover to stay light and unobtrusive.')
+  assert.ok(badgeActiveRule, 'Expected hover to use a dedicated high-contrast surface.')
   assert.ok(triggerRule, 'Expected a dedicated teaser trigger utility.')
   assert.ok(activeRule, 'Expected the active teaser state to have a dedicated rule.')
   assert.doesNotMatch(
@@ -73,13 +73,13 @@ test('automation teaser keeps a light contrast state without flickering text', (
     /\bopacity\s*:/,
     'The teaser span should stay opaque; shimmer must not animate its opacity.',
   )
-  assert.match(badgeActiveRule[0], /background-color:\s*rgba\(219,\s*234,\s*254,\s*0\.28\)(?:\s*!important)?;/)
-  assert.match(badgeActiveRule[0], /border-color:\s*rgba\(147,\s*197,\s*253,\s*0\.55\);/)
+  assert.match(badgeActiveRule[0], /background-color:\s*rgba\(37,\s*99,\s*235,\s*0\.(?:5[5-9]|6\d|7\d)\)(?:\s*!important)?;/)
+  assert.match(badgeActiveRule[0], /border-color:\s*rgba\(147,\s*197,\s*253,\s*0\.(?:6\d|7\d|8\d)\);/)
+  assert.match(badgeActiveRule[0], /color:\s*rgb\(248,\s*250,\s*252\);/)
   assert.match(badgeActiveRule[0], /box-shadow:/)
-  assert.match(activeRule[0], /color:\s*rgb\(37,\s*99,\s*235\);/)
+  assert.match(activeRule[0], /color:\s*rgb\(248,\s*250,\s*252\);/)
+  assert.match(activeRule[0], /text-shadow:/)
   assert.doesNotMatch(cssSource, /@keyframes hero-shimmer-sweep/)
   assert.doesNotMatch(cssSource, /\.hero-shimmer-badge/)
   assert.doesNotMatch(cssSource, /\.hero-teaser-badge::after/)
-  assert.doesNotMatch(cssSource, /background-color:\s*rgba\(37,\s*99,\s*235,\s*0\.88\)/)
-  assert.doesNotMatch(cssSource, /color:\s*#fff;/)
 })
