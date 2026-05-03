@@ -158,8 +158,14 @@ export default function Home() {
   return (
     <div className="overflow-hidden">
       {/* 1. Hero Section */}
-      <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32">
-        <div className="absolute inset-0 -z-10">
+      <section className="relative isolate overflow-hidden pt-32 pb-20 lg:pt-48 lg:pb-32">
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <img
+            src="/hero-ai-background.webp"
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover object-center opacity-[0.10] dark:opacity-[0.20]"
+          />
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(37,99,235,0.08)_0%,transparent_70%)]" />
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
         </div>
