@@ -3,6 +3,7 @@ import { existsSync, readFileSync, statSync } from 'node:fs'
 import { test } from 'node:test'
 
 const homeSource = readFileSync(new URL('../src/pages/Home.tsx', import.meta.url), 'utf8')
+const cssSource = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
 const backgroundUrl = '/hero-ai-background.webp'
 const backgroundAsset = new URL('../public/hero-ai-background.webp', import.meta.url)
 
@@ -18,10 +19,12 @@ test('first landing block uses the issue image as a subtle decorative background
   assert.match(heroSection, new RegExp(`src="${backgroundUrl}"`))
   assert.match(heroSection, /alt=""/)
   assert.match(heroSection, /aria-hidden="true"/)
+  assert.match(heroSection, /hero-background-flicker/)
+  assert.match(heroSection, /data-active=\{isHeroTeaserActive \? 'true' : 'false'\}/)
   assert.match(
-    heroSection,
-    /opacity-\[0\.(?:1[0-9]|2[0-9])\]/,
-    'The background image should stay subtle enough for the hero copy to remain readable.',
+    cssSource,
+    /@keyframes hero-background-flicker[\s\S]*?opacity:\s*0\.(?:1[0-9]|2[0-9])/,
+    'The background flicker should stay subtle enough for the hero copy to remain readable.',
   )
 })
 

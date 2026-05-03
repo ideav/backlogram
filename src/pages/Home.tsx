@@ -57,16 +57,6 @@ declare global {
 type FormState = 'idle' | 'sending' | 'success' | 'error'
 
 const CAPTCHA_CLIENT_KEY = (import.meta.env.VITE_SMARTCAPTCHA_CLIENT_KEY as string | undefined) ?? ''
-const HERO_SHIMMER_MIN_DELAY_MS = 7000
-const HERO_SHIMMER_MAX_DELAY_MS = 11000
-const HERO_SHIMMER_SWEEP_MS = 4200
-
-function getRandomHeroShimmerDelay(): number {
-  return Math.floor(
-    HERO_SHIMMER_MIN_DELAY_MS
-    + Math.random() * (HERO_SHIMMER_MAX_DELAY_MS - HERO_SHIMMER_MIN_DELAY_MS + 1),
-  )
-}
 
 function hasIdbCookie(): boolean {
   return document.cookie.split(';').some(c => c.trimStart().startsWith('idb_'))
@@ -79,38 +69,9 @@ export default function Home() {
   const [captchaToken, setCaptchaToken] = React.useState('')
   const [isCaptchaRequested, setIsCaptchaRequested] = React.useState(false)
   const [isHeroTeaserActive, setIsHeroTeaserActive] = React.useState(false)
-  const [isHeroShimmerRunning, setIsHeroShimmerRunning] = React.useState(false)
   const [idbCookieFound] = React.useState(() => hasIdbCookie())
   const captchaContainerRef = React.useRef<HTMLDivElement>(null)
   const captchaWidgetIdRef = React.useRef<number | null>(null)
-
-  React.useEffect(() => {
-    let delayTimer: number | undefined
-    let sweepTimer: number | undefined
-    let isCancelled = false
-
-    function scheduleNextSweep() {
-      delayTimer = window.setTimeout(() => {
-        if (isCancelled) return
-
-        setIsHeroShimmerRunning(true)
-        sweepTimer = window.setTimeout(() => {
-          if (isCancelled) return
-
-          setIsHeroShimmerRunning(false)
-        }, HERO_SHIMMER_SWEEP_MS)
-        scheduleNextSweep()
-      }, getRandomHeroShimmerDelay())
-    }
-
-    scheduleNextSweep()
-
-    return () => {
-      isCancelled = true
-      if (delayTimer !== undefined) window.clearTimeout(delayTimer)
-      if (sweepTimer !== undefined) window.clearTimeout(sweepTimer)
-    }
-  }, [])
 
   React.useEffect(() => {
     if (!CAPTCHA_CLIENT_KEY || !isCaptchaRequested || idbCookieFound) return
@@ -200,12 +161,17 @@ export default function Home() {
       {/* 1. Hero Section */}
       <section className="relative isolate overflow-hidden pt-32 pb-20 lg:pt-48 lg:pb-32">
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <img
-            src="/hero-ai-background.webp"
-            alt=""
-            aria-hidden="true"
-            className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700 ease-in-out ${isHeroTeaserActive ? 'opacity-100 dark:opacity-100' : 'opacity-[0.10] dark:opacity-[0.20]'}`}
-          />
+          <div
+            className="hero-background-flicker"
+            data-active={isHeroTeaserActive ? 'true' : 'false'}
+          >
+            <img
+              src="/hero-ai-background.webp"
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+          </div>
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(37,99,235,0.08)_0%,transparent_70%)]" />
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
         </div>
@@ -216,15 +182,13 @@ export default function Home() {
               initial={{ y: 20 }}
               animate={{ y: 0 }}
               transition={{ duration: 0.5 }}
-              className="hero-shimmer-badge inline-flex items-center gap-2 px-3 py-1 rounded-full border text-blue-500 dark:text-blue-400 text-sm font-medium mb-6"
+              className="hero-teaser-badge inline-flex items-center gap-2 px-3 py-1 rounded-full border text-blue-500 dark:text-blue-400 text-sm font-medium mb-6"
               data-active={isHeroTeaserActive ? 'true' : 'false'}
-              data-shimmer={isHeroShimmerRunning ? 'true' : 'false'}
             >
               <Zap size={14} className="fill-current" />
               <span
-                className="hero-shimmer-trigger opacity-100"
+                className="hero-teaser-trigger opacity-100"
                 data-active={isHeroTeaserActive ? 'true' : 'false'}
-                data-shimmer={isHeroShimmerRunning ? 'true' : 'false'}
                 onMouseEnter={() => setIsHeroTeaserActive(true)}
                 onMouseLeave={() => setIsHeroTeaserActive(false)}
               >
