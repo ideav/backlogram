@@ -50,11 +50,11 @@ test('automation teaser shimmer is scheduled at irregular 3-6 second intervals',
 })
 
 test('automation teaser shimmer is a discrete white sweep and active text turns white', () => {
-  const badgeRule = cssSource.match(/\.hero-shimmer-badge\s*\{[\s\S]*?\n  \}/)
-  const badgeActiveRule = cssSource.match(/\.hero-shimmer-badge\[data-active="true"\],[\s\S]*?\.hero-shimmer-badge\[data-shimmer="true"\]\s*\{[\s\S]*?\n  \}/)
-  const badgeShimmerRule = cssSource.match(/\.hero-shimmer-badge\[data-shimmer="true"\]::after\s*\{[\s\S]*?\n  \}/)
-  const triggerRule = cssSource.match(/\.hero-shimmer-trigger\s*\{[\s\S]*?\n  \}/)
-  const activeRule = cssSource.match(/\.hero-shimmer-trigger\[data-active="true"\]\s*\{[\s\S]*?\n  \}/)
+  const badgeRule = cssSource.match(/\.hero-shimmer-badge\s*\{[\s\S]*?\n[ ]*\}/)
+  const badgeActiveRule = cssSource.match(/\.hero-shimmer-badge\[data-active="true"\],[\s\S]*?\.hero-shimmer-badge\[data-shimmer="true"\]\s*\{[\s\S]*?\n[ ]*\}/)
+  const badgeShimmerRule = cssSource.match(/\.hero-shimmer-badge\[data-shimmer="true"\]::after\s*\{[\s\S]*?\n[ ]*\}/)
+  const triggerRule = cssSource.match(/\.hero-shimmer-trigger\s*\{[\s\S]*?\n[ ]*\}/)
+  const activeRule = cssSource.match(/\.hero-shimmer-trigger\[data-active="true"\]\s*\{[\s\S]*?\n[ ]*\}/)
 
   assert.ok(badgeRule, 'Expected the full teaser pill to have a dedicated shimmer surface.')
   assert.ok(badgeActiveRule, 'Expected data-shimmer to create a visible badge state even without hover.')
@@ -66,7 +66,7 @@ test('automation teaser shimmer is a discrete white sweep and active text turns 
     /\bopacity\s*:/,
     'The teaser span should stay opaque; shimmer must not animate its opacity.',
   )
-  assert.match(badgeActiveRule[0], /background-color:\s*rgba\(37,\s*99,\s*235,\s*0\.88\);/)
+  assert.match(badgeActiveRule[0], /background-color:\s*rgba\(37,\s*99,\s*235,\s*0\.88\)(?:\s*!important)?;/)
   assert.match(badgeActiveRule[0], /box-shadow:/)
   assert.match(activeRule[0], /color:\s*#fff;/)
   assert.match(cssSource, /@keyframes hero-shimmer-sweep/)
