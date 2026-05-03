@@ -145,6 +145,8 @@
     position: relative;
     isolation: isolate;
     overflow: hidden;
+    background-color: color-mix(in oklab, var(--color-blue-500) 10%, transparent);
+    border-color: color-mix(in oklab, var(--color-blue-500) 20%, transparent);
     transition:
       background-color 200ms ease,
       border-color 200ms ease,
