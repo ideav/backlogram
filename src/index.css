@@ -159,17 +159,6 @@
     z-index: 1;
   }
 
-  .hero-shimmer-badge[data-active="true"],
-  .hero-shimmer-badge[data-shimmer="true"] {
-    background-color: rgba(37, 99, 235, 0.88);
-    border-color: rgba(147, 197, 253, 0.82);
-    color: #fff;
-    box-shadow:
-      0 12px 32px rgba(37, 99, 235, 0.28),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.32);
-    text-shadow: 0 1px 8px rgba(15, 23, 42, 0.45);
-  }
-
   .hero-shimmer-badge::after {
     content: "";
     position: absolute;
@@ -189,32 +178,12 @@
     will-change: transform, opacity;
   }
 
-  .hero-shimmer-badge[data-shimmer="true"]::after {
-    animation: hero-shimmer-sweep 900ms ease-out both;
-  }
-
   .hero-shimmer-trigger {
     position: relative;
     display: inline-block;
     border-radius: 9999px;
     cursor: pointer;
     transition: color 200ms ease, text-shadow 200ms ease;
-  }
-
-  .hero-shimmer-trigger[data-active="true"] {
-    color: #fff;
-    text-shadow: 0 1px 8px rgba(15, 23, 42, 0.45);
-  }
-
-  .hero-shimmer-trigger[data-shimmer="true"] {
-    color: #fff;
-    text-shadow: 0 1px 8px rgba(15, 23, 42, 0.45);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero-shimmer-badge[data-shimmer="true"]::after {
-      animation: none;
-    }
   }
 
   /* Glass morphism utilities */
@@ -251,5 +220,42 @@
   }
   .scrollbar-none::-webkit-scrollbar {
     display: none;
+  }
+}
+
+/* Hero shimmer state rules are intentionally outside @layer utilities so they
+   override Tailwind-generated utility classes (e.g. bg-blue-500/10) that share
+   the same layer and would otherwise win due to later source order.
+   !important on background-color is required because Tailwind v4 nests a
+   @supports block inside .bg-blue-500/10 which Chromium hoists out of the
+   @layer context, making it win over unlayered CSS by source order. */
+.hero-shimmer-badge[data-active="true"],
+.hero-shimmer-badge[data-shimmer="true"] {
+  background-color: rgba(37, 99, 235, 0.88) !important;
+  border-color: rgba(147, 197, 253, 0.82);
+  color: #fff;
+  box-shadow:
+    0 12px 32px rgba(37, 99, 235, 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.32);
+  text-shadow: 0 1px 8px rgba(15, 23, 42, 0.45);
+}
+
+.hero-shimmer-badge[data-shimmer="true"]::after {
+  animation: hero-shimmer-sweep 900ms ease-out both;
+}
+
+.hero-shimmer-trigger[data-active="true"] {
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(15, 23, 42, 0.45);
+}
+
+.hero-shimmer-trigger[data-shimmer="true"] {
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(15, 23, 42, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-shimmer-badge[data-shimmer="true"]::after {
+    animation: none;
   }
 }
