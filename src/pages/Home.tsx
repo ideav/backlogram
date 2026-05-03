@@ -216,7 +216,9 @@ export default function Home() {
               initial={{ y: 20 }}
               animate={{ y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400 text-sm font-medium mb-6"
+              className="hero-shimmer-badge inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400 text-sm font-medium mb-6"
+              data-active={isHeroTeaserActive ? 'true' : 'false'}
+              data-shimmer={isHeroShimmerRunning ? 'true' : 'false'}
             >
               <Zap size={14} className="fill-current" />
               <span
