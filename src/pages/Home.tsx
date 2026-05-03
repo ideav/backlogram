@@ -195,7 +195,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="max-w-3xl mx-auto text-lg md:text-xl text-slate-500 dark:text-slate-400 leading-relaxed mb-10"
+              className="max-w-3xl mx-auto text-lg md:text-xl text-slate-900 dark:text-slate-100 leading-relaxed mb-10"
             >
               Разгрузите программистов, не жертвуя контролем.<br />
               Платформа, которая встраивается в вашу ИТ-среду и реализует проекты быстрее, чем вы успеете написать ТЗ на обычную разработку.
