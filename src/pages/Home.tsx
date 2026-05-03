@@ -57,9 +57,9 @@ declare global {
 type FormState = 'idle' | 'sending' | 'success' | 'error'
 
 const CAPTCHA_CLIENT_KEY = (import.meta.env.VITE_SMARTCAPTCHA_CLIENT_KEY as string | undefined) ?? ''
-const HERO_SHIMMER_MIN_DELAY_MS = 3000
-const HERO_SHIMMER_MAX_DELAY_MS = 6000
-const HERO_SHIMMER_SWEEP_MS = 900
+const HERO_SHIMMER_MIN_DELAY_MS = 7000
+const HERO_SHIMMER_MAX_DELAY_MS = 11000
+const HERO_SHIMMER_SWEEP_MS = 4200
 
 function getRandomHeroShimmerDelay(): number {
   return Math.floor(
