@@ -57,6 +57,16 @@ declare global {
 type FormState = 'idle' | 'sending' | 'success' | 'error'
 
 const CAPTCHA_CLIENT_KEY = (import.meta.env.VITE_SMARTCAPTCHA_CLIENT_KEY as string | undefined) ?? ''
+const HERO_SHIMMER_MIN_DELAY_MS = 3000
+const HERO_SHIMMER_MAX_DELAY_MS = 6000
+const HERO_SHIMMER_SWEEP_MS = 900
+
+function getRandomHeroShimmerDelay(): number {
+  return Math.floor(
+    HERO_SHIMMER_MIN_DELAY_MS
+    + Math.random() * (HERO_SHIMMER_MAX_DELAY_MS - HERO_SHIMMER_MIN_DELAY_MS + 1),
+  )
+}
 
 function hasIdbCookie(): boolean {
   return document.cookie.split(';').some(c => c.trimStart().startsWith('idb_'))
@@ -69,9 +79,38 @@ export default function Home() {
   const [captchaToken, setCaptchaToken] = React.useState('')
   const [isCaptchaRequested, setIsCaptchaRequested] = React.useState(false)
   const [isHeroTeaserActive, setIsHeroTeaserActive] = React.useState(false)
+  const [isHeroShimmerRunning, setIsHeroShimmerRunning] = React.useState(false)
   const [idbCookieFound] = React.useState(() => hasIdbCookie())
   const captchaContainerRef = React.useRef<HTMLDivElement>(null)
   const captchaWidgetIdRef = React.useRef<number | null>(null)
+
+  React.useEffect(() => {
+    let delayTimer: number | undefined
+    let sweepTimer: number | undefined
+    let isCancelled = false
+
+    function scheduleNextSweep() {
+      delayTimer = window.setTimeout(() => {
+        if (isCancelled) return
+
+        setIsHeroShimmerRunning(true)
+        sweepTimer = window.setTimeout(() => {
+          if (isCancelled) return
+
+          setIsHeroShimmerRunning(false)
+        }, HERO_SHIMMER_SWEEP_MS)
+        scheduleNextSweep()
+      }, getRandomHeroShimmerDelay())
+    }
+
+    scheduleNextSweep()
+
+    return () => {
+      isCancelled = true
+      if (delayTimer !== undefined) window.clearTimeout(delayTimer)
+      if (sweepTimer !== undefined) window.clearTimeout(sweepTimer)
+    }
+  }, [])
 
   React.useEffect(() => {
     if (!CAPTCHA_CLIENT_KEY || !isCaptchaRequested || idbCookieFound) return
@@ -182,6 +221,8 @@ export default function Home() {
               <Zap size={14} className="fill-current" />
               <span
                 className="hero-shimmer-trigger opacity-100"
+                data-active={isHeroTeaserActive ? 'true' : 'false'}
+                data-shimmer={isHeroShimmerRunning ? 'true' : 'false'}
                 onMouseEnter={() => setIsHeroTeaserActive(true)}
                 onMouseLeave={() => setIsHeroTeaserActive(false)}
               >

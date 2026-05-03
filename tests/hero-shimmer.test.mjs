@@ -18,6 +18,8 @@ test('automation teaser span controls the hero opacity swap without fading itsel
   assert.ok(teaserSpan, 'Expected the automation teaser to remain a span')
   assert.match(teaserSpan[0], /hero-shimmer-trigger/)
   assert.match(teaserSpan[0], /\bopacity-100\b/)
+  assert.match(teaserSpan[0], /data-active=\{isHeroTeaserActive \? 'true' : 'false'\}/)
+  assert.match(teaserSpan[0], /data-shimmer=\{isHeroShimmerRunning \? 'true' : 'false'\}/)
   assert.match(teaserSpan[0], /onMouseEnter=\{\(\) => setIsHeroTeaserActive\(true\)\}/)
   assert.match(teaserSpan[0], /onMouseLeave=\{\(\) => setIsHeroTeaserActive\(false\)\}/)
 
@@ -34,15 +36,34 @@ test('automation teaser span controls the hero opacity swap without fading itsel
   assert.match(heroSection, /transition-opacity duration-700 ease-in-out/)
 })
 
-test('automation teaser shimmer is a sweep effect that does not change span opacity', () => {
+test('automation teaser shimmer is scheduled at irregular 3-6 second intervals', () => {
+  assert.match(homeSource, /const HERO_SHIMMER_MIN_DELAY_MS = 3000/)
+  assert.match(homeSource, /const HERO_SHIMMER_MAX_DELAY_MS = 6000/)
+  assert.match(homeSource, /Math\.random\(\)/)
+  assert.match(homeSource, /window\.setTimeout/)
+  assert.match(homeSource, /setIsHeroShimmerRunning\(true\)/)
+  assert.match(homeSource, /setIsHeroShimmerRunning\(false\)/)
+})
+
+test('automation teaser shimmer is a discrete white sweep and active text turns white', () => {
   const triggerRule = cssSource.match(/\.hero-shimmer-trigger\s*\{[\s\S]*?\n  \}/)
+  const activeRule = cssSource.match(/\.hero-shimmer-trigger\[data-active="true"\]\s*\{[\s\S]*?\n  \}/)
+  const shimmerRule = cssSource.match(/\.hero-shimmer-trigger\[data-shimmer="true"\]::after\s*\{[\s\S]*?\n  \}/)
 
   assert.ok(triggerRule, 'Expected a dedicated shimmer trigger utility.')
+  assert.ok(activeRule, 'Expected the active teaser state to have a dedicated rule.')
+  assert.ok(shimmerRule, 'Expected a data-driven shimmer sweep rule.')
   assert.doesNotMatch(
     triggerRule[0],
     /\bopacity\s*:/,
     'The teaser span should stay opaque; shimmer must not animate its opacity.',
   )
+  assert.match(activeRule[0], /color:\s*#fff;/)
   assert.match(cssSource, /@keyframes hero-shimmer-sweep/)
   assert.match(cssSource, /\.hero-shimmer-trigger::after/)
+  assert.doesNotMatch(
+    cssSource,
+    /animation:\s*hero-shimmer-sweep\s+[^;]*\binfinite\b/,
+    'The sweep should be launched by React at random intervals, not run as regular infinite CSS.',
+  )
 })
