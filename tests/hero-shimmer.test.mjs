@@ -40,25 +40,26 @@ test('automation teaser span controls the hero opacity swap without fading itsel
   assert.match(heroSection, /transition-opacity duration-700 ease-in-out/)
 })
 
-test('automation teaser shimmer is scheduled at irregular 3-6 second intervals', () => {
-  assert.match(homeSource, /const HERO_SHIMMER_MIN_DELAY_MS = 3000/)
-  assert.match(homeSource, /const HERO_SHIMMER_MAX_DELAY_MS = 6000/)
+test('automation teaser shimmer is scheduled at slow irregular intervals', () => {
+  assert.match(homeSource, /const HERO_SHIMMER_MIN_DELAY_MS = 7000/)
+  assert.match(homeSource, /const HERO_SHIMMER_MAX_DELAY_MS = 11000/)
+  assert.match(homeSource, /const HERO_SHIMMER_SWEEP_MS = 4200/)
   assert.match(homeSource, /Math\.random\(\)/)
   assert.match(homeSource, /window\.setTimeout/)
   assert.match(homeSource, /setIsHeroShimmerRunning\(true\)/)
   assert.match(homeSource, /setIsHeroShimmerRunning\(false\)/)
 })
 
-test('automation teaser shimmer is a discrete white sweep and active text turns white', () => {
+test('automation teaser shimmer is a subtle slow light-blue sweep', () => {
   const badgeRule = cssSource.match(/\.hero-shimmer-badge\s*\{[\s\S]*?\n[ ]*\}/)
-  const badgeActiveRule = cssSource.match(/\.hero-shimmer-badge\[data-active="true"\],[\s\S]*?\.hero-shimmer-badge\[data-shimmer="true"\]\s*\{[\s\S]*?\n[ ]*\}/)
+  const badgeActiveRule = cssSource.match(/\.hero-shimmer-badge\[data-active="true"\]\s*\{[\s\S]*?\n[ ]*\}/)
   const badgeShimmerRule = cssSource.match(/\.hero-shimmer-badge\[data-shimmer="true"\]::after\s*\{[\s\S]*?\n[ ]*\}/)
   const triggerRule = cssSource.match(/\.hero-shimmer-trigger\s*\{[\s\S]*?\n[ ]*\}/)
   const activeRule = cssSource.match(/\.hero-shimmer-trigger\[data-active="true"\]\s*\{[\s\S]*?\n[ ]*\}/)
 
   assert.ok(badgeRule, 'Expected the full teaser pill to have a dedicated shimmer surface.')
-  assert.ok(badgeActiveRule, 'Expected data-shimmer to create a visible badge state even without hover.')
-  assert.ok(badgeShimmerRule, 'Expected the white sweep to cross the whole teaser pill.')
+  assert.ok(badgeActiveRule, 'Expected hover to stay light and unobtrusive.')
+  assert.ok(badgeShimmerRule, 'Expected the light-blue shimmer to cross the whole teaser pill.')
   assert.ok(triggerRule, 'Expected a dedicated shimmer trigger utility.')
   assert.ok(activeRule, 'Expected the active teaser state to have a dedicated rule.')
   assert.doesNotMatch(
@@ -66,11 +67,16 @@ test('automation teaser shimmer is a discrete white sweep and active text turns 
     /\bopacity\s*:/,
     'The teaser span should stay opaque; shimmer must not animate its opacity.',
   )
-  assert.match(badgeActiveRule[0], /background-color:\s*rgba\(37,\s*99,\s*235,\s*0\.88\)(?:\s*!important)?;/)
+  assert.match(badgeActiveRule[0], /background-color:\s*rgba\(219,\s*234,\s*254,\s*0\.28\)(?:\s*!important)?;/)
+  assert.match(badgeActiveRule[0], /border-color:\s*rgba\(147,\s*197,\s*253,\s*0\.55\);/)
   assert.match(badgeActiveRule[0], /box-shadow:/)
-  assert.match(activeRule[0], /color:\s*#fff;/)
+  assert.match(activeRule[0], /color:\s*rgb\(37,\s*99,\s*235\);/)
   assert.match(cssSource, /@keyframes hero-shimmer-sweep/)
   assert.match(cssSource, /\.hero-shimmer-badge::after/)
+  assert.match(cssSource, /rgba\(219,\s*234,\s*254,\s*0\.42\)/)
+  assert.match(badgeShimmerRule[0], /animation:\s*hero-shimmer-sweep\s+4200ms\s+ease-in-out\s+both;/)
+  assert.doesNotMatch(cssSource, /background-color:\s*rgba\(37,\s*99,\s*235,\s*0\.88\)/)
+  assert.doesNotMatch(cssSource, /color:\s*#fff;/)
   assert.doesNotMatch(
     cssSource,
     /animation:\s*hero-shimmer-sweep\s+[^;]*\binfinite\b/,
