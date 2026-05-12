@@ -12,6 +12,7 @@ import {
   ExternalLink,
   ListChecks,
   Link2,
+  Info,
   Library,
 } from 'lucide-react'
 import {
@@ -48,8 +49,7 @@ export default function KnowledgeBaseArticle() {
   useEffect(() => {
     if (!article) return
     const pageTitle = `${article.shortTitle} — База знаний — Интеграм`
-    const description =
-      article.metaDescription ?? article.summary
+    const description = article.metaDescription ?? article.summary
     const canonicalUrl =
       typeof window !== 'undefined'
         ? `${window.location.origin}/knowledge-base/${article.slug}.html`
@@ -84,7 +84,7 @@ export default function KnowledgeBaseArticle() {
   const prev = idx > 0 ? knowledgeBaseArticles[idx - 1] : null
   const next = idx < knowledgeBaseArticles.length - 1 ? knowledgeBaseArticles[idx + 1] : null
 
-  const related = (article.relatedSlugs ?? [])
+  const relatedArticles = (article.relatedSlugs ?? [])
     .map((s) => knowledgeBaseArticles.find((a) => a.slug === s))
     .filter((a): a is NonNullable<typeof a> => Boolean(a))
 
@@ -131,26 +131,34 @@ export default function KnowledgeBaseArticle() {
             </p>
           </section>
 
-          {article.scenarioPoints && article.scenarioPoints.length > 0 && (
+          {article.scenario && (
             <section className="mb-12">
               <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
                 <ListChecks size={14} /> Конкретный сценарий
               </h2>
-              {article.scenarioIntro && (
-                <p className="text-base text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
-                  {article.scenarioIntro}
-                </p>
-              )}
-              <ul className="space-y-3 list-disc pl-5 marker:text-blue-500">
-                {article.scenarioPoints.map((point, i) => (
+              <p className="text-base text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
+                {article.scenario.intro}
+              </p>
+              <ul className="space-y-2 mb-4 pl-4">
+                {article.scenario.symptoms.map((s, i) => (
                   <li
                     key={i}
-                    className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed"
+                    className="relative pl-4 text-sm text-slate-700 dark:text-slate-300 leading-relaxed before:content-[''] before:absolute before:left-0 before:top-2.5 before:w-1.5 before:h-1.5 before:rounded-full before:bg-slate-400 dark:before:bg-slate-500"
                   >
-                    {point}
+                    {s}
                   </li>
                 ))}
               </ul>
+              {article.scenario.note && (
+                <div className="flex gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40">
+                  <span className="flex-shrink-0 mt-0.5 text-slate-500 dark:text-slate-400">
+                    <Info size={16} />
+                  </span>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                    {article.scenario.note}
+                  </p>
+                </div>
+              )}
             </section>
           )}
 
@@ -249,20 +257,20 @@ export default function KnowledgeBaseArticle() {
             </section>
           )}
 
-          {related.length > 0 && (
+          {relatedArticles.length > 0 && (
             <section className="mb-12">
               <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
                 <Library size={14} /> Смежные статьи
               </h2>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {related.map((r) => (
+                {relatedArticles.map((r) => (
                   <li key={r.slug}>
                     <Link
                       to={`/knowledge-base/${r.slug}.html`}
                       className="group block h-full p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-blue-500/40 transition-all"
                     >
                       <div className="text-xs text-slate-400 dark:text-slate-500 mb-1">
-                        № {r.number} · {r.compare}
+                        №&nbsp;{r.number} · {r.compare}
                       </div>
                       <div className="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-blue-500 transition-colors">
                         {r.shortTitle}

@@ -14,7 +14,7 @@ const articleSource = readFileSync(
 
 test('knowledge base data exposes Excel row-limit article with enriched fields', () => {
   assert.match(dataSource, /slug: '02-excel-row-limit'/)
-  assert.match(dataSource, /scenarioPoints:/)
+  assert.match(dataSource, /scenario: \{[\s\S]*?symptoms:/)
   assert.match(dataSource, /1 048 576/)
   assert.match(dataSource, /Microsoft Support: Excel specifications and limits/)
   assert.match(dataSource, /relatedSlugs: \['01-google-sheets-150k', '03-excel-file-versions', '04-related-tables'\]/)
