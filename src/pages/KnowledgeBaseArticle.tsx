@@ -10,6 +10,9 @@ import {
   Target,
   GitCompare,
   ExternalLink,
+  ListChecks,
+  Info,
+  Library,
 } from 'lucide-react'
 import {
   getArticleBySlug,
@@ -17,20 +20,57 @@ import {
 } from '../data/knowledgeBase'
 import NotFound from './NotFound'
 
+function setMeta(selector: string, attr: 'name' | 'property', key: string, content: string) {
+  let el = document.head.querySelector<HTMLMetaElement>(selector)
+  if (!el) {
+    el = document.createElement('meta')
+    el.setAttribute(attr, key)
+    document.head.appendChild(el)
+  }
+  el.setAttribute('content', content)
+}
+
+function setCanonical(href: string) {
+  let el = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]')
+  if (!el) {
+    el = document.createElement('link')
+    el.setAttribute('rel', 'canonical')
+    document.head.appendChild(el)
+  }
+  el.setAttribute('href', href)
+}
+
 export default function KnowledgeBaseArticle() {
   const { slug = '' } = useParams<{ slug: string }>()
   const normalizedSlug = slug.replace(/\.html$/i, '')
   const article = getArticleBySlug(normalizedSlug)
 
   useEffect(() => {
-    if (article) {
-      document.title = `${article.shortTitle} — База знаний — Интеграм`
-    }
+    if (!article) return
+    const pageTitle = `${article.shortTitle} — База знаний — Интеграм`
+    const description = article.summary
+    const canonical = `${window.location.origin}/knowledge-base/${article.slug}.html`
+
+    document.title = pageTitle
+    setMeta('meta[name="description"]', 'name', 'description', description)
+    setMeta('meta[property="og:title"]', 'property', 'og:title', pageTitle)
+    setMeta('meta[property="og:description"]', 'property', 'og:description', description)
+    setMeta('meta[property="og:type"]', 'property', 'og:type', 'article')
+    setMeta('meta[property="og:url"]', 'property', 'og:url', canonical)
+    setMeta('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary_large_image')
+    setMeta('meta[name="twitter:title"]', 'name', 'twitter:title', pageTitle)
+    setMeta('meta[name="twitter:description"]', 'name', 'twitter:description', description)
+    setCanonical(canonical)
   }, [article])
 
   if (!article) {
     return <NotFound />
   }
+
+  const relatedArticles =
+    article.relatedSlugs
+      ?.map((s) => getArticleBySlug(s))
+      .filter((a): a is NonNullable<typeof a> => Boolean(a)) ?? []
 
   const idx = knowledgeBaseArticles.findIndex((a) => a.slug === article.slug)
   const prev = idx > 0 ? knowledgeBaseArticles[idx - 1] : null
@@ -77,6 +117,37 @@ export default function KnowledgeBaseArticle() {
             </p>
           </section>
 
+          {article.scenario && (
+            <section className="mb-12">
+              <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
+                <ListChecks size={14} /> Конкретный сценарий
+              </h2>
+              <p className="text-base text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
+                {article.scenario.intro}
+              </p>
+              <ul className="space-y-2 mb-4 pl-4">
+                {article.scenario.symptoms.map((s, i) => (
+                  <li
+                    key={i}
+                    className="relative pl-4 text-sm text-slate-700 dark:text-slate-300 leading-relaxed before:content-[''] before:absolute before:left-0 before:top-2.5 before:w-1.5 before:h-1.5 before:rounded-full before:bg-slate-400 dark:before:bg-slate-500"
+                  >
+                    {s}
+                  </li>
+                ))}
+              </ul>
+              {article.scenario.note && (
+                <div className="flex gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40">
+                  <span className="flex-shrink-0 mt-0.5 text-slate-500 dark:text-slate-400">
+                    <Info size={16} />
+                  </span>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                    {article.scenario.note}
+                  </p>
+                </div>
+              )}
+            </section>
+          )}
+
           <section className="mb-12">
             <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
               <CheckCircle2 size={14} /> Что делает Интеграм иначе
@@ -119,6 +190,31 @@ export default function KnowledgeBaseArticle() {
               </p>
             </div>
           </section>
+
+          {relatedArticles.length > 0 && (
+            <section className="mb-10">
+              <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
+                <Library size={14} /> Смежные статьи
+              </h2>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {relatedArticles.map((rel) => (
+                  <li key={rel.slug}>
+                    <Link
+                      to={`/knowledge-base/${rel.slug}.html`}
+                      className="group block h-full p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-blue-500/40 transition-all"
+                    >
+                      <div className="text-xs text-slate-400 dark:text-slate-500 mb-1">
+                        №&nbsp;{rel.number} · {rel.compare}
+                      </div>
+                      <div className="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-blue-500 transition-colors">
+                        {rel.shortTitle}
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           <div className="text-xs text-slate-400 dark:text-slate-500 italic">
             Полный исходный текст статьи с раскадровкой видео и фактчеком —{' '}
