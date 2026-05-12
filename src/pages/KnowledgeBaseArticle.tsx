@@ -48,8 +48,10 @@ export default function KnowledgeBaseArticle() {
 
   useEffect(() => {
     if (!article) return
-    const pageTitle = `${article.shortTitle} — База знаний — Интеграм`
-    const description = article.metaDescription ?? article.summary
+    const pageTitle = article.seoTitle ?? `${article.shortTitle} — База знаний — Интеграм`
+    const description = article.seoDescription ?? article.metaDescription ?? article.summary
+    const ogTitle = article.ogTitle ?? pageTitle
+    const ogDescription = article.ogDescription ?? description
     const canonicalUrl =
       typeof window !== 'undefined'
         ? `${window.location.origin}/knowledge-base/${article.slug}.html`
@@ -63,15 +65,15 @@ export default function KnowledgeBaseArticle() {
     }
 
     setMetaTag('meta[property="og:type"]', 'property', 'og:type', 'article')
-    setMetaTag('meta[property="og:title"]', 'property', 'og:title', pageTitle)
-    setMetaTag('meta[property="og:description"]', 'property', 'og:description', description)
+    setMetaTag('meta[property="og:title"]', 'property', 'og:title', ogTitle)
+    setMetaTag('meta[property="og:description"]', 'property', 'og:description', ogDescription)
     setMetaTag('meta[property="og:url"]', 'property', 'og:url', canonicalUrl)
     setMetaTag('meta[property="og:site_name"]', 'property', 'og:site_name', 'Интеграм')
     setMetaTag('meta[property="og:locale"]', 'property', 'og:locale', 'ru_RU')
 
     setMetaTag('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary_large_image')
-    setMetaTag('meta[name="twitter:title"]', 'name', 'twitter:title', pageTitle)
-    setMetaTag('meta[name="twitter:description"]', 'name', 'twitter:description', description)
+    setMetaTag('meta[name="twitter:title"]', 'name', 'twitter:title', ogTitle)
+    setMetaTag('meta[name="twitter:description"]', 'name', 'twitter:description', ogDescription)
 
     setCanonical(canonicalUrl)
   }, [article])
