@@ -188,6 +188,39 @@ export default function KnowledgeBaseArticle() {
             </section>
           )}
 
+          {article.flowDiagram && (
+            <section className="mb-12">
+              <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
+                <GitCompare size={14} /> {article.flowDiagram.title}
+              </h2>
+              {article.flowDiagram.description && (
+                <p className="text-base text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
+                  {article.flowDiagram.description}
+                </p>
+              )}
+              <ol className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {article.flowDiagram.steps.map((step, i) => (
+                  <li
+                    key={step.title}
+                    className="relative min-w-0 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40 p-4"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-xs font-bold text-blue-600 dark:text-blue-400">
+                        {i + 1}
+                      </span>
+                      <h3 className="min-w-0 text-sm font-semibold text-slate-800 dark:text-slate-100 leading-snug">
+                        {step.title}
+                      </h3>
+                    </div>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                      {step.body}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
+
           <section className="mb-12">
             <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
               <CheckCircle2 size={14} /> Что делает Интеграм иначе
