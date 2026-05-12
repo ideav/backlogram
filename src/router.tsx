@@ -5,6 +5,8 @@ import Success from './pages/Success'
 import Fail from './pages/Fail'
 import Tokens from './pages/Tokens'
 import AdImages from './pages/AdImages'
+import KnowledgeBase from './pages/KnowledgeBase'
+import KnowledgeBaseArticle from './pages/KnowledgeBaseArticle'
 import App from './App'
 
 export const router = createBrowserRouter([
@@ -31,6 +33,18 @@ export const router = createBrowserRouter([
       {
         path: 'ad-images.html',
         element: <AdImages />,
+      },
+      {
+        path: 'knowledge-base.html',
+        element: <KnowledgeBase />,
+      },
+      {
+        path: 'knowledge-base',
+        element: <KnowledgeBase />,
+      },
+      {
+        path: 'knowledge-base/:slug',
+        element: <KnowledgeBaseArticle />,
       },
       {
         path: '*',

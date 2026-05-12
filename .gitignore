@@ -26,5 +26,8 @@ dist-ssr
 # Vite cache
 .vite
 
+# Playwright MCP artifacts
+.playwright-mcp/
+
 # Telegram bot credentials (copy from telegram-config.example.php and fill in values)
 public/telegram-config.php
