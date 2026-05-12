@@ -1263,7 +1263,9 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
       '05-access-rights',
       '08-html-templates',
       '13-api-json-export',
-      '14-forms-reports-dashboards',
+      '14-forms',
+      '14a-reports',
+      '14b-dashboards',
     ],
   },
 ]
