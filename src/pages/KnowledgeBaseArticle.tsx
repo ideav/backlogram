@@ -48,8 +48,10 @@ export default function KnowledgeBaseArticle() {
 
   useEffect(() => {
     if (!article) return
-    const pageTitle = `${article.shortTitle} — База знаний — Интеграм`
-    const description = article.metaDescription ?? article.summary
+    const pageTitle = article.seoTitle ?? `${article.shortTitle} — База знаний — Интеграм`
+    const description = article.seoDescription ?? article.metaDescription ?? article.summary
+    const ogTitle = article.ogTitle ?? pageTitle
+    const ogDescription = article.ogDescription ?? description
     const canonicalUrl =
       typeof window !== 'undefined'
         ? `${window.location.origin}/knowledge-base/${article.slug}.html`
@@ -63,15 +65,15 @@ export default function KnowledgeBaseArticle() {
     }
 
     setMetaTag('meta[property="og:type"]', 'property', 'og:type', 'article')
-    setMetaTag('meta[property="og:title"]', 'property', 'og:title', pageTitle)
-    setMetaTag('meta[property="og:description"]', 'property', 'og:description', description)
+    setMetaTag('meta[property="og:title"]', 'property', 'og:title', ogTitle)
+    setMetaTag('meta[property="og:description"]', 'property', 'og:description', ogDescription)
     setMetaTag('meta[property="og:url"]', 'property', 'og:url', canonicalUrl)
     setMetaTag('meta[property="og:site_name"]', 'property', 'og:site_name', 'Интеграм')
     setMetaTag('meta[property="og:locale"]', 'property', 'og:locale', 'ru_RU')
 
     setMetaTag('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary_large_image')
-    setMetaTag('meta[name="twitter:title"]', 'name', 'twitter:title', pageTitle)
-    setMetaTag('meta[name="twitter:description"]', 'name', 'twitter:description', description)
+    setMetaTag('meta[name="twitter:title"]', 'name', 'twitter:title', ogTitle)
+    setMetaTag('meta[name="twitter:description"]', 'name', 'twitter:description', ogDescription)
 
     setCanonical(canonicalUrl)
   }, [article])
@@ -162,6 +164,30 @@ export default function KnowledgeBaseArticle() {
             </section>
           )}
 
+          {article.integramScenario && (
+            <section className="mb-12">
+              <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
+                <CheckCircle2 size={14} /> Тот же сценарий в Интеграме
+              </h2>
+              <p className="text-base text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
+                {article.integramScenario.intro}
+              </p>
+              <ol className="space-y-3">
+                {article.integramScenario.steps.map((step, i) => (
+                  <li
+                    key={i}
+                    className="flex gap-3 text-sm text-slate-700 dark:text-slate-300 leading-relaxed"
+                  >
+                    <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-xs font-bold text-blue-600 dark:text-blue-400">
+                      {i + 1}
+                    </span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
+
           <section className="mb-12">
             <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
               <CheckCircle2 size={14} /> Что делает Интеграм иначе
@@ -212,6 +238,24 @@ export default function KnowledgeBaseArticle() {
               <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                 {article.limitations}
               </p>
+              {article.limitationsList && (
+                <ul className="space-y-2 mt-3">
+                  {article.limitationsList.map((item, i) => (
+                    <li
+                      key={i}
+                      className="flex gap-3 text-sm text-slate-700 dark:text-slate-300 leading-relaxed"
+                    >
+                      <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-amber-500" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {article.limitationsNote && (
+                <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mt-4 pt-4 border-t border-amber-500/20">
+                  {article.limitationsNote}
+                </p>
+              )}
             </div>
           </section>
 
