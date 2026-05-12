@@ -13,6 +13,7 @@ export function Header() {
     { name: 'Как работаем', href: '/#process' },
     { name: 'Примеры', href: '/#cases' },
     { name: 'Цены', href: '/#pricing' },
+    { name: 'База знаний', href: '/knowledge-base.html' },
     { name: 'Блог', href: 'https://blog.ideav.online/', external: true },
   ]
 
