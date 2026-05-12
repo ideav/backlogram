@@ -52,5 +52,5 @@ test('article #15 ships page-specific SEO and related article links', () => {
   assert.match(list, /'05-access-rights'/)
   assert.match(list, /'08-html-templates'/)
   assert.match(list, /'13-api-json-export'/)
-  assert.match(list, /'14-forms-reports-dashboards'/)
+  assert.match(list, /'14-forms'/)
 })
