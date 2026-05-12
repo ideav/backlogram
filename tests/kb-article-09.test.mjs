@@ -41,7 +41,9 @@ test('article #09 keeps structured limitations and related knowledge-base links'
   assert.match(kbDataSource, /требования регулятора предписывают отдельное архитектурное решение/)
   assert.match(relatedSlugs, /'10-no-release-changes'/)
   assert.match(relatedSlugs, /'12-ai-prototype-rewrite'/)
-  assert.match(relatedSlugs, /'14-forms-reports-dashboards'/)
+  assert.match(relatedSlugs, /'14-forms'/)
+  assert.match(relatedSlugs, /'14a-reports'/)
+  assert.match(relatedSlugs, /'14b-dashboards'/)
   assert.match(relatedSlugs, /'05-access-rights'/)
 })
 

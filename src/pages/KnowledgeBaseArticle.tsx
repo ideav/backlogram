@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   ArrowLeft,
@@ -41,10 +41,15 @@ function setCanonical(href: string) {
   el.setAttribute('href', href)
 }
 
+const legacyKnowledgeBaseArticleRedirects: Record<string, string> = {
+  '14-forms-reports-dashboards': '/knowledge-base/14-forms.html',
+}
+
 export default function KnowledgeBaseArticle() {
   const { slug = '' } = useParams<{ slug: string }>()
   const normalizedSlug = slug.replace(/\.html$/i, '')
   const article = getArticleBySlug(normalizedSlug)
+  const legacyRedirect = legacyKnowledgeBaseArticleRedirects[normalizedSlug]
 
   useEffect(() => {
     if (!article) return
@@ -77,6 +82,10 @@ export default function KnowledgeBaseArticle() {
 
     setCanonical(canonicalUrl)
   }, [article])
+
+  if (!article && legacyRedirect) {
+    return <Navigate to={legacyRedirect} replace />
+  }
 
   if (!article) {
     return <NotFound />

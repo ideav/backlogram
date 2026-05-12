@@ -56,7 +56,7 @@ test('article #13 has page-specific SEO and related knowledge-base links', () =>
   assert.match(source, /relatedSlugs:/)
   assert.match(source, /'05-access-rights'/)
   assert.match(source, /'06-airtable-control'/)
-  assert.match(source, /'14-forms-reports-dashboards'/)
+  assert.match(source, /'14a-reports'/)
   assert.match(source, /'12-ai-prototype-rewrite'/)
 })
 
