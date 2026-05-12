@@ -21,6 +21,17 @@ test('knowledge base data exposes Excel row-limit article with enriched fields',
   assert.match(dataSource, /integramDifferenceDetailed:/)
 })
 
+test('Excel row-limit article describes dashboard analytics accurately', () => {
+  assert.doesNotMatch(
+    dataSource,
+    /формулы между ячейками, сводные таблицы, диаграммы «из коробки» средствами самого Excel здесь не воспроизводятся/,
+  )
+  assert.match(
+    dataSource,
+    /панели поддерживают формулы, диаграммы и сводные таблицы «из коробки»/,
+  )
+})
+
 test('knowledge base article page renders dynamic SEO meta tags', () => {
   assert.match(articleSource, /setMetaTag\(/)
   assert.match(articleSource, /og:title/)
