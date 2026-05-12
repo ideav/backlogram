@@ -47,19 +47,21 @@ export default function KnowledgeBaseArticle() {
 
   useEffect(() => {
     if (!article) return
-    const pageTitle = `${article.shortTitle} — База знаний — Интеграм`
-    const description = article.summary
+    const pageTitle = article.seoTitle ?? `${article.shortTitle} — База знаний — Интеграм`
+    const description = article.seoDescription ?? article.summary
+    const ogTitle = article.ogTitle ?? pageTitle
+    const ogDescription = article.ogDescription ?? description
     const canonical = `${window.location.origin}/knowledge-base/${article.slug}.html`
 
     document.title = pageTitle
     setMeta('meta[name="description"]', 'name', 'description', description)
-    setMeta('meta[property="og:title"]', 'property', 'og:title', pageTitle)
-    setMeta('meta[property="og:description"]', 'property', 'og:description', description)
+    setMeta('meta[property="og:title"]', 'property', 'og:title', ogTitle)
+    setMeta('meta[property="og:description"]', 'property', 'og:description', ogDescription)
     setMeta('meta[property="og:type"]', 'property', 'og:type', 'article')
     setMeta('meta[property="og:url"]', 'property', 'og:url', canonical)
     setMeta('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary_large_image')
-    setMeta('meta[name="twitter:title"]', 'name', 'twitter:title', pageTitle)
-    setMeta('meta[name="twitter:description"]', 'name', 'twitter:description', description)
+    setMeta('meta[name="twitter:title"]', 'name', 'twitter:title', ogTitle)
+    setMeta('meta[name="twitter:description"]', 'name', 'twitter:description', ogDescription)
     setCanonical(canonical)
   }, [article])
 
