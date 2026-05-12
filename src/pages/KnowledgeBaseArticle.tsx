@@ -11,6 +11,7 @@ import {
   GitCompare,
   ExternalLink,
   ListChecks,
+  Link2,
   Info,
   Library,
 } from 'lucide-react'
@@ -20,7 +21,7 @@ import {
 } from '../data/knowledgeBase'
 import NotFound from './NotFound'
 
-function setMeta(selector: string, attr: 'name' | 'property', key: string, content: string) {
+function setMetaTag(selector: string, attr: 'name' | 'property', key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(selector)
   if (!el) {
     el = document.createElement('meta')
@@ -48,33 +49,46 @@ export default function KnowledgeBaseArticle() {
   useEffect(() => {
     if (!article) return
     const pageTitle = `${article.shortTitle} — База знаний — Интеграм`
-    const description = article.summary
-    const canonical = `${window.location.origin}/knowledge-base/${article.slug}.html`
+    const description = article.metaDescription ?? article.summary
+    const canonicalUrl =
+      typeof window !== 'undefined'
+        ? `${window.location.origin}/knowledge-base/${article.slug}.html`
+        : `/knowledge-base/${article.slug}.html`
 
     document.title = pageTitle
-    setMeta('meta[name="description"]', 'name', 'description', description)
-    setMeta('meta[property="og:title"]', 'property', 'og:title', pageTitle)
-    setMeta('meta[property="og:description"]', 'property', 'og:description', description)
-    setMeta('meta[property="og:type"]', 'property', 'og:type', 'article')
-    setMeta('meta[property="og:url"]', 'property', 'og:url', canonical)
-    setMeta('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary_large_image')
-    setMeta('meta[name="twitter:title"]', 'name', 'twitter:title', pageTitle)
-    setMeta('meta[name="twitter:description"]', 'name', 'twitter:description', description)
-    setCanonical(canonical)
+
+    setMetaTag('meta[name="description"]', 'name', 'description', description)
+    if (article.metaKeywords) {
+      setMetaTag('meta[name="keywords"]', 'name', 'keywords', article.metaKeywords)
+    }
+
+    setMetaTag('meta[property="og:type"]', 'property', 'og:type', 'article')
+    setMetaTag('meta[property="og:title"]', 'property', 'og:title', pageTitle)
+    setMetaTag('meta[property="og:description"]', 'property', 'og:description', description)
+    setMetaTag('meta[property="og:url"]', 'property', 'og:url', canonicalUrl)
+    setMetaTag('meta[property="og:site_name"]', 'property', 'og:site_name', 'Интеграм')
+    setMetaTag('meta[property="og:locale"]', 'property', 'og:locale', 'ru_RU')
+
+    setMetaTag('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary_large_image')
+    setMetaTag('meta[name="twitter:title"]', 'name', 'twitter:title', pageTitle)
+    setMetaTag('meta[name="twitter:description"]', 'name', 'twitter:description', description)
+
+    setCanonical(canonicalUrl)
   }, [article])
 
   if (!article) {
     return <NotFound />
   }
 
-  const relatedArticles =
-    article.relatedSlugs
-      ?.map((s) => getArticleBySlug(s))
-      .filter((a): a is NonNullable<typeof a> => Boolean(a)) ?? []
-
   const idx = knowledgeBaseArticles.findIndex((a) => a.slug === article.slug)
   const prev = idx > 0 ? knowledgeBaseArticles[idx - 1] : null
   const next = idx < knowledgeBaseArticles.length - 1 ? knowledgeBaseArticles[idx + 1] : null
+
+  const relatedArticles = (article.relatedSlugs ?? [])
+    .map((s) => knowledgeBaseArticles.find((a) => a.slug === s))
+    .filter((a): a is NonNullable<typeof a> => Boolean(a))
+
+  const differenceDetailed = article.integramDifferenceDetailed
 
   return (
     <div className="overflow-hidden">
@@ -152,21 +166,42 @@ export default function KnowledgeBaseArticle() {
             <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
               <CheckCircle2 size={14} /> Что делает Интеграм иначе
             </h2>
-            <ul className="space-y-4">
-              {article.integramDifference.map((item, i) => (
-                <li
-                  key={i}
-                  className="flex gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40"
-                >
-                  <span className="flex-shrink-0 mt-0.5 text-blue-500">
-                    <CheckCircle2 size={18} />
-                  </span>
-                  <span className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                    {item}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            {differenceDetailed && differenceDetailed.length > 0 ? (
+              <ul className="space-y-4">
+                {differenceDetailed.map((item, i) => (
+                  <li
+                    key={i}
+                    className="flex gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40"
+                  >
+                    <span className="flex-shrink-0 mt-0.5 text-blue-500">
+                      <CheckCircle2 size={18} />
+                    </span>
+                    <div className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                      <div className="font-semibold text-slate-800 dark:text-slate-100 mb-1">
+                        {item.title}
+                      </div>
+                      <p>{item.body}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <ul className="space-y-4">
+                {article.integramDifference.map((item, i) => (
+                  <li
+                    key={i}
+                    className="flex gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40"
+                  >
+                    <span className="flex-shrink-0 mt-0.5 text-blue-500">
+                      <CheckCircle2 size={18} />
+                    </span>
+                    <span className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                      {item}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
 
           <section className="mb-12">
@@ -191,23 +226,54 @@ export default function KnowledgeBaseArticle() {
             </div>
           </section>
 
+          {article.sources && article.sources.length > 0 && (
+            <section className="mb-12">
+              <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
+                <Link2 size={14} /> Источники
+              </h2>
+              <ul className="space-y-3">
+                {article.sources.map((src, i) => (
+                  <li
+                    key={i}
+                    className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed"
+                  >
+                    <a
+                      href={src.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 font-medium underline decoration-slate-300 dark:decoration-slate-700 hover:text-blue-500 dark:hover:text-blue-400 hover:decoration-blue-400"
+                    >
+                      {src.title}
+                      <ExternalLink size={11} />
+                    </a>
+                    {src.note && (
+                      <span className="block text-slate-500 dark:text-slate-400 mt-1">
+                        {src.note}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           {relatedArticles.length > 0 && (
-            <section className="mb-10">
+            <section className="mb-12">
               <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
                 <Library size={14} /> Смежные статьи
               </h2>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {relatedArticles.map((rel) => (
-                  <li key={rel.slug}>
+                {relatedArticles.map((r) => (
+                  <li key={r.slug}>
                     <Link
-                      to={`/knowledge-base/${rel.slug}.html`}
+                      to={`/knowledge-base/${r.slug}.html`}
                       className="group block h-full p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-blue-500/40 transition-all"
                     >
                       <div className="text-xs text-slate-400 dark:text-slate-500 mb-1">
-                        №&nbsp;{rel.number} · {rel.compare}
+                        №&nbsp;{r.number} · {r.compare}
                       </div>
-                      <div className="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-blue-500 transition-colors">
-                        {rel.shortTitle}
+                      <div className="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-blue-500 transition-colors">
+                        {r.shortTitle}
                       </div>
                     </Link>
                   </li>
