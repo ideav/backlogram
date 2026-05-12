@@ -148,6 +148,30 @@ export default function KnowledgeBaseArticle() {
             </section>
           )}
 
+          {article.integramScenario && (
+            <section className="mb-12">
+              <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
+                <CheckCircle2 size={14} /> Тот же сценарий в Интеграме
+              </h2>
+              <p className="text-base text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
+                {article.integramScenario.intro}
+              </p>
+              <ol className="space-y-3">
+                {article.integramScenario.steps.map((step, i) => (
+                  <li
+                    key={i}
+                    className="flex gap-3 text-sm text-slate-700 dark:text-slate-300 leading-relaxed"
+                  >
+                    <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-xs font-bold text-blue-600 dark:text-blue-400">
+                      {i + 1}
+                    </span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
+
           <section className="mb-12">
             <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
               <CheckCircle2 size={14} /> Что делает Интеграм иначе
@@ -177,6 +201,24 @@ export default function KnowledgeBaseArticle() {
               <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                 {article.limitations}
               </p>
+              {article.limitationsList && (
+                <ul className="space-y-2 mt-3">
+                  {article.limitationsList.map((item, i) => (
+                    <li
+                      key={i}
+                      className="flex gap-3 text-sm text-slate-700 dark:text-slate-300 leading-relaxed"
+                    >
+                      <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-amber-500" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {article.limitationsNote && (
+                <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mt-4 pt-4 border-t border-amber-500/20">
+                  {article.limitationsNote}
+                </p>
+              )}
             </div>
           </section>
 
