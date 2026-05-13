@@ -2,7 +2,7 @@
 title: 'Убийца Excel: как no-code адепту подступиться к заказчику'
 description: Мы занимаемся развитием конструктора баз данных и веб-приложений (no-code, low-code) и много времени проводим в разъяснениях, что же это такое.
 pubDate: '2025-10-24'
-category: Без категории
+category: Технологии
 author: Команда Интеграм
 canonical: https://blog.ideav.online/2025/10/ubiica-excel-kak-no-code-adeptu-podstupitsya-k-zakazchiku
 tags:

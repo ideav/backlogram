@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import { tagSlug } from '../../lib/tags'
+import { categorySlug } from '../../lib/categories'
 
 export async function getStaticPaths() {
   const all = await getCollection('posts', ({ data }) => !data.draft)
@@ -38,7 +39,7 @@ const initial = post.data.author.charAt(0)
   publishedTime={post.data.pubDate.toISOString()}
   author={post.data.author}
 >
-  <article class="max-w-[78rem] mx-auto px-6 lg:px-12 pt-14 pb-24">
+  <article class="max-w-[78rem] mx-auto px-6 lg:px-12 pt-14 pb-24" data-pagefind-body>
 
     <!-- Top metadata strip — issue number, date, category, reading time -->
     <div class="flex flex-wrap items-baseline gap-x-6 gap-y-2 pb-5 border-b border-[var(--color-hairline-strong)] mb-12">
@@ -46,7 +47,9 @@ const initial = post.data.author.charAt(0)
         №&nbsp;{issueNumber}
       </div>
       <div class="eyebrow text-[var(--color-ink-faint)]">{formattedDate}</div>
-      <div class="eyebrow text-[var(--color-vermilion)]">{post.data.category}</div>
+      <div class="eyebrow text-[var(--color-vermilion)]">
+        <a href={`/category/${categorySlug(post.data.category)}/`} class="link-swipe">{post.data.category}</a>
+      </div>
       <div class="eyebrow text-[var(--color-ink-faint)]">{readingTime}&nbsp;мин чтения</div>
       <div class="ml-auto">
         <a href="/" class="eyebrow link-swipe text-[var(--color-ink)]">← Архив выпусков</a>
