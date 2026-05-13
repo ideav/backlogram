@@ -5,10 +5,15 @@ import { Footer } from './components/Footer'
 import { CookieConsent } from './components/CookieConsent'
 import { ThemeProvider } from './context/ThemeContext'
 
-function ScrollToHash() {
-  const { hash } = useLocation()
+function ScrollToRouteTarget() {
+  const { pathname, search, hash } = useLocation()
+
   useEffect(() => {
-    if (!hash) return
+    if (!hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+      return
+    }
+
     const id = hash.slice(1)
     const tryScroll = (attempts = 0) => {
       const el = document.getElementById(id)
@@ -19,7 +24,8 @@ function ScrollToHash() {
       }
     }
     tryScroll()
-  }, [hash])
+  }, [pathname, search, hash])
+
   return null
 }
 
@@ -27,7 +33,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 selection:bg-blue-500/30 transition-colors duration-300">
-        <ScrollToHash />
+        <ScrollToRouteTarget />
         <Header />
         <main>
           <Outlet />
