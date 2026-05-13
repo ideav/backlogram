@@ -6,8 +6,12 @@ const manifestPath = new URL(
   '../content/habr-vc-personal-experience/manifest.json',
   import.meta.url,
 )
-const draft11Path = new URL(
+const draft11HabrPath = new URL(
   '../content/habr-vc-personal-experience/drafts/11-ai-interface-data-safety.md',
+  import.meta.url,
+)
+const draft11VcPath = new URL(
+  '../content/habr-vc-personal-experience/drafts/11-ai-interface-data-safety.vc.md',
   import.meta.url,
 )
 
@@ -43,17 +47,26 @@ test('article #11 is the first Habr/VC draft and is assigned to author review', 
   assert.equal(article11.draftPath, 'drafts/11-ai-interface-data-safety.md')
 })
 
-test('article #11 Habr/VC draft is written as personal experience instead of a product page', () => {
-  const draft = readFileSync(draft11Path, 'utf8')
+test('article #11 split Habr and VC drafts stay in the personal-experience pipeline', () => {
+  const habrDraft = readFileSync(draft11HabrPath, 'utf8')
+  const vcDraft = readFileSync(draft11VcPath, 'utf8')
 
-  assert.match(draft, /format: personal_experience/)
-  assert.match(draft, /status: author_review/)
-  assert.match(draft, /targetPlatforms:\n  - Habr\n  - VC\.ru/)
-  assert.match(draft, /я решил/)
-  assert.match(draft, /мы получили/)
-  assert.match(draft, /что я вынес/)
-  assert.match(draft, /ИИ делает интерфейс/)
-  assert.match(draft, /данные, права и история/)
-  assert.match(draft, /Интеграм/)
-  assert.match(draft, /Фактчек перед публикацией/)
+  assert.match(habrDraft, /format: habr_analytical/)
+  assert.match(habrDraft, /status: author_review/)
+  assert.match(habrDraft, /targetPlatforms:\n  - Habr/)
+  assert.match(habrDraft, /ИИ делает интерфейс/)
+  assert.match(habrDraft, /данные, права и история/)
+  assert.match(habrDraft, /Интеграм/)
+  assert.match(habrDraft, /Фактчек перед публикацией/)
+
+  assert.match(vcDraft, /format: personal_experience/)
+  assert.match(vcDraft, /status: author_review/)
+  assert.match(vcDraft, /targetPlatforms:\n  - VC\.ru/)
+  assert.match(vcDraft, /я решил/)
+  assert.match(vcDraft, /мы получили/)
+  assert.match(vcDraft, /что я вынес/)
+  assert.match(vcDraft, /ИИ делает интерфейс/)
+  assert.match(vcDraft, /данные, права и история/)
+  assert.match(vcDraft, /Интеграм/)
+  assert.match(vcDraft, /Фактчек перед публикацией/)
 })
