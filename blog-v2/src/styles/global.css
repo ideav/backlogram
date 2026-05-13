@@ -114,6 +114,28 @@ body::after {
   font-variation-settings: "opsz" 14;
 }
 
+/* Overlay-link pattern for archive cards.
+   Apply to <a> inside a heading; its ::before extends to cover the
+   nearest .card-container ancestor, so the whole row becomes clickable
+   while inner links (category, tags) stay independent.
+   Avoids the nested-<a> bug that ate the title in the previous markup. */
+.card-link::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.card-link {
+  position: static;
+}
+.card-container {
+  position: relative;
+}
+.card-container .card-overlay-above {
+  position: relative;
+  z-index: 2;
+}
+
 /* Hairline link underline that swipes from left on hover */
 .link-swipe {
   position: relative;
