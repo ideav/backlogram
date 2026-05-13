@@ -1,8 +1,98 @@
-User-agent: *
-Disallow: /
+# robots.txt for ideav.ru
+# Last updated: 2026-05-13
 
+# === Default: разрешаем всё, что не запрещено явно ===
 User-agent: *
-Allow: /knowledge-base.html
-Allow: /knowledge-base/
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /*?*utm_
+Disallow: /*?*fbclid
 
+# === LLM training crawlers (учат модели на нашем контенте) ===
+# OpenAI (ChatGPT, GPT-4/5)
+User-agent: GPTBot
+Allow: /
+
+# Anthropic (Claude)
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# Google (Gemini training, отдельно от обычного Googlebot)
+User-agent: Google-Extended
+Allow: /
+
+# Apple (Apple Intelligence)
+User-agent: Applebot-Extended
+Allow: /
+
+# Common Crawl — кормит почти все open-source модели и часть коммерческих
+User-agent: CCBot
+Allow: /
+
+# Meta AI (Llama)
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+# ByteDance (Doubao)
+User-agent: Bytespider
+Allow: /
+
+# Cohere
+User-agent: cohere-ai
+Allow: /
+
+# Mistral
+User-agent: MistralAI-User
+Allow: /
+
+# === LLM live retrieval crawlers (ходят в момент ответа пользователю) ===
+# OpenAI поиск
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+# Anthropic поиск
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# DuckDuckGo AI
+User-agent: DuckAssistBot
+Allow: /
+
+# === Classic search engines (без них живого поиска LLM тоже нет) ===
+User-agent: Googlebot
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# === Sitemap ===
 Sitemap: https://ideav.ru/sitemap.xml
