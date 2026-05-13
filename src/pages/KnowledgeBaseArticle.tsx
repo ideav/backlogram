@@ -453,7 +453,7 @@ export default function KnowledgeBaseArticle() {
           )}
 
           <div className="text-xs text-slate-400 dark:text-slate-500 italic">
-            Полный исходный текст статьи с раскадровкой видео и фактчеком —{' '}
+            Исходный материал статьи и фактчек —{' '}
             <a
               href={article.sourceUrl}
               target="_blank"
