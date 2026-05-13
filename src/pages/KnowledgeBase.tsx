@@ -216,12 +216,9 @@ export default function KnowledgeBase() {
                     to={`/knowledge-base/${article.slug}.html`}
                     className="group block h-full p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:border-blue-500/40 hover:shadow-md dark:hover:shadow-none transition-all"
                   >
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
-                        №&nbsp;{article.number}
-                      </span>
+                    <div className="flex items-center mb-4">
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400">
-                        <GitCompare size={12} /> {article.compare}
+                        <GitCompare size={12} /> Сравнение с {article.compare}
                       </span>
                     </div>
                     <h2 className="text-lg font-bold mb-3 leading-snug text-slate-800 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
