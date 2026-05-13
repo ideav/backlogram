@@ -30,6 +30,25 @@ function setCanonical(href: string) {
   el.setAttribute('href', href)
 }
 
+function setJsonLd(id: string, data: unknown) {
+  let el = document.head.querySelector<HTMLScriptElement>(
+    `script[type="application/ld+json"][data-jsonld="${id}"]`,
+  )
+  if (!el) {
+    el = document.createElement('script')
+    el.setAttribute('type', 'application/ld+json')
+    el.setAttribute('data-jsonld', id)
+    document.head.appendChild(el)
+  }
+  el.textContent = JSON.stringify(data)
+}
+
+function clearJsonLd() {
+  document.head
+    .querySelectorAll('script[type="application/ld+json"][data-jsonld]')
+    .forEach((el) => el.remove())
+}
+
 function matchesQuery(query: string, article: (typeof knowledgeBaseArticles)[number]): boolean {
   const words = query.toLowerCase().split(/\s+/).filter(Boolean)
   const haystack = [article.title, article.shortTitle, article.compare, article.summary]
@@ -42,6 +61,7 @@ export default function KnowledgeBase() {
   const [query, setQuery] = useState('')
 
   useEffect(() => {
+    clearJsonLd()
     document.title = KB_SEO_TITLE
 
     setMetaTag('meta[name="description"]', 'name', 'description', KB_SEO_DESCRIPTION)
@@ -63,11 +83,55 @@ export default function KnowledgeBase() {
       KB_SEO_DESCRIPTION,
     )
 
-    const canonicalUrl =
-      typeof window !== 'undefined'
-        ? `${window.location.origin}/knowledge-base.html`
-        : '/knowledge-base.html'
+    const origin =
+      typeof window !== 'undefined' ? window.location.origin : 'https://ideav.ru'
+    const canonicalUrl = `${origin}/knowledge-base.html`
     setCanonical(canonicalUrl)
+
+    setJsonLd('collection', {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: KB_SEO_TITLE,
+      description: KB_SEO_DESCRIPTION,
+      inLanguage: 'ru-RU',
+      url: canonicalUrl,
+      isPartOf: {
+        '@type': 'WebSite',
+        name: 'Интеграм',
+        url: `${origin}/`,
+      },
+      mainEntity: {
+        '@type': 'ItemList',
+        numberOfItems: knowledgeBaseArticles.length,
+        itemListElement: knowledgeBaseArticles.map((a, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          url: `${origin}/knowledge-base/${a.slug}.html`,
+          name: a.shortTitle,
+        })),
+      },
+    })
+
+    setJsonLd('breadcrumb', {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Интеграм',
+          item: `${origin}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'База знаний',
+          item: canonicalUrl,
+        },
+      ],
+    })
+
+    return clearJsonLd
   }, [])
 
   const trimmed = query.trim()
