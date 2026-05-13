@@ -1,50 +1,65 @@
 ---
 const pathname = Astro.url.pathname
 const isHome = pathname === '/' || pathname === ''
+
+const today = new Date()
+const dateStamp = today
+  .toLocaleDateString('ru-RU', { year: 'numeric', month: '2-digit' })
+  .replace('.', '·')
 ---
 
-<header class="sticky top-0 z-50 backdrop-blur-lg bg-white/70 dark:bg-slate-950/70 border-b border-slate-200 dark:border-slate-800">
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16">
-      <a href="/" class="flex items-center gap-2 group" aria-label="Блог Интеграм — главная">
-        <span class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold shadow-sm group-hover:shadow-md transition-shadow">
-          И
-        </span>
-        <span class="font-semibold text-slate-900 dark:text-white">
-          Блог Интеграм
-        </span>
+<header class="relative border-b border-[var(--color-hairline-strong)] bg-[var(--color-paper)]">
+  <div class="max-w-[78rem] mx-auto px-6 lg:px-12">
+    <div class="flex items-end justify-between pt-9 pb-4">
+      <a href="/" class="group block" aria-label="Блог Интеграм — главная">
+        <div class="eyebrow text-[var(--color-vermilion)] mb-1">
+          Изд. с 2020 · Выпуск {dateStamp}
+        </div>
+        <div class="font-[family-name:var(--font-serif)] text-[2rem] sm:text-[2.6rem] leading-[0.95] tracking-[-0.02em] font-semibold text-[var(--color-ink)]" style="font-variation-settings: 'opsz' 144, 'SOFT' 30;">
+          Блог <span class="italic font-normal">Интеграм</span>
+        </div>
       </a>
 
-      <nav class="flex items-center gap-1 sm:gap-2">
+      <nav class="hidden md:flex items-center gap-7 pb-2">
         <a
           href="/"
-          class={`px-3 py-2 text-sm rounded-md transition-colors ${
-            isHome
-              ? 'text-blue-600 dark:text-blue-400 font-medium'
-              : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-          }`}
+          class={`eyebrow link-swipe ${isHome ? 'text-[var(--color-vermilion)]' : 'text-[var(--color-ink)]'}`}
         >
-          Статьи
+          Журнал
         </a>
         <a
           href="https://ideav.ru"
-          class="px-3 py-2 text-sm rounded-md text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+          class="eyebrow link-swipe text-[var(--color-ink)]"
         >
           О продукте
         </a>
         <a
           href="/rss.xml"
-          class="inline-flex items-center gap-1 px-2 sm:px-3 py-2 text-sm rounded-md text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
+          class="eyebrow link-swipe text-[var(--color-ink-soft)] flex items-center gap-1.5"
           aria-label="RSS-лента"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
             <path d="M4 11a9 9 0 0 1 9 9"></path>
             <path d="M4 4a16 16 0 0 1 16 16"></path>
             <circle cx="5" cy="19" r="1"></circle>
           </svg>
-          <span class="hidden sm:inline">RSS</span>
+          RSS
         </a>
       </nav>
+    </div>
+
+    <!-- Тагline strip -->
+    <div class="flex items-center justify-between border-t border-[var(--color-hairline)] py-2.5">
+      <div class="eyebrow text-[var(--color-ink-faint)]">
+        Записки о&nbsp;данных, учётных системах и&nbsp;no-code
+      </div>
+      <div class="hidden sm:flex items-center gap-4 eyebrow text-[var(--color-ink-faint)]">
+        <span>Раздел<span class="text-[var(--color-vermilion)] ml-1.5">платформа</span></span>
+        <span class="text-[var(--color-hairline-strong)]">/</span>
+        <span>Раздел<span class="text-[var(--color-vermilion)] ml-1.5">технологии</span></span>
+        <span class="text-[var(--color-hairline-strong)]">/</span>
+        <span>Раздел<span class="text-[var(--color-vermilion)] ml-1.5">обучение</span></span>
+      </div>
     </div>
   </div>
 </header>
