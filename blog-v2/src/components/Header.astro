@@ -56,7 +56,45 @@ const dateStamp = today
           </svg>
           RSS
         </a>
+
+        <button
+          id="theme-toggle"
+          type="button"
+          aria-label="Переключить тему"
+          title="Светлая / тёмная тема"
+          class="inline-flex items-center justify-center w-8 h-8 -mr-2 rounded text-[var(--color-ink-soft)] hover:text-[var(--color-vermilion)] transition-colors"
+        >
+          <svg class="theme-icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4.5"></circle>
+            <path d="M12 2v2.5M12 19.5V22M4.93 4.93l1.77 1.77M17.3 17.3l1.77 1.77M2 12h2.5M19.5 12H22M4.93 19.07l1.77-1.77M17.3 6.7l1.77-1.77"></path>
+          </svg>
+          <svg class="theme-icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
       </nav>
+
+      <style>
+        /* Show the icon for the theme you can switch TO. */
+        :root .theme-icon-sun { display: none; }
+        :root .theme-icon-moon { display: block; }
+        :root[data-theme="dark"] .theme-icon-sun { display: block; }
+        :root[data-theme="dark"] .theme-icon-moon { display: none; }
+      </style>
+
+      <script is:inline>
+        document.getElementById('theme-toggle')?.addEventListener('click', () => {
+          const root = document.documentElement
+          const isDark = root.getAttribute('data-theme') === 'dark'
+          if (isDark) {
+            root.removeAttribute('data-theme')
+            localStorage.setItem('theme', 'light')
+          } else {
+            root.setAttribute('data-theme', 'dark')
+            localStorage.setItem('theme', 'dark')
+          }
+        })
+      </script>
     </div>
 
     <!-- Тагline strip -->
@@ -65,11 +103,11 @@ const dateStamp = today
         Записки о&nbsp;данных, учётных системах и&nbsp;no-code
       </div>
       <div class="hidden sm:flex items-center gap-4 eyebrow text-[var(--color-ink-faint)]">
-        <span>Раздел<span class="text-[var(--color-vermilion)] ml-1.5">платформа</span></span>
+        <a href="/category/o-platforme/" class="link-swipe">Раздел&nbsp;<span class="text-[var(--color-vermilion)]">платформа</span></a>
         <span class="text-[var(--color-hairline-strong)]">/</span>
-        <span>Раздел<span class="text-[var(--color-vermilion)] ml-1.5">технологии</span></span>
+        <a href="/category/tehnologii/" class="link-swipe">Раздел&nbsp;<span class="text-[var(--color-vermilion)]">технологии</span></a>
         <span class="text-[var(--color-hairline-strong)]">/</span>
-        <span>Раздел<span class="text-[var(--color-vermilion)] ml-1.5">обучение</span></span>
+        <a href="/category/obuchenie/" class="link-swipe">Раздел&nbsp;<span class="text-[var(--color-vermilion)]">обучение</span></a>
       </div>
     </div>
   </div>

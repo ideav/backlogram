@@ -20,32 +20,26 @@
   --font-mono: "IBM Plex Mono", "JetBrains Mono", Menlo, monospace;
 }
 
-/* Dark — ink edition */
-@media (prefers-color-scheme: dark) {
-  @theme {
-    --color-paper: oklch(0.14 0.010 65);
-    --color-paper-soft: oklch(0.17 0.012 65);
-    --color-paper-deep: oklch(0.11 0.008 65);
-    --color-ink: oklch(0.93 0.012 85);
-    --color-ink-soft: oklch(0.75 0.014 85);
-    --color-ink-faint: oklch(0.55 0.012 85);
-    --color-hairline: oklch(0.93 0.012 85 / 0.18);
-    --color-hairline-strong: oklch(0.93 0.012 85 / 0.50);
-    --color-vermilion: oklch(0.72 0.18 35);
-    --color-vermilion-deep: oklch(0.82 0.16 38);
-    --color-vermilion-soft: oklch(0.72 0.18 35 / 0.14);
-    --color-warm-gray: oklch(0.65 0.010 85);
-  }
+/* Dark — ink edition. Opt-in via data-theme="dark" on <html>.
+   Default theme is light regardless of the OS prefers-color-scheme. */
+:root[data-theme="dark"] {
+  --color-paper: oklch(0.14 0.010 65);
+  --color-paper-soft: oklch(0.17 0.012 65);
+  --color-paper-deep: oklch(0.11 0.008 65);
+  --color-ink: oklch(0.93 0.012 85);
+  --color-ink-soft: oklch(0.75 0.014 85);
+  --color-ink-faint: oklch(0.55 0.012 85);
+  --color-hairline: oklch(0.93 0.012 85 / 0.18);
+  --color-hairline-strong: oklch(0.93 0.012 85 / 0.50);
+  --color-vermilion: oklch(0.72 0.18 35);
+  --color-vermilion-deep: oklch(0.82 0.16 38);
+  --color-vermilion-soft: oklch(0.72 0.18 35 / 0.14);
+  --color-warm-gray: oklch(0.65 0.010 85);
+  color-scheme: dark;
 }
 
 :root {
-  color-scheme: light dark;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-  }
+  color-scheme: light;
 }
 
 /* ----- Base ----- */
@@ -75,11 +69,9 @@ body::before {
   mix-blend-mode: multiply;
 }
 
-@media (prefers-color-scheme: dark) {
-  body::before {
-    opacity: 0.18;
-    mix-blend-mode: screen;
-  }
+:root[data-theme="dark"] body::before {
+  opacity: 0.18;
+  mix-blend-mode: screen;
 }
 
 /* Editorial accent bar at the very top of every page */
@@ -260,10 +252,8 @@ body::after {
   font-size: 0.88em;
 }
 
-@media (prefers-color-scheme: dark) {
-  .prose-article code {
-    color: var(--color-vermilion-deep);
-  }
+:root[data-theme="dark"] .prose-article code {
+  color: var(--color-vermilion-deep);
 }
 
 .prose-article pre {

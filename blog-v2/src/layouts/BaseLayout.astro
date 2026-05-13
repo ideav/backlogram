@@ -36,6 +36,18 @@ const imageURL = new URL(image, Astro.site).toString()
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#C8392B" />
 
+    <script is:inline>
+      // Apply the saved theme before the body renders to avoid a flash.
+      // Default is light; user can switch to dark via the header toggle.
+      (function () {
+        try {
+          if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark')
+          }
+        } catch (_) {}
+      })()
+    </script>
+
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
