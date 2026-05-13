@@ -162,7 +162,7 @@ export default function KnowledgeBase() {
                 rel="noopener noreferrer"
                 className="underline hover:text-blue-500 dark:hover:text-blue-400"
               >
-                закрытые задачи в&nbsp;репозитории продукта
+                выполненные задачи в&nbsp;репозитории продукта
               </a>
               .
             </p>
