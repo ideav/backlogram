@@ -1,0 +1,19 @@
+{
+  "name": "blog-ideav-ru",
+  "version": "0.1.0",
+  "description": "Корпоративный блог Интеграм на blog.ideav.ru. Astro + Markdown.",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --host 0.0.0.0 --port 4321",
+    "build": "astro build",
+    "preview": "astro preview --host 0.0.0.0 --port 4321",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.7",
+    "@astrojs/sitemap": "^3.2.1",
+    "@tailwindcss/vite": "^4.2.2",
+    "astro": "^5.0.0",
+    "tailwindcss": "^4.2.2"
+  }
+}
