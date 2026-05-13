@@ -1,2 +1,8 @@
 User-agent: *
 Disallow: /
+
+User-agent: *
+Allow: /knowledge-base.html
+Allow: /knowledge-base/
+
+Sitemap: https://ideav.ru/sitemap.xml
