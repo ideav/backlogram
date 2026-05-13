@@ -3,21 +3,29 @@ import { getCollection, render } from 'astro:content'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 
 export async function getStaticPaths() {
-  const posts = await getCollection('posts', ({ data }) => !data.draft)
-  return posts.map((post) => ({
+  const all = await getCollection('posts', ({ data }) => !data.draft)
+  const ascending = [...all].sort(
+    (a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf()
+  )
+  return ascending.map((post, i) => ({
     params: { slug: post.id },
-    props: { post },
+    props: {
+      post,
+      issueNumber: String(i + 1).padStart(3, '0'),
+    },
   }))
 }
 
-const { post } = Astro.props
+const { post, issueNumber } = Astro.props
 const { Content } = await render(post)
 
-const formattedDate = post.data.pubDate.toLocaleDateString('ru-RU', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-})
+const formattedDate = post.data.pubDate
+  .toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric' })
+  .replace(' г.', '')
+
+const readingTime = Math.max(1, Math.round(post.body!.length / 1100))
+
+const initial = post.data.author.charAt(0)
 ---
 
 <BaseLayout
@@ -29,65 +37,126 @@ const formattedDate = post.data.pubDate.toLocaleDateString('ru-RU', {
   publishedTime={post.data.pubDate.toISOString()}
   author={post.data.author}
 >
-  <article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <a
-      href="/"
-      class="inline-flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-8"
-    >
-      ← Все статьи
-    </a>
+  <article class="max-w-[78rem] mx-auto px-6 lg:px-12 pt-14 pb-24">
 
-    <header class="mb-10">
-      <div class="flex flex-wrap items-center gap-3 mb-4">
-        <span class="inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
-          {post.data.category}
-        </span>
-        <time
-          datetime={post.data.pubDate.toISOString()}
-          class="text-sm text-slate-400 dark:text-slate-500"
-        >
-          {formattedDate}
-        </time>
+    <!-- Top metadata strip — issue number, date, category, reading time -->
+    <div class="flex flex-wrap items-baseline gap-x-6 gap-y-2 pb-5 border-b border-[var(--color-hairline-strong)] mb-12">
+      <div class="issue-number text-[var(--color-vermilion)] text-xl font-medium tracking-tight">
+        №&nbsp;{issueNumber}
       </div>
-
-      <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white leading-tight tracking-tight mb-4">
-        {post.data.title}
-      </h1>
-
-      <p class="text-lg text-slate-500 dark:text-slate-400 leading-relaxed">
-        {post.data.description}
-      </p>
-
-      <div class="mt-6 flex items-center gap-3 pt-6 border-t border-slate-200 dark:border-slate-800">
-        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-sm font-semibold">
-          {post.data.author.charAt(0)}
-        </div>
-        <div class="text-sm">
-          <div class="font-medium text-slate-900 dark:text-white">{post.data.author}</div>
-          <div class="text-xs text-slate-400 dark:text-slate-500">Команда блога</div>
-        </div>
+      <div class="eyebrow text-[var(--color-ink-faint)]">{formattedDate}</div>
+      <div class="eyebrow text-[var(--color-vermilion)]">{post.data.category}</div>
+      <div class="eyebrow text-[var(--color-ink-faint)]">{readingTime}&nbsp;мин чтения</div>
+      <div class="ml-auto">
+        <a href="/" class="eyebrow link-swipe text-[var(--color-ink)]">← Архив выпусков</a>
       </div>
-    </header>
-
-    {post.data.image && (
-      <img
-        src={post.data.image}
-        alt={post.data.title}
-        class="w-full rounded-xl mb-10"
-      />
-    )}
-
-    <div class="prose-article text-slate-700 dark:text-slate-300 text-[17px]">
-      <Content />
     </div>
 
-    <footer class="mt-16 pt-8 border-t border-slate-200 dark:border-slate-800 text-sm">
-      <a
-        href="/"
-        class="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline"
-      >
-        ← Все статьи
-      </a>
-    </footer>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-x-10">
+
+      <!-- Side rail: author / colophon -->
+      <aside class="lg:col-span-3 lg:order-2 lg:pl-6 mb-12 lg:mb-0">
+        <div class="lg:sticky lg:top-12">
+          <div class="eyebrow text-[var(--color-ink-faint)] mb-3">Автор</div>
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-full bg-[var(--color-vermilion)] flex items-center justify-center text-[var(--color-paper)] font-medium" style="font-family: var(--font-serif); font-variation-settings: 'opsz' 60;">
+              {initial}
+            </div>
+            <div>
+              <div class="text-[var(--color-ink)] font-medium">{post.data.author}</div>
+              <div class="eyebrow text-[var(--color-ink-faint)] mt-0.5">Редакция журнала</div>
+            </div>
+          </div>
+
+          {post.data.canonical && (
+            <div class="mt-8 pt-6 border-t border-[var(--color-hairline)]">
+              <div class="eyebrow text-[var(--color-ink-faint)] mb-2">Первая публикация</div>
+              <a href={post.data.canonical} class="text-sm link-swipe text-[var(--color-ink-soft)] break-words">
+                {new URL(post.data.canonical).hostname}
+              </a>
+            </div>
+          )}
+
+          <div class="mt-8 pt-6 border-t border-[var(--color-hairline)]">
+            <div class="eyebrow text-[var(--color-ink-faint)] mb-3">Поделиться</div>
+            <ul class="space-y-1.5">
+              <li>
+                <a
+                  href={`https://t.me/share/url?url=${encodeURIComponent('https://blog.ideav.ru/posts/' + post.id + '/')}&text=${encodeURIComponent(post.data.title)}`}
+                  class="link-swipe text-[var(--color-ink)] text-sm"
+                >
+                  Telegram
+                </a>
+              </li>
+              <li>
+                <a
+                  href={`https://vk.com/share.php?url=${encodeURIComponent('https://blog.ideav.ru/posts/' + post.id + '/')}`}
+                  class="link-swipe text-[var(--color-ink)] text-sm"
+                >
+                  ВКонтакте
+                </a>
+              </li>
+              <li>
+                <a
+                  href={`mailto:?subject=${encodeURIComponent(post.data.title)}&body=${encodeURIComponent('https://blog.ideav.ru/posts/' + post.id + '/')}`}
+                  class="link-swipe text-[var(--color-ink)] text-sm"
+                >
+                  Почтой
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main column: title + body -->
+      <div class="lg:col-span-9 lg:order-1">
+
+        <header class="mb-10 lg:mb-14 lg:pr-6">
+          <h1
+            class="font-[family-name:var(--font-serif)] text-[2.4rem] sm:text-[3.2rem] lg:text-[3.8rem] leading-[1.02] tracking-[-0.024em] text-[var(--color-ink)]"
+            style="font-variation-settings: 'opsz' 144, 'SOFT' 30; font-weight: 500;"
+          >
+            {post.data.title}
+          </h1>
+
+          <p
+            class="mt-7 max-w-2xl text-xl leading-[1.55] text-[var(--color-ink-soft)] body-serif italic"
+          >
+            {post.data.description}
+          </p>
+        </header>
+
+        {post.data.image && (
+          <figure class="mb-10 lg:mb-14 -mx-6 lg:mx-0">
+            <img
+              src={post.data.image}
+              alt={post.data.title}
+              class="w-full"
+            />
+          </figure>
+        )}
+
+        <div class="prose-article lg:pr-6">
+          <Content />
+        </div>
+
+        <!-- End marker + return link -->
+        <div class="mt-16 pt-8 border-t border-[var(--color-hairline-strong)]">
+          <div class="text-center mb-8">
+            <span class="text-[var(--color-vermilion)] text-2xl" style="font-family: var(--font-serif);">❡</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <a href="/" class="eyebrow link-swipe text-[var(--color-ink)]">
+              ← Все выпуски
+            </a>
+            <div class="eyebrow text-[var(--color-ink-faint)]">
+              Выпуск №&nbsp;{issueNumber}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
   </article>
 </BaseLayout>

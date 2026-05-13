@@ -2,46 +2,57 @@
 const year = new Date().getFullYear()
 ---
 
-<footer class="border-t border-slate-200 dark:border-slate-800 mt-24">
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
-      <div>
-        <h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-3">
-          Интеграм
-        </h3>
-        <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-          No-code конструктор баз данных и веб-приложений. Создаём учётные системы без программирования.
+<footer class="mt-32 border-t border-[var(--color-hairline-strong)] bg-[var(--color-paper)]">
+  <div class="max-w-[78rem] mx-auto px-6 lg:px-12 pt-12 pb-10">
+
+    <!-- Colophon top: large editorial mark + meta grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-12 pb-12 border-b border-[var(--color-hairline)]">
+
+      <div class="lg:col-span-5">
+        <div class="eyebrow text-[var(--color-vermilion)] mb-3">Колофон</div>
+        <div class="font-[family-name:var(--font-serif)] text-3xl sm:text-4xl leading-[1.05] text-[var(--color-ink)] tracking-[-0.015em]" style="font-variation-settings: 'opsz' 144;">
+          <span class="italic font-normal">Журнал</span> о&nbsp;данных, учётных системах и&nbsp;практике no-code от&nbsp;команды&nbsp;Интеграм.
+        </div>
+        <p class="mt-5 max-w-md text-[var(--color-ink-soft)] leading-relaxed">
+          Пишем о&nbsp;том, как малые и&nbsp;средние компании отказываются от&nbsp;разрозненных таблиц в&nbsp;пользу нормальных учётных систем — без программистов и&nbsp;долгих проектов.
         </p>
       </div>
 
-      <div>
-        <h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-3">
-          Продукт
-        </h3>
-        <ul class="space-y-2 text-sm">
-          <li><a href="https://ideav.ru" class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">Сайт продукта</a></li>
-          <li><a href="https://integram.io" class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">Зайти в Интеграм</a></li>
-          <li><a href="/rss.xml" class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">RSS-лента</a></li>
+      <div class="lg:col-span-3">
+        <div class="eyebrow text-[var(--color-ink-faint)] mb-4">Навигация</div>
+        <ul class="space-y-2">
+          <li><a href="/" class="link-swipe text-[var(--color-ink)]">Все статьи</a></li>
+          <li><a href="/rss.xml" class="link-swipe text-[var(--color-ink)]">RSS-лента</a></li>
+          <li><a href="/sitemap-index.xml" class="link-swipe text-[var(--color-ink-soft)]">Sitemap</a></li>
         </ul>
       </div>
 
-      <div>
-        <h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-3">
-          Контакты
-        </h3>
-        <ul class="space-y-2 text-sm">
-          <li><a href="mailto:hello@ideav.ru" class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">hello@ideav.ru</a></li>
+      <div class="lg:col-span-2">
+        <div class="eyebrow text-[var(--color-ink-faint)] mb-4">Продукт</div>
+        <ul class="space-y-2">
+          <li><a href="https://ideav.ru" class="link-swipe text-[var(--color-ink)]">ideav.ru</a></li>
+          <li><a href="https://integram.io" class="link-swipe text-[var(--color-ink)]">integram.io</a></li>
+        </ul>
+      </div>
+
+      <div class="lg:col-span-2">
+        <div class="eyebrow text-[var(--color-ink-faint)] mb-4">Связаться</div>
+        <ul class="space-y-2">
+          <li><a href="mailto:hello@ideav.ru" class="link-swipe text-[var(--color-ink)]">hello@ideav.ru</a></li>
         </ul>
       </div>
     </div>
 
-    <div class="pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-      <p class="text-xs text-slate-400 dark:text-slate-500">
-        © {year} Интеграм. Все права защищены.
-      </p>
-      <p class="text-xs text-slate-400 dark:text-slate-500">
-        blog.ideav.ru
-      </p>
+    <!-- Bottom credit line -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 eyebrow text-[var(--color-ink-faint)]">
+      <div>© {year} Интеграм · Все права защищены</div>
+      <div class="flex flex-wrap gap-x-5 gap-y-1">
+        <span>Набрано <span class="text-[var(--color-ink)]">Fraunces</span></span>
+        <span>и <span class="text-[var(--color-ink)]">IBM Plex</span></span>
+        <span>·</span>
+        <span>Свёрстано в&nbsp;Astro</span>
+      </div>
     </div>
+
   </div>
 </footer>
