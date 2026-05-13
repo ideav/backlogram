@@ -181,4 +181,91 @@ const initial = post.data.author.charAt(0)
       </div>
     </div>
   </article>
+
+  <!-- Lightbox overlay (hidden by default) -->
+  <div
+    id="lightbox"
+    class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/85 backdrop-blur-sm cursor-zoom-out p-4 sm:p-8"
+    aria-hidden="true"
+  >
+    <img id="lightbox-img" alt="" class="max-w-full max-h-full object-contain shadow-2xl" />
+    <button
+      id="lightbox-close"
+      type="button"
+      aria-label="Закрыть"
+      class="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 flex items-center justify-center text-white/80 hover:text-white text-3xl leading-none"
+    >
+      ×
+    </button>
+  </div>
+
+  <style>
+    /* Make article images look interactive */
+    .prose-article img,
+    article > div > div > div > figure > img {
+      cursor: zoom-in;
+      transition: opacity 150ms ease;
+    }
+    .prose-article img:hover,
+    article > div > div > div > figure > img:hover {
+      opacity: 0.92;
+    }
+    #lightbox.open {
+      display: flex;
+    }
+    #lightbox.open #lightbox-img {
+      animation: lb-in 180ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+    @keyframes lb-in {
+      from { opacity: 0; transform: scale(0.97); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    body.lightbox-open { overflow: hidden; }
+  </style>
+
+  <script is:inline>
+    (function () {
+      const lb = document.getElementById('lightbox')
+      const lbImg = document.getElementById('lightbox-img')
+      const lbClose = document.getElementById('lightbox-close')
+      if (!lb || !lbImg) return
+
+      // Pick up images inside the article body and inside the hero figure
+      const imgs = document.querySelectorAll(
+        '.prose-article img, article figure > img'
+      )
+
+      function open(src, alt) {
+        lbImg.src = src
+        lbImg.alt = alt || ''
+        lb.classList.add('open')
+        lb.setAttribute('aria-hidden', 'false')
+        document.body.classList.add('lightbox-open')
+      }
+
+      function close() {
+        lb.classList.remove('open')
+        lb.setAttribute('aria-hidden', 'true')
+        document.body.classList.remove('lightbox-open')
+        // Drop src so the next open animates fresh
+        setTimeout(function () {
+          if (!lb.classList.contains('open')) lbImg.src = ''
+        }, 200)
+      }
+
+      imgs.forEach(function (img) {
+        img.addEventListener('click', function () {
+          open(img.currentSrc || img.src, img.alt)
+        })
+      })
+
+      lb.addEventListener('click', function (e) {
+        if (e.target === lb || e.target === lbImg) close()
+      })
+      lbClose.addEventListener('click', close)
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && lb.classList.contains('open')) close()
+      })
+    })()
+  </script>
 </BaseLayout>
