@@ -41,6 +41,25 @@ function setCanonical(href: string) {
   el.setAttribute('href', href)
 }
 
+function setJsonLd(id: string, data: unknown) {
+  let el = document.head.querySelector<HTMLScriptElement>(
+    `script[type="application/ld+json"][data-jsonld="${id}"]`,
+  )
+  if (!el) {
+    el = document.createElement('script')
+    el.setAttribute('type', 'application/ld+json')
+    el.setAttribute('data-jsonld', id)
+    document.head.appendChild(el)
+  }
+  el.textContent = JSON.stringify(data)
+}
+
+function clearJsonLd() {
+  document.head
+    .querySelectorAll('script[type="application/ld+json"][data-jsonld]')
+    .forEach((el) => el.remove())
+}
+
 const legacyKnowledgeBaseArticleRedirects: Record<string, string> = {
   '14-forms-reports-dashboards': '/knowledge-base/14-forms.html',
 }
@@ -53,6 +72,7 @@ export default function KnowledgeBaseArticle() {
 
   useEffect(() => {
     if (!article) return
+    clearJsonLd()
     const pageTitle = article.seoTitle ?? `${article.shortTitle} — База знаний — Интеграм`
     const description = article.seoDescription ?? article.metaDescription ?? article.summary
     const ogTitle = article.ogTitle ?? pageTitle
@@ -81,6 +101,70 @@ export default function KnowledgeBaseArticle() {
     setMetaTag('meta[name="twitter:description"]', 'name', 'twitter:description', ogDescription)
 
     setCanonical(canonicalUrl)
+
+    const origin =
+      typeof window !== 'undefined' ? window.location.origin : 'https://ideav.ru'
+    const knowledgeBaseUrl = `${origin}/knowledge-base.html`
+
+    setJsonLd('article', {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: article.title,
+      name: article.title,
+      description,
+      inLanguage: 'ru-RU',
+      url: canonicalUrl,
+      mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
+      isPartOf: {
+        '@type': 'Collection',
+        name: 'База знаний — Интеграм',
+        url: knowledgeBaseUrl,
+      },
+      keywords: article.metaKeywords,
+      articleSection: article.compare,
+      about: { '@type': 'Thing', name: article.compare },
+      author: {
+        '@type': 'Organization',
+        name: 'Интеграм',
+        url: origin,
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Интеграм',
+        url: origin,
+        logo: {
+          '@type': 'ImageObject',
+          url: `${origin}/favicon.ico`,
+        },
+      },
+    })
+
+    setJsonLd('breadcrumb', {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Интеграм',
+          item: `${origin}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'База знаний',
+          item: knowledgeBaseUrl,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: article.shortTitle,
+          item: canonicalUrl,
+        },
+      ],
+    })
+
+    return clearJsonLd
   }, [article])
 
   if (!article && legacyRedirect) {
