@@ -6,6 +6,8 @@ pubDate: '2023-12-10'
 category: Технологии
 author: Команда Интеграм
 canonical: https://blog.ideav.online/2023/12/stroim-druzhelyubnye-standarty-vzaimodeistviya
+tags:
+- разработка
 ---
 
 API (Application Programming Interface, или Интерфейс прикладного программирования), стал базовым элементом создания и поддержки ПО. Средство обмена данными упрощает разработку программ и расширяет горизонты для внешних разработчиков, партнеров и внутренних подразделений компаний.

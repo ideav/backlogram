@@ -5,6 +5,8 @@ pubDate: '2024-03-29'
 category: Правила предпринимателя в IT
 author: Команда Интеграм
 canonical: https://blog.ideav.online/2024/03/pravilo-3-oformlyaite-sostav-resheniya
+tags:
+- обучение
 ---
 
 После первой встречи с заказчиком вы создаете документ, фиксируя:

@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content'
 import BaseLayout from '../layouts/BaseLayout.astro'
+import TagCloud from '../components/TagCloud.astro'
 
 const allPosts = await getCollection('posts', ({ data }) => !data.draft)
 
@@ -95,6 +96,10 @@ function readingTime(post: typeof allPosts[number]): number {
       </div>
     </section>
   )}
+
+  <section class="max-w-[78rem] mx-auto px-6 lg:px-12">
+    <TagCloud variant="cloud" />
+  </section>
 
   {rest.length > 0 && (
     <!-- Index: contents page style. No images. Hover reveals excerpt. -->

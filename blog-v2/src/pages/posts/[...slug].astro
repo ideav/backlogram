@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content'
 import BaseLayout from '../../layouts/BaseLayout.astro'
+import { tagSlug } from '../../lib/tags'
 
 export async function getStaticPaths() {
   const all = await getCollection('posts', ({ data }) => !data.draft)
@@ -74,6 +75,24 @@ const initial = post.data.author.charAt(0)
               <a href={post.data.canonical} class="text-sm link-swipe text-[var(--color-ink-soft)] break-words">
                 {new URL(post.data.canonical).hostname}
               </a>
+            </div>
+          )}
+
+          {(post.data.tags ?? []).length > 0 && (
+            <div class="mt-8 pt-6 border-t border-[var(--color-hairline)]">
+              <div class="eyebrow text-[var(--color-ink-faint)] mb-3">Теги</div>
+              <ul class="flex flex-wrap gap-x-3 gap-y-1.5">
+                {post.data.tags!.map((t) => (
+                  <li>
+                    <a
+                      href={`/tag/${tagSlug(t)}/`}
+                      class="link-swipe text-sm text-[var(--color-ink)] hover:text-[var(--color-vermilion)]"
+                    >
+                      {t}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
 

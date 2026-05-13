@@ -5,6 +5,9 @@ pubDate: '2025-01-21'
 category: Разработка
 author: Команда Интеграм
 canonical: https://blog.ideav.online/2025/01/intellektualnyi-otchet-dlya-redaktirovaniya-dannyh-v-tablicah
+tags:
+- обучение
+- разработка
 ---
 
 Хочу рассказать (видео-формат [youtube](<https://www.youtube.com/watch?v=x0IREIG0HtM>), [rutube](<https://rutube.ru/video/8b21501218c81b9afdf6c2021cd04f4d/>)) про удобный инструмент для редактирования данных из разных таблиц в виде единой таблицы, как в Excel. Для наглядности мы часто собираем данные в отчеты, где их удобно изучать. Теперь эти данные можно редактировать прямо в отчете, и они будут компактно храниться в таблицах Интеграла, в отличие от Excel.
