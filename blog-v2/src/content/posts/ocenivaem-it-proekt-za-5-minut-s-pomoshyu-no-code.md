@@ -13,7 +13,7 @@ canonical: https://blog.ideav.online/2023/12/ocenivaem-it-proekt-za-5-minut-s-po
 
 Тип визуала, включая дизайн | [Базовые интерфейсы Интеграла](<https://www.youtube.com/watch?v=s3q3StQkDBw>) | [Простая верстка](<https://www.youtube.com/watch?v=WhmVKzn3pgQ>), [ИИ-верстка](<https://rutube.ru/video/09409fb9ff4276f9d29fa5a5620b3e2c/>), [конструктор](<https://www.youtube.com/watch?v=wMzCEzlhtBY&t=110s>) | [Интерфейсы сверстаны профи](<https://www.youtube.com/watch?v=esX-WKvKIBM>)  
 ---|---|---|---  
-Количество сущностей (и форм) | ![enter image description here](https://ideav.online/download/mile19072003/unnamed.png) | ![enter image description here](https://ideav.online/download/mile19072003/unnamed%20%281%29.png) | ![enter image description here](https://ideav.online/download/mile19072003/unnamed%20%282%29.png)  
+Количество сущностей (и форм) | ![enter image description here](/uploads/c3054a3f-unnamed.png) | ![enter image description here](/uploads/6ae85bbf-unnamed-1-.png) | ![enter image description here](/uploads/249007eb-unnamed-2-.png)  
 до 5 (1-2 формы | [10](<https://www.youtube.com/watch?v=iQo4iM67TkI>) | 50 | 150  
 5-10 (2-3 формы) | [25](<https://www.youtube.com/watch?v=s3q3StQkDBw>) | [**80**](<https://www.youtube.com/watch?v=wMzCEzlhtBY>)-[**150**](<https://www.youtube.com/watch?v=q0yL16GKl9w>) | [300](<https://magnetx.ideav.online/static/media/tutorial.mp4>)  
 11-20 (5-6 форм) | 50 | [**200**](<https://www.youtube.com/watch?v=rJmK4dYVc5k>) | 500  

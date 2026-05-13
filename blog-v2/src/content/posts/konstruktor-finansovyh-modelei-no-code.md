@@ -9,7 +9,7 @@ canonical: https://blog.ideav.online/2025/09/konstruktor-finansovyh-modelei-no-c
 
 Сейчас мы делаем расширяемый конструктор финансовых моделей из простых блоков, и вы можете участвовать в этом проекте и получить бесплатно вечную лицензию на SaaS конструктора или её локальную установку.
 
-![enter image description here](https://blog.ideav.online/content/images/20250903154730-fm.png)
+![enter image description here](/uploads/26c8a728-20250903154730-fm.png)
 
 [Презентация проекта](<http://integram.io/download/Integram_FM.pdf>) с уникальным предложением заинтересованным клиентам.
 

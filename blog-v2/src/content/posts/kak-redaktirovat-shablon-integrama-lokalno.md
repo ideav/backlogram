@@ -12,7 +12,7 @@ canonical: https://blog.ideav.online/2025/02/kak-redaktirovat-shablon-integrama-
 
 Файлы можно загрузить вручную в меню Файлы:
 
-![enter image description here](https://leonardo.osnova.io/15bfb678-2e01-5fb6-8871-0cd6b4497b56)
+![enter image description here](/uploads/98f6e6d8-15bfb678-2e01-5fb6-8871-0cd6b4497b56.png)
 
 Меню Файлы, папка templates – защищенные шаблоны
 
@@ -41,8 +41,8 @@ canonical: https://blog.ideav.online/2025/02/kak-redaktirovat-shablon-integrama-
 
 По аналогии можно сохранять файлы стилей и скриптов в папку download.
 
-Заведите в своем Интеграме роль **api** и пользователя с этой ролью: ![enter image description here](https://leonardo.osnova.io/9c5bf15b-7aad-5e40-a446-dda7f43f1638) Роль с доступом на изменение файлов
+Заведите в своем Интеграме роль **api** и пользователя с этой ролью: ![enter image description here](/uploads/76786cdd-9c5bf15b-7aad-5e40-a446-dda7f43f1638.png) Роль с доступом на изменение файлов
 
-Сгенерируйте этому пользователю токены в новом рабочем месте api и пользуйтесь своим любимым редактором! ![enter image description here](https://leonardo.osnova.io/bcd6324b-66f9-5005-88fd-38fe87448632) По адресу **/api** теперь есть API-explorer
+Сгенерируйте этому пользователю токены в новом рабочем месте api и пользуйтесь своим любимым редактором! ![enter image description here](/uploads/b0a06a17-bcd6324b-66f9-5005-88fd-38fe87448632.png) По адресу **/api** теперь есть API-explorer
 
 Спасибо и успехов!
