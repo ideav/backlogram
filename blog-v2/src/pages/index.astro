@@ -1,0 +1,64 @@
+---
+import { getCollection } from 'astro:content'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import PostCard from '../components/PostCard.astro'
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft)
+const posts = allPosts.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+)
+
+const featured = posts[0]
+const rest = posts.slice(1)
+---
+
+<BaseLayout
+  title="Блог Интеграм — статьи о no-code, учётных системах и автоматизации"
+  description="Истории внедрений, технические заметки и практика no-code. Команда Интеграм пишет о том, как делать учётные системы без программирования."
+>
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16">
+    <div class="mb-14">
+      <h1 class="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">
+        Блог Интеграм
+      </h1>
+      <p class="text-lg text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
+        Практика no-code, истории внедрений, технические заметки. Пишем о том, как команды делают учётные системы без разработки.
+      </p>
+    </div>
+
+    {featured && (
+      <div class="mb-16">
+        <PostCard
+          href={`/posts/${featured.id}/`}
+          title={featured.data.title}
+          description={featured.data.description}
+          category={featured.data.category}
+          pubDate={featured.data.pubDate}
+          image={featured.data.image}
+          featured={true}
+        />
+      </div>
+    )}
+
+    {rest.length > 0 && (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {rest.map((post) => (
+          <PostCard
+            href={`/posts/${post.id}/`}
+            title={post.data.title}
+            description={post.data.description}
+            category={post.data.category}
+            pubDate={post.data.pubDate}
+            image={post.data.image}
+          />
+        ))}
+      </div>
+    )}
+
+    {posts.length === 0 && (
+      <div class="text-center py-20 text-slate-500 dark:text-slate-400">
+        Статей пока нет.
+      </div>
+    )}
+  </section>
+</BaseLayout>

@@ -1,0 +1,93 @@
+---
+import { getCollection, render } from 'astro:content'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft)
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }))
+}
+
+const { post } = Astro.props
+const { Content } = await render(post)
+
+const formattedDate = post.data.pubDate.toLocaleDateString('ru-RU', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+})
+---
+
+<BaseLayout
+  title={`${post.data.title} — Блог Интеграм`}
+  description={post.data.description}
+  image={post.data.image}
+  canonical={post.data.canonical}
+  type="article"
+  publishedTime={post.data.pubDate.toISOString()}
+  author={post.data.author}
+>
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <a
+      href="/"
+      class="inline-flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-8"
+    >
+      ← Все статьи
+    </a>
+
+    <header class="mb-10">
+      <div class="flex flex-wrap items-center gap-3 mb-4">
+        <span class="inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
+          {post.data.category}
+        </span>
+        <time
+          datetime={post.data.pubDate.toISOString()}
+          class="text-sm text-slate-400 dark:text-slate-500"
+        >
+          {formattedDate}
+        </time>
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white leading-tight tracking-tight mb-4">
+        {post.data.title}
+      </h1>
+
+      <p class="text-lg text-slate-500 dark:text-slate-400 leading-relaxed">
+        {post.data.description}
+      </p>
+
+      <div class="mt-6 flex items-center gap-3 pt-6 border-t border-slate-200 dark:border-slate-800">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-sm font-semibold">
+          {post.data.author.charAt(0)}
+        </div>
+        <div class="text-sm">
+          <div class="font-medium text-slate-900 dark:text-white">{post.data.author}</div>
+          <div class="text-xs text-slate-400 dark:text-slate-500">Команда блога</div>
+        </div>
+      </div>
+    </header>
+
+    {post.data.image && (
+      <img
+        src={post.data.image}
+        alt={post.data.title}
+        class="w-full rounded-xl mb-10"
+      />
+    )}
+
+    <div class="prose-article text-slate-700 dark:text-slate-300 text-[17px]">
+      <Content />
+    </div>
+
+    <footer class="mt-16 pt-8 border-t border-slate-200 dark:border-slate-800 text-sm">
+      <a
+        href="/"
+        class="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline"
+      >
+        ← Все статьи
+      </a>
+    </footer>
+  </article>
+</BaseLayout>
