@@ -189,18 +189,18 @@ body::after {
   font-family: var(--font-serif);
   font-weight: 600;
   font-variation-settings: "opsz" 60;
-  font-size: 1.55rem;
-  line-height: 1.18;
-  letter-spacing: -0.012em;
-  margin-top: 2.8rem;
-  margin-bottom: 1rem;
+  font-size: 1.15rem;
+  line-height: 1.25;
+  letter-spacing: -0.008em;
+  margin-top: 2.2rem;
+  margin-bottom: 0.75rem;
   color: var(--color-ink);
 }
 
 .prose-article h2::before {
   content: "§";
   display: inline-block;
-  margin-right: 0.55rem;
+  margin-right: 0.45rem;
   color: var(--color-vermilion);
   font-weight: 500;
   font-variation-settings: "opsz" 30;
