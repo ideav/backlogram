@@ -186,7 +186,7 @@ export default function KnowledgeBaseArticle() {
   const differenceDetailed = article.integramDifferenceDetailed
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden wrap-anywhere">
       <article className="pt-28 pb-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
@@ -249,7 +249,7 @@ export default function KnowledgeBaseArticle() {
                   <span className="flex-shrink-0 mt-0.5 text-slate-500 dark:text-slate-400">
                     <Info size={16} />
                   </span>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                  <p className="min-w-0 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                     {article.scenario.note}
                   </p>
                 </div>
@@ -274,7 +274,7 @@ export default function KnowledgeBaseArticle() {
                     <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-xs font-bold text-blue-600 dark:text-blue-400">
                       {i + 1}
                     </span>
-                    <span>{step}</span>
+                    <span className="min-w-0">{step}</span>
                   </li>
                 ))}
               </ol>
@@ -328,7 +328,7 @@ export default function KnowledgeBaseArticle() {
                     <span className="flex-shrink-0 mt-0.5 text-blue-500">
                       <CheckCircle2 size={18} />
                     </span>
-                    <div className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                    <div className="min-w-0 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                       <div className="font-semibold text-slate-800 dark:text-slate-100 mb-1">
                         {item.title}
                       </div>
@@ -347,7 +347,7 @@ export default function KnowledgeBaseArticle() {
                     <span className="flex-shrink-0 mt-0.5 text-blue-500">
                       <CheckCircle2 size={18} />
                     </span>
-                    <span className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                    <span className="min-w-0 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                       {item}
                     </span>
                   </li>
@@ -372,7 +372,7 @@ export default function KnowledgeBaseArticle() {
                       className="flex gap-3 text-sm text-slate-700 dark:text-slate-300 leading-relaxed"
                     >
                       <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-amber-500" />
-                      <span>{item}</span>
+                      <span className="min-w-0">{item}</span>
                     </li>
                   ))}
                 </ul>
