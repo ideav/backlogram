@@ -147,6 +147,11 @@
     animation: shimmer 2s infinite;
   }
 
+  .wrap-anywhere {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
   .hero-background-flicker {
     position: absolute;
     inset: 0;
