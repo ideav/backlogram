@@ -31,13 +31,11 @@ function setCanonical(href: string) {
 }
 
 function matchesQuery(query: string, article: (typeof knowledgeBaseArticles)[number]): boolean {
-  const q = query.toLowerCase()
-  return (
-    article.title.toLowerCase().includes(q) ||
-    article.shortTitle.toLowerCase().includes(q) ||
-    article.compare.toLowerCase().includes(q) ||
-    article.summary.toLowerCase().includes(q)
-  )
+  const words = query.toLowerCase().split(/\s+/).filter(Boolean)
+  const haystack = [article.title, article.shortTitle, article.compare, article.summary]
+    .join(' ')
+    .toLowerCase()
+  return words.every((word) => haystack.includes(word))
 }
 
 export default function KnowledgeBase() {
