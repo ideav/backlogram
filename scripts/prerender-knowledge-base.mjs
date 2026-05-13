@@ -381,7 +381,7 @@ for (const article of knowledgeBaseArticles) {
 <article id="kb-prerender" itemscope itemtype="https://schema.org/TechArticle">
   <nav class="kb-article__nav"><a href="/knowledge-base">← База знаний</a></nav>
   <header>
-    <p class="kb-prerender__eyebrow">Статья ${escape(article.number || article.slug)}</p>
+    <p class="kb-prerender__eyebrow">${escape(article.compare ? `Сравнение с ${article.compare}` : 'База знаний')}</p>
     <h1 itemprop="headline">${escape(article.title)}</h1>
     <p class="kb-prerender__lead" itemprop="description">${escape(article.compare || trim(article.summary, 220))}</p>
   </header>

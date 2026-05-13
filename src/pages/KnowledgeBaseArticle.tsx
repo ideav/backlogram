@@ -203,7 +203,7 @@ export default function KnowledgeBaseArticle() {
           >
             <div className="flex items-center gap-3 mb-5 flex-wrap">
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-widest">
-                <BookOpen size={14} /> Статья № {article.number}
+                <BookOpen size={14} /> База знаний
               </span>
               <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400">
                 <GitCompare size={12} /> Сравнение: {article.compare}
@@ -440,7 +440,7 @@ export default function KnowledgeBaseArticle() {
                       className="group block h-full p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-blue-500/40 transition-all"
                     >
                       <div className="text-xs text-slate-400 dark:text-slate-500 mb-1">
-                        №&nbsp;{r.number} · {r.compare}
+                        Сравнение с {r.compare}
                       </div>
                       <div className="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-blue-500 transition-colors">
                         {r.shortTitle}

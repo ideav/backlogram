@@ -242,7 +242,7 @@ console.log(`✓ public/og/knowledge-base.png`)
 for (const article of knowledgeBaseArticles) {
   const eyebrow = article.compare
     ? `Сравнение с ${article.compare}`
-    : `Статья ${article.number || article.slug}`
+    : 'База знаний'
   const raw = (article.metaDescription || article.summary || '').replace(/\s+/g, ' ').trim()
   const subtitle = raw.length > 170 ? raw.slice(0, 167).replace(/\s+\S*$/, '') + '…' : raw
   await render(
