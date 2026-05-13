@@ -154,14 +154,15 @@ export default function KnowledgeBase() {
               Серия разборов сценариев, в которых Интеграм заменяет или дополняет
               распространённые инструменты — от Google Sheets до заказной разработки.
               Каждая статья описывает контекст, что Интеграм делает иначе, и где у него
-              есть ограничения. Тексты основаны на{' '}
+              есть ограничения. Примеры взяты из ежедневной работы над платформой —
+              правки дашбордов, отчётов, шаблонов и форм. Журнал этой работы открыт:{' '}
               <a
-                href="https://github.com/ideav/crm/tree/main/docs/integram-article-reviews"
+                href="https://github.com/ideav/crm/issues?q=is%3Aissue+state%3Aclosed+html"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline hover:text-blue-500 dark:hover:text-blue-400"
               >
-                открытом плане серии обзоров
+                закрытые задачи в&nbsp;репозитории продукта
               </a>
               .
             </p>
