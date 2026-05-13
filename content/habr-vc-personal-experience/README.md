@@ -28,4 +28,3 @@ The pipeline tracks 18 canonical knowledge-base articles:
 
 The first draft in this pipeline is article `11-ai-interface-data-safety`, now
 assigned to author review.
-
