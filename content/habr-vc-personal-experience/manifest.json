@@ -1,0 +1,195 @@
+{
+  "pipeline": "habr-vc-personal-experience",
+  "sourceCollection": "knowledgeBaseArticles",
+  "format": "personal_experience",
+  "targetPlatforms": ["Habr", "VC.ru"],
+  "updatedAt": "2026-05-13",
+  "statusLegend": {
+    "planned": "Source article is selected, but no personal-experience draft exists yet.",
+    "draft": "Initial rewrite exists and needs editorial cleanup.",
+    "author_review": "Draft is ready for author review and fact-check.",
+    "ready": "Draft passed author review and can move into publication tooling."
+  },
+  "articles": [
+    {
+      "number": "01",
+      "slug": "01-google-sheets-150k",
+      "topic": "Google Sheets",
+      "sourcePage": "/knowledge-base/01-google-sheets-150k.html",
+      "sourceUrl": "https://github.com/ideav/crm/blob/main/docs/integram-article-reviews/01-google-sheets-150k.md",
+      "status": "planned",
+      "draftOwner": null,
+      "draftPath": null
+    },
+    {
+      "number": "02",
+      "slug": "02-excel-row-limit",
+      "topic": "Excel",
+      "sourcePage": "/knowledge-base/02-excel-row-limit.html",
+      "sourceUrl": "https://github.com/ideav/crm/blob/main/docs/integram-article-reviews/02-excel-row-limit.md",
+      "status": "planned",
+      "draftOwner": null,
+      "draftPath": null
+    },
+    {
+      "number": "03",
+      "slug": "03-excel-file-versions",
+      "topic": "Excel-рассылки",
+      "sourcePage": "/knowledge-base/03-excel-file-versions.html",
+      "sourceUrl": "https://github.com/ideav/crm/blob/main/docs/integram-article-reviews/03-excel-file-versions.md",
+      "status": "planned",
+      "draftOwner": null,
+      "draftPath": null
+    },
+    {
+      "number": "04",
+      "slug": "04-related-tables",
+      "topic": "связанные таблицы",
+      "sourcePage": "/knowledge-base/04-related-tables.html",
+      "sourceUrl": "https://github.com/ideav/crm/blob/main/docs/integram-article-reviews/04-related-tables.md",
+      "status": "planned",
+      "draftOwner": null,
+      "draftPath": null
+    },
+    {
+      "number": "05",
+      "slug": "05-access-rights",
+      "topic": "права доступа",
+      "sourcePage": "/knowledge-base/05-access-rights.html",
+      "sourceUrl": "https://github.com/ideav/crm/blob/main/docs/integram-article-reviews/05-access-rights.md",
+      "status": "planned",
+      "draftOwner": null,
+      "draftPath": null
+    },
+    {
+      "number": "06",
+      "slug": "06-airtable-control",
+      "topic": "Airtable и собственный контур",
+      "sourcePage": "/knowledge-base/06-airtable-control.html",
+      "sourceUrl": "https://github.com/ideav/crm/blob/main/docs/integram-article-reviews/06-airtable-control.md",
+      "status": "planned",
+      "draftOwner": null,
+      "draftPath": null
+    },
+    {
+      "number": "07",
+      "slug": "07-notion-relational-data",
+      "topic": "Notion и реляционные данные",
+      "sourcePage": "/knowledge-base/07-notion-relational-data.html",
+      "sourceUrl": "https://github.com/ideav/crm/blob/main/docs/integram-article-reviews/07-notion-relational-data.md",
+      "status": "planned",
+      "draftOwner": null,
+      "draftPath": null
+    },
+    {
+      "number": "08",
+      "slug": "08-html-templates",
+      "topic": "HTML-шаблоны",
+      "sourcePage": "/knowledge-base/08-html-templates.html",
+      "sourceUrl": "https://github.com/ideav/crm/blob/main/docs/integram-article-reviews/08-html-templates.md",
+      "status": "planned",
+      "draftOwner": null,
+      "draftPath": null
+    },
+    {
+      "number": "09",
+      "slug": "09-custom-development-prototype",
+      "topic": "прототип вместо заказной разработки",
+      "sourcePage": "/knowledge-base/09-custom-development-prototype.html",
+      "sourceUrl": "https://github.com/ideav/crm/blob/main/docs/integram-article-reviews/09-custom-development-prototype.md",
+      "status": "planned",
+      "draftOwner": null,
+      "draftPath": null
+    },
+    {
+      "number": "10",
+      "slug": "10-no-release-changes",
+      "topic": "изменения без релиза",
+      "sourcePage": "/knowledge-base/10-no-release-changes.html",
+      "sourceUrl": "https://github.com/ideav/crm/blob/main/docs/integram-article-reviews/10-no-release-changes.md",
+      "status": "planned",
+      "draftOwner": null,
+      "draftPath": null
+    },
+    {
+      "number": "11",
+      "slug": "11-ai-interface-data-safety",
+      "topic": "вайб-кодинг",
+      "sourcePage": "/knowledge-base/11-ai-interface-data-safety.html",
+      "sourceUrl": "https://github.com/ideav/crm/blob/main/docs/integram-article-reviews/11-ai-interface-data-safety.md",
+      "status": "author_review",
+      "draftOwner": "author",
+      "draftPath": "drafts/11-ai-interface-data-safety.md"
+    },
+    {
+      "number": "12",
+      "slug": "12-ai-prototype-rewrite",
+      "topic": "AI-прототипы",
+      "sourcePage": "/knowledge-base/12-ai-prototype-rewrite.html",
+      "sourceUrl": "https://github.com/ideav/crm/blob/main/docs/integram-article-reviews/12-ai-prototype-rewrite.md",
+      "status": "planned",
+      "draftOwner": null,
+      "draftPath": null
+    },
+    {
+      "number": "13",
+      "slug": "13-api-json-export",
+      "topic": "API и JSON-экспорт",
+      "sourcePage": "/knowledge-base/13-api-json-export.html",
+      "sourceUrl": "https://github.com/ideav/crm/blob/main/docs/integram-article-reviews/13-api-json-export.md",
+      "status": "planned",
+      "draftOwner": null,
+      "draftPath": null
+    },
+    {
+      "number": "14",
+      "slug": "14-forms",
+      "topic": "формы",
+      "sourcePage": "/knowledge-base/14-forms.html",
+      "sourceUrl": "https://github.com/ideav/crm/blob/main/docs/integram-article-reviews/14-forms.md",
+      "status": "planned",
+      "draftOwner": null,
+      "draftPath": null
+    },
+    {
+      "number": "14a",
+      "slug": "14a-reports",
+      "topic": "отчёты",
+      "sourcePage": "/knowledge-base/14a-reports.html",
+      "sourceUrl": "https://github.com/ideav/crm/blob/main/docs/integram-article-reviews/14a-reports.md",
+      "status": "planned",
+      "draftOwner": null,
+      "draftPath": null
+    },
+    {
+      "number": "14b",
+      "slug": "14b-dashboards",
+      "topic": "дашборды",
+      "sourcePage": "/knowledge-base/14b-dashboards.html",
+      "sourceUrl": "https://github.com/ideav/crm/blob/main/docs/integram-article-reviews/14b-dashboards.md",
+      "status": "planned",
+      "draftOwner": null,
+      "draftPath": null
+    },
+    {
+      "number": "15",
+      "slug": "15-local-control-files",
+      "topic": "локальное развёртывание",
+      "sourcePage": "/knowledge-base/15-local-control-files.html",
+      "sourceUrl": "https://github.com/ideav/crm/blob/main/docs/integram-article-reviews/15-local-control-files.md",
+      "status": "planned",
+      "draftOwner": null,
+      "draftPath": null
+    },
+    {
+      "number": "16",
+      "slug": "16-pricing-policy",
+      "topic": "тарифы в токенах",
+      "sourcePage": "/knowledge-base/16-pricing-policy.html",
+      "sourceUrl": "https://github.com/ideav/crm/blob/main/docs/integram-article-reviews/16-pricing-policy.md",
+      "status": "planned",
+      "draftOwner": null,
+      "draftPath": null
+    }
+  ]
+}

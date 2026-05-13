@@ -50,7 +50,8 @@ test('knowledge base page renders a search input', () => {
 
 test('knowledge base page filters articles by query using matchesQuery', () => {
   assert.match(kbPageSource, /matchesQuery/)
-  assert.match(kbPageSource, /\.toLowerCase\(\)\.includes\(q\)/)
+  assert.match(kbPageSource, /split\(\/\\s\+\/\)\.filter\(Boolean\)/)
+  assert.match(kbPageSource, /words\.every\(\(word\) => haystack\.includes\(word\)\)/)
 })
 
 test('knowledge base page shows empty-state message when search has no results', () => {
@@ -63,6 +64,6 @@ test('knowledge base page shows a clear button when the query is non-empty', () 
 })
 
 test('robots.txt allows crawling of knowledge-base routes', () => {
-  assert.match(robotsSource, /Allow: \/knowledge-base\.html/)
-  assert.match(robotsSource, /Allow: \/knowledge-base\//)
+  assert.match(robotsSource, /User-agent: \*\nAllow: \//)
+  assert.doesNotMatch(robotsSource, /Disallow: \/knowledge-base/)
 })
