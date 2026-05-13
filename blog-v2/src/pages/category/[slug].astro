@@ -1,26 +1,26 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro'
-import TagCloud from '../../components/TagCloud.astro'
-import { getAllTags, getPostsByTagSlug } from '../../lib/tags'
-import { categorySlug } from '../../lib/categories'
+import {
+  getAllCategories,
+  getPostsByCategorySlug,
+} from '../../lib/categories'
+import { getCollection } from 'astro:content'
 
 export async function getStaticPaths() {
-  const tags = await getAllTags()
+  const cats = await getAllCategories()
   return Promise.all(
-    tags.map(async (t) => {
-      const posts = await getPostsByTagSlug(t.slug)
+    cats.map(async (c) => {
+      const posts = await getPostsByCategorySlug(c.slug)
       return {
-        params: { slug: t.slug },
-        props: { tag: t.tag, count: t.count, posts },
+        params: { slug: c.slug },
+        props: { name: c.name, count: c.count, posts },
       }
     })
   )
 }
 
-const { tag, count, posts } = Astro.props
+const { name, count, posts } = Astro.props
 
-// Sort newest first, assign issue numbers from the full collection ordering
-import { getCollection } from 'astro:content'
 const allPosts = await getCollection('posts', ({ data }) => !data.draft)
 const ascending = [...allPosts].sort(
   (a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf()
@@ -43,11 +43,13 @@ function formatDate(d: Date): string {
 function readingTime(body: string): number {
   return Math.max(1, Math.round(body.length / 1100))
 }
+
+const allCats = await getAllCategories()
 ---
 
 <BaseLayout
-  title={`Тег «${tag}» — Блог Интеграм`}
-  description={`Статьи блога Интеграм с тегом «${tag}»: ${count} материалов о no-code, учётных системах и практике.`}
+  title={`Раздел «${name}» — Блог Интеграм`}
+  description={`Статьи блога Интеграм в разделе «${name}»: ${count} материалов.`}
 >
   <section class="max-w-[78rem] mx-auto px-6 lg:px-12 pt-14 pb-12 border-b border-[var(--color-hairline)]">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-x-10">
@@ -57,24 +59,40 @@ function readingTime(body: string): number {
         </a>
       </div>
       <div class="lg:col-span-10">
-        <div class="eyebrow text-[var(--color-vermilion)] mb-3">Тег</div>
+        <div class="eyebrow text-[var(--color-vermilion)] mb-3">Раздел</div>
         <h1
           class="font-[family-name:var(--font-serif)] text-[3rem] sm:text-[4.4rem] leading-[0.98] tracking-[-0.022em] text-[var(--color-ink)]"
           style="font-variation-settings: 'opsz' 144, 'SOFT' 30; font-weight: 500;"
         >
-          <span class="italic">{tag}</span>
+          {name}
           <sup
             class="text-[var(--color-vermilion)] ml-1"
-            style="font-family: var(--font-mono); font-size: 0.32em; font-style: normal; font-weight: 500; letter-spacing: 0.05em; position: relative; top: -0.55em;"
+            style="font-family: var(--font-mono); font-size: 0.32em; font-weight: 500; letter-spacing: 0.05em; position: relative; top: -0.55em;"
           >
             {String(count).padStart(2, '0')}
           </sup>
         </h1>
         <p class="mt-5 text-lg text-[var(--color-ink-soft)] max-w-2xl">
-          {count === 1
-            ? 'Один материал в этом теге.'
-            : `Материалов в этом теге: ${count}.`}
+          {count === 1 ? 'Один материал в этом разделе.' : `Материалов в разделе: ${count}.`}
         </p>
+
+        <!-- Inline list of all categories — quick jumps -->
+        <nav class="mt-8 flex flex-wrap items-baseline gap-x-5 gap-y-2">
+          {allCats.map((c, i) => (
+            <>
+              {i > 0 && <span class="text-[var(--color-hairline-strong)]">·</span>}
+              <a
+                href={`/category/${c.slug}/`}
+                class={`eyebrow link-swipe ${c.slug === Astro.params.slug ? 'text-[var(--color-vermilion)]' : 'text-[var(--color-ink)]'}`}
+              >
+                {c.name}
+                <sup class="text-[var(--color-ink-faint)] ml-0.5" style="font-family: var(--font-mono); font-size: 0.78em;">
+                  {c.count}
+                </sup>
+              </a>
+            </>
+          ))}
+        </nav>
       </div>
     </div>
   </section>
@@ -97,9 +115,6 @@ function readingTime(body: string): number {
                 </div>
               </div>
               <div class="lg:col-span-7">
-                <div class="eyebrow text-[var(--color-vermilion)] mb-2 relative z-10">
-                  <a href={`/category/${categorySlug(post.data.category)}/`} class="link-swipe pointer-events-auto" onclick="event.stopPropagation()">{post.data.category}</a>
-                </div>
                 <h3
                   class="font-[family-name:var(--font-serif)] text-2xl sm:text-[1.85rem] leading-[1.12] tracking-[-0.012em] text-[var(--color-ink)] group-hover:text-[var(--color-vermilion-deep)] transition-colors"
                   style="font-variation-settings: 'opsz' 60; font-weight: 600;"
@@ -124,9 +139,5 @@ function readingTime(body: string): number {
         </li>
       ))}
     </ol>
-  </section>
-
-  <section class="max-w-[78rem] mx-auto px-6 lg:px-12 pb-16">
-    <TagCloud activeSlug={Astro.params.slug} variant="cloud" />
   </section>
 </BaseLayout>

@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import TagCloud from '../components/TagCloud.astro'
+import { categorySlug } from '../lib/categories'
 
 const allPosts = await getCollection('posts', ({ data }) => !data.draft)
 
@@ -73,7 +74,9 @@ function readingTime(post: typeof allPosts[number]): number {
           </div>
           <div class="eyebrow text-[var(--color-ink-faint)] mt-3">{formatDate(featured.data.pubDate)}</div>
           <div class="eyebrow text-[var(--color-ink-faint)] mt-1">{readingTime(featured)}&nbsp;мин чтения</div>
-          <div class="eyebrow text-[var(--color-vermilion)] mt-3">{featured.data.category}</div>
+          <div class="eyebrow text-[var(--color-vermilion)] mt-3">
+            <a href={`/category/${categorySlug(featured.data.category)}/`} class="link-swipe">{featured.data.category}</a>
+          </div>
         </aside>
 
         <div class="lg:col-span-10">
@@ -136,7 +139,13 @@ function readingTime(post: typeof allPosts[number]): number {
                 </div>
 
                 <div class="lg:col-span-7">
-                  <div class="eyebrow text-[var(--color-vermilion)] mb-2">{post.data.category}</div>
+                  <div class="eyebrow text-[var(--color-vermilion)] mb-2 relative z-10">
+                    <a
+                      href={`/category/${categorySlug(post.data.category)}/`}
+                      class="link-swipe pointer-events-auto"
+                      onclick="event.stopPropagation()"
+                    >{post.data.category}</a>
+                  </div>
                   <h3
                     class="font-[family-name:var(--font-serif)] text-2xl sm:text-[1.85rem] leading-[1.12] tracking-[-0.012em] text-[var(--color-ink)] group-hover:text-[var(--color-vermilion-deep)] transition-colors"
                     style="font-variation-settings: 'opsz' 60; font-weight: 600;"
