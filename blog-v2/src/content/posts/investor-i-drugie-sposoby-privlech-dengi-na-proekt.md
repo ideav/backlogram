@@ -5,6 +5,8 @@ pubDate: '2024-10-18'
 category: Правила предпринимателя в IT
 author: Команда Интеграм
 canonical: https://blog.ideav.online/2024/10/investor-i-drugie-sposoby-privlech-dengi-na-proekt
+tags:
+- инвестиции
 ---
 
 КДПВ: _В 395-й раз я слушаю вердикт: вернуться сюда с выручкой 3000$ в месяц_

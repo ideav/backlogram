@@ -5,6 +5,8 @@ pubDate: '2024-06-30'
 category: Обучение
 author: Команда Интеграм
 canonical: https://blog.ideav.online/2024/06/kak-otlichit-podchinennuyu-tablicu-ot-spravochnika
+tags:
+- справочники
 ---
 
 У новичков Интеграма часто возникает недопонимание сути справочников и подчиненных таблиц.
