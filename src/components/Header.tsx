@@ -14,7 +14,7 @@ export function Header() {
     { name: 'Примеры', href: '/#cases' },
     { name: 'Цены', href: '/#pricing' },
     { name: 'База знаний', href: '/knowledge-base.html' },
-    { name: 'Блог', href: 'https://blog.ideav.online/', external: true },
+    { name: 'Блог', href: 'https://blog.ideav.ru/', external: true },
   ]
 
   return (
