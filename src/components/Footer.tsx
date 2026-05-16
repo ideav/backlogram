@@ -41,7 +41,7 @@ export function Footer() {
               <li><Link to="/tokens.html" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Токены</Link></li>
               <li><a href="https://integram.io/terms.html" target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Правила использования</a></li>
               <li><a href="https://rutube.ru/channel/41204904/videos/" target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">RUTUBE</a></li>
-              <li><a href="https://blog.ideav.online/" target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors flex items-center gap-2">Блог <ExternalLink size={12} /></a></li>
+              <li><a href="https://blog.ideav.ru/" target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors flex items-center gap-2">Блог <ExternalLink size={12} /></a></li>
             </ul>
           </div>
 

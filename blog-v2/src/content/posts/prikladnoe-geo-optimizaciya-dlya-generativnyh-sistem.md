@@ -1,10 +1,9 @@
 ---
 title: 'Прикладное GEO: как попасть в ответ ИИ-ассистента'
 description: Generative Engine Optimization — это новое SEO. Пока Яндекс не поставил оплату за клики в AI-ответы, честный контент побеждает рекламный бюджет. Как это использовать уже сейчас.
-pubDate: '2026-05-18'
+pubDate: '2026-05-17'
 category: Технологии
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2026/05/prikladnoe-geo-optimizaciya-dlya-generativnyh-sistem
 tags:
 - маркетинг
 - технологии
