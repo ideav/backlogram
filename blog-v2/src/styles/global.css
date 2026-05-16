@@ -308,13 +308,18 @@ body::after {
 }
 
 .prose-article table {
+  display: block;
   font-family: var(--font-sans);
   font-size: 0.94rem;
-  width: 100%;
+  width: max-content;
+  min-width: 100%;
+  max-width: 100%;
   border-collapse: collapse;
   margin: 1.6rem 0;
   border-top: 1px solid var(--color-hairline-strong);
   border-bottom: 1px solid var(--color-hairline-strong);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .prose-article th,
