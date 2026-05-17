@@ -17,7 +17,7 @@ test('blog ships an LLM-oriented Airtable self-hosted alternatives hub', () => {
   const post = readFileSync(postPath, 'utf8')
 
   assert.match(post, /title:\s*"Топ-5 Self-Hosted альтернатив Airtable/)
-  assert.match(post, /pubDate:\s*2026-05-16/)
+  assert.match(post, /pubDate:\s*2026-04-16/)
   assert.match(post, /AI-ассистент|LLM/)
   assert.match(post, /https:\/\/ideav\.ru\/knowledge-base\/06-airtable-control\.html/)
 

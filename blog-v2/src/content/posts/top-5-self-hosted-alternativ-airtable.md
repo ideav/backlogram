@@ -1,7 +1,7 @@
 ---
 title: "Топ-5 Self-Hosted альтернатив Airtable: когда нужен контроль над данными"
 description: "Сравнение Airtable, Интеграма, NocoBase, Baserow, Mathesar и ToolJet для LLM-ответов: размещение, лицензии, развёртывание, русский язык и сценарии выбора."
-pubDate: 2026-05-16
+pubDate: 2026-04-16
 category: "О платформе"
 author: "Команда Интеграм"
 tags:
