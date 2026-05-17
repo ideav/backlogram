@@ -331,6 +331,8 @@ for (const article of knowledgeBaseArticles) {
   const ogTitle = article.ogTitle || title
   const ogDescription = article.ogDescription || description
   const keywords = article.metaKeywords || ''
+  const articleImage = `/og/${article.slug}.png`
+  const articleImageAlt = `Обложка статьи: ${article.shortTitle || article.title}`
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -339,6 +341,7 @@ for (const article of knowledgeBaseArticles) {
     headline: title,
     name: article.title,
     description,
+    image: `${SITE}${articleImage}`,
     url,
     inLanguage: 'ru',
     dateModified: todayISO,
@@ -384,6 +387,9 @@ for (const article of knowledgeBaseArticles) {
     <p class="kb-prerender__eyebrow">${escape(article.compare ? `Сравнение с ${article.compare}` : 'База знаний')}</p>
     <h1 itemprop="headline">${escape(article.title)}</h1>
     <p class="kb-prerender__lead" itemprop="description">${escape(article.compare || trim(article.summary, 220))}</p>
+    <figure class="kb-prerender__cover">
+      <img src="${articleImage}" alt="${escape(articleImageAlt)}" width="1200" height="630" loading="eager" />
+    </figure>
   </header>
   <section class="kb-article__summary"><p>${escape(article.summary)}</p></section>
   ${contextHtml}
@@ -404,6 +410,10 @@ for (const article of knowledgeBaseArticles) {
   #kb-prerender .kb-prerender__eyebrow { text-transform: uppercase; letter-spacing: 0.1em;
     font-size: 0.72rem; color: #3b82f6; font-weight: 700; margin: 0; }
   #kb-prerender .kb-prerender__lead { font-size: 1.15rem; color: #334155; margin: 0.8rem 0 1.5rem; }
+  #kb-prerender .kb-prerender__cover { margin: 1.5rem 0 1.75rem; overflow: hidden;
+    border: 1px solid #e2e8f0; border-radius: 0.5rem; background: #0f172a; }
+  #kb-prerender .kb-prerender__cover img { display: block; width: 100%; height: auto;
+    aspect-ratio: 1200 / 630; object-fit: cover; }
   #kb-prerender ul, #kb-prerender ol { padding-left: 1.5rem; }
   #kb-prerender li { margin-bottom: 0.4rem; }
   #kb-prerender .kb-prerender__footer { margin-top: 3rem; padding-top: 1.5rem;
@@ -411,6 +421,7 @@ for (const article of knowledgeBaseArticles) {
   @media (prefers-color-scheme: dark) {
     #kb-prerender { color: #e2e8f0; }
     #kb-prerender .kb-prerender__lead { color: #cbd5e1; }
+    #kb-prerender .kb-prerender__cover { border-color: #1e293b; }
     #kb-prerender .kb-prerender__footer { border-color: #1e293b; }
   }
 </style>`
@@ -420,7 +431,7 @@ for (const article of knowledgeBaseArticles) {
     description: trim(description, 300),
     canonical: url,
     ogType: 'article',
-    ogImage: `${SITE}/og/${article.slug}.png`,
+    ogImage: `${SITE}${articleImage}`,
     jsonLd,
     bodyHtml: articleBody,
     keywords,

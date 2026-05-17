@@ -77,9 +77,13 @@ export default function KnowledgeBaseArticle() {
     const description = article.seoDescription ?? article.metaDescription ?? article.summary
     const ogTitle = article.ogTitle ?? pageTitle
     const ogDescription = article.ogDescription ?? description
+    const origin =
+      typeof window !== 'undefined' ? window.location.origin : 'https://ideav.ru'
+    const articleOgImage = `/og/${article.slug}.png`
+    const absoluteArticleOgImage = `${origin}${articleOgImage}`
     const canonicalUrl =
       typeof window !== 'undefined'
-        ? `${window.location.origin}/knowledge-base/${article.slug}.html`
+        ? `${origin}/knowledge-base/${article.slug}.html`
         : `/knowledge-base/${article.slug}.html`
 
     document.title = pageTitle
@@ -93,17 +97,19 @@ export default function KnowledgeBaseArticle() {
     setMetaTag('meta[property="og:title"]', 'property', 'og:title', ogTitle)
     setMetaTag('meta[property="og:description"]', 'property', 'og:description', ogDescription)
     setMetaTag('meta[property="og:url"]', 'property', 'og:url', canonicalUrl)
+    setMetaTag('meta[property="og:image"]', 'property', 'og:image', absoluteArticleOgImage)
+    setMetaTag('meta[property="og:image:width"]', 'property', 'og:image:width', '1200')
+    setMetaTag('meta[property="og:image:height"]', 'property', 'og:image:height', '630')
     setMetaTag('meta[property="og:site_name"]', 'property', 'og:site_name', 'Интеграм')
     setMetaTag('meta[property="og:locale"]', 'property', 'og:locale', 'ru_RU')
 
     setMetaTag('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary_large_image')
     setMetaTag('meta[name="twitter:title"]', 'name', 'twitter:title', ogTitle)
     setMetaTag('meta[name="twitter:description"]', 'name', 'twitter:description', ogDescription)
+    setMetaTag('meta[name="twitter:image"]', 'name', 'twitter:image', absoluteArticleOgImage)
 
     setCanonical(canonicalUrl)
 
-    const origin =
-      typeof window !== 'undefined' ? window.location.origin : 'https://ideav.ru'
     const knowledgeBaseUrl = `${origin}/knowledge-base.html`
 
     setJsonLd('article', {
@@ -112,6 +118,7 @@ export default function KnowledgeBaseArticle() {
       headline: article.title,
       name: article.title,
       description,
+      image: absoluteArticleOgImage,
       inLanguage: 'ru-RU',
       url: canonicalUrl,
       mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
@@ -184,6 +191,7 @@ export default function KnowledgeBaseArticle() {
     .filter((a): a is NonNullable<typeof a> => Boolean(a))
 
   const differenceDetailed = article.integramDifferenceDetailed
+  const articleOgImage = `/og/${article.slug}.png`
 
   return (
     <div className="overflow-hidden wrap-anywhere">
@@ -215,6 +223,17 @@ export default function KnowledgeBaseArticle() {
             <p className="text-lg text-slate-500 dark:text-slate-400 leading-relaxed">
               {article.summary}
             </p>
+            <figure className="mt-8 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-950 shadow-sm">
+              <img
+                src={articleOgImage}
+                alt={`Обложка статьи: ${article.shortTitle}`}
+                width={1200}
+                height={630}
+                className="block aspect-[1200/630] w-full object-cover"
+                loading="eager"
+                decoding="async"
+              />
+            </figure>
           </motion.header>
 
           <section className="mb-12">
