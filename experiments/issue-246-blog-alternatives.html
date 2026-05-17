@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>Issue 246: blog design alternatives</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: #dfe5eb;
+        color: #18212c;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #dfe5eb;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .screen {
+        width: 1440px;
+        min-height: 1024px;
+        margin: 0 auto 48px;
+        overflow: hidden;
+      }
+
+      .topline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 750;
+      }
+
+      .mark {
+        display: grid;
+        width: 40px;
+        height: 40px;
+        place-items: center;
+        border-radius: 8px;
+        font-weight: 850;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+      }
+
+      .nav a,
+      .pill,
+      .button,
+      .chip {
+        border-radius: 8px;
+        white-space: nowrap;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 0 16px;
+        font-weight: 700;
+      }
+
+      .eyebrow {
+        font-size: 12px;
+        font-weight: 760;
+        text-transform: uppercase;
+        letter-spacing: 0;
+      }
+
+      .title {
+        margin: 0;
+        font-weight: 790;
+        line-height: 1.03;
+      }
+
+      .lead {
+        margin: 0;
+        font-size: 20px;
+        line-height: 1.55;
+      }
+
+      .card {
+        border-radius: 8px;
+      }
+
+      .product-newsroom {
+        background: #f6f8fb;
+        color: #172033;
+        padding: 36px 56px 56px;
+      }
+
+      .product-newsroom .mark {
+        background: #1447e6;
+        color: #ffffff;
+      }
+
+      .product-newsroom .nav a {
+        padding: 10px 12px;
+        color: #596577;
+      }
+
+      .product-newsroom .nav a.active {
+        background: #e6edff;
+        color: #1447e6;
+      }
+
+      .product-newsroom .button {
+        background: #172033;
+        color: #ffffff;
+      }
+
+      .product-hero {
+        display: grid;
+        grid-template-columns: 1fr 460px;
+        gap: 42px;
+        margin-top: 56px;
+        align-items: stretch;
+      }
+
+      .product-hero h1 {
+        max-width: 760px;
+        font-size: 66px;
+      }
+
+      .product-hero .lead {
+        max-width: 680px;
+        margin-top: 24px;
+        color: #4b5a6c;
+      }
+
+      .searchbar {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 10px;
+        max-width: 780px;
+        margin-top: 34px;
+        padding: 8px;
+        background: #ffffff;
+        border: 1px solid #d9e1ec;
+        border-radius: 8px;
+        box-shadow: 0 18px 48px rgba(17, 24, 39, 0.08);
+      }
+
+      .searchbar .input {
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        min-height: 50px;
+        color: #6a7585;
+      }
+
+      .searchbar .pill {
+        display: flex;
+        align-items: center;
+        padding: 0 14px;
+        background: #eef6f3;
+        color: #17745d;
+        font-weight: 700;
+      }
+
+      .product-panel {
+        background: #ffffff;
+        border: 1px solid #dbe3ee;
+        padding: 18px;
+        box-shadow: 0 24px 80px rgba(23, 32, 51, 0.12);
+      }
+
+      .panel-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 8px 16px;
+      }
+
+      .traffic {
+        display: flex;
+        gap: 6px;
+      }
+
+      .traffic span {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+      }
+
+      .traffic span:nth-child(1) {
+        background: #ef4444;
+      }
+
+      .traffic span:nth-child(2) {
+        background: #f59e0b;
+      }
+
+      .traffic span:nth-child(3) {
+        background: #10b981;
+      }
+
+      .workflow {
+        display: grid;
+        gap: 10px;
+      }
+
+      .workflow-row {
+        display: grid;
+        grid-template-columns: 32px 1fr auto;
+        gap: 12px;
+        align-items: center;
+        padding: 14px;
+        border: 1px solid #e4ebf4;
+        border-radius: 8px;
+        background: #fbfcfe;
+      }
+
+      .workflow-icon {
+        display: grid;
+        width: 32px;
+        height: 32px;
+        place-items: center;
+        border-radius: 8px;
+        background: #e6edff;
+        color: #1447e6;
+        font-weight: 800;
+      }
+
+      .workflow-title {
+        font-weight: 760;
+      }
+
+      .workflow-meta {
+        margin-top: 3px;
+        font-size: 13px;
+        color: #66758a;
+      }
+
+      .status {
+        padding: 6px 8px;
+        border-radius: 8px;
+        background: #eaf7f1;
+        color: #157051;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .article-grid {
+        display: grid;
+        grid-template-columns: 1.35fr 1fr 1fr;
+        gap: 18px;
+        margin-top: 52px;
+      }
+
+      .article-card {
+        min-height: 236px;
+        padding: 24px;
+        background: #ffffff;
+        border: 1px solid #dde5f0;
+        box-shadow: 0 16px 40px rgba(23, 32, 51, 0.06);
+      }
+
+      .article-card.featured {
+        background: #172033;
+        color: #ffffff;
+      }
+
+      .article-card .meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 26px;
+        color: #748096;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .article-card.featured .meta {
+        color: #b5c2d6;
+      }
+
+      .article-card h2,
+      .article-card h3 {
+        margin: 0;
+        line-height: 1.17;
+      }
+
+      .article-card h2 {
+        font-size: 34px;
+      }
+
+      .article-card h3 {
+        font-size: 22px;
+      }
+
+      .article-card p {
+        margin: 18px 0 0;
+        color: #586579;
+        line-height: 1.5;
+      }
+
+      .article-card.featured p {
+        color: #d7deea;
+      }
+
+      .knowledge-hub {
+        display: grid;
+        grid-template-columns: 276px 1fr;
+        background: #f9faf8;
+        color: #17201d;
+      }
+
+      .knowledge-sidebar {
+        padding: 34px 24px;
+        background: #ffffff;
+        border-right: 1px solid #dde5df;
+      }
+
+      .knowledge-sidebar .mark {
+        background: #103d35;
+        color: #a7f3d0;
+      }
+
+      .side-nav {
+        display: grid;
+        gap: 8px;
+        margin-top: 36px;
+      }
+
+      .side-nav a {
+        padding: 12px 14px;
+        border-radius: 8px;
+        color: #58645f;
+        font-weight: 680;
+      }
+
+      .side-nav a.active {
+        background: #e7f7ef;
+        color: #103d35;
+      }
+
+      .sidebar-footer {
+        position: absolute;
+        bottom: 34px;
+        width: 228px;
+        padding: 16px;
+        border-radius: 8px;
+        background: #f2f5f3;
+        color: #52605a;
+        line-height: 1.45;
+      }
+
+      .knowledge-main {
+        padding: 34px 46px 48px;
+      }
+
+      .knowledge-toolbar {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .knowledge-search {
+        display: flex;
+        align-items: center;
+        min-height: 48px;
+        padding: 0 16px;
+        border: 1px solid #dce5df;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #6f7d77;
+      }
+
+      .knowledge-toolbar .chip {
+        padding: 13px 14px;
+        background: #ffffff;
+        border: 1px solid #dce5df;
+        color: #40524a;
+        font-weight: 720;
+      }
+
+      .knowledge-hero {
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 26px;
+        margin-top: 42px;
+      }
+
+      .knowledge-hero-block {
+        padding: 34px;
+        border: 1px solid #d8e5dd;
+        background: #ffffff;
+      }
+
+      .knowledge-hero h1 {
+        max-width: 690px;
+        font-size: 54px;
+      }
+
+      .knowledge-hero .lead {
+        max-width: 720px;
+        margin-top: 20px;
+        color: #566761;
+      }
+
+      .quick-answer {
+        padding: 28px;
+        background: #103d35;
+        color: #ffffff;
+      }
+
+      .quick-answer h2 {
+        margin: 22px 0 12px;
+        font-size: 26px;
+        line-height: 1.18;
+      }
+
+      .quick-answer p {
+        color: #cce9dc;
+        line-height: 1.5;
+      }
+
+      .knowledge-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 330px;
+        gap: 18px;
+        margin-top: 22px;
+      }
+
+      .resource-card,
+      .popular-card {
+        padding: 24px;
+        border: 1px solid #dbe5df;
+        background: #ffffff;
+      }
+
+      .resource-card h3,
+      .popular-card h3 {
+        margin: 18px 0 10px;
+        font-size: 24px;
+        line-height: 1.2;
+      }
+
+      .resource-card p {
+        color: #5f6d68;
+        line-height: 1.52;
+      }
+
+      .resource-card .chip {
+        display: inline-flex;
+        padding: 7px 9px;
+        background: #ecf7f2;
+        color: #0f6b51;
+        font-size: 12px;
+        font-weight: 760;
+      }
+
+      .popular-list {
+        display: grid;
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .popular-list a {
+        display: grid;
+        grid-template-columns: 24px 1fr;
+        gap: 12px;
+        line-height: 1.35;
+      }
+
+      .popular-list span:first-child {
+        color: #0f6b51;
+        font-weight: 800;
+      }
+
+      .executive-digest {
+        background: #171a1f;
+        color: #f7f4ed;
+        padding: 36px 56px 56px;
+      }
+
+      .executive-digest .mark {
+        background: #f7f4ed;
+        color: #171a1f;
+      }
+
+      .executive-digest .nav a {
+        padding: 10px 12px;
+        color: #aeb7bd;
+      }
+
+      .executive-digest .nav a.active {
+        background: #2d342f;
+        color: #b8f18b;
+      }
+
+      .executive-digest .button {
+        background: #b8f18b;
+        color: #162013;
+      }
+
+      .digest-hero {
+        display: grid;
+        grid-template-columns: 1fr 430px;
+        gap: 34px;
+        margin-top: 48px;
+      }
+
+      .digest-copy {
+        padding: 48px;
+        background: #20242a;
+        border: 1px solid #323940;
+      }
+
+      .digest-copy h1 {
+        max-width: 760px;
+        font-size: 62px;
+      }
+
+      .digest-copy .lead {
+        max-width: 660px;
+        margin-top: 22px;
+        color: #cad1d5;
+      }
+
+      .digest-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 30px;
+      }
+
+      .digest-actions .ghost {
+        background: transparent;
+        color: #f7f4ed;
+        border: 1px solid #4c555d;
+      }
+
+      .signal-panel {
+        display: grid;
+        gap: 16px;
+      }
+
+      .signal-card {
+        padding: 22px;
+        background: #f7f4ed;
+        color: #171a1f;
+      }
+
+      .signal-value {
+        font-size: 46px;
+        font-weight: 820;
+      }
+
+      .signal-label {
+        margin-top: 6px;
+        color: #58605c;
+      }
+
+      .bar-stack {
+        display: grid;
+        gap: 8px;
+        margin-top: 18px;
+      }
+
+      .bar {
+        height: 10px;
+        border-radius: 8px;
+        background: #e8e1d5;
+        overflow: hidden;
+      }
+
+      .bar span {
+        display: block;
+        height: 100%;
+        border-radius: 8px;
+      }
+
+      .bar:nth-child(1) span {
+        width: 86%;
+        background: #37d0c2;
+      }
+
+      .bar:nth-child(2) span {
+        width: 64%;
+        background: #b8f18b;
+      }
+
+      .bar:nth-child(3) span {
+        width: 48%;
+        background: #ffb454;
+      }
+
+      .digest-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 1fr;
+        gap: 18px;
+        margin-top: 22px;
+      }
+
+      .digest-card {
+        padding: 24px;
+        min-height: 246px;
+        background: #20242a;
+        border: 1px solid #323940;
+      }
+
+      .digest-card h2,
+      .digest-card h3 {
+        margin: 18px 0 12px;
+        line-height: 1.17;
+      }
+
+      .digest-card h2 {
+        font-size: 36px;
+      }
+
+      .digest-card h3 {
+        font-size: 24px;
+      }
+
+      .digest-card p {
+        margin: 0;
+        color: #bbc4c8;
+        line-height: 1.5;
+      }
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 26px;
+      }
+
+      .tag-row .chip {
+        padding: 7px 9px;
+        background: #2b3036;
+        color: #d8dee1;
+        font-size: 12px;
+        font-weight: 760;
+      }
+    </style>
+  </head>
+  <body>
+    <section
+      id="product-newsroom"
+      class="screen product-newsroom"
+      data-screenshot="product-newsroom"
+      aria-label="Product newsroom alternative"
+    >
+      <header class="topline">
+        <a class="brand" href="#">
+          <span class="mark">I</span>
+          <span>Блог Интеграм</span>
+        </a>
+        <nav class="nav" aria-label="Основная навигация">
+          <a class="active" href="#">Все статьи</a>
+          <a href="#">О платформе</a>
+          <a href="#">Технологии</a>
+          <a href="#">Кейсы</a>
+          <a href="#">RSS</a>
+        </nav>
+        <a class="button" href="#">Открыть Интеграм</a>
+      </header>
+
+      <main>
+        <div class="product-hero">
+          <div>
+            <div class="eyebrow" style="color: #1447e6">Практика no-code и данных</div>
+            <h1 class="title">Современный продуктовый блог для команд, которые строят учетные системы</h1>
+            <p class="lead">
+              Больше похоже на центр продукта: быстрый поиск, понятные рубрики, свежие разборы и статьи,
+              которые сразу ведут к решению задачи.
+            </p>
+            <div class="searchbar" aria-label="Поиск по блогу">
+              <div class="input">Поиск по темам, статьям и сценариям</div>
+              <div class="pill">self-hosted</div>
+              <a class="button" href="#">Найти</a>
+            </div>
+          </div>
+
+          <aside class="product-panel card" aria-label="Сводка свежих тем">
+            <div class="panel-toolbar">
+              <div class="traffic" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="eyebrow" style="color: #66758a">Последние материалы</div>
+            </div>
+            <div class="workflow">
+              <div class="workflow-row">
+                <div class="workflow-icon">01</div>
+                <div>
+                  <div class="workflow-title">AI-ответы и GEO</div>
+                  <div class="workflow-meta">Технологии · 6 мин чтения</div>
+                </div>
+                <span class="status">новое</span>
+              </div>
+              <div class="workflow-row">
+                <div class="workflow-icon">02</div>
+                <div>
+                  <div class="workflow-title">Self-hosted вместо Airtable</div>
+                  <div class="workflow-meta">О платформе · сравнение</div>
+                </div>
+                <span class="status">хаб</span>
+              </div>
+              <div class="workflow-row">
+                <div class="workflow-icon">03</div>
+                <div>
+                  <div class="workflow-title">On-premise в контуре</div>
+                  <div class="workflow-meta">Безопасность · гайд</div>
+                </div>
+                <span class="status">гайд</span>
+              </div>
+              <div class="workflow-row">
+                <div class="workflow-icon">04</div>
+                <div>
+                  <div class="workflow-title">Рабочие места без кода</div>
+                  <div class="workflow-meta">Процессы · практика</div>
+                </div>
+                <span class="status">кейс</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <section class="article-grid" aria-label="Подборка статей">
+          <a class="article-card featured card" href="#">
+            <div class="meta">Технологии · 17 мая 2026</div>
+            <h2>Прикладное GEO: как попасть в ответ ИИ-ассистента</h2>
+            <p>Что меняется в поиске, какие форматы читают модели и как готовить статьи для AI-выдачи.</p>
+          </a>
+          <a class="article-card card" href="#">
+            <div class="meta">О платформе · 16 мая 2026</div>
+            <h3>Топ-5 Self-Hosted альтернатив Airtable</h3>
+            <p>Сравнение размещения, лицензий, API и сценариев выбора.</p>
+          </a>
+          <a class="article-card card" href="#">
+            <div class="meta">О платформе · 14 мая 2026</div>
+            <h3>Интеграм on-premise: установка в контуре заказчика</h3>
+            <p>Docker, закрытый контур, LDAP и регламенты эксплуатации.</p>
+          </a>
+        </section>
+      </main>
+    </section>
+
+    <section
+      id="knowledge-hub"
+      class="screen knowledge-hub"
+      data-screenshot="knowledge-hub"
+      aria-label="Knowledge hub alternative"
+    >
+      <aside class="knowledge-sidebar" style="position: relative">
+        <a class="brand" href="#">
+          <span class="mark">I</span>
+          <span>Интеграм Блог</span>
+        </a>
+        <nav class="side-nav" aria-label="Разделы">
+          <a class="active" href="#">Обзор</a>
+          <a href="#">О платформе</a>
+          <a href="#">Технологии</a>
+          <a href="#">Обучение</a>
+          <a href="#">Проекты</a>
+          <a href="#">Архив</a>
+        </nav>
+        <div class="sidebar-footer">
+          Статьи сгруппированы как база знаний: читатель быстро выбирает задачу, а не выпуск журнала.
+        </div>
+      </aside>
+
+      <main class="knowledge-main">
+        <div class="knowledge-toolbar">
+          <div class="knowledge-search">Поиск: Airtable, on-premise, отчеты, API</div>
+          <a class="chip" href="#">Все теги</a>
+          <a class="chip" href="#">RSS</a>
+        </div>
+
+        <section class="knowledge-hero">
+          <div class="knowledge-hero-block card">
+            <div class="eyebrow" style="color: #0f6b51">Центр знаний</div>
+            <h1 class="title">Статьи Интеграм как навигация по рабочим задачам</h1>
+            <p class="lead">
+              Вариант убирает журнальную подачу и делает блог похожим на полезный справочник:
+              больше структуры, меньше декоративности, быстрее путь к ответу.
+            </p>
+          </div>
+
+          <aside class="quick-answer card">
+            <div class="eyebrow" style="color: #a7f3d0">Короткий ответ</div>
+            <h2>Когда нужен self-hosted?</h2>
+            <p>
+              Если данные нельзя выпускать за периметр, нужны свои регламенты доступа,
+              локальная инфраструктура или интерфейсы под конкретный процесс.
+            </p>
+          </aside>
+        </section>
+
+        <section class="knowledge-grid" aria-label="Основные материалы">
+          <a class="resource-card card" href="#">
+            <span class="chip">Сравнение</span>
+            <h3>Self-Hosted альтернативы Airtable</h3>
+            <p>Таблицы, лицензии, API, ограничения и ситуации, когда лучше выбирать локальный контур.</p>
+          </a>
+          <a class="resource-card card" href="#">
+            <span class="chip">Гайд</span>
+            <h3>Интеграм on-premise</h3>
+            <p>Как выглядит установка, что происходит без интернета и какие интеграции нужны ИБ.</p>
+          </a>
+          <aside class="popular-card card">
+            <div class="eyebrow" style="color: #0f6b51">Популярное</div>
+            <h3>Быстрый доступ</h3>
+            <div class="popular-list">
+              <a href="#"><span>1</span><span>Первый российский аналог Airtable</span></a>
+              <a href="#"><span>2</span><span>Конструктор финансовых моделей no-code</span></a>
+              <a href="#"><span>3</span><span>Единая база данных для филиалов</span></a>
+              <a href="#"><span>4</span><span>Отчеты и информационные табло</span></a>
+            </div>
+          </aside>
+        </section>
+      </main>
+    </section>
+
+    <section
+      id="executive-digest"
+      class="screen executive-digest"
+      data-screenshot="executive-digest"
+      aria-label="Executive digest alternative"
+    >
+      <header class="topline">
+        <a class="brand" href="#">
+          <span class="mark">I</span>
+          <span>Блог Интеграм</span>
+        </a>
+        <nav class="nav" aria-label="Навигация">
+          <a class="active" href="#">Дайджест</a>
+          <a href="#">Кейсы</a>
+          <a href="#">Решения</a>
+          <a href="#">Технологии</a>
+          <a href="#">Контакты</a>
+        </nav>
+        <a class="button" href="#">Подписаться</a>
+      </header>
+
+      <main>
+        <section class="digest-hero">
+          <div class="digest-copy card">
+            <div class="eyebrow" style="color: #b8f18b">Для руководителей и владельцев процессов</div>
+            <h1 class="title">Деловой дайджест о данных, контроле и автоматизации</h1>
+            <p class="lead">
+              Блог выглядит как регулярная аналитическая рассылка: короткая повестка, понятные сигналы,
+              статьи по влиянию на бизнес и быстрый переход к внедрению.
+            </p>
+            <div class="digest-actions">
+              <a class="button" href="#">Читать свежий выпуск</a>
+              <a class="button ghost" href="#">Смотреть все темы</a>
+            </div>
+          </div>
+
+          <aside class="signal-panel">
+            <div class="signal-card card">
+              <div class="eyebrow" style="color: #476056">Свежий сигнал</div>
+              <div class="signal-value">53</div>
+              <div class="signal-label">материала в архиве продукта</div>
+              <div class="bar-stack" aria-hidden="true">
+                <div class="bar"><span></span></div>
+                <div class="bar"><span></span></div>
+                <div class="bar"><span></span></div>
+              </div>
+            </div>
+            <div class="signal-card card">
+              <div class="eyebrow" style="color: #476056">Фокус недели</div>
+              <div style="margin-top: 18px; font-size: 26px; line-height: 1.18; font-weight: 800">
+                AI-поиск, self-hosted и контроль данных
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="digest-grid" aria-label="Статьи дайджеста">
+          <a class="digest-card card" href="#">
+            <div class="eyebrow" style="color: #37d0c2">Новый разбор</div>
+            <h2>Прикладное GEO: как попасть в ответ ИИ-ассистента</h2>
+            <p>Коротко о том, как меняется органический спрос и почему структурные статьи важнее рекламной витрины.</p>
+            <div class="tag-row">
+              <span class="chip">маркетинг</span>
+              <span class="chip">технологии</span>
+              <span class="chip">AI</span>
+            </div>
+          </a>
+          <a class="digest-card card" href="#">
+            <div class="eyebrow" style="color: #b8f18b">Выбор платформы</div>
+            <h3>Self-hosted вместо Airtable</h3>
+            <p>Что проверить перед миграцией: хранение, роли, интеграции, лицензии и стоимость владения.</p>
+            <div class="tag-row">
+              <span class="chip">Airtable</span>
+              <span class="chip">контур</span>
+            </div>
+          </a>
+          <a class="digest-card card" href="#">
+            <div class="eyebrow" style="color: #ffb454">Инфраструктура</div>
+            <h3>On-premise: установка в контуре заказчика</h3>
+            <p>Docker, работа без интернета, LDAP, JWT и эксплуатация в закрытой инфраструктуре.</p>
+            <div class="tag-row">
+              <span class="chip">ИБ</span>
+              <span class="chip">LDAP</span>
+            </div>
+          </a>
+        </section>
+      </main>
+    </section>
+  </body>
+</html>
