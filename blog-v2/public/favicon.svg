@@ -1,15 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" fill="#F6F1E6"/>
-  <rect x="0" y="0" width="64" height="6" fill="#C8392B"/>
-  <text
-    x="50%"
-    y="58%"
-    text-anchor="middle"
-    dominant-baseline="central"
-    font-family="Charter, Georgia, serif"
-    font-style="italic"
-    font-weight="500"
-    font-size="44"
-    fill="#1B1A17"
-  >и</text>
-</svg>
+<svg width="100" height="100" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="#307FE2" d="M0 0h100v100H0z"/><path d="M57.013 38.518l-4.038 4.24 6.903 7.24L37.392 73.34 8.858 64.344V35.656l28.534-8.996 5.165 5.486 4.084-4.19L39.101 20 3 31.38v37.24L39.101 80 68 49.998l-10.987-11.48z" fill="#fff"/><path d="M42.982 61.482l4.043-4.24-6.903-7.24L62.603 26.66l28.539 8.996v28.688L62.603 73.34l-5.174-5.5-4.084 4.195L60.899 80 97 68.624V31.38L60.899 20 32 50.002l10.982 11.48z" fill="#fff"/></svg>
