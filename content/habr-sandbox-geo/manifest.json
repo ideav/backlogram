@@ -1,0 +1,13 @@
+{
+  "pipeline": "habr-sandbox-geo",
+  "sourceCollection": "blog-v2",
+  "sourceArticle": "prikladnoe-geo-optimizaciya-dlya-generativnyh-sistem",
+  "sourceUrl": "https://blog.ideav.ru/posts/prikladnoe-geo-optimizaciya-dlya-generativnyh-sistem/",
+  "format": "habr_sandbox_article",
+  "targetPlatforms": ["Habr"],
+  "status": "author_review",
+  "updatedAt": "2026-05-18",
+  "draftOwner": "author",
+  "draftPath": "drafts/prikladnoe-geo-optimizaciya-dlya-generativnyh-sistem.md",
+  "editorialGoal": "Rewrite the short GEO blog post into a useful Habr sandbox article with technical depth, fact-check notes, and minimal promotion."
+}
