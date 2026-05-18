@@ -1,12 +1,11 @@
 ---
 import { getCollection } from 'astro:content'
 import BaseLayout from '../layouts/BaseLayout.astro'
-import TagCloud from '../components/TagCloud.astro'
-import { categorySlug } from '../lib/categories'
+import { categorySlug, getAllCategories } from '../lib/categories'
 
 const allPosts = await getCollection('posts', ({ data }) => !data.draft)
+const categories = await getAllCategories()
 
-// Stable issue numbers: oldest = 001, newest = highest
 const ascending = [...allPosts].sort(
   (a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf()
 )
@@ -15,13 +14,13 @@ const numbered = ascending.map((post, i) => ({
   issueNumber: String(i + 1).padStart(3, '0'),
 }))
 
-// Display newest first
 const display = [...numbered].sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 )
 
-const featured = display[0]
-const rest = display.slice(1)
+const latest = display.slice(0, 4)
+const cards = display.slice(0, 3)
+const archive = display.slice(3)
 
 function formatDate(d: Date): string {
   return d
@@ -29,154 +28,165 @@ function formatDate(d: Date): string {
     .replace(' г.', '')
 }
 
-function readingTime(post: typeof allPosts[number]): number {
+function readingTime(post: typeof numbered[number]): number {
   return Math.max(1, Math.round(post.body!.length / 1100))
+}
+
+function statusLabel(index: number): string {
+  if (index === 0) return 'новое'
+  if (index === 1) return 'хаб'
+  if (index === 2) return 'гайд'
+  return 'кейс'
 }
 ---
 
 <BaseLayout
-  title="Блог Интеграм — журнал о no-code, данных и учётных системах"
-  description="Истории внедрений, технические заметки и практика no-code. Команда Интеграм пишет о том, как делать учётные системы без программирования."
+  title="Блог Интеграм — продуктовый блог о no-code, данных и учетных системах"
+  description="Практические статьи Интеграма о no-code, данных, self-hosted размещении, автоматизации и учетных системах."
 >
-  <!-- Masthead / opening editorial block -->
-  <section class="max-w-[78rem] mx-auto px-6 lg:px-12 pt-14 pb-20 border-b border-[var(--color-hairline)]">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-x-10">
-      <div class="lg:col-span-2 mb-6 lg:mb-0">
-        <div class="eyebrow text-[var(--color-vermilion)]">Эссе и&nbsp;заметки</div>
-        <div class="eyebrow text-[var(--color-ink-faint)] mt-1.5">№&nbsp;{display.length.toString().padStart(3, '0')} выпусков</div>
-      </div>
-      <div class="lg:col-span-10">
-        <h1
-          class="font-[family-name:var(--font-serif)] text-[2.4rem] sm:text-[3.4rem] lg:text-[4.4rem] leading-[0.95] tracking-[-0.024em] text-[var(--color-ink)]"
-          style="font-variation-settings: 'opsz' 144, 'SOFT' 30; font-weight: 500;"
-        >
-          О&nbsp;структуре данных, <span class="italic font-normal text-[var(--color-vermilion)]">правах</span>,<br />
-          истории изменений и&nbsp;о&nbsp;том, как делать <span class="italic font-normal">учётные системы</span> без программистов.
-        </h1>
-        <p class="mt-7 max-w-2xl text-[var(--color-ink-soft)] text-lg leading-relaxed">
-          Команда конструктора <a href="https://ideav.ru" class="text-[var(--color-ink)] link-swipe">Интеграм</a> ведёт этот журнал четвёртый год. Здесь — практика, провальные внедрения, разборы инструментов и&nbsp;медленные мысли о&nbsp;том, куда движется no-code.
-        </p>
-      </div>
-    </div>
-  </section>
+  <main class="product-newsroom">
+    <div class="product-container">
+      <section class="product-hero" aria-labelledby="product-newsroom-title">
+        <div>
+          <div class="eyebrow text-[var(--color-product-blue)]">Практика no-code и данных</div>
+          <h1 id="product-newsroom-title" class="product-hero-title">
+            Современный продуктовый блог для команд, которые строят учетные системы
+          </h1>
+          <p class="product-lead">
+            Больше похоже на центр продукта: быстрый поиск, понятные рубрики, свежие
+            разборы и статьи, которые сразу ведут к решению задачи.
+          </p>
 
-  {featured && (
-    <!-- Featured article: big editorial block, no photo -->
-    <section class="max-w-[78rem] mx-auto px-6 lg:px-12 pt-14 pb-16 border-b border-[var(--color-hairline)]">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-x-10">
-        <aside class="lg:col-span-2 mb-6 lg:mb-0">
-          <div class="eyebrow text-[var(--color-vermilion)]">Свежий выпуск</div>
-          <div
-            class="issue-number text-[var(--color-ink)] mt-2"
-            style="font-size: 3.6rem; line-height: 1; font-weight: 500;"
-          >
-            №&nbsp;{featured.issueNumber}
+          <form class="product-searchbar" action="/search/" method="get" role="search">
+            <label class="sr-only" for="home-blog-search">Поиск по блогу</label>
+            <input
+              id="home-blog-search"
+              type="search"
+              name="q"
+              placeholder="Поиск по темам, статьям и сценариям"
+            />
+            <a class="product-search-chip" href="/search/?q=self-hosted">self-hosted</a>
+            <button class="product-button" type="submit">Найти</button>
+          </form>
+        </div>
+
+        <aside class="product-panel" aria-label="Сводка свежих материалов">
+          <div class="product-panel-toolbar">
+            <div class="product-traffic" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="eyebrow text-[var(--color-ink-faint)]">Последние материалы</div>
           </div>
-          <div class="eyebrow text-[var(--color-ink-faint)] mt-3">{formatDate(featured.data.pubDate)}</div>
-          <div class="eyebrow text-[var(--color-ink-faint)] mt-1">{readingTime(featured)}&nbsp;мин чтения</div>
-          <div class="eyebrow text-[var(--color-vermilion)] mt-3">
-            <a href={`/category/${categorySlug(featured.data.category)}/`} class="link-swipe">{featured.data.category}</a>
-          </div>
+
+          {latest.length > 0 ? (
+            <div class="product-latest-list">
+              {latest.map((post, index) => (
+                <a class="product-latest-row" href={`/posts/${post.id}/`}>
+                  <span class="product-latest-index">{String(index + 1).padStart(2, '0')}</span>
+                  <span>
+                    <span class="product-latest-title">{post.data.title}</span>
+                    <span class="product-latest-meta">
+                      {post.data.category} · {readingTime(post)} мин чтения
+                    </span>
+                  </span>
+                  <span class="product-status">{statusLabel(index)}</span>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <p class="text-[var(--color-ink-soft)]">Материалы скоро появятся.</p>
+          )}
         </aside>
+      </section>
 
-        <div class="lg:col-span-10">
-          <a href={`/posts/${featured.id}/`} class="group block">
-            <h2
-              class="font-[family-name:var(--font-serif)] text-[1.5rem] sm:text-[2.25rem] lg:text-[2.7rem] leading-[1.05] tracking-[-0.02em] text-[var(--color-ink)] group-hover:text-[var(--color-vermilion)] transition-colors"
-              style="font-variation-settings: 'opsz' 144, 'SOFT' 30; font-weight: 500;"
+      {cards.length > 0 && (
+        <section class="product-card-grid" aria-label="Подборка статей">
+          {cards.map((post, index) => (
+            <a
+              class={`product-article-card ${index === 0 ? 'featured' : ''}`}
+              href={`/posts/${post.id}/`}
             >
-              {featured.data.title}
-            </h2>
-            <p class="mt-7 max-w-3xl body-serif text-xl leading-[1.55] text-[var(--color-ink-soft)]">
-              {featured.data.description}
-            </p>
-            <div class="mt-7 inline-flex items-baseline gap-3 eyebrow text-[var(--color-vermilion)]">
-              <span class="link-swipe">Читать целиком</span>
-              <span aria-hidden="true">→</span>
+              <div>
+                <div class="meta">{post.data.category} · {formatDate(post.data.pubDate)}</div>
+                {index === 0 ? (
+                  <h2>{post.data.title}</h2>
+                ) : (
+                  <h3>{post.data.title}</h3>
+                )}
+                <p>{post.data.description}</p>
+              </div>
+              <span class="mt-8 text-sm font-bold">
+                № {post.issueNumber} · {readingTime(post)} мин
+              </span>
+            </a>
+          ))}
+        </section>
+      )}
+    </div>
+
+    <section class="product-section">
+      <div class="product-container">
+        <div class="product-section-heading">
+          <div>
+            <div class="eyebrow text-[var(--color-product-blue)]">Рубрики</div>
+            <div class="mt-1 text-sm text-[var(--color-ink-faint)]">
+              {categories.length} разделов
             </div>
-          </a>
+          </div>
+          <div>
+            <h2>Быстрый переход к практическим темам</h2>
+            <div class="product-pill-row mt-5">
+              {categories.map((category) => (
+                <a class="product-pill" href={`/category/${category.slug}/`}>
+                  {category.name}
+                  <span class="ml-2 text-[var(--color-ink-faint)]">{category.count}</span>
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
-  )}
 
-  <section class="max-w-[78rem] mx-auto px-6 lg:px-12">
-    <TagCloud variant="cloud" />
-  </section>
+    {archive.length > 0 && (
+      <section class="product-section">
+        <div class="product-container">
+          <div class="product-section-heading">
+            <div class="eyebrow text-[var(--color-product-blue)]">Архив</div>
+            <h2>Все материалы</h2>
+          </div>
 
-  {rest.length > 0 && (
-    <!-- Index: contents page style. No images. Hover reveals excerpt. -->
-    <section class="max-w-[78rem] mx-auto px-6 lg:px-12 pt-14 pb-24">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-x-10 mb-10">
-        <div class="lg:col-span-2">
-          <div class="eyebrow text-[var(--color-vermilion)]">Содержание</div>
+          <ol class="product-list">
+            {archive.map((post) => (
+              <li class="card-container product-list-row">
+                <div>
+                  <div class="issue-number text-[var(--color-product-blue)] text-xl font-bold">
+                    № {post.issueNumber}
+                  </div>
+                  <div class="mt-2 text-sm text-[var(--color-ink-faint)]">
+                    {formatDate(post.data.pubDate)}
+                  </div>
+                </div>
+
+                <div>
+                  <div class="card-overlay-above mb-2 text-sm font-bold text-[var(--color-product-blue)]">
+                    <a class="link-swipe" href={`/category/${categorySlug(post.data.category)}/`}>
+                      {post.data.category}
+                    </a>
+                  </div>
+                  <h3 class="product-list-title">
+                    <a class="card-link" href={`/posts/${post.id}/`}>{post.data.title}</a>
+                  </h3>
+                  <p>{post.data.description}</p>
+                </div>
+
+                <div class="text-sm text-[var(--color-ink-faint)] md:text-right">
+                  <div>{post.data.author}</div>
+                  <div class="mt-2">{readingTime(post)} мин чтения</div>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
-        <div class="lg:col-span-10">
-          <h2
-            class="font-[family-name:var(--font-serif)] text-2xl sm:text-3xl tracking-[-0.012em] text-[var(--color-ink)]"
-            style="font-variation-settings: 'opsz' 144, 'SOFT' 30; font-weight: 500;"
-          >
-            Архив <span class="italic font-normal text-[var(--color-vermilion)]">выпусков</span>
-          </h2>
-        </div>
-      </div>
-
-      <ol class="border-t border-[var(--color-hairline-strong)]">
-        {rest.map((post) => (
-          <li class="card-container group border-b border-[var(--color-hairline)] py-7 lg:py-9 transition-colors hover:bg-[var(--color-vermilion-soft)]">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-x-10 px-1">
-              <div class="lg:col-span-2 flex lg:flex-col items-center lg:items-start gap-3 lg:gap-2 mb-4 lg:mb-0">
-                <div class="issue-number text-[var(--color-vermilion)] text-2xl lg:text-3xl font-medium tracking-tight">
-                  №&nbsp;{post.issueNumber}
-                </div>
-                <div class="eyebrow text-[var(--color-ink-faint)] lg:mt-1">
-                  {formatDate(post.data.pubDate)}
-                </div>
-              </div>
-
-              <div class="lg:col-span-7">
-                <div class="eyebrow text-[var(--color-vermilion)] mb-2 card-overlay-above">
-                  <a
-                    href={`/category/${categorySlug(post.data.category)}/`}
-                    class="link-swipe"
-                  >{post.data.category}</a>
-                </div>
-                <h3
-                  class="font-[family-name:var(--font-serif)] text-2xl sm:text-[1.85rem] leading-[1.12] tracking-[-0.012em] text-[var(--color-ink)] group-hover:text-[var(--color-vermilion-deep)] transition-colors"
-                  style="font-variation-settings: 'opsz' 60; font-weight: 600;"
-                >
-                  <a href={`/posts/${post.id}/`} class="card-link">
-                    {post.data.title}
-                  </a>
-                </h3>
-                <p class="mt-3 text-[var(--color-ink-soft)] max-w-2xl">
-                  {post.data.description}
-                </p>
-              </div>
-
-              <div class="hidden lg:flex lg:col-span-3 items-start justify-end">
-                <div class="text-right">
-                  <div class="eyebrow text-[var(--color-ink-faint)]">Автор</div>
-                  <div class="mt-1 text-sm text-[var(--color-ink)]">{post.data.author}</div>
-                  <div class="eyebrow text-[var(--color-ink-faint)] mt-3">{readingTime(post)}&nbsp;мин</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        ))}
-      </ol>
-    </section>
-  )}
-
-  {display.length === 0 && (
-    <section class="max-w-[78rem] mx-auto px-6 lg:px-12 py-32 text-center">
-      <div class="eyebrow text-[var(--color-vermilion)]">Архив пуст</div>
-      <p
-        class="font-[family-name:var(--font-serif)] text-3xl mt-3 text-[var(--color-ink)]"
-        style="font-variation-settings: 'opsz' 60; font-weight: 500;"
-      >
-        Первый выпуск выйдет на&nbsp;днях.
-      </p>
-    </section>
-  )}
+      </section>
+    )}
+  </main>
 </BaseLayout>

@@ -2,9 +2,7 @@
 import { getAllTags } from '../lib/tags'
 
 interface Props {
-  /** Slug of the currently-active tag, if rendered on a tag page */
   activeSlug?: string
-  /** Layout variant: 'cloud' for index page (varied sizes), 'compact' for inline */
   variant?: 'cloud' | 'compact'
 }
 
@@ -12,59 +10,29 @@ const { activeSlug, variant = 'cloud' } = Astro.props
 
 const tags = await getAllTags()
 if (tags.length === 0) return null
-
-/**
- * Map weight 0..1 → typographic scale for the cloud variant.
- * Five sizes, all in REM, paired with font weights — keeps the editorial
- * feel ("setting" rather than "buttons").
- */
-function sizeStyle(weight: number, mode: Props['variant']): string {
-  if (mode === 'compact') {
-    return 'font-size: 0.95rem; font-weight: 500;'
-  }
-  if (weight >= 0.85) return 'font-size: 2.7rem; font-weight: 600; font-style: italic;'
-  if (weight >= 0.6) return 'font-size: 2.1rem; font-weight: 500;'
-  if (weight >= 0.35) return 'font-size: 1.6rem; font-weight: 500;'
-  if (weight >= 0.15) return 'font-size: 1.25rem; font-weight: 500;'
-  return 'font-size: 1.0rem; font-weight: 500;'
-}
 ---
 
 {variant === 'cloud' ? (
-  <div class="border-y border-[var(--color-hairline-strong)] py-12">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-x-10">
-      <div class="lg:col-span-2 mb-6 lg:mb-0">
-        <div class="eyebrow text-[var(--color-vermilion)]">Темы</div>
-        <div class="eyebrow text-[var(--color-ink-faint)] mt-1.5">
-          {tags.length} тегов в&nbsp;архиве
+  <div class="product-section">
+    <div class="product-section-heading">
+      <div>
+        <div class="eyebrow text-[var(--color-product-blue)]">Темы</div>
+        <div class="mt-1 text-sm text-[var(--color-ink-faint)]">
+          {tags.length} тегов в архиве
         </div>
       </div>
-      <div class="lg:col-span-10">
-        <div
-          class="flex flex-wrap items-baseline gap-x-6 gap-y-3 font-[family-name:var(--font-serif)] leading-[1.05]"
-          style="font-variation-settings: 'opsz' 60;"
-        >
+      <div>
+        <h2>Навигация по задачам и сценариям</h2>
+        <div class="product-pill-row mt-5">
           {tags.map((t) => {
             const isActive = activeSlug === t.slug
             return (
               <a
                 href={`/tag/${t.slug}/`}
-                class={`group inline-flex items-baseline gap-1.5 transition-colors ${
-                  isActive
-                    ? 'text-[var(--color-vermilion)]'
-                    : 'text-[var(--color-ink)] hover:text-[var(--color-vermilion)]'
-                }`}
-                style={sizeStyle(t.weight, 'cloud')}
+                class={`product-pill ${isActive ? 'text-[var(--color-product-blue)] border-[var(--color-product-blue)]' : ''}`}
               >
-                <span class="border-b border-transparent group-hover:border-[var(--color-vermilion)] transition-colors pb-0.5">
-                  {t.tag}
-                </span>
-                <sup
-                  class="text-[var(--color-ink-faint)] group-hover:text-[var(--color-vermilion)] transition-colors"
-                  style="font-family: var(--font-mono); font-size: 0.55em; font-weight: 500; font-style: normal; letter-spacing: 0.04em; position: relative; top: -0.45em;"
-                >
-                  {String(t.count).padStart(2, '0')}
-                </sup>
+                {t.tag}
+                <span class="ml-2 text-[var(--color-ink-faint)]">{t.count}</span>
               </a>
             )
           })}
@@ -73,30 +41,17 @@ function sizeStyle(weight: number, mode: Props['variant']): string {
     </div>
   </div>
 ) : (
-  <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1.5">
-    {tags.map((t, i) => {
+  <div class="product-pill-row">
+    {tags.map((t) => {
       const isActive = activeSlug === t.slug
       return (
-        <>
-          {i > 0 && <span class="text-[var(--color-hairline-strong)]">·</span>}
-          <a
-            href={`/tag/${t.slug}/`}
-            class={`inline-flex items-baseline gap-1 link-swipe ${
-              isActive
-                ? 'text-[var(--color-vermilion)]'
-                : 'text-[var(--color-ink)] hover:text-[var(--color-vermilion)]'
-            }`}
-            style={sizeStyle(t.weight, 'compact')}
-          >
-            <span>{t.tag}</span>
-            <sup
-              class="text-[var(--color-ink-faint)]"
-              style="font-family: var(--font-mono); font-size: 0.65em; font-weight: 500; letter-spacing: 0.04em;"
-            >
-              {t.count}
-            </sup>
-          </a>
-        </>
+        <a
+          href={`/tag/${t.slug}/`}
+          class={`product-pill ${isActive ? 'text-[var(--color-product-blue)] border-[var(--color-product-blue)]' : ''}`}
+        >
+          {t.tag}
+          <span class="ml-2 text-[var(--color-ink-faint)]">{t.count}</span>
+        </a>
       )
     })}
   </div>
