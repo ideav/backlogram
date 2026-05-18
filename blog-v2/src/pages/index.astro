@@ -37,17 +37,23 @@ function firstImage(post: NumberedPost): string | undefined {
   return match?.[1]
 }
 
+function abstractImage(index: number): string {
+  return `/abstract/blog-material-${(index % 6) + 1}.svg`
+}
+
 function decorate(post: NumberedPost, index: number) {
+  const image = firstImage(post)
+
   return {
     post,
-    image: firstImage(post),
-    visual: `product-visual-${(index % 6) + 1}`,
+    image: image ?? abstractImage(index),
+    isAbstract: !image,
   }
 }
 
 const featured = display[0] ? decorate(display[0], 0) : undefined
-const cards = display.slice(1, 13).map((post, index) => decorate(post, index + 1))
-const archive = display.slice(13)
+const cards = display.slice(1, 10).map((post, index) => decorate(post, index + 1))
+const archive = display.slice(10)
 ---
 
 <BaseLayout
@@ -112,14 +118,8 @@ const archive = display.slice(13)
 
       {featured && (
         <a class="product-blog-featured" href={`/posts/${featured.post.id}/`}>
-          <div class={`product-featured-media ${featured.image ? 'has-image' : featured.visual}`}>
-            {featured.image ? (
-              <img src={featured.image} alt="" loading="eager" />
-            ) : (
-              <div class="product-media-pattern" aria-hidden="true">
-                <span></span><span></span><span></span>
-              </div>
-            )}
+          <div class={`product-featured-media has-image ${featured.isAbstract ? 'is-abstract' : ''}`}>
+            <img src={featured.image} alt="" loading="eager" />
           </div>
           <div class="product-featured-copy">
             <div class="product-card-meta">
@@ -136,16 +136,10 @@ const archive = display.slice(13)
 
       {cards.length > 0 && (
         <section class="product-blog-card-grid" aria-label="Подборка статей">
-          {cards.map(({ post, image, visual }) => (
+          {cards.map(({ post, image, isAbstract }) => (
             <a class="product-blog-card" href={`/posts/${post.id}/`}>
-              <div class={`product-card-media ${image ? 'has-image' : visual}`}>
-                {image ? (
-                  <img src={image} alt="" loading="lazy" />
-                ) : (
-                  <div class="product-media-pattern" aria-hidden="true">
-                    <span></span><span></span><span></span>
-                  </div>
-                )}
+              <div class={`product-card-media has-image ${isAbstract ? 'is-abstract' : ''}`}>
+                <img src={image} alt="" loading="lazy" />
               </div>
               <div class="product-card-body">
                 <div class="product-card-meta">
@@ -165,36 +159,43 @@ const archive = display.slice(13)
       )}
 
       {archive.length > 0 && (
-        <section class="product-blog-archive" aria-labelledby="product-blog-archive-title">
-          <div class="product-blog-archive-head">
-            <div>
-              <div class="eyebrow text-[var(--color-product-blue)]">Архив</div>
-              <h2 id="product-blog-archive-title">Все материалы</h2>
-            </div>
-            <a href="/search/">Открыть поиск</a>
-          </div>
+        <details class="product-blog-all-materials">
+          <summary>
+            <span>Все материалы</span>
+            <span class="product-all-count">{archive.length}</span>
+          </summary>
 
-          <ol>
-            {archive.map((post) => (
-              <li>
-                <div class="issue-number">№ {post.issueNumber}</div>
-                <div>
-                  <a class="product-archive-category" href={`/category/${categorySlug(post.data.category)}/`}>
-                    {post.data.category}
-                  </a>
-                  <h3>
-                    <a href={`/posts/${post.id}/`}>{post.data.title}</a>
-                  </h3>
-                  <p>{post.data.description}</p>
-                </div>
-                <div class="product-archive-meta">
-                  <span>{formatDate(post.data.pubDate)}</span>
-                  <span>{readingTime(post)} мин</span>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
+          <section class="product-blog-archive" aria-labelledby="product-blog-archive-title">
+            <div class="product-blog-archive-head">
+              <div>
+                <div class="eyebrow text-[var(--color-product-blue)]">Архив</div>
+                <h2 id="product-blog-archive-title">Материалы блога</h2>
+              </div>
+              <a href="/search/">Открыть поиск</a>
+            </div>
+
+            <ol>
+              {archive.map((post) => (
+                <li>
+                  <div class="issue-number">№ {post.issueNumber}</div>
+                  <div>
+                    <a class="product-archive-category" href={`/category/${categorySlug(post.data.category)}/`}>
+                      {post.data.category}
+                    </a>
+                    <h3>
+                      <a href={`/posts/${post.id}/`}>{post.data.title}</a>
+                    </h3>
+                    <p>{post.data.description}</p>
+                  </div>
+                  <div class="product-archive-meta">
+                    <span>{formatDate(post.data.pubDate)}</span>
+                    <span>{readingTime(post)} мин</span>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+        </details>
       )}
     </section>
   </main>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-label="Abstract connected workflow">
+  <defs>
+    <radialGradient id="glow" cx="0.72" cy="0.38" r="0.72">
+      <stop offset="0" stop-color="#60a5fa"/>
+      <stop offset="0.54" stop-color="#1447e6"/>
+      <stop offset="1" stop-color="#071328"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="720" fill="url(#glow)"/>
+  <g fill="none" stroke="#ffffff" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.34">
+    <path d="M210 378 L370 222 L558 338 L742 168 L965 296"/>
+    <path d="M256 516 L446 420 L650 532 L884 430 L1052 518"/>
+  </g>
+  <g>
+    <circle cx="210" cy="378" r="54" fill="#f97316"/>
+    <circle cx="370" cy="222" r="42" fill="#dbeafe"/>
+    <circle cx="558" cy="338" r="66" fill="#14b8a6"/>
+    <circle cx="742" cy="168" r="46" fill="#facc15"/>
+    <circle cx="965" cy="296" r="72" fill="#ffffff" opacity="0.72"/>
+  </g>
+  <rect x="154" y="486" width="272" height="88" rx="22" fill="#ffffff" opacity="0.18"/>
+  <rect x="504" y="492" width="386" height="88" rx="22" fill="#ffffff" opacity="0.14"/>
+  <path d="M0 640 C240 575 392 705 620 632 C825 566 1000 608 1200 548 V720 H0 Z" fill="#071328" opacity="0.36"/>
+</svg>
