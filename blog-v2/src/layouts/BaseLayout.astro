@@ -34,20 +34,8 @@ const imageURL = new URL(image, Astro.site).toString()
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="theme-color" content="#C8392B" />
+    <meta name="theme-color" content="#1447E6" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
-
-    <script is:inline>
-      // Apply the saved theme before the body renders to avoid a flash.
-      // Default is light; user can switch to dark via the header toggle.
-      (function () {
-        try {
-          if (localStorage.getItem('theme') === 'dark') {
-            document.documentElement.setAttribute('data-theme', 'dark')
-          }
-        } catch (_) {}
-      })()
-    </script>
 
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -70,13 +58,6 @@ const imageURL = new URL(image, Astro.site).toString()
     {author && <meta property="article:author" content={author} />}
 
     <link rel="alternate" type="application/rss+xml" title="Блог Интеграм" href="/rss.xml" />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
     <div class="relative z-10">

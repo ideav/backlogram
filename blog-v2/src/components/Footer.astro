@@ -2,57 +2,45 @@
 const year = new Date().getFullYear()
 ---
 
-<footer class="mt-32 border-t border-[var(--color-hairline-strong)] bg-[var(--color-paper)]">
-  <div class="max-w-[78rem] mx-auto px-6 lg:px-12 pt-12 pb-10">
-
-    <!-- Colophon top: large editorial mark + meta grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-12 pb-12 border-b border-[var(--color-hairline)]">
-
-      <div class="lg:col-span-5">
-        <div class="eyebrow text-[var(--color-vermilion)] mb-3">Колофон</div>
-        <div class="font-[family-name:var(--font-serif)] text-3xl sm:text-4xl leading-[1.05] text-[var(--color-ink)] tracking-[-0.015em]" style="font-variation-settings: 'opsz' 144;">
-          <span class="italic font-normal">Журнал</span> о&nbsp;данных, учётных системах и&nbsp;практике no-code от&nbsp;команды&nbsp;Интеграм.
-        </div>
-        <p class="mt-5 max-w-md text-[var(--color-ink-soft)] leading-relaxed">
-          Пишем о&nbsp;том, как малые и&nbsp;средние компании отказываются от&nbsp;разрозненных таблиц в&nbsp;пользу нормальных учётных систем — без программистов и&nbsp;долгих проектов.
-        </p>
+<footer class="product-footer">
+  <div class="product-container product-footer-grid">
+    <section>
+      <div class="product-brand">
+        <span class="product-mark">I</span>
+        <span>Блог Интеграм</span>
       </div>
+      <p class="mt-5 max-w-[32rem] leading-relaxed">
+        Практические материалы о no-code, данных и учетных системах для команд,
+        которые строят рабочие процессы вокруг Интеграма.
+      </p>
+      <div class="product-footer-meta mt-6 text-sm">© {year} Интеграм</div>
+    </section>
 
-      <div class="lg:col-span-3">
-        <div class="eyebrow text-[var(--color-ink-faint)] mb-4">Навигация</div>
-        <ul class="space-y-2">
-          <li><a href="/" class="link-swipe text-[var(--color-ink)]">Все статьи</a></li>
-          <li><a href="/rss.xml" class="link-swipe text-[var(--color-ink)]">RSS-лента</a></li>
-          <li><a href="/sitemap-index.xml" class="link-swipe text-[var(--color-ink-soft)]">Sitemap</a></li>
-        </ul>
-      </div>
+    <section>
+      <h3 class="text-base">Навигация</h3>
+      <ul>
+        <li><a class="link-swipe" href="/">Все статьи</a></li>
+        <li><a class="link-swipe" href="/search/">Поиск</a></li>
+        <li><a class="link-swipe" href="/rss.xml">RSS</a></li>
+      </ul>
+    </section>
 
-      <div class="lg:col-span-2">
-        <div class="eyebrow text-[var(--color-ink-faint)] mb-4">Продукт</div>
-        <ul class="space-y-2">
-          <li><a href="https://ideav.ru" class="link-swipe text-[var(--color-ink)]">ideav.ru</a></li>
-          <li><a href="https://integram.io" class="link-swipe text-[var(--color-ink)]">integram.io</a></li>
-        </ul>
-      </div>
+    <section>
+      <h3 class="text-base">Разделы</h3>
+      <ul>
+        <li><a class="link-swipe" href="/category/o-platforme/">О платформе</a></li>
+        <li><a class="link-swipe" href="/category/tehnologii/">Технологии</a></li>
+        <li><a class="link-swipe" href="/category/proekty/">Кейсы</a></li>
+      </ul>
+    </section>
 
-      <div class="lg:col-span-2">
-        <div class="eyebrow text-[var(--color-ink-faint)] mb-4">Связаться</div>
-        <ul class="space-y-2">
-          <li><a href="mailto:hello@ideav.ru" class="link-swipe text-[var(--color-ink)]">hello@ideav.ru</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Bottom credit line -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 eyebrow text-[var(--color-ink-faint)]">
-      <div>© {year} Интеграм · Все права защищены</div>
-      <div class="flex flex-wrap gap-x-5 gap-y-1">
-        <span>Набрано <span class="text-[var(--color-ink)]">Fraunces</span></span>
-        <span>и <span class="text-[var(--color-ink)]">IBM Plex</span></span>
-        <span>·</span>
-        <span>Свёрстано в&nbsp;Astro</span>
-      </div>
-    </div>
-
+    <section>
+      <h3 class="text-base">Продукт</h3>
+      <ul>
+        <li><a class="link-swipe" href="https://ideav.ru">ideav.ru</a></li>
+        <li><a class="link-swipe" href="https://integram.io">integram.io</a></li>
+        <li><a class="link-swipe" href="mailto:hello@ideav.ru">hello@ideav.ru</a></li>
+      </ul>
+    </section>
   </div>
 </footer>

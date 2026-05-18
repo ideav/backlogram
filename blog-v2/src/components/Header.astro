@@ -1,114 +1,28 @@
 ---
 const pathname = Astro.url.pathname
-const isHome = pathname === '/' || pathname === ''
 
-const today = new Date()
-const dateStamp = today
-  .toLocaleDateString('ru-RU', { year: 'numeric', month: '2-digit' })
-  .replace('.', '·')
+function activeFor(paths: string[]): string {
+  return paths.some((path) => pathname === path || pathname.startsWith(path))
+    ? 'active'
+    : ''
+}
 ---
 
-<header class="relative border-b border-[var(--color-hairline-strong)] bg-[var(--color-paper)]">
-  <div class="max-w-[78rem] mx-auto px-6 lg:px-12">
-    <div class="flex items-end justify-between pt-9 pb-4">
-      <a href="/" class="group block" aria-label="Блог Интеграм — главная">
-        <div class="eyebrow text-[var(--color-vermilion)] mb-1">
-          Изд. с 2020 · Выпуск {dateStamp}
-        </div>
-        <div class="font-[family-name:var(--font-serif)] text-[2rem] sm:text-[2.6rem] leading-[0.95] tracking-[-0.02em] font-semibold text-[var(--color-ink)]" style="font-variation-settings: 'opsz' 144, 'SOFT' 30;">
-          Блог <span class="italic font-normal">Интеграм</span>
-        </div>
-      </a>
+<header class="product-site-header">
+  <div class="product-container product-nav-shell">
+    <a href="/" class="product-brand" aria-label="Блог Интеграм — главная">
+      <span class="product-mark">I</span>
+      <span>Блог Интеграм</span>
+    </a>
 
-      <nav class="hidden md:flex items-center gap-7 pb-2">
-        <a
-          href="/"
-          class={`eyebrow link-swipe ${isHome ? 'text-[var(--color-vermilion)]' : 'text-[var(--color-ink)]'}`}
-        >
-          Журнал
-        </a>
-        <a
-          href="/search/"
-          class="eyebrow link-swipe text-[var(--color-ink)] flex items-center gap-1.5"
-          aria-label="Поиск"
-        >
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="7"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          Поиск
-        </a>
-        <a
-          href="https://ideav.ru"
-          class="eyebrow link-swipe text-[var(--color-ink)]"
-        >
-          О продукте
-        </a>
-        <a
-          href="/rss.xml"
-          class="eyebrow link-swipe text-[var(--color-ink-soft)] flex items-center gap-1.5"
-          aria-label="RSS-лента"
-        >
-          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 11a9 9 0 0 1 9 9"></path>
-            <path d="M4 4a16 16 0 0 1 16 16"></path>
-            <circle cx="5" cy="19" r="1"></circle>
-          </svg>
-          RSS
-        </a>
+    <nav class="product-nav-links" aria-label="Основная навигация">
+      <a href="/" class={pathname === '/' || pathname === '' ? 'active' : ''}>Все статьи</a>
+      <a href="/category/o-platforme/" class={activeFor(['/category/o-platforme/'])}>О платформе</a>
+      <a href="/category/tehnologii/" class={activeFor(['/category/tehnologii/'])}>Технологии</a>
+      <a href="/category/proekty/" class={activeFor(['/category/proekty/'])}>Кейсы</a>
+      <a href="/rss.xml">RSS</a>
+    </nav>
 
-        <button
-          id="theme-toggle"
-          type="button"
-          aria-label="Переключить тему"
-          title="Светлая / тёмная тема"
-          class="inline-flex items-center justify-center w-8 h-8 -mr-2 rounded text-[var(--color-ink-soft)] hover:text-[var(--color-vermilion)] transition-colors"
-        >
-          <svg class="theme-icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="4.5"></circle>
-            <path d="M12 2v2.5M12 19.5V22M4.93 4.93l1.77 1.77M17.3 17.3l1.77 1.77M2 12h2.5M19.5 12H22M4.93 19.07l1.77-1.77M17.3 6.7l1.77-1.77"></path>
-          </svg>
-          <svg class="theme-icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
-        </button>
-      </nav>
-
-      <style>
-        /* Show the icon for the theme you can switch TO. */
-        :root .theme-icon-sun { display: none; }
-        :root .theme-icon-moon { display: block; }
-        :root[data-theme="dark"] .theme-icon-sun { display: block; }
-        :root[data-theme="dark"] .theme-icon-moon { display: none; }
-      </style>
-
-      <script is:inline>
-        document.getElementById('theme-toggle')?.addEventListener('click', () => {
-          const root = document.documentElement
-          const isDark = root.getAttribute('data-theme') === 'dark'
-          if (isDark) {
-            root.removeAttribute('data-theme')
-            localStorage.setItem('theme', 'light')
-          } else {
-            root.setAttribute('data-theme', 'dark')
-            localStorage.setItem('theme', 'dark')
-          }
-        })
-      </script>
-    </div>
-
-    <!-- Тагline strip -->
-    <div class="flex items-center justify-between border-t border-[var(--color-hairline)] py-2.5">
-      <div class="eyebrow text-[var(--color-ink-faint)]">
-        Записки о&nbsp;данных, учётных системах и&nbsp;no-code
-      </div>
-      <div class="hidden sm:flex items-center gap-4 eyebrow text-[var(--color-ink-faint)]">
-        <a href="/category/o-platforme/" class="link-swipe">Раздел&nbsp;<span class="text-[var(--color-vermilion)]">платформа</span></a>
-        <span class="text-[var(--color-hairline-strong)]">/</span>
-        <a href="/category/tehnologii/" class="link-swipe">Раздел&nbsp;<span class="text-[var(--color-vermilion)]">технологии</span></a>
-        <span class="text-[var(--color-hairline-strong)]">/</span>
-        <a href="/category/obuchenie/" class="link-swipe">Раздел&nbsp;<span class="text-[var(--color-vermilion)]">обучение</span></a>
-      </div>
-    </div>
+    <a class="product-button" href="https://ideav.ru">Открыть Интеграм</a>
   </div>
 </header>
