@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content'
 import BaseLayout from '../layouts/BaseLayout.astro'
-import { categorySlug, getAllCategories } from '../lib/categories'
+import { getAllCategories } from '../lib/categories'
 
 const allPosts = await getCollection('posts', ({ data }) => !data.draft)
 const categories = await getAllCategories()
@@ -14,13 +14,11 @@ const numbered = ascending.map((post, i) => ({
   issueNumber: String(i + 1).padStart(3, '0'),
 }))
 
+type NumberedPost = typeof numbered[number]
+
 const display = [...numbered].sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 )
-
-const latest = display.slice(0, 4)
-const cards = display.slice(0, 3)
-const archive = display.slice(3)
 
 function formatDate(d: Date): string {
   return d
@@ -28,165 +26,140 @@ function formatDate(d: Date): string {
     .replace(' г.', '')
 }
 
-function readingTime(post: typeof numbered[number]): number {
-  return Math.max(1, Math.round(post.body!.length / 1100))
+function readingTime(post: NumberedPost): number {
+  return Math.max(1, Math.round((post.body ?? '').length / 1100))
 }
 
-function statusLabel(index: number): string {
-  if (index === 0) return 'новое'
-  if (index === 1) return 'хаб'
-  if (index === 2) return 'гайд'
-  return 'кейс'
+function firstImage(post: NumberedPost): string | undefined {
+  if (post.data.image) return post.data.image
+
+  const match = (post.body ?? '').match(/!\[[^\]]*\]\((\/uploads\/[^)\s]+)\)/)
+  return match?.[1]
 }
+
+function decorate(post: NumberedPost, index: number) {
+  return {
+    post,
+    image: firstImage(post),
+    visual: `visual-${(index % 6) + 1}`,
+  }
+}
+
+const featured = display[0] ? decorate(display[0], 0) : undefined
+const cards = display.slice(1, 13).map((post, index) => decorate(post, index + 1))
+const archive = display.slice(13)
 ---
 
 <BaseLayout
-  title="Блог Интеграм — продуктовый блог о no-code, данных и учетных системах"
+  title="Блог Интеграм — статьи о no-code, данных и автоматизации"
   description="Практические статьи Интеграма о no-code, данных, self-hosted размещении, автоматизации и учетных системах."
 >
-  <main class="product-newsroom">
-    <div class="product-container">
-      <section class="product-hero" aria-labelledby="product-newsroom-title">
-        <div>
-          <div class="eyebrow text-[var(--color-product-blue)]">Практика no-code и данных</div>
-          <h1 id="product-newsroom-title" class="product-hero-title">
-            Современный продуктовый блог для команд, которые строят учетные системы
-          </h1>
-          <p class="product-lead">
-            Больше похоже на центр продукта: быстрый поиск, понятные рубрики, свежие
-            разборы и статьи, которые сразу ведут к решению задачи.
+  <main class="amo-blog-page">
+    <section class="amo-blog-hero" aria-labelledby="amo-blog-title">
+      <div class="product-container amo-hero-inner">
+        <div class="amo-hero-copy">
+          <a class="amo-hero-kicker" href="/">Блог</a>
+          <h1 id="amo-blog-title">О no-code, данных и автоматизации</h1>
+          <p>
+            Разборы платформ, практические инструкции и кейсы для команд, которые хотят
+            управлять процессами без лишней разработки.
           </p>
-
-          <form class="product-searchbar" action="/search/" method="get" role="search">
-            <label class="sr-only" for="home-blog-search">Поиск по блогу</label>
-            <input
-              id="home-blog-search"
-              type="search"
-              name="q"
-              placeholder="Поиск по темам, статьям и сценариям"
-            />
-            <a class="product-search-chip" href="/search/?q=self-hosted">self-hosted</a>
-            <button class="product-button" type="submit">Найти</button>
-          </form>
         </div>
 
-        <aside class="product-panel" aria-label="Сводка свежих материалов">
-          <div class="product-panel-toolbar">
-            <div class="product-traffic" aria-hidden="true"><span></span><span></span><span></span></div>
-            <div class="eyebrow text-[var(--color-ink-faint)]">Последние материалы</div>
-          </div>
-
-          {latest.length > 0 ? (
-            <div class="product-latest-list">
-              {latest.map((post, index) => (
-                <a class="product-latest-row" href={`/posts/${post.id}/`}>
-                  <span class="product-latest-index">{String(index + 1).padStart(2, '0')}</span>
-                  <span>
-                    <span class="product-latest-title">{post.data.title}</span>
-                    <span class="product-latest-meta">
-                      {post.data.category} · {readingTime(post)} мин чтения
-                    </span>
-                  </span>
-                  <span class="product-status">{statusLabel(index)}</span>
-                </a>
-              ))}
-            </div>
-          ) : (
-            <p class="text-[var(--color-ink-soft)]">Материалы скоро появятся.</p>
-          )}
-        </aside>
-      </section>
-
-      {cards.length > 0 && (
-        <section class="product-card-grid" aria-label="Подборка статей">
-          {cards.map((post, index) => (
-            <a
-              class={`product-article-card ${index === 0 ? 'featured' : ''}`}
-              href={`/posts/${post.id}/`}
-            >
-              <div>
-                <div class="meta">{post.data.category} · {formatDate(post.data.pubDate)}</div>
-                {index === 0 ? (
-                  <h2>{post.data.title}</h2>
-                ) : (
-                  <h3>{post.data.title}</h3>
-                )}
-                <p>{post.data.description}</p>
-              </div>
-              <span class="mt-8 text-sm font-bold">
-                № {post.issueNumber} · {readingTime(post)} мин
-              </span>
-            </a>
-          ))}
-        </section>
-      )}
-    </div>
-
-    <section class="product-section">
-      <div class="product-container">
-        <div class="product-section-heading">
-          <div>
-            <div class="eyebrow text-[var(--color-product-blue)]">Рубрики</div>
-            <div class="mt-1 text-sm text-[var(--color-ink-faint)]">
-              {categories.length} разделов
-            </div>
-          </div>
-          <div>
-            <h2>Быстрый переход к практическим темам</h2>
-            <div class="product-pill-row mt-5">
-              {categories.map((category) => (
-                <a class="product-pill" href={`/category/${category.slug}/`}>
-                  {category.name}
-                  <span class="ml-2 text-[var(--color-ink-faint)]">{category.count}</span>
-                </a>
-              ))}
-            </div>
+        <div class="amo-hero-visual" aria-hidden="true">
+          <div class="amo-hero-frame"></div>
+          <div class="amo-hero-console">
+            <span></span><span></span><span></span>
+            <div></div>
+            <div></div>
+            <div></div>
           </div>
         </div>
       </div>
     </section>
 
-    {archive.length > 0 && (
-      <section class="product-section">
-        <div class="product-container">
-          <div class="product-section-heading">
-            <div class="eyebrow text-[var(--color-product-blue)]">Архив</div>
-            <h2>Все материалы</h2>
+    <section class="amo-content-shell" aria-label="Материалы блога">
+      <div class="amo-category-row">
+        <nav class="amo-category-pills" aria-label="Рубрики блога">
+          <a class="amo-category-pill active" href="/">Все</a>
+          {categories.map((category) => (
+            <a class="amo-category-pill" href={`/category/${category.slug}/`}>
+              {category.name}
+            </a>
+          ))}
+        </nav>
+
+        <form class="amo-searchbar" action="/search/" method="get" role="search">
+          <label class="sr-only" for="home-blog-search">Поиск по блогу</label>
+          <input
+            id="home-blog-search"
+            type="search"
+            name="q"
+            placeholder="Поиск по статьям"
+          />
+          <button class="amo-search-button" type="submit">Найти</button>
+        </form>
+      </div>
+
+      {featured && (
+        <a class="amo-featured-card" href={`/posts/${featured.post.id}/`}>
+          <div class={`amo-featured-media ${featured.image ? 'has-image' : featured.visual}`}>
+            {featured.image ? (
+              <img src={featured.image} alt="" loading="eager" />
+            ) : (
+              <div class="amo-media-pattern" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+            )}
           </div>
+          <div class="amo-featured-content">
+            <div class="amo-card-meta">
+              {featured.post.data.category} · {formatDate(featured.post.data.pubDate)}
+            </div>
+            <h2>{featured.post.data.title}</h2>
+            <p>{featured.post.data.description}</p>
+            <span>
+              № {featured.post.issueNumber} · {readingTime(featured.post)} мин чтения
+            </span>
+          </div>
+        </a>
+      )}
 
-          <ol class="product-list">
-            {archive.map((post) => (
-              <li class="card-container product-list-row">
-                <div>
-                  <div class="issue-number text-[var(--color-product-blue)] text-xl font-bold">
-                    № {post.issueNumber}
+      {cards.length > 0 && (
+        <section class="amo-post-grid" aria-label="Все статьи">
+          {cards.map(({ post, image, visual }) => (
+            <a class="amo-post-card" href={`/posts/${post.id}/`}>
+              <div class={`amo-card-media ${image ? 'has-image' : visual}`}>
+                {image ? (
+                  <img src={image} alt="" loading="lazy" />
+                ) : (
+                  <div class="amo-media-pattern" aria-hidden="true">
+                    <span></span><span></span><span></span>
                   </div>
-                  <div class="mt-2 text-sm text-[var(--color-ink-faint)]">
-                    {formatDate(post.data.pubDate)}
-                  </div>
+                )}
+              </div>
+              <div class="amo-card-body">
+                <div class="amo-card-meta">
+                  <span class="amo-card-category">{post.data.category}</span>
+                  <span>{formatDate(post.data.pubDate)}</span>
                 </div>
+                <h3>{post.data.title}</h3>
+                <p>{post.data.description}</p>
+                <div class="amo-card-foot">
+                  <span>№ {post.issueNumber}</span>
+                  <span>{readingTime(post)} мин</span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </section>
+      )}
 
-                <div>
-                  <div class="card-overlay-above mb-2 text-sm font-bold text-[var(--color-product-blue)]">
-                    <a class="link-swipe" href={`/category/${categorySlug(post.data.category)}/`}>
-                      {post.data.category}
-                    </a>
-                  </div>
-                  <h3 class="product-list-title">
-                    <a class="card-link" href={`/posts/${post.id}/`}>{post.data.title}</a>
-                  </h3>
-                  <p>{post.data.description}</p>
-                </div>
-
-                <div class="text-sm text-[var(--color-ink-faint)] md:text-right">
-                  <div>{post.data.author}</div>
-                  <div class="mt-2">{readingTime(post)} мин чтения</div>
-                </div>
-              </li>
-            ))}
-          </ol>
+      {archive.length > 0 && (
+        <div class="amo-more-row">
+          <a class="amo-more-button" href="/search/">Больше полезных материалов</a>
         </div>
-      </section>
-    )}
+      )}
+    </section>
   </main>
 </BaseLayout>
