@@ -9,6 +9,7 @@ const KB_SEO_DESCRIPTION =
   'Серия разборов: когда Интеграм удобнее Google Sheets, Excel, Notion, Airtable и других инструментов. Сравнения сценариев, ограничений и отличий.'
 const KB_SEO_KEYWORDS =
   'база знаний интеграм,сравнение инструментов,интеграм vs airtable,интеграм vs google sheets,интеграм vs excel,no-code база данных,конструктор приложений'
+const KB_OG_IMAGE = '/og/knowledge-base.png'
 
 function setMetaTag(selector: string, attr: 'name' | 'property', key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(selector)
@@ -68,13 +69,22 @@ export default function KnowledgeBase() {
     setMetaTag('meta[name="keywords"]', 'name', 'keywords', KB_SEO_KEYWORDS)
     setMetaTag('meta[name="robots"]', 'name', 'robots', 'index, follow')
 
+    const origin =
+      typeof window !== 'undefined' ? window.location.origin : 'https://ideav.ru'
+    const canonicalUrl = `${origin}/knowledge-base.html`
+    const absoluteKnowledgeBaseOgImage = `${origin}${KB_OG_IMAGE}`
+
     setMetaTag('meta[property="og:type"]', 'property', 'og:type', 'website')
     setMetaTag('meta[property="og:title"]', 'property', 'og:title', KB_SEO_TITLE)
     setMetaTag('meta[property="og:description"]', 'property', 'og:description', KB_SEO_DESCRIPTION)
+    setMetaTag('meta[property="og:url"]', 'property', 'og:url', canonicalUrl)
+    setMetaTag('meta[property="og:image"]', 'property', 'og:image', absoluteKnowledgeBaseOgImage)
+    setMetaTag('meta[property="og:image:width"]', 'property', 'og:image:width', '1200')
+    setMetaTag('meta[property="og:image:height"]', 'property', 'og:image:height', '630')
     setMetaTag('meta[property="og:site_name"]', 'property', 'og:site_name', 'Интеграм')
     setMetaTag('meta[property="og:locale"]', 'property', 'og:locale', 'ru_RU')
 
-    setMetaTag('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary')
+    setMetaTag('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary_large_image')
     setMetaTag('meta[name="twitter:title"]', 'name', 'twitter:title', KB_SEO_TITLE)
     setMetaTag(
       'meta[name="twitter:description"]',
@@ -82,10 +92,8 @@ export default function KnowledgeBase() {
       'twitter:description',
       KB_SEO_DESCRIPTION,
     )
+    setMetaTag('meta[name="twitter:image"]', 'name', 'twitter:image', absoluteKnowledgeBaseOgImage)
 
-    const origin =
-      typeof window !== 'undefined' ? window.location.origin : 'https://ideav.ru'
-    const canonicalUrl = `${origin}/knowledge-base.html`
     setCanonical(canonicalUrl)
 
     setJsonLd('collection', {
