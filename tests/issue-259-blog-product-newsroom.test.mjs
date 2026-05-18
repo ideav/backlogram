@@ -7,24 +7,24 @@ const layoutPath = new URL('../blog-v2/src/layouts/BaseLayout.astro', import.met
 const headerPath = new URL('../blog-v2/src/components/Header.astro', import.meta.url)
 const globalCssPath = new URL('../blog-v2/src/styles/global.css', import.meta.url)
 const screenshotPath = new URL(
-  '../docs/screenshots/issue-259-blog-product-newsroom.png',
+  '../docs/screenshots/issue-265-after-desktop.png',
   import.meta.url
 )
 
-test('blog home implements the selected Product Newsroom direction from issue 259', () => {
+test('blog home keeps product-blog basics after the issue 265 visual restyle', () => {
   const index = readFileSync(indexPath, 'utf8')
   const layout = readFileSync(layoutPath, 'utf8')
   const header = readFileSync(headerPath, 'utf8')
   const globalCss = readFileSync(globalCssPath, 'utf8')
 
-  assert.match(index, /product-newsroom/)
-  assert.match(index, /product-hero/)
+  assert.match(index, /product-blog-page/)
+  assert.match(index, /product-blog-hero/)
   assert.match(index, /action="\/search\/"/)
   assert.match(index, /name="q"/)
-  assert.match(index, /Последние материалы/)
-  assert.match(index, /product-latest-list/)
-  assert.match(index, /product-card-grid/)
-  assert.match(index, /Современный продуктовый блог/)
+  assert.match(index, /product-blog-category-pills/)
+  assert.match(index, /product-blog-featured/)
+  assert.match(index, /product-blog-card-grid/)
+  assert.match(index, /О no-code, данных и автоматизации/)
 
   assert.match(header, /Все статьи/)
   assert.match(header, /О платформе/)
@@ -37,6 +37,6 @@ test('blog home implements the selected Product Newsroom direction from issue 25
   assert.match(globalCss, /--color-product-blue/)
   assert.match(globalCss, /font-family:\s*var\(--font-sans\)/)
 
-  assert.ok(existsSync(screenshotPath), 'expected the production Product Newsroom screenshot')
+  assert.ok(existsSync(screenshotPath), 'expected the issue 265 rendered screenshot')
   assert.ok(statSync(screenshotPath).size > 50_000, 'screenshot should be a rendered PNG')
 })
