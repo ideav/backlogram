@@ -194,16 +194,12 @@ img {
 }
 
 .product-mark {
-  display: grid;
+  display: block;
   width: 2.5rem;
   height: 2.5rem;
-  place-items: center;
   border-radius: 8px;
-  background: var(--color-product-blue);
-  color: #ffffff;
-  font-size: 1.1rem;
-  font-weight: 850;
-  line-height: 1;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
 .product-nav-links {
