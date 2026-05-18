@@ -18,9 +18,7 @@ const display = [...numbered].sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 )
 
-const latest = display.slice(0, 4)
-const cards = display.slice(0, 3)
-const archive = display.slice(3)
+type NumberedPost = typeof numbered[number]
 
 function formatDate(d: Date): string {
   return d
@@ -28,165 +26,176 @@ function formatDate(d: Date): string {
     .replace(' г.', '')
 }
 
-function readingTime(post: typeof numbered[number]): number {
-  return Math.max(1, Math.round(post.body!.length / 1100))
+function readingTime(post: NumberedPost): number {
+  return Math.max(1, Math.round((post.body ?? '').length / 1100))
 }
 
-function statusLabel(index: number): string {
-  if (index === 0) return 'новое'
-  if (index === 1) return 'хаб'
-  if (index === 2) return 'гайд'
-  return 'кейс'
+function firstImage(post: NumberedPost): string | undefined {
+  if (post.data.image) return post.data.image
+
+  const match = (post.body ?? '').match(/!\[[^\]]*\]\((\/uploads\/[^)\s]+)\)/)
+  return match?.[1]
 }
+
+function decorate(post: NumberedPost, index: number) {
+  return {
+    post,
+    image: firstImage(post),
+    visual: `product-visual-${(index % 6) + 1}`,
+  }
+}
+
+const featured = display[0] ? decorate(display[0], 0) : undefined
+const cards = display.slice(1, 13).map((post, index) => decorate(post, index + 1))
+const archive = display.slice(13)
 ---
 
 <BaseLayout
-  title="Блог Интеграм — продуктовый блог о no-code, данных и учетных системах"
+  title="Блог Интеграм — статьи о no-code, данных и автоматизации"
   description="Практические статьи Интеграма о no-code, данных, self-hosted размещении, автоматизации и учетных системах."
 >
-  <main class="product-newsroom">
-    <div class="product-container">
-      <section class="product-hero" aria-labelledby="product-newsroom-title">
-        <div>
-          <div class="eyebrow text-[var(--color-product-blue)]">Практика no-code и данных</div>
-          <h1 id="product-newsroom-title" class="product-hero-title">
-            Современный продуктовый блог для команд, которые строят учетные системы
-          </h1>
-          <p class="product-lead">
-            Больше похоже на центр продукта: быстрый поиск, понятные рубрики, свежие
-            разборы и статьи, которые сразу ведут к решению задачи.
+  <main class="product-blog-page">
+    <section class="product-blog-hero" aria-labelledby="product-blog-title">
+      <div class="product-container product-blog-hero-inner">
+        <div class="product-blog-hero-copy">
+          <div class="eyebrow">Практика no-code и данных</div>
+          <h1 id="product-blog-title">О no-code, данных и автоматизации</h1>
+          <p>
+            Разборы платформ, инструкции и кейсы для команд, которые строят учетные
+            системы без лишней разработки.
           </p>
 
-          <form class="product-searchbar" action="/search/" method="get" role="search">
+          <form class="product-blog-search" action="/search/" method="get" role="search">
             <label class="sr-only" for="home-blog-search">Поиск по блогу</label>
             <input
               id="home-blog-search"
               type="search"
               name="q"
-              placeholder="Поиск по темам, статьям и сценариям"
+              placeholder="Поиск по статьям и сценариям"
             />
-            <a class="product-search-chip" href="/search/?q=self-hosted">self-hosted</a>
-            <button class="product-button" type="submit">Найти</button>
+            <button type="submit">Найти</button>
           </form>
         </div>
 
-        <aside class="product-panel" aria-label="Сводка свежих материалов">
-          <div class="product-panel-toolbar">
-            <div class="product-traffic" aria-hidden="true"><span></span><span></span><span></span></div>
-            <div class="eyebrow text-[var(--color-ink-faint)]">Последние материалы</div>
-          </div>
-
-          {latest.length > 0 ? (
-            <div class="product-latest-list">
-              {latest.map((post, index) => (
-                <a class="product-latest-row" href={`/posts/${post.id}/`}>
-                  <span class="product-latest-index">{String(index + 1).padStart(2, '0')}</span>
-                  <span>
-                    <span class="product-latest-title">{post.data.title}</span>
-                    <span class="product-latest-meta">
-                      {post.data.category} · {readingTime(post)} мин чтения
-                    </span>
-                  </span>
-                  <span class="product-status">{statusLabel(index)}</span>
-                </a>
-              ))}
+        <div class="product-blog-hero-visual" aria-hidden="true">
+          <div class="product-visual-frame"></div>
+          <div class="product-visual-window">
+            <div class="product-visual-toolbar">
+              <span></span><span></span><span></span>
             </div>
-          ) : (
-            <p class="text-[var(--color-ink-soft)]">Материалы скоро появятся.</p>
-          )}
-        </aside>
-      </section>
-
-      {cards.length > 0 && (
-        <section class="product-card-grid" aria-label="Подборка статей">
-          {cards.map((post, index) => (
-            <a
-              class={`product-article-card ${index === 0 ? 'featured' : ''}`}
-              href={`/posts/${post.id}/`}
-            >
-              <div>
-                <div class="meta">{post.data.category} · {formatDate(post.data.pubDate)}</div>
-                {index === 0 ? (
-                  <h2>{post.data.title}</h2>
-                ) : (
-                  <h3>{post.data.title}</h3>
-                )}
-                <p>{post.data.description}</p>
+            <div class="product-visual-body">
+              <div class="product-visual-column">
+                <span></span><span></span><span></span><span></span>
               </div>
-              <span class="mt-8 text-sm font-bold">
-                № {post.issueNumber} · {readingTime(post)} мин
-              </span>
-            </a>
-          ))}
-        </section>
-      )}
-    </div>
-
-    <section class="product-section">
-      <div class="product-container">
-        <div class="product-section-heading">
-          <div>
-            <div class="eyebrow text-[var(--color-product-blue)]">Рубрики</div>
-            <div class="mt-1 text-sm text-[var(--color-ink-faint)]">
-              {categories.length} разделов
-            </div>
-          </div>
-          <div>
-            <h2>Быстрый переход к практическим темам</h2>
-            <div class="product-pill-row mt-5">
-              {categories.map((category) => (
-                <a class="product-pill" href={`/category/${category.slug}/`}>
-                  {category.name}
-                  <span class="ml-2 text-[var(--color-ink-faint)]">{category.count}</span>
-                </a>
-              ))}
+              <div class="product-visual-list">
+                <span></span><span></span><span></span>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    {archive.length > 0 && (
-      <section class="product-section">
-        <div class="product-container">
-          <div class="product-section-heading">
-            <div class="eyebrow text-[var(--color-product-blue)]">Архив</div>
-            <h2>Все материалы</h2>
+    <section class="product-blog-shell" aria-label="Материалы блога">
+      <div class="product-blog-topbar">
+        <nav class="product-blog-category-pills" aria-label="Рубрики блога">
+          <a class="product-blog-category active" href="/">
+            Все <span>{display.length}</span>
+          </a>
+          {categories.map((category) => (
+            <a class="product-blog-category" href={`/category/${category.slug}/`}>
+              {category.name} <span>{category.count}</span>
+            </a>
+          ))}
+        </nav>
+      </div>
+
+      {featured && (
+        <a class="product-blog-featured" href={`/posts/${featured.post.id}/`}>
+          <div class={`product-featured-media ${featured.image ? 'has-image' : featured.visual}`}>
+            {featured.image ? (
+              <img src={featured.image} alt="" loading="eager" />
+            ) : (
+              <div class="product-media-pattern" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+            )}
+          </div>
+          <div class="product-featured-copy">
+            <div class="product-card-meta">
+              {featured.post.data.category} · {formatDate(featured.post.data.pubDate)}
+            </div>
+            <h2>{featured.post.data.title}</h2>
+            <p>{featured.post.data.description}</p>
+            <span>
+              № {featured.post.issueNumber} · {readingTime(featured.post)} мин чтения
+            </span>
+          </div>
+        </a>
+      )}
+
+      {cards.length > 0 && (
+        <section class="product-blog-card-grid" aria-label="Подборка статей">
+          {cards.map(({ post, image, visual }) => (
+            <a class="product-blog-card" href={`/posts/${post.id}/`}>
+              <div class={`product-card-media ${image ? 'has-image' : visual}`}>
+                {image ? (
+                  <img src={image} alt="" loading="lazy" />
+                ) : (
+                  <div class="product-media-pattern" aria-hidden="true">
+                    <span></span><span></span><span></span>
+                  </div>
+                )}
+              </div>
+              <div class="product-card-body">
+                <div class="product-card-meta">
+                  <span>{post.data.category}</span>
+                  <span>{formatDate(post.data.pubDate)}</span>
+                </div>
+                <h3>{post.data.title}</h3>
+                <p>{post.data.description}</p>
+                <div class="product-card-foot">
+                  <span>№ {post.issueNumber}</span>
+                  <span>{readingTime(post)} мин</span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </section>
+      )}
+
+      {archive.length > 0 && (
+        <section class="product-blog-archive" aria-labelledby="product-blog-archive-title">
+          <div class="product-blog-archive-head">
+            <div>
+              <div class="eyebrow text-[var(--color-product-blue)]">Архив</div>
+              <h2 id="product-blog-archive-title">Все материалы</h2>
+            </div>
+            <a href="/search/">Открыть поиск</a>
           </div>
 
-          <ol class="product-list">
+          <ol>
             {archive.map((post) => (
-              <li class="card-container product-list-row">
+              <li>
+                <div class="issue-number">№ {post.issueNumber}</div>
                 <div>
-                  <div class="issue-number text-[var(--color-product-blue)] text-xl font-bold">
-                    № {post.issueNumber}
-                  </div>
-                  <div class="mt-2 text-sm text-[var(--color-ink-faint)]">
-                    {formatDate(post.data.pubDate)}
-                  </div>
-                </div>
-
-                <div>
-                  <div class="card-overlay-above mb-2 text-sm font-bold text-[var(--color-product-blue)]">
-                    <a class="link-swipe" href={`/category/${categorySlug(post.data.category)}/`}>
-                      {post.data.category}
-                    </a>
-                  </div>
-                  <h3 class="product-list-title">
-                    <a class="card-link" href={`/posts/${post.id}/`}>{post.data.title}</a>
+                  <a class="product-archive-category" href={`/category/${categorySlug(post.data.category)}/`}>
+                    {post.data.category}
+                  </a>
+                  <h3>
+                    <a href={`/posts/${post.id}/`}>{post.data.title}</a>
                   </h3>
                   <p>{post.data.description}</p>
                 </div>
-
-                <div class="text-sm text-[var(--color-ink-faint)] md:text-right">
-                  <div>{post.data.author}</div>
-                  <div class="mt-2">{readingTime(post)} мин чтения</div>
+                <div class="product-archive-meta">
+                  <span>{formatDate(post.data.pubDate)}</span>
+                  <span>{readingTime(post)} мин</span>
                 </div>
               </li>
             ))}
           </ol>
-        </div>
-      </section>
-    )}
+        </section>
+      )}
+    </section>
   </main>
 </BaseLayout>
