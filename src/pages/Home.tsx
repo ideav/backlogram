@@ -892,7 +892,7 @@ export default function Home() {
                 </div>
               </div>
               <ul className="space-y-4 mb-8 flex-1">
-                {['Выбор задачи из очереди', 'Полный цикл разработки', 'Развертывание в контуре', 'Инструкции и доки'].map((item, i) => (
+                {['Выбор задачи из очереди', 'Полный цикл разработки', 'Развертывание в облаке', 'Инструкции и документация'].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
                     <CheckCircle2 size={14} className="text-blue-500" />
                     {item}
