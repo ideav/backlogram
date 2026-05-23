@@ -918,7 +918,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="mb-6 flex items-baseline gap-2">
-                <span className="text-4xl font-black text-slate-900 dark:text-white">290 000</span>
+                <span className="text-4xl font-black text-slate-900 dark:text-white">590 000</span>
                 <span className="text-slate-400 dark:text-slate-500 text-xl font-bold">₽</span>
               </div>
               <ul className="space-y-4 mb-8 flex-1">
