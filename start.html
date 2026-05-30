@@ -20,5 +20,28 @@
     </script>
     <noscript><div><img src="https://mc.yandex.ru/watch/108758829" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
     <!-- /Yandex.Metrika counter -->
+    <script>
+      if (location.hash === '#reg') {
+        var _regTabAttempts = 0;
+        function _openRegTab() {
+          var tabs = document.querySelectorAll('[role="tab"]');
+          for (var i = 0; i < tabs.length; i++) {
+            if (tabs[i].textContent.trim() === 'Регистрация') {
+              tabs[i].click();
+              return;
+            }
+          }
+          if (_regTabAttempts < 20) {
+            _regTabAttempts++;
+            setTimeout(_openRegTab, 100);
+          }
+        }
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', _openRegTab);
+        } else {
+          _openRegTab();
+        }
+      }
+    </script>
   </body>
 </html>

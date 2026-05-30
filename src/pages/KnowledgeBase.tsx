@@ -254,7 +254,7 @@ export default function KnowledgeBase() {
             форму и отчёт — без программирования.
           </p>
           <a
-            href="https://ideav.ru/start.html"
+            href="https://ideav.ru/start.html#reg"
             target="start"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all"
