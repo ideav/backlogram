@@ -230,7 +230,7 @@ export default function Home() {
                   <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </a>
                 <a
-                  href="https://ideav.ru/start.html"
+                  href="https://ideav.ru/start.html#reg"
                   target="start"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto px-8 py-4 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-xl transition-all"
@@ -1163,7 +1163,7 @@ export default function Home() {
                 ))}
               </ul>
               <a
-                href="https://ideav.ru/start.html"
+                href="https://ideav.ru/start.html#reg"
                 target="start"
                 rel="noopener noreferrer"
                 className="w-full py-4 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 text-slate-800 dark:text-white font-bold rounded-xl transition-all text-center block"
