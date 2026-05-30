@@ -5,6 +5,14 @@ import { test } from 'node:test'
 const postsDir = new URL('../blog-v2/src/content/posts/', import.meta.url)
 const postFile = 'promyshlennaya-avtomatizaciya-i-zhivoe-tz.md'
 const postPath = new URL(postFile, postsDir)
+const heroImagePath = new URL(
+  '../blog-v2/public/uploads/issue-288-v-tech-production-dashboard.png',
+  import.meta.url,
+)
+const heroSourcePath = new URL(
+  '../experiments/issue-288-v-tech-production-dashboard.html',
+  import.meta.url,
+)
 
 function frontmatterValue(source, field) {
   const match = source.match(new RegExp(`^${field}:\\s*['"]?(.*?)['"]?$`, 'm'))
@@ -83,4 +91,25 @@ test('industrial automation article is the latest issue in the chronological arc
   const position = posts.findIndex((post) => post.file === postFile) + 1
   assert.ok(position > 0, 'published article should appear in the archive')
   assert.equal(position, posts.length, 'article with the newest pubDate should be the latest issue')
+})
+
+test('industrial automation article uses the colorful V-Tech hero screenshot (issue 288)', () => {
+  assert.ok(existsSync(postPath), `expected ${postFile} to exist`)
+  assert.ok(existsSync(heroImagePath), 'expected issue #288 hero screenshot asset to exist')
+  assert.ok(existsSync(heroSourcePath), 'expected issue #288 screenshot source to exist')
+
+  const post = readFileSync(postPath, 'utf8')
+  const heroSource = readFileSync(heroSourcePath, 'utf8')
+  const heroImage = readFileSync(heroImagePath)
+
+  assert.match(post, /image:\s*['"]?\/uploads\/issue-288-v-tech-production-dashboard\.png['"]?/)
+  assert.equal(heroImage.subarray(1, 4).toString('ascii'), 'PNG')
+  assert.equal(heroImage.readUInt32BE(16), 1200)
+  assert.equal(heroImage.readUInt32BE(20), 630)
+  assert.match(heroSource, /В-Тех/)
+  assert.match(heroSource, /Пульт запуска заказов В-Тех/)
+  assert.match(heroSource, /--green:\s*#16a34a/)
+  assert.match(heroSource, /--amber:\s*#d97706/)
+  assert.match(heroSource, /--rose:\s*#e11d48/)
+  assert.match(heroSource, /--violet:\s*#7c3aed/)
 })

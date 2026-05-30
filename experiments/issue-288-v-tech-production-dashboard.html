@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1200, initial-scale=1" />
+    <title>В-Тех production dashboard screenshot</title>
+    <!-- Inspired by ideav/crm production screenshots: issue-2913-planning-overview and issue-2915-slitter-cut. -->
+    <style>
+      @font-face {
+        font-family: Inter;
+        src: url("../scripts/fonts/Inter-Regular.ttf") format("truetype");
+        font-weight: 400;
+      }
+
+      @font-face {
+        font-family: Inter;
+        src: url("../scripts/fonts/Inter-Bold.ttf") format("truetype");
+        font-weight: 700;
+      }
+
+      :root {
+        --ink: #172033;
+        --muted: #68758c;
+        --line: #d9e0ea;
+        --panel: #ffffff;
+        --blue: #2563eb;
+        --cyan: #0891b2;
+        --green: #16a34a;
+        --amber: #d97706;
+        --rose: #e11d48;
+        --violet: #7c3aed;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: #ecf1f7;
+        color: var(--ink);
+        font-family: Inter, Arial, sans-serif;
+      }
+
+      #shot {
+        width: 1200px;
+        height: 630px;
+        padding: 18px;
+        background:
+          linear-gradient(145deg, rgba(8, 145, 178, 0.14), transparent 38%),
+          linear-gradient(315deg, rgba(225, 29, 72, 0.08), transparent 42%),
+          #ecf1f7;
+      }
+
+      .app {
+        display: grid;
+        grid-template-columns: 196px 1fr;
+        width: 1164px;
+        height: 594px;
+        border: 1px solid #cbd5e1;
+        border-radius: 22px;
+        overflow: hidden;
+        background: #f8fafc;
+        box-shadow: 0 22px 52px rgba(15, 23, 42, 0.18);
+      }
+
+      .sidebar {
+        padding: 20px 18px;
+        background: #132238;
+        color: #e5edf8;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 28px;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border-radius: 12px;
+        background: #f97316;
+        color: #fff7ed;
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .brand-name {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 0;
+      }
+
+      .brand-sub {
+        margin-top: 2px;
+        color: #9fb0c7;
+        font-size: 11px;
+      }
+
+      .side-section {
+        margin-top: 16px;
+      }
+
+      .side-label {
+        margin-bottom: 8px;
+        color: #8ea3bf;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        min-height: 34px;
+        margin-bottom: 6px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        color: #d8e3f4;
+        font-size: 13px;
+      }
+
+      .nav-item.active {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      .shift-card {
+        margin-top: 28px;
+        padding: 14px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.09);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .shift-card strong {
+        display: block;
+        margin-bottom: 8px;
+        color: #fff;
+        font-size: 15px;
+      }
+
+      .shift-card p {
+        margin: 0;
+        color: #b9c8dc;
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .main {
+        display: grid;
+        grid-template-rows: 64px 108px 1fr;
+        min-width: 0;
+        background: #f7f9fc;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 24px;
+        background: #ffffff;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .eyebrow {
+        color: var(--cyan);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 4px 0 0;
+        font-size: 24px;
+        line-height: 1.1;
+        letter-spacing: 0;
+      }
+
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 30px;
+        padding: 0 11px;
+        border-radius: 999px;
+        background: #eef2ff;
+        color: #4338ca;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .button {
+        height: 34px;
+        padding: 0 14px;
+        border: 0;
+        border-radius: 9px;
+        background: var(--blue);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        padding: 12px 24px 10px;
+      }
+
+      .metric {
+        padding: 12px 14px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--panel);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+      }
+
+      .metric-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .metric-title {
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .metric-value {
+        color: var(--blue);
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .bar {
+        height: 9px;
+        margin: 5px 0;
+        border-radius: 999px;
+        overflow: hidden;
+        background: #e9eef5;
+      }
+
+      .bar > span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+      }
+
+      .metric-note {
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: 1.12fr 0.88fr;
+        gap: 14px;
+        min-height: 0;
+        padding: 0 24px 18px;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--panel);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+        overflow: hidden;
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border-bottom: 1px solid #e7edf4;
+      }
+
+      .panel-title {
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      .panel-caption {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .queue {
+        padding: 8px 16px 10px;
+      }
+
+      .queue-row {
+        display: grid;
+        grid-template-columns: 82px 1fr 94px 82px;
+        align-items: center;
+        min-height: 36px;
+        border-bottom: 1px solid #edf1f6;
+        column-gap: 10px;
+        font-size: 12px;
+      }
+
+      .queue-row:last-child {
+        border-bottom: 0;
+      }
+
+      .cut-id {
+        font-weight: 700;
+      }
+
+      .order {
+        color: var(--muted);
+      }
+
+      .status {
+        display: inline-flex;
+        justify-content: center;
+        min-width: 84px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .status.run {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+
+      .status.ready {
+        background: #dcfce7;
+        color: #15803d;
+      }
+
+      .status.wait {
+        background: #fef3c7;
+        color: #b45309;
+      }
+
+      .status.hold {
+        background: #ffe4e6;
+        color: #be123c;
+      }
+
+      .gantt {
+        margin-top: 6px;
+        padding: 10px 16px 12px;
+        border-top: 1px solid #e7edf4;
+      }
+
+      .timeline {
+        display: grid;
+        grid-template-columns: 82px repeat(8, 1fr);
+        align-items: center;
+        row-gap: 7px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .time-label {
+        font-weight: 700;
+      }
+
+      .task {
+        height: 19px;
+        border-radius: 7px;
+      }
+
+      .task.blue {
+        grid-column: 2 / 5;
+        background: #60a5fa;
+      }
+
+      .task.green {
+        grid-column: 5 / 9;
+        background: #34d399;
+      }
+
+      .task.amber {
+        grid-column: 3 / 7;
+        background: #f59e0b;
+      }
+
+      .task.violet {
+        grid-column: 7 / 10;
+        background: #a78bfa;
+      }
+
+      .right-column {
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+        gap: 14px;
+        min-height: 0;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        padding: 14px;
+      }
+
+      .mini {
+        min-height: 76px;
+        padding: 10px;
+        border-radius: 14px;
+        background: #f8fafc;
+        border: 1px solid #e3e9f1;
+      }
+
+      .mini-label {
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .mini-value {
+        margin-top: 3px;
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .mini small {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 10px;
+      }
+
+      .accent-blue {
+        color: var(--blue);
+      }
+
+      .accent-green {
+        color: var(--green);
+      }
+
+      .accent-amber {
+        color: var(--amber);
+      }
+
+      .accent-rose {
+        color: var(--rose);
+      }
+
+      .updates {
+        padding: 2px 14px 14px;
+      }
+
+      .update {
+        display: grid;
+        grid-template-columns: 9px 1fr auto;
+        align-items: center;
+        gap: 9px;
+        min-height: 28px;
+        color: #334155;
+        font-size: 11px;
+      }
+
+      .update-line {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+      }
+
+      .update strong {
+        font-size: 12px;
+      }
+
+      .update-time {
+        color: var(--muted);
+      }
+
+      .legend {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="shot">
+      <div class="app">
+        <aside class="sidebar">
+          <div class="brand">
+            <div class="brand-mark">В</div>
+            <div>
+              <div class="brand-name">В-Тех</div>
+              <div class="brand-sub">MES / APS контур</div>
+            </div>
+          </div>
+
+          <div class="side-section">
+            <div class="side-label">Рабочие места</div>
+            <div class="nav-item active"><span class="dot" style="color: #38bdf8"></span>Планирование</div>
+            <div class="nav-item"><span class="dot" style="color: #22c55e"></span>Операторская</div>
+            <div class="nav-item"><span class="dot" style="color: #f59e0b"></span>Склад сырья</div>
+            <div class="nav-item"><span class="dot" style="color: #fb7185"></span>Контроль ОТК</div>
+          </div>
+
+          <div class="side-section">
+            <div class="side-label">Методология</div>
+            <div class="nav-item"><span class="dot" style="color: #a78bfa"></span>Живое ТЗ</div>
+            <div class="nav-item"><span class="dot" style="color: #14b8a6"></span>RBAC</div>
+          </div>
+
+          <div class="shift-card">
+            <strong>Смена А</strong>
+            <p>План на 30 мая: 14 200 м выпуска, 4 активные резки, 2 заявки требуют сырья.</p>
+          </div>
+        </aside>
+
+        <main class="main">
+          <header class="topbar">
+            <div>
+              <div class="eyebrow">Производственное планирование</div>
+              <h1>Пульт запуска заказов В-Тех</h1>
+            </div>
+            <div class="top-actions">
+              <span class="pill"><span class="dot" style="color: #16a34a"></span>онлайн</span>
+              <span class="pill" style="background: #fff7ed; color: #c2410c">1С обмен 08:45</span>
+              <button class="button">Собрать план</button>
+            </div>
+          </header>
+
+          <section class="metrics">
+            <div class="metric">
+              <div class="metric-head"><span class="metric-title">Заказы в работе</span><span class="metric-value">18</span></div>
+              <div class="bar"><span style="width: 78%; background: var(--blue)"></span></div>
+              <div class="metric-note">6 новых, 9 в производстве, 3 ждут сырья</div>
+            </div>
+            <div class="metric">
+              <div class="metric-head"><span class="metric-title">Загрузка линий</span><span class="metric-value" style="color: var(--green)">82%</span></div>
+              <div class="bar"><span style="width: 82%; background: var(--green)"></span></div>
+              <div class="metric-note">Слиттер №1 перегружен на 12%</div>
+            </div>
+            <div class="metric">
+              <div class="metric-head"><span class="metric-title">Остаток сырья</span><span class="metric-value" style="color: var(--amber)">7.4т</span></div>
+              <div class="bar"><span style="width: 56%; background: var(--amber)"></span></div>
+              <div class="metric-note">Алюминий 1.0 мм закрывает 2 смены</div>
+            </div>
+            <div class="metric">
+              <div class="metric-head"><span class="metric-title">Риски срока</span><span class="metric-value" style="color: var(--rose)">3</span></div>
+              <div class="bar"><span style="width: 31%; background: var(--rose)"></span></div>
+              <div class="metric-note">Нужно согласовать замену партии</div>
+            </div>
+          </section>
+
+          <section class="workspace">
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-title">Очередь резки по слиттерам</div>
+                  <div class="panel-caption">Типовой экран, собранный из конфигурации Живого ТЗ</div>
+                </div>
+                <div class="legend">
+                  <span class="status run">В работе</span>
+                  <span class="status ready">Готов</span>
+                </div>
+              </div>
+              <div class="queue">
+                <div class="queue-row">
+                  <span class="cut-id">Резка №1</span><span>25×35 БОПП · партия A-100</span><span class="order">850 м</span><span class="status run">В работе</span>
+                </div>
+                <div class="queue-row">
+                  <span class="cut-id">Резка №2</span><span>55 мм ПЭТ · заказ 1412</span><span class="order">1 200 м</span><span class="status wait">Ожидает</span>
+                </div>
+                <div class="queue-row">
+                  <span class="cut-id">Резка №3</span><span>40×20 · партия B-2026</span><span class="order">620 м</span><span class="status ready">Готов</span>
+                </div>
+                <div class="queue-row">
+                  <span class="cut-id">Резка №4</span><span>30×30 · срочный заказ 1420</span><span class="order">430 м</span><span class="status hold">Риск</span>
+                </div>
+              </div>
+              <div class="gantt">
+                <div class="timeline">
+                  <div></div><div>08</div><div>09</div><div>10</div><div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
+                  <div class="time-label">Линия 1</div><div class="task blue"></div>
+                  <div class="time-label">Линия 2</div><div class="task green"></div>
+                  <div class="time-label">Склад</div><div class="task amber"></div>
+                  <div class="time-label">ОТК</div><div class="task violet"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="right-column">
+              <div class="panel">
+                <div class="panel-head">
+                  <div class="panel-title">Цифровой контур</div>
+                  <div class="panel-caption">обновлено 30.05</div>
+                </div>
+                <div class="cards">
+                  <div class="mini">
+                    <div class="mini-label">План выпуска</div>
+                    <div class="mini-value accent-blue">14 200 м</div>
+                    <small>+18% к прошлой смене</small>
+                  </div>
+                  <div class="mini">
+                    <div class="mini-label">FIFO списание</div>
+                    <div class="mini-value accent-green">92%</div>
+                    <small>автоматический подбор</small>
+                  </div>
+                  <div class="mini">
+                    <div class="mini-label">Отклонения</div>
+                    <div class="mini-value accent-amber">12 м²</div>
+                    <small>брак в допуске</small>
+                  </div>
+                  <div class="mini">
+                    <div class="mini-label">Права доступа</div>
+                    <div class="mini-value accent-rose">7 ролей</div>
+                    <small>производство, склад, ОТК</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-head">
+                  <div class="panel-title">События смены</div>
+                  <div class="panel-caption">прозрачная история операций</div>
+                </div>
+                <div class="updates">
+                  <div class="update">
+                    <span class="update-line" style="background: var(--green)"></span>
+                    <strong>Резка №1 запущена оператором</strong>
+                    <span class="update-time">08:15</span>
+                  </div>
+                  <div class="update">
+                    <span class="update-line" style="background: var(--blue)"></span>
+                    <strong>1С вернула резерв сырья A-100</strong>
+                    <span class="update-time">08:34</span>
+                  </div>
+                  <div class="update">
+                    <span class="update-line" style="background: var(--amber)"></span>
+                    <strong>Аналитик изменил порядок полей</strong>
+                    <span class="update-time">08:47</span>
+                  </div>
+                  <div class="update">
+                    <span class="update-line" style="background: var(--violet)"></span>
+                    <strong>Заказчик принял прототип отчёта</strong>
+                    <span class="update-time">09:02</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
