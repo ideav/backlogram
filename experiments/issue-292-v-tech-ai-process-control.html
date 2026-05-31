@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1200, initial-scale=1" />
+    <title>Контроль логики В-Тех</title>
+    <!-- Inspired by ideav/crm screenshots: issue-2471-ai-chat and issue-2481-ai-providers. -->
+    <style>
+      @font-face {
+        font-family: Inter;
+        src: url("../scripts/fonts/Inter-Regular.ttf") format("truetype");
+        font-weight: 400;
+      }
+
+      @font-face {
+        font-family: Inter;
+        src: url("../scripts/fonts/Inter-Bold.ttf") format("truetype");
+        font-weight: 700;
+      }
+
+      :root {
+        --ink: #172033;
+        --muted: #637083;
+        --line: #d9e0ea;
+        --panel: #ffffff;
+        --blue: #2563eb;
+        --cyan: #0891b2;
+        --green: #16a34a;
+        --amber: #d97706;
+        --rose: #e11d48;
+        --violet: #7c3aed;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: #eef2f8;
+        color: var(--ink);
+        font-family: Inter, Arial, sans-serif;
+      }
+
+      #shot {
+        width: 1200px;
+        height: 630px;
+        padding: 18px;
+        background:
+          linear-gradient(140deg, rgba(124, 58, 237, 0.14), transparent 38%),
+          linear-gradient(315deg, rgba(217, 119, 6, 0.12), transparent 44%),
+          #eef2f8;
+      }
+
+      .app {
+        display: grid;
+        grid-template-columns: 196px 1fr;
+        width: 1164px;
+        height: 594px;
+        overflow: hidden;
+        border: 1px solid #cbd5e1;
+        border-radius: 14px;
+        background: #f8fafc;
+        box-shadow: 0 22px 52px rgba(15, 23, 42, 0.18);
+      }
+
+      .sidebar {
+        padding: 20px 18px;
+        background: #111c32;
+        color: #e7eef8;
+      }
+
+      .brand {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 28px;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border-radius: 8px;
+        background: #f97316;
+        color: #fff7ed;
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .brand-name {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 0;
+      }
+
+      .brand-sub {
+        margin-top: 2px;
+        color: #9fb0c7;
+        font-size: 11px;
+      }
+
+      .side-label {
+        margin: 20px 0 8px;
+        color: #8ea3bf;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .nav-item {
+        display: flex;
+        gap: 9px;
+        align-items: center;
+        min-height: 34px;
+        margin-bottom: 6px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        color: #d8e3f4;
+        font-size: 13px;
+      }
+
+      .nav-item.active {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      .side-card {
+        margin-top: 30px;
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.09);
+      }
+
+      .side-card strong {
+        display: block;
+        margin-bottom: 8px;
+        color: #fff;
+        font-size: 15px;
+      }
+
+      .side-card p {
+        margin: 0;
+        color: #b9c8dc;
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .main {
+        display: grid;
+        grid-template-rows: 70px 1fr;
+        min-width: 0;
+        background: #f7f9fc;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 24px;
+        border-bottom: 1px solid var(--line);
+        background: #fff;
+      }
+
+      .eyebrow {
+        color: var(--violet);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 4px 0 0;
+        font-size: 25px;
+        line-height: 1.1;
+        letter-spacing: 0;
+      }
+
+      .top-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .pill {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        height: 30px;
+        padding: 0 11px;
+        border-radius: 999px;
+        background: #f3e8ff;
+        color: #6b21a8;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .button {
+        height: 34px;
+        padding: 0 14px;
+        border: 0;
+        border-radius: 8px;
+        background: var(--violet);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .content {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 260px;
+        gap: 16px;
+        padding: 18px 24px 22px;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 18px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .panel-title {
+        font-size: 17px;
+        font-weight: 700;
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-rows: 128px 1fr;
+        gap: 16px;
+        min-width: 0;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .card {
+        min-width: 0;
+        padding: 15px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+      }
+
+      .card span {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .card b {
+        display: block;
+        margin: 8px 0 6px;
+        font-size: 25px;
+      }
+
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .model {
+        padding: 16px 18px 18px;
+      }
+
+      .model-grid {
+        display: grid;
+        grid-template-columns: 190px minmax(0, 1fr) 190px;
+        gap: 14px;
+        align-items: stretch;
+      }
+
+      .lane {
+        min-height: 300px;
+        padding: 14px;
+        border: 1px solid #dbe3ee;
+        border-radius: 8px;
+        background: #f8fafc;
+      }
+
+      .lane-title {
+        margin-bottom: 12px;
+        color: #475569;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .node {
+        margin-bottom: 10px;
+        padding: 11px 12px;
+        border-radius: 8px;
+        background: #fff;
+        border-left: 5px solid var(--blue);
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+      }
+
+      .node b {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 13px;
+      }
+
+      .node span {
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .node.green {
+        border-left-color: var(--green);
+      }
+
+      .node.amber {
+        border-left-color: var(--amber);
+      }
+
+      .node.rose {
+        border-left-color: var(--rose);
+      }
+
+      .canvas {
+        position: relative;
+        display: grid;
+        place-items: center;
+        min-height: 300px;
+        border: 1px solid #dbe3ee;
+        border-radius: 8px;
+        background:
+          linear-gradient(#eef2ff 1px, transparent 1px),
+          linear-gradient(90deg, #eef2ff 1px, transparent 1px),
+          #fff;
+        background-size: 28px 28px;
+      }
+
+      .core {
+        width: 210px;
+        padding: 18px;
+        border: 2px solid #c4b5fd;
+        border-radius: 8px;
+        background: #f5f3ff;
+        text-align: center;
+      }
+
+      .core strong {
+        display: block;
+        color: var(--violet);
+        font-size: 18px;
+      }
+
+      .core p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .float {
+        position: absolute;
+        min-width: 118px;
+        padding: 9px 11px;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .float.one {
+        top: 34px;
+        left: 26px;
+        color: var(--blue);
+      }
+
+      .float.two {
+        top: 42px;
+        right: 26px;
+        color: var(--green);
+      }
+
+      .float.three {
+        bottom: 42px;
+        left: 34px;
+        color: var(--amber);
+      }
+
+      .float.four {
+        right: 34px;
+        bottom: 36px;
+        color: var(--rose);
+      }
+
+      .chat {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        min-height: 486px;
+      }
+
+      .message-list {
+        padding: 16px;
+      }
+
+      .message {
+        margin-bottom: 12px;
+        padding: 12px;
+        border-radius: 8px;
+        background: #f8fafc;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+
+      .message.ai {
+        border: 1px solid #ddd6fe;
+        background: #f5f3ff;
+      }
+
+      .message strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .guard {
+        margin: 0 16px 16px;
+        padding: 13px;
+        border: 1px solid #bbf7d0;
+        border-radius: 8px;
+        background: #f0fdf4;
+      }
+
+      .guard b {
+        display: block;
+        color: var(--green);
+        font-size: 14px;
+      }
+
+      .guard span {
+        display: block;
+        margin-top: 5px;
+        color: #166534;
+        font-size: 12px;
+        line-height: 1.35;
+      }
+    </style>
+  </head>
+  <body>
+    <main id="shot">
+      <section class="app">
+        <aside class="sidebar">
+          <div class="brand">
+            <div class="brand-mark">ВТ</div>
+            <div>
+              <div class="brand-name">В-Тех</div>
+              <div class="brand-sub">управляемая модель</div>
+            </div>
+          </div>
+
+          <div class="side-label">Контур</div>
+          <div class="nav-item active"><span class="dot"></span> Логика</div>
+          <div class="nav-item"><span class="dot"></span> AI-помощник</div>
+          <div class="nav-item"><span class="dot"></span> Права</div>
+          <div class="nav-item"><span class="dot"></span> Шаблоны</div>
+
+          <div class="side-card">
+            <strong>AI не владеет процессом</strong>
+            <p>Подсказки ускоряют настройку, но правила остаются видимыми в модели данных.</p>
+          </div>
+        </aside>
+
+        <section class="main">
+          <header class="topbar">
+            <div>
+              <div class="eyebrow">О платформе / AI</div>
+              <h1>Контроль логики В-Тех</h1>
+            </div>
+            <div class="top-actions">
+              <div class="pill">Прозрачная бизнес-модель</div>
+              <button class="button">Проверить</button>
+            </div>
+          </header>
+
+          <div class="content">
+            <section class="workspace">
+              <div class="cards">
+                <div class="card">
+                  <span>Черновики AI</span>
+                  <b style="color: var(--violet)">12</b>
+                  <p>формы, тексты и шаблоны писем созданы как предложения.</p>
+                </div>
+                <div class="card">
+                  <span>Явные правила</span>
+                  <b style="color: var(--green)">38</b>
+                  <p>проверок доступа и маршрутов согласования видно в модели.</p>
+                </div>
+                <div class="card">
+                  <span>Скрытый код</span>
+                  <b style="color: var(--rose)">0</b>
+                  <p>критичная логика не спрятана в сгенерированном приложении.</p>
+                </div>
+              </div>
+
+              <section class="panel model">
+                <div class="model-grid">
+                  <div class="lane">
+                    <div class="lane-title">Сущности</div>
+                    <div class="node">
+                      <b>Заявка клиента</b>
+                      <span>статус, сумма, срок, цех</span>
+                    </div>
+                    <div class="node green">
+                      <b>Сменное задание</b>
+                      <span>оператор, линия, партия</span>
+                    </div>
+                    <div class="node amber">
+                      <b>Отчёт качества</b>
+                      <span>показатели и отклонения</span>
+                    </div>
+                  </div>
+
+                  <div class="canvas">
+                    <div class="float one">роль: диспетчер</div>
+                    <div class="float two">маршрут согласования</div>
+                    <div class="float three">шаблон письма</div>
+                    <div class="float four">ограничение доступа</div>
+                    <div class="core">
+                      <strong>Модель процесса</strong>
+                      <p>AI помогает собрать черновик, а В-Тех сохраняет управляемую структуру.</p>
+                    </div>
+                  </div>
+
+                  <div class="lane">
+                    <div class="lane-title">Результаты</div>
+                    <div class="node green">
+                      <b>Форма запуска</b>
+                      <span>готова для цеха</span>
+                    </div>
+                    <div class="node">
+                      <b>Дашборд SLA</b>
+                      <span>видит директор</span>
+                    </div>
+                    <div class="node rose">
+                      <b>Аудит доступа</b>
+                      <span>показывает риск до публикации</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </section>
+
+            <aside class="panel chat">
+              <div class="panel-head">
+                <div class="panel-title">AI-помощник</div>
+                <div class="pill">черновик</div>
+              </div>
+              <div class="message-list">
+                <div class="message">
+                  <strong>Менеджер В-Тех</strong>
+                  Добавь форму для срочного заказа и покажи риски по сроку.
+                </div>
+                <div class="message ai">
+                  <strong>AI-помощник</strong>
+                  Предлагаю поля, проверку дедлайна и текст уведомления. Применить в модель?
+                </div>
+                <div class="message">
+                  <strong>Аналитик</strong>
+                  Поля принимаем, правило доступа оставляем только для роли диспетчера.
+                </div>
+              </div>
+              <div class="guard">
+                <b>Логика утверждена человеком</b>
+                <span>Изменения станут частью модели В-Тех, а не отдельным сгенерированным кодом.</span>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

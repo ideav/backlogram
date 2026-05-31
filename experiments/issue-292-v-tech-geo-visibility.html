@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1200, initial-scale=1" />
+    <title>GEO-мониторинг В-Тех</title>
+    <!-- Inspired by ideav/crm screenshots: issue-2919-dashboards and issue-3002-09-director-dashboards. -->
+    <style>
+      @font-face {
+        font-family: Inter;
+        src: url("../scripts/fonts/Inter-Regular.ttf") format("truetype");
+        font-weight: 400;
+      }
+
+      @font-face {
+        font-family: Inter;
+        src: url("../scripts/fonts/Inter-Bold.ttf") format("truetype");
+        font-weight: 700;
+      }
+
+      :root {
+        --ink: #172033;
+        --muted: #637083;
+        --line: #d9e0ea;
+        --panel: #ffffff;
+        --blue: #2563eb;
+        --cyan: #0891b2;
+        --green: #16a34a;
+        --amber: #d97706;
+        --rose: #e11d48;
+        --violet: #7c3aed;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: #edf3f5;
+        color: var(--ink);
+        font-family: Inter, Arial, sans-serif;
+      }
+
+      #shot {
+        width: 1200px;
+        height: 630px;
+        padding: 18px;
+        background:
+          linear-gradient(145deg, rgba(8, 145, 178, 0.14), transparent 38%),
+          linear-gradient(315deg, rgba(225, 29, 72, 0.1), transparent 42%),
+          #edf3f5;
+      }
+
+      .app {
+        display: grid;
+        grid-template-columns: 196px 1fr;
+        width: 1164px;
+        height: 594px;
+        overflow: hidden;
+        border: 1px solid #cbd5e1;
+        border-radius: 14px;
+        background: #f8fafc;
+        box-shadow: 0 22px 52px rgba(15, 23, 42, 0.18);
+      }
+
+      .sidebar {
+        padding: 20px 18px;
+        background: #132238;
+        color: #e7eef8;
+      }
+
+      .brand {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 28px;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border-radius: 8px;
+        background: #f97316;
+        color: #fff7ed;
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .brand-name {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 0;
+      }
+
+      .brand-sub {
+        margin-top: 2px;
+        color: #9fb0c7;
+        font-size: 11px;
+      }
+
+      .side-label {
+        margin: 20px 0 8px;
+        color: #8ea3bf;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .nav-item {
+        display: flex;
+        gap: 9px;
+        align-items: center;
+        min-height: 34px;
+        margin-bottom: 6px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        color: #d8e3f4;
+        font-size: 13px;
+      }
+
+      .nav-item.active {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      .side-card {
+        margin-top: 30px;
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.09);
+      }
+
+      .side-card strong {
+        display: block;
+        margin-bottom: 8px;
+        color: #fff;
+        font-size: 15px;
+      }
+
+      .side-card p {
+        margin: 0;
+        color: #b9c8dc;
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .main {
+        display: grid;
+        grid-template-rows: 70px 1fr;
+        min-width: 0;
+        background: #f7f9fc;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 24px;
+        border-bottom: 1px solid var(--line);
+        background: #fff;
+      }
+
+      .eyebrow {
+        color: var(--cyan);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 4px 0 0;
+        font-size: 25px;
+        line-height: 1.1;
+        letter-spacing: 0;
+      }
+
+      .top-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .pill {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        height: 30px;
+        padding: 0 11px;
+        border-radius: 999px;
+        background: #cffafe;
+        color: #155e75;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .button {
+        height: 34px;
+        padding: 0 14px;
+        border: 0;
+        border-radius: 8px;
+        background: var(--cyan);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .content {
+        display: grid;
+        grid-template-rows: 116px 1fr;
+        gap: 16px;
+        padding: 18px 24px 22px;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+
+      .metric {
+        padding: 15px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+      }
+
+      .metric span {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .metric b {
+        display: block;
+        margin: 7px 0 5px;
+        font-size: 26px;
+      }
+
+      .metric p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1.12fr 0.88fr;
+        gap: 16px;
+        min-height: 352px;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px 18px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .panel-title {
+        font-size: 17px;
+        font-weight: 700;
+      }
+
+      .visibility {
+        padding: 16px 18px 18px;
+      }
+
+      .chart {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+        align-items: end;
+        height: 164px;
+        margin-bottom: 15px;
+        padding: 12px 14px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: #f8fafc;
+      }
+
+      .bar {
+        display: flex;
+        align-items: end;
+        justify-content: center;
+        border-radius: 8px 8px 4px 4px;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .queries {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+
+      .query {
+        padding: 12px;
+        border: 1px solid #dbe3ee;
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      .query b {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 13px;
+        line-height: 1.25;
+      }
+
+      .query span {
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .right {
+        display: grid;
+        grid-template-rows: 1fr 150px;
+        gap: 16px;
+      }
+
+      table {
+        width: calc(100% - 36px);
+        margin: 14px 18px 18px;
+        border-collapse: collapse;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        font-size: 12px;
+      }
+
+      th,
+      td {
+        padding: 10px 11px;
+        border-bottom: 1px solid #e7edf5;
+        text-align: left;
+      }
+
+      th {
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 11px;
+        text-transform: uppercase;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .source {
+        display: inline-flex;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: #dcfce7;
+        color: #166534;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .faq {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        padding: 14px;
+      }
+
+      .faq-card {
+        padding: 12px;
+        border-radius: 8px;
+        background: #f8fafc;
+      }
+
+      .faq-card b {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 13px;
+      }
+
+      .faq-card span {
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.35;
+      }
+    </style>
+  </head>
+  <body>
+    <main id="shot">
+      <section class="app">
+        <aside class="sidebar">
+          <div class="brand">
+            <div class="brand-mark">ВТ</div>
+            <div>
+              <div class="brand-name">В-Тех</div>
+              <div class="brand-sub">видимость в AI-ответах</div>
+            </div>
+          </div>
+
+          <div class="side-label">GEO</div>
+          <div class="nav-item active"><span class="dot"></span> Мониторинг</div>
+          <div class="nav-item"><span class="dot"></span> Вопросы</div>
+          <div class="nav-item"><span class="dot"></span> Источники</div>
+          <div class="nav-item"><span class="dot"></span> FAQ-блоки</div>
+
+          <div class="side-card">
+            <strong>Структура важнее бюджета</strong>
+            <p>Таблицы, FAQ и точные факты помогают ассистентам цитировать материалы В-Тех.</p>
+          </div>
+        </aside>
+
+        <section class="main">
+          <header class="topbar">
+            <div>
+              <div class="eyebrow">Технологии / GEO</div>
+              <h1>GEO-мониторинг В-Тех</h1>
+            </div>
+            <div class="top-actions">
+              <div class="pill">AI-ответы за неделю</div>
+              <button class="button">Обновить срез</button>
+            </div>
+          </header>
+
+          <div class="content">
+            <section class="metrics">
+              <div class="metric">
+                <span>Упоминания</span>
+                <b style="color: var(--green)">64%</b>
+                <p>в целевых AI-ответах</p>
+              </div>
+              <div class="metric">
+                <span>Источники</span>
+                <b style="color: var(--blue)">18</b>
+                <p>страниц с таблицами и FAQ</p>
+              </div>
+              <div class="metric">
+                <span>Риск</span>
+                <b style="color: var(--amber)">7</b>
+                <p>вопросов без прямого ответа</p>
+              </div>
+              <div class="metric">
+                <span>Ошибки фактов</span>
+                <b style="color: var(--rose)">2</b>
+                <p>нужно уточнить цифры</p>
+              </div>
+            </section>
+
+            <section class="grid">
+              <section class="panel visibility">
+                <div class="panel-head" style="padding: 0 0 12px; border-bottom: 0">
+                  <div class="panel-title">Доля ответов, где В-Тех указан как источник</div>
+                  <div class="pill">+18% за месяц</div>
+                </div>
+                <div class="chart">
+                  <div class="bar" style="height: 74px; background: var(--blue)">31</div>
+                  <div class="bar" style="height: 86px; background: var(--cyan)">38</div>
+                  <div class="bar" style="height: 102px; background: var(--green)">45</div>
+                  <div class="bar" style="height: 98px; background: var(--amber)">43</div>
+                  <div class="bar" style="height: 118px; background: var(--violet)">52</div>
+                  <div class="bar" style="height: 136px; background: var(--green)">60</div>
+                  <div class="bar" style="height: 146px; background: var(--cyan)">64</div>
+                </div>
+                <div class="queries">
+                  <div class="query">
+                    <b>какую CRM выбрать для производства</b>
+                    <span>В-Тех цитируется с таблицей сравнения</span>
+                  </div>
+                  <div class="query">
+                    <b>no-code система для филиалов</b>
+                    <span>нужен блок с ограничениями</span>
+                  </div>
+                  <div class="query">
+                    <b>учёт без Excel и 1С</b>
+                    <span>ответ берёт FAQ и кейс</span>
+                  </div>
+                </div>
+              </section>
+
+              <section class="right">
+                <section class="panel">
+                  <div class="panel-head">
+                    <div class="panel-title">Источники для ассистентов</div>
+                    <div class="pill">проверено</div>
+                  </div>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Материал</th>
+                        <th>Сигнал</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Сравнение CRM</td>
+                        <td><span class="source">таблица</span></td>
+                      </tr>
+                      <tr>
+                        <td>FAQ по внедрению</td>
+                        <td><span class="source">ответы</span></td>
+                      </tr>
+                      <tr>
+                        <td>Кейс производства</td>
+                        <td><span class="source">цифры</span></td>
+                      </tr>
+                      <tr>
+                        <td>Self-hosted контур</td>
+                        <td><span class="source">факты</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </section>
+
+                <section class="panel faq">
+                  <div class="faq-card">
+                    <b style="color: var(--violet)">FAQ готов</b>
+                    <span>9 прямых ответов на вопросы ассистентов.</span>
+                  </div>
+                  <div class="faq-card">
+                    <b style="color: var(--amber)">Нужна таблица</b>
+                    <span>3 запроса требуют сравнения форматов внедрения.</span>
+                  </div>
+                </section>
+              </section>
+            </section>
+          </div>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>
