@@ -4,6 +4,7 @@ description: Generative Engine Optimization — это новое SEO. Пока 
 pubDate: '2026-05-17'
 category: Технологии
 author: Команда Интеграм
+image: /uploads/issue-292-v-tech-geo-visibility.png
 tags:
 - маркетинг
 - технологии

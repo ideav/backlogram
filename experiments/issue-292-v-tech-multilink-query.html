@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1200, initial-scale=1" />
+    <title>Цеховые мультиссылки В-Тех</title>
+    <!-- Inspired by ideav/crm screenshots: issue-2827-xcom-match and issue-2495-unique-key-ui. -->
+    <style>
+      @font-face {
+        font-family: Inter;
+        src: url("../scripts/fonts/Inter-Regular.ttf") format("truetype");
+        font-weight: 400;
+      }
+
+      @font-face {
+        font-family: Inter;
+        src: url("../scripts/fonts/Inter-Bold.ttf") format("truetype");
+        font-weight: 700;
+      }
+
+      :root {
+        --ink: #172033;
+        --muted: #637083;
+        --line: #d9e0ea;
+        --panel: #ffffff;
+        --blue: #2563eb;
+        --cyan: #0891b2;
+        --green: #16a34a;
+        --amber: #d97706;
+        --rose: #e11d48;
+        --violet: #7c3aed;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: #edf2f7;
+        color: var(--ink);
+        font-family: Inter, Arial, sans-serif;
+      }
+
+      #shot {
+        width: 1200px;
+        height: 630px;
+        padding: 18px;
+        background:
+          linear-gradient(145deg, rgba(37, 99, 235, 0.14), transparent 38%),
+          linear-gradient(315deg, rgba(22, 163, 74, 0.12), transparent 44%),
+          #edf2f7;
+      }
+
+      .app {
+        display: grid;
+        grid-template-columns: 192px 1fr;
+        width: 1164px;
+        height: 594px;
+        overflow: hidden;
+        border: 1px solid #cbd5e1;
+        border-radius: 14px;
+        background: #f8fafc;
+        box-shadow: 0 22px 52px rgba(15, 23, 42, 0.18);
+      }
+
+      .sidebar {
+        padding: 20px 18px;
+        background: #132238;
+        color: #e7eef8;
+      }
+
+      .brand {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 28px;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border-radius: 8px;
+        background: #f97316;
+        color: #fff7ed;
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .brand-name {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 0;
+      }
+
+      .brand-sub {
+        margin-top: 2px;
+        color: #9fb0c7;
+        font-size: 11px;
+      }
+
+      .side-label {
+        margin: 20px 0 8px;
+        color: #8ea3bf;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .nav-item {
+        display: flex;
+        gap: 9px;
+        align-items: center;
+        min-height: 34px;
+        margin-bottom: 6px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        color: #d8e3f4;
+        font-size: 13px;
+      }
+
+      .nav-item.active {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      .hint {
+        margin-top: 30px;
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.09);
+      }
+
+      .hint strong {
+        display: block;
+        margin-bottom: 8px;
+        color: #fff;
+        font-size: 15px;
+      }
+
+      .hint p {
+        margin: 0;
+        color: #b9c8dc;
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .main {
+        display: grid;
+        grid-template-rows: 70px 1fr;
+        min-width: 0;
+        background: #f7f9fc;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 24px;
+        border-bottom: 1px solid var(--line);
+        background: #fff;
+      }
+
+      .eyebrow {
+        color: var(--cyan);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 4px 0 0;
+        font-size: 25px;
+        line-height: 1.1;
+        letter-spacing: 0;
+      }
+
+      .top-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .pill {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        height: 30px;
+        padding: 0 11px;
+        border-radius: 999px;
+        background: #e0f2fe;
+        color: #0369a1;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .button {
+        height: 34px;
+        padding: 0 14px;
+        border: 0;
+        border-radius: 8px;
+        background: var(--blue);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .content {
+        display: grid;
+        grid-template-columns: 1.08fr 0.92fr;
+        gap: 16px;
+        padding: 18px 24px 18px;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+      }
+
+      .query {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        min-height: 482px;
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 18px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .panel-title {
+        font-size: 17px;
+        font-weight: 700;
+      }
+
+      .status {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        padding: 6px 9px;
+        border-radius: 999px;
+        background: #dcfce7;
+        color: #166534;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .status::before {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--green);
+        content: "";
+      }
+
+      .formula {
+        margin: 14px 18px;
+        padding: 15px 16px;
+        border: 1px solid #bfdbfe;
+        border-radius: 8px;
+        background: #eff6ff;
+        color: #1e3a8a;
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .formula span {
+        color: var(--rose);
+      }
+
+      .flow {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        padding: 2px 18px 14px;
+      }
+
+      .step {
+        min-height: 86px;
+        padding: 12px;
+        border: 1px solid #dbe3ee;
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      .step b {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 13px;
+      }
+
+      .step p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.35;
+      }
+
+      .step:nth-child(1) b {
+        color: var(--blue);
+      }
+
+      .step:nth-child(2) b {
+        color: var(--violet);
+      }
+
+      .step:nth-child(3) b {
+        color: var(--amber);
+      }
+
+      .step:nth-child(4) b {
+        color: var(--green);
+      }
+
+      table {
+        width: calc(100% - 36px);
+        margin: 0 18px 16px;
+        border-collapse: collapse;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        font-size: 12px;
+      }
+
+      th,
+      td {
+        padding: 10px 11px;
+        border-bottom: 1px solid #e7edf5;
+        text-align: left;
+      }
+
+      th {
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 11px;
+        text-transform: uppercase;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .badge {
+        display: inline-flex;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: #fef3c7;
+        color: #92400e;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .right {
+        display: grid;
+        grid-template-rows: 1fr 172px;
+        gap: 16px;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        padding: 16px 18px 10px;
+      }
+
+      .chip {
+        padding: 8px 11px;
+        border-radius: 999px;
+        background: #eef2ff;
+        color: #3730a3;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .chip.green {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .chip.amber {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .chip.rose {
+        background: #ffe4e6;
+        color: #9f1239;
+      }
+
+      .preview {
+        margin: 6px 18px 16px;
+        padding: 14px;
+        border: 1px dashed #a5b4fc;
+        border-radius: 8px;
+        background: #f8fafc;
+      }
+
+      .preview-title {
+        margin-bottom: 8px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .preview p {
+        margin: 0 0 8px;
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .preview strong {
+        color: var(--violet);
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        padding: 14px;
+      }
+
+      .metric {
+        padding: 12px;
+        border-radius: 8px;
+        background: #f8fafc;
+      }
+
+      .metric b {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 22px;
+      }
+
+      .metric span {
+        color: var(--muted);
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <main id="shot">
+      <section class="app">
+        <aside class="sidebar">
+          <div class="brand">
+            <div class="brand-mark">ВТ</div>
+            <div>
+              <div class="brand-name">В-Тех</div>
+              <div class="brand-sub">производственный контур</div>
+            </div>
+          </div>
+
+          <div class="side-label">Разделы</div>
+          <div class="nav-item active"><span class="dot"></span> Запросы</div>
+          <div class="nav-item"><span class="dot"></span> Справочники</div>
+          <div class="nav-item"><span class="dot"></span> Номенклатура</div>
+          <div class="nav-item"><span class="dot"></span> Журнал SET</div>
+
+          <div class="hint">
+            <strong>Мультиссылка</strong>
+            <p>Один запрос разбирает строку на теги, создаёт недостающие значения и связывает их с заказом.</p>
+          </div>
+        </aside>
+
+        <section class="main">
+          <header class="topbar">
+            <div>
+              <div class="eyebrow">Обучение / запросы</div>
+              <h1>Цеховые мультиссылки В-Тех</h1>
+            </div>
+            <div class="top-actions">
+              <div class="pill">Автосоздание справочника</div>
+              <button class="button">Запустить проверку</button>
+            </div>
+          </header>
+
+          <div class="content">
+            <section class="panel query">
+              <div class="panel-head">
+                <div class="panel-title">SET-поле для карточки заказа</div>
+                <div class="status">готово к записи</div>
+              </div>
+              <div>
+                <div class="formula">SET Теги = <span>[ПВХ,матовый,рулон,срочно,нож-3]</span></div>
+                <div class="flow">
+                  <div class="step">
+                    <b>Разобрать строку</b>
+                    <p>Скобки и запятые становятся границами значений.</p>
+                  </div>
+                  <div class="step">
+                    <b>Найти записи</b>
+                    <p>Каждый токен сверяется со справочником В-Тех.</p>
+                  </div>
+                  <div class="step">
+                    <b>Добавить новые</b>
+                    <p>Отсутствующие значения создаются автоматически.</p>
+                  </div>
+                  <div class="step">
+                    <b>Сохранить связи</b>
+                    <p>Заказ получает набор ссылок без ручного ввода.</p>
+                  </div>
+                </div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Заказ</th>
+                      <th>Номенклатура</th>
+                      <th>SET preview</th>
+                      <th>Статус</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>ВТ-2048</td>
+                      <td>Плёнка матовая 1200</td>
+                      <td>#18 ПВХ, #22 матовый, #41 рулон</td>
+                      <td><span class="badge">3 ссылки</span></td>
+                    </tr>
+                    <tr>
+                      <td>ВТ-2051</td>
+                      <td>Картридж ножа</td>
+                      <td>#7 нож-3, #51 срочно</td>
+                      <td><span class="badge">2 ссылки</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="right">
+              <section class="panel">
+                <div class="panel-head">
+                  <div class="panel-title">Справочник токенов</div>
+                  <div class="pill">46 значений</div>
+                </div>
+                <div class="chips">
+                  <span class="chip green">ПВХ</span>
+                  <span class="chip">матовый</span>
+                  <span class="chip amber">рулон</span>
+                  <span class="chip rose">срочно</span>
+                  <span class="chip">нож-3</span>
+                  <span class="chip green">упаковка</span>
+                  <span class="chip amber">перемотка</span>
+                  <span class="chip">контроль</span>
+                </div>
+                <div class="preview">
+                  <div class="preview-title">Предпросмотр результата</div>
+                  <p><strong>ВТ-2048</strong> получит четыре мультиссылки и останется доступен в фильтрах производства.</p>
+                  <p>Дубликаты и разный регистр схлопнутся до одной записи справочника.</p>
+                </div>
+              </section>
+
+              <section class="panel metrics">
+                <div class="metric">
+                  <b style="color: var(--green)">18</b>
+                  <span>новых связей</span>
+                </div>
+                <div class="metric">
+                  <b style="color: var(--amber)">4</b>
+                  <span>созданных токена</span>
+                </div>
+                <div class="metric">
+                  <b style="color: var(--violet)">0</b>
+                  <span>ручных правок</span>
+                </div>
+              </section>
+            </section>
+          </div>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

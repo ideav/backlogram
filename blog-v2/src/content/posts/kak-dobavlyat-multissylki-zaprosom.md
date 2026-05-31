@@ -4,6 +4,7 @@ description: 'Новая возможность Интеграма: присво
 pubDate: '2026-05-25'
 category: Обучение
 author: Команда Интеграм
+image: /uploads/issue-292-v-tech-multilink-query.png
 tags:
 - обучение
 - запросы

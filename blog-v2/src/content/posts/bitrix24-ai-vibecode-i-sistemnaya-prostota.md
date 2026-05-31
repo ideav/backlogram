@@ -4,6 +4,7 @@ description: "Битрикс24 показал Вайбкод, AI-агентов 
 pubDate: 2026-05-18
 category: "О платформе"
 author: "Команда Интеграм"
+image: /uploads/issue-292-v-tech-ai-process-control.png
 tags:
 - Интеграм
 - Битрикс24
