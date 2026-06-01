@@ -4,6 +4,7 @@ description: "Справочное сравнение трёх способов 
 pubDate: '2026-06-01'
 category: О платформе
 author: Команда Интеграм
+image: /uploads/hero-ai-background.webp
 tags:
 - Интеграм
 - ии-агент
