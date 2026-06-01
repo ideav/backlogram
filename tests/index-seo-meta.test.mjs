@@ -4,10 +4,14 @@ import { test } from 'node:test'
 
 const indexSource = readFileSync(new URL('../index.html', import.meta.url), 'utf8')
 
-test('index.html exposes SEO description and keywords', () => {
+test('index.html exposes SEO title, description and keywords', () => {
   assert.match(
     indexSource,
-    /<meta name="description" content="Конструктор баз данных и приложений для создания форм и замены экселя" \/>/,
+    /<title>Конструктор Интеграм — приложения и базы данных без кода<\/title>/,
+  )
+  assert.match(
+    indexSource,
+    /<meta name="description" content="Интеграм — российский конструктор приложений и баз данных без программирования\. Формы, отчёты и автоматизация бизнеса\. Аналог Airtable, замена Excel\." \/>/,
   )
   assert.match(
     indexSource,
