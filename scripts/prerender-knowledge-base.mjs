@@ -89,6 +89,7 @@ const groups = [
       '09-custom-development-prototype',
       '11-ai-interface-data-safety',
       '12-ai-prototype-rewrite',
+      '19-ai-agent-app-build',
     ],
   },
   {
