@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><link rel="stylesheet" href="_chrome.css">
+<style>
+  .rbar { display: flex; align-items: center; height: 48px; border-bottom: 1px solid #e3e3e3; padding: 0 16px; gap: 12px; }
+  .rbar .home { color: #2f7fe6; font-size: 18px; }
+  .rbar .btn { border: 1px solid #2f7fe6; color: #2f7fe6; border-radius: 6px; padding: 3px 10px; font-size: 13px; }
+  .rbar .title { flex: 1; text-align: center; font-size: 20px; color: #333; }
+  .rbar .ico { color: #2f7fe6; font-size: 17px; margin-left: 10px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th { background: #f4f6f8; border: 1px solid #e3e3e3; padding: 10px 12px; color: #333; font-weight: 700; }
+  td { border: 1px solid #ededed; padding: 9px 12px; color: #3a3a3a; }
+  td.num { text-align: right; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 11px; font-size: 12px; font-weight: 600; }
+  .b-new { background: #e8f0fe; color: #1a73e8; }
+  .b-bake { background: #fff4d6; color: #b8860b; }
+  .b-ready { background: #e6f4ea; color: #137333; }
+  .b-way { background: #fde9d6; color: #c75b12; }
+  .b-done { background: #eceff1; color: #5f6368; }
+  tr:nth-child(even) td { background: #fbfcfd; }
+</style></head>
+<body><div class="win">
+  <div class="chrome">
+    <span class="navi">←</span><span class="navi dim">→</span><span class="navi">⟳</span>
+    <div class="url"><span class="lock">🔒</span>integram.io/pekarnya/report/204 — Заказы на сегодня</div>
+    <div class="avatar">П</div>
+  </div>
+  <div class="rbar">
+    <span class="home">⌂</span>
+    <span class="btn">.HTML</span><span class="btn">.XLS</span>
+    <span class="title">Заказы на сегодня</span>
+    <span class="ico">⤓</span><span class="ico">▾</span><span class="ico">⟲</span><span class="ico">⊗</span>
+  </div>
+  <table>
+    <tr><th>№</th><th>Клиент</th><th>Изделие</th><th>Кол-во</th><th>Сумма, ₽</th><th>Доставка до</th><th>Статус</th></tr>
+    <tr><td>1041</td><td>Кафе «Зерно»</td><td>Багет французский</td><td class="num">40</td><td class="num">2 200</td><td>08:00</td><td><span class="badge b-done">Доставлен</span></td></tr>
+    <tr><td>1042</td><td>Магазин «У дома»</td><td>Хлеб «Бородинский»</td><td class="num">120</td><td class="num">4 560</td><td>08:00</td><td><span class="badge b-way">В пути</span></td></tr>
+    <tr><td>1043</td><td>ИП Соколова</td><td>Круассан сливочный</td><td class="num">200</td><td class="num">5 800</td><td>09:30</td><td><span class="badge b-ready">Готов к выдаче</span></td></tr>
+    <tr><td>1044</td><td>Столовая №7</td><td>Булочка с маком</td><td class="num">300</td><td class="num">6 600</td><td>10:00</td><td><span class="badge b-bake">Печётся</span></td></tr>
+    <tr><td>1045</td><td>Кафе «Зерно»</td><td>Чиабатта</td><td class="num">60</td><td class="num">2 880</td><td>10:00</td><td><span class="badge b-bake">Печётся</span></td></tr>
+    <tr><td>1046</td><td>Ресторан «Очаг»</td><td>Тарт-сет (ассорти)</td><td class="num">25</td><td class="num">7 500</td><td>12:00</td><td><span class="badge b-new">Принят</span></td></tr>
+    <tr><td>1047</td><td>Магазин «У дома»</td><td>Багет французский</td><td class="num">35</td><td class="num">1 925</td><td>12:00</td><td><span class="badge b-new">Принят</span></td></tr>
+    <tr><td>1048</td><td>Детский сад «Ромашка»</td><td>Хлеб пшеничный</td><td class="num">80</td><td class="num">2 560</td><td>13:00</td><td><span class="badge b-new">Принят</span></td></tr>
+    <tr><td colspan="3" style="text-align:right;font-weight:700;background:#f4f6f8">Итого за день:</td><td class="num" style="font-weight:700;background:#f4f6f8">860</td><td class="num" style="font-weight:700;background:#f4f6f8">34 025</td><td colspan="2" style="background:#f4f6f8"></td></tr>
+  </table>
+</div></body></html>
