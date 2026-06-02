@@ -10,27 +10,21 @@ function getHeroSection(source) {
   return match[0]
 }
 
-test('hero leads with the single «Из Excel — приложение за час» offer', () => {
+function getPromoSection(source) {
+  const match = source.match(/\{\/\* 1b\. Excel.*?promo \*\/\}[\s\S]*?<\/section>/)
+  assert.ok(match, 'Expected the excel promo section to exist')
+  return match[0]
+}
+
+test('hero primary CTA leads to the #cta section (restored old offer, issue #319)', () => {
   const hero = getHeroSection(homeSource)
-
-  const h1 = hero.match(/<motion\.h1[\s\S]*?<\/motion\.h1>/)
-  assert.ok(h1, 'Expected the hero H1 to exist')
-  assert.match(h1[0], /Из Excel —/)
-  assert.match(h1[0], /приложение за час/)
-
-  // The lead paragraph speaks to the accountant / logistician / shop-floor manager.
-  const lead = hero.match(/<motion\.p[\s\S]*?<\/motion\.p>/)
-  assert.ok(lead, 'Expected the hero lead paragraph to exist')
-  assert.match(lead[0], /бухгалтеру, логисту, начальнику цеха/)
-
-  // The old «ускорение внутренней разработки» framing must be gone from the hero.
-  assert.doesNotMatch(hero, /ускорения<\/span> внутренней разработки/)
+  // Primary CTA is a plain <a> pointing at #cta (the contact form)
+  assert.match(hero, /href="#cta"/)
+  assert.match(hero, /Отправить задачу из очереди задач/)
 })
 
-test('hero primary CTA leads to the A1 «Excel → приложение» landing (#303)', () => {
-  const hero = getHeroSection(homeSource)
-  const cta = hero.match(/<Link\b[\s\S]*?<\/Link>/)
-  assert.ok(cta, 'Expected the hero primary CTA to be a react-router Link')
-  assert.match(cta[0], /to="\/excel-to-app\.html"/)
-  assert.match(cta[0], /Загрузить Excel/)
+test('excel-to-app promo section is present below the hero with a link to /excel-to-app.html', () => {
+  const promo = getPromoSection(homeSource)
+  assert.match(promo, /to="\/excel-to-app\.html"/)
+  assert.match(promo, /Загрузит/)
 })
