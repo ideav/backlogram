@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1200, initial-scale=1" />
+    <title>ГрузЛайн dispatcher journal screenshot</title>
+    <!-- Issue #308 (A5.2): the «journal» grid that replaced the dispatcher's Excel.
+         Same palette as issue-308-logistics-dispatcher-dashboard.html. -->
+    <style>
+      @font-face {
+        font-family: Inter;
+        src: url("../scripts/fonts/Inter-Regular.ttf") format("truetype");
+        font-weight: 400;
+      }
+
+      @font-face {
+        font-family: Inter;
+        src: url("../scripts/fonts/Inter-Bold.ttf") format("truetype");
+        font-weight: 700;
+      }
+
+      :root {
+        --ink: #172033;
+        --muted: #68758c;
+        --line: #d9e0ea;
+        --panel: #ffffff;
+        --blue: #2563eb;
+        --cyan: #0891b2;
+        --green: #16a34a;
+        --amber: #d97706;
+        --rose: #e11d48;
+        --violet: #7c3aed;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: #ecf1f7;
+        color: var(--ink);
+        font-family: Inter, Arial, sans-serif;
+      }
+
+      #shot {
+        width: 1200px;
+        height: 630px;
+        padding: 18px;
+        background:
+          linear-gradient(145deg, rgba(8, 145, 178, 0.14), transparent 38%),
+          linear-gradient(315deg, rgba(37, 99, 235, 0.1), transparent 42%),
+          #ecf1f7;
+      }
+
+      .app {
+        display: grid;
+        grid-template-rows: 60px 52px 1fr auto;
+        width: 1164px;
+        height: 594px;
+        border: 1px solid #cbd5e1;
+        border-radius: 22px;
+        overflow: hidden;
+        background: #f8fafc;
+        box-shadow: 0 22px 52px rgba(15, 23, 42, 0.18);
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 24px;
+        background: #132238;
+        color: #e5edf8;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 36px;
+        height: 36px;
+        place-items: center;
+        border-radius: 10px;
+        background: #2563eb;
+        color: #eff6ff;
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .brand-name {
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .brand-sub {
+        margin-top: 1px;
+        color: #9fb0c7;
+        font-size: 11px;
+      }
+
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 30px;
+        padding: 0 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        color: #e5edf8;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      .button {
+        height: 32px;
+        padding: 0 14px;
+        border: 0;
+        border-radius: 9px;
+        background: var(--blue);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 24px;
+        background: #ffffff;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .view-title {
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      .view-title small {
+        margin-left: 8px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 400;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 30px;
+        padding: 0 11px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: #f8fafc;
+        color: #334155;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .chip.accent {
+        border-color: #c7d7fe;
+        background: #eef2ff;
+        color: #4338ca;
+      }
+
+      .spacer {
+        flex: 1;
+      }
+
+      .grid {
+        background: var(--panel);
+        overflow: hidden;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 78px 1.25fr 1.55fr 96px 1.2fr 70px 92px 104px;
+        align-items: center;
+        column-gap: 12px;
+        padding: 0 24px;
+        min-height: 49px;
+        border-bottom: 1px solid #edf1f6;
+        font-size: 13px;
+      }
+
+      .row.head {
+        min-height: 42px;
+        background: #f1f5fb;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+      }
+
+      .row .id {
+        font-weight: 700;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .driver {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .avatar {
+        display: grid;
+        width: 24px;
+        height: 24px;
+        place-items: center;
+        border-radius: 50%;
+        background: #e0e7ff;
+        color: #4338ca;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .status {
+        display: inline-flex;
+        justify-content: center;
+        min-width: 90px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .status.run {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+
+      .status.ready {
+        background: #dcfce7;
+        color: #15803d;
+      }
+
+      .status.wait {
+        background: #fef3c7;
+        color: #b45309;
+      }
+
+      .status.hold {
+        background: #ffe4e6;
+        color: #be123c;
+      }
+
+      .status.done {
+        background: #ede9fe;
+        color: #6d28d9;
+      }
+
+      .footer {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 0 24px;
+        min-height: 44px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .footer b {
+        color: var(--ink);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="shot">
+      <div class="app">
+        <header class="topbar">
+          <div class="brand">
+            <div class="brand-mark">Г</div>
+            <div>
+              <div class="brand-name">ГрузЛайн</div>
+              <div class="brand-sub">Диспетчер отгрузок</div>
+            </div>
+          </div>
+          <div class="top-actions">
+            <span class="pill"><span class="dot" style="color: #4ade80"></span>обмен с 1С активен</span>
+            <button class="button">+ Новый рейс</button>
+          </div>
+        </header>
+
+        <div class="toolbar">
+          <div class="view-title">Журнал отгрузок<small>заменил 4 листа Excel</small></div>
+          <span class="spacer"></span>
+          <span class="chip accent">Группировка: дата · док</span>
+          <span class="chip">Фильтр: смена А</span>
+          <span class="chip">Поиск по клиенту</span>
+        </div>
+
+        <div class="grid">
+          <div class="row head">
+            <span>Рейс</span><span>Клиент</span><span>Маршрут</span><span>Машина</span><span>Водитель</span><span>Тоннаж</span><span>Окно</span><span>Статус</span>
+          </div>
+          <div class="row">
+            <span class="id">№1</span><span>Агроторг</span><span class="muted">Москва → Воронеж</span><span>М-512 АТ</span>
+            <span class="driver"><span class="avatar">СП</span>Петров С.</span><span>18 т</span><span class="muted">08:00</span><span class="status run">В работе</span>
+          </div>
+          <div class="row">
+            <span class="id">№2</span><span>ТД «Восток»</span><span class="muted">Москва → Казань</span><span>К-204 РО</span>
+            <span class="driver"><span class="avatar">ИК</span>Кузнецов И.</span><span>12 т</span><span class="muted">09:30</span><span class="status wait">Ожидает</span>
+          </div>
+          <div class="row">
+            <span class="id">№3</span><span>Ростсельмаш</span><span class="muted">Склад Юг → Ростов</span><span>Р-118 ВК</span>
+            <span class="driver"><span class="avatar">АН</span>Новиков А.</span><span>9 т</span><span class="muted">10:15</span><span class="status ready">Готов</span>
+          </div>
+          <div class="row">
+            <span class="id">№4</span><span>Северный путь</span><span class="muted">Москва → Санкт-Петербург</span><span>С-067 МН</span>
+            <span class="driver"><span class="avatar">ДС</span>Смирнов Д.</span><span>21 т</span><span class="muted">11:00</span><span class="status hold">Риск срока</span>
+          </div>
+          <div class="row">
+            <span class="id">№5</span><span>Метизы-Юг</span><span class="muted">Склад Юг → Краснодар</span><span>К-330 ТА</span>
+            <span class="driver"><span class="avatar">ВЛ</span>Лебедев В.</span><span>7 т</span><span class="muted">12:20</span><span class="status ready">Готов</span>
+          </div>
+          <div class="row">
+            <span class="id">№6</span><span>Уют-Маркет</span><span class="muted">Москва → Нижний Новгород</span><span>Н-742 ОР</span>
+            <span class="driver"><span class="avatar">ПМ</span>Морозов П.</span><span>14 т</span><span class="muted">13:00</span><span class="status run">В работе</span>
+          </div>
+          <div class="row">
+            <span class="id">№7</span><span>Агроторг</span><span class="muted">Москва → Тула</span><span>Т-205 ЕК</span>
+            <span class="driver"><span class="avatar">ЕВ</span>Волков Е.</span><span>6 т</span><span class="muted">14:10</span><span class="status done">Доставлен</span>
+          </div>
+          <div class="row">
+            <span class="id">№8</span><span>ТД «Восток»</span><span class="muted">Склад Юг → Самара</span><span>С-919 БГ</span>
+            <span class="driver"><span class="avatar">ОБ</span>Беляев О.</span><span>16 т</span><span class="muted">15:30</span><span class="status wait">Ожидает</span>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span>Рейсов в смене: <b>24</b></span>
+          <span>К отгрузке: <b>142 т</b></span>
+          <span>Готовы к выезду: <b>8</b></span>
+          <span>На контроле: <b style="color: var(--rose)">3</b></span>
+          <span class="spacer"></span>
+          <span>обновлено 02.06 · 08:47</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
