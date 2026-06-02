@@ -115,10 +115,14 @@ const bodyHtml = `
   #lp-prerender .lp-prerender__lead { font-size: 1.1rem; color: #475569; max-width: 50rem; }
   #lp-prerender .lp-prerender__footer { margin-top: 3rem; padding-top: 1.5rem;
     border-top: 1px solid #e2e8f0; font-size: 0.92rem; color: #475569; }
-  @media (prefers-color-scheme: dark) {
-    #lp-prerender { color: #e2e8f0; }
-    #lp-prerender .lp-prerender__lead, #lp-prerender .lp-prerender__footer { color: #94a3b8; }
-  }
+  /* Dark colours follow the app theme (.dark on <html>, set synchronously by the
+     inline <head> script from localStorage) — NOT prefers-color-scheme. The body
+     background comes from the bundled CSS keyed on the same .dark class, so the
+     fallback text must use that signal too; otherwise a visitor who picked the
+     site's dark theme while the OS is light sees dark text on a dark background —
+     a black screen during loading (issue #325). */
+  .dark #lp-prerender { color: #e2e8f0; }
+  .dark #lp-prerender .lp-prerender__lead, .dark #lp-prerender .lp-prerender__footer { color: #94a3b8; }
 </style>`
 
 // ───────────────────────────────────────────────────────────────────────────
