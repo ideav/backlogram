@@ -7,14 +7,19 @@ const indexSource = readFileSync(new URL('../index.html', import.meta.url), 'utf
 test('index.html exposes SEO title, description and keywords', () => {
   assert.match(
     indexSource,
-    /<title>Конструктор Интеграм — приложения и базы данных без кода<\/title>/,
+    /<title>Из Excel — приложение за час \| Интеграм<\/title>/,
   )
   assert.match(
     indexSource,
-    /<meta name="description" content="Интеграм — российский конструктор приложений и баз данных без программирования\. Формы, отчёты и автоматизация бизнеса\. Аналог Airtable, замена Excel\." \/>/,
+    /<meta name="description" content="Из Excel — рабочее приложение за час\. Пришлите таблицу: получите веб-приложение с формами, доступами и отчётами\. Понятно бухгалтеру, логисту, начальнику цеха — без программистов, 1С и долгого внедрения\." \/>/,
   )
   assert.match(
     indexSource,
-    /<meta name="keywords" content="интеграмщик,автоматизация бизнеса,гугл таблицы,создать базу данных,конструктор интеграм,интеграм,российский airtable,аналог airtable,airtable,google-tables,конструктор приложений,приложение без программирования,квинтетная модель данных,no-code,nocode,low code,зерокод,конструктор SQL,замена excel" \/>/,
+    /<meta name="keywords" content="из excel приложение,excel в приложение,замена excel за час,приложение за час,приложение из excel,автоматизация бизнеса,гугл таблицы,создать базу данных,конструктор интеграм,интеграм,российский airtable,аналог airtable,airtable,конструктор приложений,приложение без программирования,no-code,nocode,low code,зерокод,замена excel" \/>/,
   )
+})
+
+test('index.html SEO leads with the single «Excel → приложение за час» offer', () => {
+  assert.match(indexSource, /<title>[^<]*Excel[^<]*час/)
+  assert.match(indexSource, /<meta name="description" content="[^"]*Excel[^"]*час/)
 })

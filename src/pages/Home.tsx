@@ -33,7 +33,8 @@ import {
   Wrench,
   Sparkles,
   Briefcase,
-  ServerCog
+  ServerCog,
+  FileSpreadsheet
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import ClientLogos from '@/components/ClientLogos'
@@ -203,7 +204,7 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.1 }}
                 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8"
               >
-                Инструмент для <span className="text-blue-500 italic">ускорения</span> внутренней разработки
+                Из Excel — <span className="text-blue-500 italic">приложение за час</span>
               </motion.h1>
 
               <motion.p
@@ -212,8 +213,8 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="max-w-3xl mx-auto text-lg md:text-xl text-slate-900 dark:text-slate-100 leading-relaxed mb-10"
               >
-                Разгрузите программистов, не жертвуя контролем.<br />
-                Платформа, которая встраивается в вашу ИТ-среду и реализует проекты быстрее, чем вы успеете написать ТЗ на обычную разработку.
+                Пришлите таблицу — получите рабочее веб-приложение: формы, доступы и отчёты.<br />
+                Понятно бухгалтеру, логисту, начальнику цеха. Без программистов, 1С и команды внедрения.
               </motion.p>
 
               <motion.div
@@ -222,13 +223,13 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.3 }}
                 className="flex flex-col sm:flex-row items-center justify-center gap-4"
               >
-                <a
-                  href="#cta"
+                <Link
+                  to="/excel-to-app.html"
                   className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2 group"
                 >
-                  Отправить задачу из очереди задач (бэклога)
+                  Загрузить Excel — получить приложение
                   <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                </a>
+                </Link>
                 <a
                   href="https://ideav.ru/start.html#reg"
                   target="start"
@@ -240,6 +241,39 @@ export default function Home() {
               </motion.div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* 1b. Excel → app promo */}
+      <section className="py-12 border-t border-slate-200 dark:border-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Link
+            to="/excel-to-app.html"
+            className="group grid lg:grid-cols-[auto_1fr_auto] items-center gap-6 p-6 sm:p-8 rounded-3xl border border-blue-200 dark:border-blue-900/60 bg-gradient-to-r from-blue-50 to-white dark:from-blue-950/40 dark:to-slate-950 hover:border-blue-400 dark:hover:border-blue-700 transition-colors"
+          >
+            <div className="w-14 h-14 rounded-2xl bg-blue-600/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+              <FileSpreadsheet size={26} />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1">
+                Новое · готово за ~45 минут
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold mb-1">
+                Загрузите Excel — получите приложение
+              </h2>
+              <p className="text-slate-500 dark:text-slate-400">
+                Пришлите свои таблицы и тематику — вернём ссылку на готовую базу Интеграм с вашими данными.
+              </p>
+            </div>
+            <span className="hidden lg:inline-flex items-center gap-2 px-6 py-3 bg-blue-600 group-hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-colors shrink-0">
+              Загрузить файлы
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </span>
+            <span className="lg:hidden inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold">
+              Загрузить файлы
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </span>
+          </Link>
         </div>
       </section>
 
