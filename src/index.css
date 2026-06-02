@@ -29,7 +29,13 @@
   --radius: 0.5rem;
 }
 
-@theme dark {
+/* Dark theme overrides the design tokens under the `.dark` class on <html>
+   (added synchronously by the inline <head> script from localStorage). This must
+   be a `.dark` selector, NOT `@theme dark`: Tailwind merges `@theme dark` straight
+   into `:root`, so the dark values would override the light ones unconditionally
+   and `body { background-color: var(--color-background) }` would be dark for every
+   visitor — a black background during loading (issue #325). */
+.dark {
   --color-background: oklch(9% 0.016 285.75);
   --color-foreground: oklch(98% 0.003 285.75);
   --color-card: oklch(9% 0.016 285.75);

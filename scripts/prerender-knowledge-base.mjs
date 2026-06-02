@@ -266,13 +266,17 @@ const indexBody = `
   #kb-prerender .kb-prerender__item p { font-size: 0.92rem; color: #475569; margin: 0; }
   #kb-prerender .kb-prerender__footer { margin-top: 3rem; padding-top: 1.5rem;
     border-top: 1px solid #e2e8f0; font-size: 0.92rem; color: #475569; }
-  @media (prefers-color-scheme: dark) {
-    #kb-prerender { color: #e2e8f0; }
-    #kb-prerender .kb-prerender__lead, #kb-prerender .kb-prerender__blurb,
-    #kb-prerender .kb-prerender__item p, #kb-prerender .kb-prerender__footer { color: #94a3b8; }
-    #kb-prerender .kb-prerender__item a { border-color: #1e293b; }
-    #kb-prerender .kb-prerender__count, #kb-prerender .kb-prerender__updated { color: #94a3b8; }
-  }
+  /* Dark colours follow the app theme (.dark on <html>, set synchronously by the
+     inline <head> script from localStorage) — NOT prefers-color-scheme. The body
+     background comes from the bundled CSS keyed on the same .dark class, so the
+     fallback text must use that signal too; otherwise a visitor who picked the
+     site's dark theme while the OS is light sees dark text on a dark background —
+     a black screen during loading (issue #325). */
+  .dark #kb-prerender { color: #e2e8f0; }
+  .dark #kb-prerender .kb-prerender__lead, .dark #kb-prerender .kb-prerender__blurb,
+  .dark #kb-prerender .kb-prerender__item p, .dark #kb-prerender .kb-prerender__footer { color: #94a3b8; }
+  .dark #kb-prerender .kb-prerender__item a { border-color: #1e293b; }
+  .dark #kb-prerender .kb-prerender__count, .dark #kb-prerender .kb-prerender__updated { color: #94a3b8; }
 </style>`
 
 const indexTitle = `База знаний — ${totalCount} разборов сравнений Интеграма с Excel, Airtable, Notion и заказной разработкой`
@@ -419,12 +423,16 @@ for (const article of knowledgeBaseArticles) {
   #kb-prerender li { margin-bottom: 0.4rem; }
   #kb-prerender .kb-prerender__footer { margin-top: 3rem; padding-top: 1.5rem;
     border-top: 1px solid #e2e8f0; font-size: 0.92rem; }
-  @media (prefers-color-scheme: dark) {
-    #kb-prerender { color: #e2e8f0; }
-    #kb-prerender .kb-prerender__lead { color: #cbd5e1; }
-    #kb-prerender .kb-prerender__cover { border-color: #1e293b; }
-    #kb-prerender .kb-prerender__footer { border-color: #1e293b; }
-  }
+  /* Dark colours follow the app theme (.dark on <html>, set synchronously by the
+     inline <head> script from localStorage) — NOT prefers-color-scheme. The body
+     background comes from the bundled CSS keyed on the same .dark class, so the
+     fallback text must use that signal too; otherwise a visitor who picked the
+     site's dark theme while the OS is light sees dark text on a dark background —
+     a black screen during loading (issue #325). */
+  .dark #kb-prerender { color: #e2e8f0; }
+  .dark #kb-prerender .kb-prerender__lead { color: #cbd5e1; }
+  .dark #kb-prerender .kb-prerender__cover { border-color: #1e293b; }
+  .dark #kb-prerender .kb-prerender__footer { border-color: #1e293b; }
 </style>`
 
   const html = patchHtml({
