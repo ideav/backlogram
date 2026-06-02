@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><link rel="stylesheet" href="_chrome.css">
+<style>
+  .rbar { display: flex; align-items: center; height: 48px; border-bottom: 1px solid #e3e3e3; padding: 0 16px; gap: 12px; }
+  .rbar .home { color: #2f7fe6; font-size: 18px; }
+  .rbar .btn { border: 1px solid #2f7fe6; color: #2f7fe6; border-radius: 6px; padding: 3px 10px; font-size: 13px; }
+  .rbar .title { flex: 1; text-align: center; font-size: 20px; color: #333; }
+  .rbar .ico { color: #2f7fe6; font-size: 17px; margin-left: 10px; }
+  .kpis { display: flex; gap: 16px; padding: 20px 22px 6px; }
+  .kpi { flex: 1; border: 1px solid #e8eaed; border-radius: 10px; padding: 14px 18px; }
+  .kpi .v { font-size: 28px; color: #2f7fe6; font-weight: 700; }
+  .kpi .l { font-size: 13px; color: #8a8f96; margin-top: 2px; }
+  .kpi .v.green { color: #137333; }
+  .kpi .v.orange { color: #c75b12; }
+  h2 { font-size: 17px; color: #444; padding: 18px 22px 0; font-weight: 600; }
+  table { border-collapse: collapse; width: calc(100% - 44px); margin: 12px 22px 22px; font-size: 14px; }
+  th { background: #f4f6f8; border: 1px solid #e3e3e3; padding: 9px 12px; color: #333; text-align: left; }
+  td { border: 1px solid #ededed; padding: 9px 12px; color: #3a3a3a; }
+  td.num, th.num { text-align: right; }
+  .bar { height: 10px; border-radius: 5px; background: #2f7fe6; display: inline-block; vertical-align: middle; }
+  tr:last-child td { background: #f4f6f8; font-weight: 700; }
+</style></head>
+<body><div class="win">
+  <div class="chrome">
+    <span class="navi">←</span><span class="navi dim">→</span><span class="navi">⟳</span>
+    <div class="url"><span class="lock">🔒</span>integram.io/pekarnya/report/207 — Что печём сегодня</div>
+    <div class="avatar">П</div>
+  </div>
+  <div class="rbar">
+    <span class="home">⌂</span>
+    <span class="btn">.HTML</span><span class="btn">.XLS</span>
+    <span class="title">Что печём сегодня · 2 июня</span>
+    <span class="ico">⤓</span><span class="ico">▾</span><span class="ico">⟲</span>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><div class="v">8</div><div class="l">заказов на день</div></div>
+    <div class="kpi"><div class="v">860</div><div class="l">изделий к выпечке</div></div>
+    <div class="kpi"><div class="v green">34 025 ₽</div><div class="l">сумма заказов</div></div>
+    <div class="kpi"><div class="v orange">2</div><div class="l">ждут оплаты</div></div>
+  </div>
+  <h2>Сводка по изделиям — план на смену</h2>
+  <table>
+    <tr><th>Изделие</th><th class="num">Заказано</th><th>Загрузка печи</th></tr>
+    <tr><td>Булочка с маком</td><td class="num">300</td><td><span class="bar" style="width:240px"></span></td></tr>
+    <tr><td>Круассан сливочный</td><td class="num">200</td><td><span class="bar" style="width:160px"></span></td></tr>
+    <tr><td>Хлеб «Бородинский»</td><td class="num">120</td><td><span class="bar" style="width:96px"></span></td></tr>
+    <tr><td>Хлеб пшеничный</td><td class="num">80</td><td><span class="bar" style="width:64px"></span></td></tr>
+    <tr><td>Чиабатта</td><td class="num">60</td><td><span class="bar" style="width:48px"></span></td></tr>
+    <tr><td>Багет французский</td><td class="num">75</td><td><span class="bar" style="width:60px"></span></td></tr>
+    <tr><td>Тарт-сет / эклеры</td><td class="num">25</td><td><span class="bar" style="width:20px"></span></td></tr>
+    <tr><td>Всего</td><td class="num">860</td><td></td></tr>
+  </table>
+</div></body></html>
