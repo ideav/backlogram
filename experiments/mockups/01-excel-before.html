@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #f3f2f1; font-family: "Segoe UI", Arial, sans-serif; }
+  .win { width: 980px; }
+  /* title bar */
+  .titlebar { background: #217346; color: #fff; height: 30px; display: flex; align-items: center; padding: 0 12px; font-size: 13px; }
+  .titlebar .x { margin-left: auto; opacity: .9; }
+  /* ribbon (simplified) */
+  .ribbon { background: #f3f2f1; border-bottom: 1px solid #d4d4d4; height: 28px; display: flex; align-items: center; gap: 18px; padding: 0 14px; font-size: 13px; color: #444; }
+  .ribbon .act { color: #217346; font-weight: 600; }
+  /* formula bar */
+  .fbar { display: flex; align-items: center; height: 26px; border-bottom: 1px solid #d4d4d4; background: #fff; font-size: 13px; }
+  .namebox { width: 70px; text-align: center; border-right: 1px solid #d4d4d4; color: #333; }
+  .fx { padding: 0 10px; color: #999; border-right: 1px solid #d4d4d4; font-style: italic; }
+  .finput { padding: 0 10px; color: #444; }
+  /* grid */
+  table { border-collapse: collapse; width: 100%; font-size: 13px; table-layout: fixed; }
+  .colh td, th { background: #f3f2f1; border: 1px solid #d4d4d4; text-align: center; color: #555; height: 20px; font-weight: 600; }
+  .rowh { background: #f3f2f1; border: 1px solid #d4d4d4; text-align: center; color: #555; width: 34px; font-weight: 600; }
+  td { border: 1px solid #e3e3e3; padding: 2px 6px; height: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  td.num { text-align: right; }
+  .warn { background: #fde7e9; color: #b00020; }
+  .note { background: #fff4ce; }
+  .red { color: #c00; }
+  /* sheet tabs */
+  .tabs { display: flex; align-items: stretch; background: #f3f2f1; border-top: 1px solid #d4d4d4; height: 26px; font-size: 12px; }
+  .tab { padding: 5px 14px; border-right: 1px solid #d4d4d4; color: #555; }
+  .tab.active { background: #fff; color: #217346; font-weight: 700; border-top: 2px solid #217346; }
+  .plus { padding: 5px 10px; color: #888; }
+</style>
+</head>
+<body>
+<div class="win">
+  <div class="titlebar"><span>Заказы_октябрь_ИТОГ_финал2(2).xlsx — Excel</span><span class="x">— ▢ ✕</span></div>
+  <div class="ribbon"><span class="act">Главная</span><span>Вставка</span><span>Разметка</span><span>Формулы</span><span>Данные</span><span>Рецензирование</span></div>
+  <div class="fbar"><div class="namebox">F7</div><div class="fx">fx</div><div class="finput">=B7*Цены!C12   (#ССЫЛКА! — лист переименовали?)</div></div>
+  <table>
+    <colgroup>
+      <col style="width:34px"><col style="width:88px"><col style="width:190px"><col style="width:150px"><col style="width:60px"><col style="width:90px"><col style="width:120px"><col style="width:160px">
+    </colgroup>
+    <tr class="colh"><td class="rowh"></td><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th></tr>
+    <tr><td class="rowh">1</td><td><b>Дата</b></td><td><b>Клиент</b></td><td><b>Что</b></td><td><b>Кол-во</b></td><td><b>Цена</b></td><td><b>Итого</b></td><td><b>Оплата / комментарии</b></td></tr>
+    <tr><td class="rowh">2</td><td>01.10</td><td>Кафе «Зерно»</td><td>багет</td><td class="num">40</td><td class="num">55</td><td class="num">2200</td><td>оплачено</td></tr>
+    <tr><td class="rowh">3</td><td>1 окт</td><td>кафе Зерно</td><td>Багеты</td><td class="num">40</td><td class="num">55</td><td class="num">2200</td><td class="warn">дубль? уже есть выше</td></tr>
+    <tr><td class="rowh">4</td><td>02.10.2025</td><td>Магазин у дома</td><td>Хлеб «Бородинский»</td><td class="num">120</td><td class="num">38</td><td class="num">4560</td><td class="note">скидка??? уточнить у Иры</td></tr>
+    <tr><td class="rowh">5</td><td>02.10</td><td>ИП Соколова</td><td>круассаны</td><td class="num">200</td><td class="num"></td><td class="num red">#ДЕЛ/0!</td><td class="warn">цену не нашли</td></tr>
+    <tr><td class="rowh">6</td><td>03.10</td><td>Кафе «Зёрно»</td><td>чиабатта</td><td class="num">60</td><td class="num">48</td><td class="num">2880</td><td>нал, отдали курьеру</td></tr>
+    <tr><td class="rowh">7</td><td>03.10</td><td>столовая №7</td><td>булочки с маком</td><td class="num">300</td><td class="num">22</td><td class="num red">#ССЫЛКА!</td><td class="note">формула слетела</td></tr>
+    <tr><td class="rowh">8</td><td>04.10</td><td></td><td>торт на заказ</td><td class="num">1</td><td class="num">3500</td><td class="num">3500</td><td class="warn">чей заказ?? телефон в другом файле</td></tr>
+    <tr><td class="rowh">9</td><td>4.10</td><td>Магазин у дома</td><td>багет</td><td class="num">35</td><td class="num">55</td><td class="num">1925</td><td>не уверена что доставили</td></tr>
+    <tr><td class="rowh">10</td><td>05/10</td><td>ИП Соколова</td><td>Круассаны</td><td class="num">200</td><td class="num">29</td><td class="num">5800</td><td class="note">долг с прошлой недели тоже!</td></tr>
+    <tr><td class="rowh">11</td><td>05.10</td><td>кафе зерно</td><td>багет + чиабатта</td><td class="num">?</td><td class="num"></td><td class="num"></td><td class="warn">позвонят уточнят</td></tr>
+    <tr><td class="rowh">12</td><td></td><td></td><td></td><td class="num"></td><td class="num"></td><td class="num"></td><td></td></tr>
+    <tr><td class="rowh">13</td><td></td><td></td><td></td><td class="num"></td><td class="num"></td><td class="num"></td><td></td></tr>
+  </table>
+  <div class="tabs">
+    <div class="tab active">Заказы</div>
+    <div class="tab">Клиенты</div>
+    <div class="tab">Цены_2025</div>
+    <div class="tab">Доставка</div>
+    <div class="tab">Долги (не трогать!)</div>
+    <div class="plus">＋</div>
+  </div>
+</div>
+</body>
+</html>

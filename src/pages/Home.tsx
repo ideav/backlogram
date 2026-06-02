@@ -204,7 +204,7 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.1 }}
                 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8"
               >
-                Инструмент для <span className="text-blue-500 italic">ускорения</span> внутренней разработки
+                Из Excel — <span className="text-blue-500 italic">приложение за час</span>
               </motion.h1>
 
               <motion.p
@@ -213,8 +213,8 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="max-w-3xl mx-auto text-lg md:text-xl text-slate-900 dark:text-slate-100 leading-relaxed mb-10"
               >
-                Разгрузите программистов, не жертвуя контролем.<br />
-                Платформа, которая встраивается в вашу ИТ-среду и реализует проекты быстрее, чем вы успеете написать ТЗ на обычную разработку.
+                Пришлите таблицу — получите рабочее веб-приложение: формы, доступы и отчёты.<br />
+                Понятно бухгалтеру, логисту, начальнику цеха. Без программистов, 1С и команды внедрения.
               </motion.p>
 
               <motion.div
@@ -223,13 +223,13 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.3 }}
                 className="flex flex-col sm:flex-row items-center justify-center gap-4"
               >
-                <a
-                  href="#cta"
+                <Link
+                  to="/excel-to-app.html"
                   className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2 group"
                 >
-                  Отправить задачу из очереди задач (бэклога)
+                  Загрузить Excel — получить приложение
                   <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                </a>
+                </Link>
                 <a
                   href="https://ideav.ru/start.html#reg"
                   target="start"
