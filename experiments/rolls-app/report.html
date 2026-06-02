@@ -1,0 +1,79 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+.kpis { display: flex; gap: 16px; margin-bottom: 22px; }
+.kpi { flex: 1; background: #fff; border: 1px solid #e3e8ef; border-radius: 12px; padding: 18px 20px; }
+.kpi .label { font-size: 13px; color: #8a97a8; }
+.kpi .num { font-size: 30px; font-weight: 700; margin-top: 6px; }
+.kpi .delta { font-size: 13px; margin-top: 6px; font-weight: 600; }
+.kpi .up { color: #1c8c46; } .kpi .down-good { color: #1c8c46; } .kpi .warn { color: #b8730d; }
+.board { display: flex; gap: 16px; }
+.lane { flex: 1; background: #f3f6fa; border: 1px solid #e3e8ef; border-radius: 12px; padding: 12px; }
+.lane h4 { font-size: 13px; color: #5c6b7d; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.lane h4 .n { margin-left: auto; background: #fff; border: 1px solid #dde3ec; border-radius: 10px; padding: 1px 9px; font-size: 12px; color: #6b7787; }
+.tk { background: #fff; border: 1px solid #e6ebf2; border-radius: 9px; padding: 11px 13px; margin-bottom: 10px; }
+.tk .top { display: flex; justify-content: space-between; font-size: 12px; color: #8a97a8; margin-bottom: 5px; }
+.tk .cu { font-weight: 600; font-size: 14px; }
+.tk .mt { font-size: 13px; color: #6b7787; margin-top: 3px; }
+.tk .due { font-size: 12px; margin-top: 7px; }
+.tk.late { border-color: #f3c4c4; }
+.dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.d-new { background: #2c5fd0; } .d-cut { background: #e58e16; } .d-ready { background: #21a44f; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="logo"><span class="mark">И</span> Интеграм</div>
+    <div class="nav"><a>Заказы</a><a>Рулоны на складе</a><a>Клиенты</a><a class="active">Отчёты</a></div>
+    <div class="spacer"></div>
+    <div class="user"><span class="av">МР</span> Мастерская резки</div>
+  </div>
+  <div class="main">
+    <div class="side">
+      <div class="group">Отчёты</div>
+      <a class="active">📊 Сводка по цеху</a>
+      <a>⏱️ Соблюдение сроков</a>
+      <a>🧻 Расход материала</a>
+      <a>💰 Выручка по клиентам</a>
+      <div class="group">Период</div>
+      <a>Сегодня</a>
+      <a class="active">Май 2025</a>
+      <a>Квартал</a>
+    </div>
+    <div class="content">
+      <div class="page-head">
+        <div>
+          <h1>Сводка по цеху · май</h1>
+          <div class="sub">Картина по всем заказам в одном месте — раньше её собирали из пяти файлов</div>
+        </div>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><div class="label">Заказов за месяц</div><div class="num">214</div><div class="delta up">▲ 18% к апрелю</div></div>
+        <div class="kpi"><div class="label">Сдано в срок</div><div class="num">97%</div><div class="delta up">▲ было 78%</div></div>
+        <div class="kpi"><div class="label">Потеряно заказов</div><div class="num">0</div><div class="delta down-good">было ≈ 6 в месяц</div></div>
+        <div class="kpi"><div class="label">Средний срок резки</div><div class="num">1,4 дн</div><div class="delta down-good">▼ было 2,3 дн</div></div>
+      </div>
+      <div class="board">
+        <div class="lane">
+          <h4><span class="dot d-new"></span> Новые <span class="n">6</span></h4>
+          <div class="tk"><div class="top"><span>№ 1040</span><span>4 июня</span></div><div class="cu">ООО «Фрешлайн»</div><div class="mt">Плёнка ПВД · 160 мм · 25 рул.</div></div>
+          <div class="tk"><div class="top"><span>№ 1038</span><span>5 июня</span></div><div class="cu">ИП Кузьмин</div><div class="mt">Скотч ВОРР · 48 мм · 96 рул.</div></div>
+          <div class="tk"><div class="top"><span>№ 1044</span><span>6 июня</span></div><div class="cu">«Агродом»</div><div class="mt">Спанбонд · 240 мм · 20 рул.</div></div>
+        </div>
+        <div class="lane">
+          <h4><span class="dot d-cut"></span> В резке <span class="n">9</span></h4>
+          <div class="tk late"><div class="top"><span>№ 1043</span><span style="color:#c23b3b;font-weight:600">просрочен</span></div><div class="cu">ООО «Пакмаркет»</div><div class="mt">Стретч 23 мкм · 125 мм · 40 рул.</div><div class="due" style="color:#c23b3b;font-weight:600">⚠ срок был 1 июня</div></div>
+          <div class="tk"><div class="top"><span>№ 1042</span><span>сегодня</span></div><div class="cu">ИП Гаврилова</div><div class="mt">Крафт 80 · 200 мм · 18 рул.</div></div>
+          <div class="tk"><div class="top"><span>№ 1041</span><span>завтра</span></div><div class="cu">«Город-Упак»</div><div class="mt">Пузырьковая · 300 мм · 12 рул.</div></div>
+        </div>
+        <div class="lane">
+          <h4><span class="dot d-ready"></span> Готовы к выдаче <span class="n">5</span></h4>
+          <div class="tk"><div class="top"><span>№ 1039</span><span>ждёт</span></div><div class="cu">«Сибтара»</div><div class="mt">Гофрокартон Е · 420 мм · 8 рул.</div></div>
+          <div class="tk"><div class="top"><span>№ 1036</span><span>ждёт</span></div><div class="cu">«Агродом»</div><div class="mt">Спанбонд 60 · 320 мм · 14 рул.</div></div>
+          <div class="tk"><div class="top"><span>№ 1031</span><span>ждёт</span></div><div class="cu">ИП Кузьмин</div><div class="mt">Стретч 20 мкм · 100 мм · 50 рул.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

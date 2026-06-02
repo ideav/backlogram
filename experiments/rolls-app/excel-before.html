@@ -1,0 +1,55 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:"Segoe UI",Calibri,Arial,sans-serif; background:#f3f3f3; }
+.app { width:1280px; height:470px; background:#fff; display:flex; flex-direction:column; }
+.ribbon { background:#217346; color:#fff; height:30px; display:flex; align-items:center; padding:0 14px; font-size:13px; gap:18px; }
+.ribbon .t { opacity:.85; } .ribbon .t.on { opacity:1; font-weight:600; border-bottom:2px solid #fff; height:30px; display:flex; align-items:center;}
+.tabs2 { background:#f5f6f5; border-bottom:1px solid #d6d6d6; height:26px; display:flex; align-items:center; padding:0 8px; gap:2px; font-size:12px; }
+.formula { height:26px; border-bottom:1px solid #d6d6d6; display:flex; align-items:center; font-size:12.5px; color:#444; }
+.formula .cell { width:60px; border-right:1px solid #d6d6d6; height:26px; display:flex; align-items:center; justify-content:center; color:#777; }
+.formula .fx { padding:0 10px; color:#999; }
+.grid { flex:1; overflow:hidden; }
+table { border-collapse:collapse; width:100%; font-size:12.5px; table-layout:fixed; }
+th.rownum, td.rownum { width:34px; background:#f5f6f5; border:1px solid #d6d6d6; color:#888; text-align:center; font-weight:normal; }
+th.colh { background:#f5f6f5; border:1px solid #d6d6d6; color:#666; font-weight:normal; height:20px; }
+td { border:1px solid #e2e2e2; padding:3px 6px; height:24px; white-space:nowrap; overflow:hidden; }
+.hdr td { background:#dfe7e3; font-weight:700; color:#1c1c1c; border-color:#c2cfca; }
+.red { background:#ffd5d5; }
+.yel { background:#fff2c2; }
+.grn { background:#d6f0d6; }
+.strike { text-decoration:line-through; color:#999; }
+.note { color:#c00; font-style:italic; }
+.sheets { height:28px; background:#f5f6f5; border-top:1px solid #d6d6d6; display:flex; align-items:center; padding:0 8px; gap:4px; font-size:12px; }
+.sheet { padding:4px 12px; color:#555; border:1px solid transparent; }
+.sheet.on { background:#fff; border:1px solid #d6d6d6; border-bottom:1px solid #fff; font-weight:600; color:#217346; }
+</style></head>
+<body>
+<div class="app">
+  <div class="ribbon"><span class="t">Файл</span><span class="t on">Главная</span><span class="t">Вставка</span><span class="t">Разметка</span><span class="t">Формулы</span><span class="t">Данные</span><span class="t">Рецензирование</span></div>
+  <div class="tabs2">Заказы_резка_ИЮНЬ_финал_2(восстановлен).xlsx — Excel</div>
+  <div class="formula"><span class="cell">F7</span><span class="fx">fx</span>&nbsp;&nbsp;срочно!! звонил клиент</div>
+  <div class="grid">
+  <table>
+    <tr><th class="rownum"></th><th class="colh">A</th><th class="colh">B</th><th class="colh">C</th><th class="colh">D</th><th class="colh">E</th><th class="colh">F</th><th class="colh">G</th><th class="colh">H</th></tr>
+    <tr class="hdr"><td class="rownum">1</td><td>Дата</td><td>Клиент</td><td>Материал</td><td>Ширина</td><td>Кол-во</td><td>Срок</td><td>Статус</td><td>Кто делает</td></tr>
+    <tr><td class="rownum">2</td><td>28.05</td><td>Пакмаркет</td><td>стретч 23</td><td>125</td><td>40</td><td>01.06</td><td class="red">не сделали!!!</td><td>?</td></tr>
+    <tr><td class="rownum">3</td><td>29.05</td><td>Гаврилова</td><td>крафт 80</td><td>200</td><td>18</td><td>02.06</td><td class="yel">в работе</td><td>Соколов</td></tr>
+    <tr><td class="rownum">4</td><td>29.05</td><td>город упак</td><td>пузырьк.</td><td>300</td><td>12</td><td>03.06</td><td class="yel">режем</td><td>Минин</td></tr>
+    <tr><td class="rownum">5</td><td>30.05</td><td>Фрешлайн</td><td>пвд</td><td>160</td><td>25</td><td>?</td><td></td><td></td></tr>
+    <tr><td class="rownum">6</td><td>30.05</td><td>Кузьмин ип</td><td>скотч</td><td>48</td><td class="note">96?? или 69</td><td>05.06</td><td></td><td></td></tr>
+    <tr><td class="rownum">7</td><td>31.05</td><td>Пакмаркет</td><td>стретч 17</td><td>100</td><td>60</td><td>06.06</td><td class="red note">срочно!! звонил клиент</td><td>Соколов</td></tr>
+    <tr><td class="rownum">8</td><td class="strike">31.05</td><td class="strike">агродом</td><td class="strike">спанбонд</td><td class="strike">320</td><td class="strike">14</td><td class="strike">06.06</td><td class="grn">готово</td><td>Минин</td></tr>
+    <tr><td class="rownum">9</td><td>01.06</td><td>сибтара</td><td>гофрокартон</td><td>420</td><td>8</td><td>04.06</td><td class="grn">готово</td><td>Минин</td></tr>
+    <tr><td class="rownum">10</td><td>01.06</td><td>?? кто-то</td><td class="note">не помню</td><td></td><td></td><td></td><td class="red">потеряли заявку</td><td></td></tr>
+    <tr><td class="rownum">11</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="rownum">12</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="rownum">13</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="rownum">14</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  </table>
+  </div>
+  <div class="sheets">
+    <span class="sheet on">Июнь</span><span class="sheet">Май</span><span class="sheet">Май(2)</span><span class="sheet">клиенты</span><span class="sheet">склад рулоны</span><span class="sheet">НЕ УДАЛЯТЬ</span><span class="sheet">Лист1</span>
+  </div>
+</div>
+</body></html>
