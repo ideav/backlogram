@@ -1,0 +1,19 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #fff; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: #333; }
+.win { width: 980px; }
+/* fake browser chrome */
+.chrome { background: #dee1e6; height: 40px; display: flex; align-items: center; padding: 0 12px; gap: 14px; }
+.chrome .navi { color: #5f6368; font-size: 18px; }
+.chrome .navi.dim { opacity: .4; }
+.url { flex: 1; background: #fff; border-radius: 14px; height: 26px; display: flex; align-items: center; padding: 0 14px; font-size: 13px; color: #3c4043; }
+.url .lock { color: #5f6368; margin-right: 8px; font-size: 12px; }
+.avatar { width: 22px; height: 22px; border-radius: 50%; background: #8e44ad; color: #fff; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+/* integram top nav */
+.nav { background: linear-gradient(#3286ee, #2f7fe6); height: 58px; display: flex; align-items: center; padding: 0 22px; gap: 28px; }
+.logo { color: #fff; font-size: 26px; font-weight: 700; letter-spacing: -2px; }
+.nav a { color: #fff; font-size: 15px; text-decoration: none; opacity: .96; }
+.nav a:hover { text-decoration: underline; }
+.nav .spacer { margin-left: auto; }
+.nav .user { color: #fff; font-size: 18px; }
+.body { padding: 26px 30px 34px; }
+.accent { color: #2f7fe6; }
