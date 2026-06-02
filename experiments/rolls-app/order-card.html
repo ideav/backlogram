@@ -1,0 +1,109 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+.crumb { color: #8a97a8; font-size: 13px; margin-bottom: 10px; }
+.crumb a { color: #1f6feb; text-decoration: none; }
+.cols { display: flex; gap: 22px; align-items: flex-start; }
+.col-main { flex: 1; }
+.col-side { width: 320px; }
+.block { background: #fff; border: 1px solid #e3e8ef; border-radius: 12px; padding: 18px 20px; margin-bottom: 18px; }
+.block h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .5px; color: #93a0b3; margin-bottom: 14px; }
+.field { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f2f5f9; font-size: 14.5px; }
+.field:last-child { border-bottom: none; }
+.field .k { color: #7a8699; }
+.field .v { font-weight: 600; text-align: right; }
+.timeline { position: relative; padding-left: 6px; }
+.tl { display: flex; gap: 12px; padding: 9px 0; }
+.tl .dot { width: 11px; height: 11px; border-radius: 50%; margin-top: 4px; flex: none; }
+.tl .dot.done { background: #21a44f; } .tl .dot.now { background: #e58e16; box-shadow: 0 0 0 4px #fdeccf; } .tl .dot.todo { background: #d2dae5; }
+.tl .body .t { font-size: 14.5px; font-weight: 600; }
+.tl .body .m { font-size: 13px; color: #8a97a8; margin-top: 2px; }
+.tl .line { width: 2px; background: #e7ecf3; margin-left: 4.5px; height: 14px; }
+.attach { display: flex; align-items: center; gap: 10px; background: #f7f9fc; border: 1px solid #e8edf4; border-radius: 9px; padding: 11px 13px; font-size: 14px; }
+.note { background: #fff8e6; border: 1px solid #f3e1ad; border-radius: 9px; padding: 12px 14px; font-size: 14px; color: #6b551c; }
+.actions { display: flex; gap: 10px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="logo"><span class="mark">И</span> Интеграм</div>
+    <div class="nav">
+      <a class="active">Заказы</a><a>Рулоны на складе</a><a>Клиенты</a><a>Отчёты</a>
+    </div>
+    <div class="spacer"></div>
+    <div class="user"><span class="av">МР</span> Мастерская резки</div>
+  </div>
+  <div class="main">
+    <div class="side">
+      <div class="group">Заказы</div>
+      <a>📋 Все заказы <span class="count">37</span></a>
+      <a>🆕 Новые <span class="count">6</span></a>
+      <a class="active">✂️ В резке <span class="count">9</span></a>
+      <a>✅ Готовы <span class="count">5</span></a>
+      <a>🚚 Отгружены <span class="count">17</span></a>
+      <div class="group">Справочники</div>
+      <a>🧻 Материалы</a><a>👥 Клиенты</a><a>👷 Сотрудники</a>
+    </div>
+    <div class="content">
+      <div class="crumb"><a>Заказы</a> / <a>В резке</a> / № 1042</div>
+      <div class="page-head">
+        <div>
+          <h1>Заказ № 1042 · ИП Гаврилова</h1>
+          <div class="sub">Принят 1 июня в 10:24 · мастер Соколов</div>
+        </div>
+        <div class="spacer"></div>
+        <div class="actions">
+          <button class="btn ghost">Печать ярлыка</button>
+          <button class="btn">Отметить готовым ✓</button>
+        </div>
+      </div>
+      <div class="cols">
+        <div class="col-main">
+          <div class="block">
+            <h3>Что режем</h3>
+            <div class="field"><span class="k">Исходный рулон</span><span class="v">Бумага крафт 80 г/м², ширина 1050 мм</span></div>
+            <div class="field"><span class="k">Ширина реза</span><span class="v">200 мм</span></div>
+            <div class="field"><span class="k">Количество</span><span class="v">18 рулончиков</span></div>
+            <div class="field"><span class="k">Длина намотки</span><span class="v">300 м</span></div>
+            <div class="field"><span class="k">Втулка</span><span class="v">76 мм</span></div>
+            <div class="field"><span class="k">Со склада</span><span class="v">Рулон № Р-318 (остаток 940 м)</span></div>
+          </div>
+          <div class="block">
+            <h3>Этапы заказа</h3>
+            <div class="timeline">
+              <div class="tl"><div class="dot done"></div><div class="body"><div class="t">Заказ принят</div><div class="m">1 июня, 10:24 · из формы на сайте</div></div></div>
+              <div class="line"></div>
+              <div class="tl"><div class="dot done"></div><div class="body"><div class="t">Материал найден на складе</div><div class="m">1 июня, 11:05 · Соколов</div></div></div>
+              <div class="line"></div>
+              <div class="tl"><div class="dot now"></div><div class="body"><div class="t">Идёт резка</div><div class="m">2 июня, 09:40 · станок №2</div></div></div>
+              <div class="line"></div>
+              <div class="tl"><div class="dot todo"></div><div class="body"><div class="t">Готов к выдаче</div><div class="m m">ожидается сегодня к 17:00</div></div></div>
+              <div class="line"></div>
+              <div class="tl"><div class="dot todo"></div><div class="body"><div class="t">Отгружен клиенту</div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-side">
+          <div class="block">
+            <h3>Клиент</h3>
+            <div class="field"><span class="k">Компания</span><span class="v">ИП Гаврилова</span></div>
+            <div class="field"><span class="k">Контакт</span><span class="v">Ольга, +7 913 204-…</span></div>
+            <div class="field"><span class="k">Заказов всего</span><span class="v">14</span></div>
+            <div class="field"><span class="k">Способ доставки</span><span class="v">Самовывоз</span></div>
+          </div>
+          <div class="block">
+            <h3>Срок и оплата</h3>
+            <div class="field"><span class="k">Срок</span><span class="v due-soon">сегодня, 17:00</span></div>
+            <div class="field"><span class="k">Сумма</span><span class="v">9 540 ₽</span></div>
+            <div class="field"><span class="k">Оплата</span><span class="v">Аванс 50%</span></div>
+          </div>
+          <div class="block">
+            <h3>Заметка мастера</h3>
+            <div class="note">Клиент просит ровные торцы без «телескопа» — намотку проверить вручную.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

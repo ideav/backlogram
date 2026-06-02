@@ -1,0 +1,67 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"></head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="logo"><span class="mark">И</span> Интеграм</div>
+    <div class="nav">
+      <a class="active">Заказы</a>
+      <a>Рулоны на складе</a>
+      <a>Клиенты</a>
+      <a>Отчёты</a>
+    </div>
+    <div class="spacer"></div>
+    <div class="user"><span class="av">МР</span> Мастерская резки</div>
+  </div>
+  <div class="main">
+    <div class="side">
+      <div class="group">Заказы</div>
+      <a class="active">📋 Все заказы <span class="count">37</span></a>
+      <a>🆕 Новые <span class="count">6</span></a>
+      <a>✂️ В резке <span class="count">9</span></a>
+      <a>✅ Готовы <span class="count">5</span></a>
+      <a>🚚 Отгружены <span class="count">17</span></a>
+      <div class="group">Справочники</div>
+      <a>🧻 Материалы</a>
+      <a>👥 Клиенты</a>
+      <a>👷 Сотрудники</a>
+    </div>
+    <div class="content">
+      <div class="page-head">
+        <div>
+          <h1>Заказы на резку</h1>
+          <div class="sub">Сегодня, 2 июня — 6 новых, 9 в работе, 2 горят</div>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn">＋ Новый заказ</button>
+      </div>
+      <div class="toolbar">
+        <div class="search">🔍 Поиск по клиенту, материалу или номеру…</div>
+        <div class="chip on">Все</div>
+        <div class="chip">Горящие</div>
+        <div class="chip">На этой неделе</div>
+        <div class="chip">Мои</div>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr>
+            <th>№</th><th>Клиент</th><th>Материал</th><th>Ширина реза</th><th>Кол-во</th><th>Срок</th><th>Статус</th><th>Мастер</th>
+          </tr></thead>
+          <tbody>
+            <tr><td class="id">№ 1043</td><td class="cust">ООО «Пакмаркет»</td><td>Стретч-плёнка 23 мкм</td><td class="tabnum">125 мм</td><td class="tabnum">40 рул.</td><td class="due-late">просрочен 1 июня</td><td><span class="badge b-late"><span class="dot"></span>Горит</span></td><td>Соколов</td></tr>
+            <tr><td class="id">№ 1042</td><td class="cust">ИП Гаврилова</td><td>Бумага крафт 80 г/м²</td><td class="tabnum">200 мм</td><td class="tabnum">18 рул.</td><td class="due-soon">сегодня, 17:00</td><td><span class="badge b-cut"><span class="dot"></span>В резке</span></td><td>Соколов</td></tr>
+            <tr><td class="id">№ 1041</td><td class="cust">«Город-Упак»</td><td>Воздушно-пузырьковая</td><td class="tabnum">300 мм</td><td class="tabnum">12 рул.</td><td>завтра, 12:00</td><td><span class="badge b-cut"><span class="dot"></span>В резке</span></td><td>Минин</td></tr>
+            <tr><td class="id">№ 1040</td><td class="cust">ООО «Фрешлайн»</td><td>Плёнка ПВД первичка</td><td class="tabnum">160 мм</td><td class="tabnum">25 рул.</td><td>4 июня</td><td><span class="badge b-new"><span class="dot"></span>Новый</span></td><td class="muted">—</td></tr>
+            <tr><td class="id">№ 1039</td><td class="cust">«Сибтара»</td><td>Картон гофро Е</td><td class="tabnum">420 мм</td><td class="tabnum">8 рул.</td><td>4 июня</td><td><span class="badge b-ready"><span class="dot"></span>Готов</span></td><td>Минин</td></tr>
+            <tr><td class="id">№ 1038</td><td class="cust">ИП Кузьмин</td><td>Скотч ВОРР 45 мкм</td><td class="tabnum">48 мм</td><td class="tabnum">96 рул.</td><td>5 июня</td><td><span class="badge b-new"><span class="dot"></span>Новый</span></td><td class="muted">—</td></tr>
+            <tr><td class="id">№ 1037</td><td class="cust">ООО «Пакмаркет»</td><td>Стретч-плёнка 17 мкм</td><td class="tabnum">100 мм</td><td class="tabnum">60 рул.</td><td>6 июня</td><td><span class="badge b-cut"><span class="dot"></span>В резке</span></td><td>Соколов</td></tr>
+            <tr><td class="id">№ 1036</td><td class="cust">«Агродом»</td><td>Спанбонд 60 г/м²</td><td class="tabnum">320 мм</td><td class="tabnum">14 рул.</td><td>6 июня</td><td><span class="badge b-ready"><span class="dot"></span>Готов</span></td><td>Минин</td></tr>
+            <tr><td class="id">№ 1035</td><td class="cust">ИП Гаврилова</td><td>Бумага крафт 70 г/м²</td><td class="tabnum">150 мм</td><td class="tabnum">22 рул.</td><td>3 июня</td><td><span class="badge b-ship"><span class="dot"></span>Отгружен</span></td><td>Соколов</td></tr>
+            <tr><td class="id">№ 1034</td><td class="cust">«Город-Упак»</td><td>Стретч-плёнка 20 мкм</td><td class="tabnum">250 мм</td><td class="tabnum">30 рул.</td><td>2 июня</td><td><span class="badge b-ship"><span class="dot"></span>Отгружен</span></td><td>Минин</td></tr>
+          </tbody>
+        </table>
+        <div class="foot">Показано 10 из 37 заказов · обновлено только что</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>
