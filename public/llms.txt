@@ -28,6 +28,7 @@
 - [Интеграм vs Airtable: собственный контур вместо SaaS-зависимости](https://ideav.ru/knowledge-base/06-airtable-control.html): Self-hosted развёртывание, контроль над данными, отсутствие ценовых сюрпризов при росте команды.
 - [Интеграм vs Notion: реляционная база вместо доски заметок](https://ideav.ru/knowledge-base/07-notion-relational-data.html): Где Notion ломается на серьёзных учётных задачах и почему «база данных» в Notion — не база данных в инженерном смысле.
 - [Интеграм vs закрытые конструкторы интерфейсов: HTML-шаблоны](https://ideav.ru/knowledge-base/08-html-templates.html): Гибкость кастомного интерфейса (Airtable Interfaces, Notion views) без ограничений «можно только то, что предусмотрел сервис».
+- [Вайб-кодинг рабочих мест для Интеграма: шаблон ИИ в main.html](https://ideav.ru/knowledge-base/08a-vibe-coding-templates.html): Промпт, последовательность шагов и реальные примеры из ideav/crm, где HTML-шаблон рабочего места генерировался ИИ и нативно встраивался в main.html.
 
 ### Сравнения с заказной разработкой
 
