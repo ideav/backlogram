@@ -55,7 +55,15 @@
   * {
     border-color: var(--color-border);
   }
-  
+
+  html {
+    background-color: oklch(100% 0 0);
+  }
+
+  html.dark {
+    background-color: oklch(9% 0.016 285.75);
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
