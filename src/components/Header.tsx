@@ -9,6 +9,7 @@ export function Header() {
   const { theme, toggleTheme } = useTheme()
 
   const navLinks = [
+    { name: 'Excel → приложение', href: '/excel-to-app.html' },
     { name: 'Технология', href: '/#technology' },
     { name: 'Как работаем', href: '/#process' },
     { name: 'Примеры', href: '/#cases' },
