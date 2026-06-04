@@ -4,7 +4,7 @@ description: "Честные ответы без маркетинга: чем н
 pubDate: 2026-06-05
 category: "О платформе"
 author: "Команда Интеграм"
-image: /abstract/blog-material-2.svg
+image: /uploads/lowcode-qa-cover.jpg
 tags:
 - low-code
 - no-code
