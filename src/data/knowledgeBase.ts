@@ -1576,7 +1576,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
       },
     ],
     relatedSlugs: [
-      '14-forms-reports-dashboards',
+      '14-forms',
       '15-local-control-files',
       '06-airtable-control',
       '13-api-json-export',
