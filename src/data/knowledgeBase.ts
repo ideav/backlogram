@@ -1269,7 +1269,12 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
     conclusion:
       'Отчёт в Интеграме — это представление тех же таблиц, а не отдельная BI-система с собственным коннектором, кэшем и списком пользователей. Фильтр в URL сразу применён, экспорт и JSON работают на том же источнике, а ячейку можно поправить без ухода из отчёта. Вопрос «где правда?» снимается, потому что источник один.',
     sourceUrl: `${'https://github.com/ideav/crm/blob/main/docs/integram-article-reviews'}/14a-reports.md`,
-    relatedSlugs: ['14-forms', '14b-dashboards', '13-api-json-export', '02-excel-row-limit'],
+    relatedSlugs: [
+      '14-forms',
+      '14b-dashboards',
+      '13-api-json-export',
+      '20-semantic-memory-without-vector-db',
+    ],
   },
   {
     slug: '14b-dashboards',
@@ -1958,7 +1963,12 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
         note: 'Устройство рекурсивного обхода (WITH RECURSIVE), замеры one-shot ANN и цифры масштабирования.',
       },
     ],
-    relatedSlugs: ['01-google-sheets-150k'],
+    relatedSlugs: [
+      '14a-reports',
+      '04-related-tables',
+      '15-local-control-files',
+      '06-airtable-control',
+    ],
     sourceUrl: 'https://github.com/ideav/ime/blob/main/docs/summary.md',
   },
 ]

@@ -4,6 +4,7 @@ description: "Большинство бизнес-данных — это свя
 pubDate: '2026-06-04'
 category: О платформе
 author: Команда Интеграм
+image: /abstract/blog-material-3.svg
 tags:
 - Интеграм
 - low-code
