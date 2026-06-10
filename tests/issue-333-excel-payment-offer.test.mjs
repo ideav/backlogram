@@ -35,7 +35,15 @@ test('the payment offer keeps the 3-hour limited-time framing', () => {
   assert.match(pageSource, /заархивирована/)
 })
 
-test('the payment offer has a pay CTA to the Telegram contact', () => {
-  assert.match(pageSource, /const PAYMENT_CONTACT_URL = 'https:\/\/t\.me\/qdmadept'/)
+test('the pay CTA is a two-step Tochka checkout flow (issue #335)', () => {
+  // Step 1: the CTA button reveals the email field instead of linking to Telegram.
   assert.match(pageSource, /Оплатить 12 500 ₽ и забрать базу/)
+  assert.match(pageSource, /onClick=\{\(\) => setShowPayForm\(true\)\}/)
+  // Step 2: email is collected, validated, then the page redirects to the
+  // Tochka checkout link (same pattern as start.html #promoPayButton).
+  assert.match(pageSource, /const PAYMENT_CHECKOUT_URL = 'https:\/\/checkout\.tochka\.com\/cc7f594c-58a5-4ada-8c13-91b678ac2868'/)
+  assert.match(pageSource, /isPaymentEmailValid\(/)
+  assert.match(pageSource, /window\.location\.href = PAYMENT_CHECKOUT_URL/)
+  // The Telegram contact is no longer the payment CTA.
+  assert.doesNotMatch(pageSource, /href=\{PAYMENT_CONTACT_URL\}/)
 })
