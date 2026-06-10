@@ -4,7 +4,7 @@ description: План проекта содержит сроки, текущее
 pubDate: '2024-04-05'
 category: Правила предпринимателя в IT
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2024/04/pravilo-5-sostavlenie-plana-proekta
+originalUrl: https://blog.ideav.online/2024/04/pravilo-5-sostavlenie-plana-proekta
 tags:
 - обучение
 ---

@@ -4,7 +4,7 @@ description: Минимально жизнеспособный продукт (M
 pubDate: '2024-04-12'
 category: Правила предпринимателя в IT
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2024/04/pravilo-7-ponyatie-mvp
+originalUrl: https://blog.ideav.online/2024/04/pravilo-7-ponyatie-mvp
 tags:
 - обучение
 ---

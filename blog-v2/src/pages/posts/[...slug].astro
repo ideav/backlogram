@@ -73,11 +73,11 @@ const initial = post.data.author.charAt(0)
             </div>
           </div>
 
-          {post.data.canonical && (
+          {post.data.originalUrl && (
             <div class="mt-8 pt-6 border-t border-[var(--color-hairline)]">
               <div class="eyebrow text-[var(--color-ink-faint)] mb-2">Первая публикация</div>
-              <a href={post.data.canonical} class="text-sm link-swipe text-[var(--color-ink-soft)] break-words">
-                {new URL(post.data.canonical).hostname}
+              <a href={post.data.originalUrl} class="text-sm link-swipe text-[var(--color-ink-soft)] break-words">
+                {new URL(post.data.originalUrl).hostname}
               </a>
             </div>
           )}

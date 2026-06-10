@@ -4,7 +4,7 @@ description: Хочу рассказать (видео-формат youtube, rut
 pubDate: '2025-01-21'
 category: Разработка
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2025/01/intellektualnyi-otchet-dlya-redaktirovaniya-dannyh-v-tablicah
+originalUrl: https://blog.ideav.online/2025/01/intellektualnyi-otchet-dlya-redaktirovaniya-dannyh-v-tablicah
 tags:
 - обучение
 - разработка

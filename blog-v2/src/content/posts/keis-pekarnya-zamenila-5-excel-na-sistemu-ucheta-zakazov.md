@@ -5,7 +5,7 @@ pubDate: '2026-06-02'
 category: Проекты
 author: Команда Интеграм
 image: /uploads/keis-pekarnya-03-zakazy.png
-canonical: https://blog.ideav.online/2026/06/keis-pekarnya-zamenila-5-excel-na-sistemu-ucheta-zakazov
+originalUrl: https://blog.ideav.online/2026/06/keis-pekarnya-zamenila-5-excel-na-sistemu-ucheta-zakazov
 tags:
 - кейсы
 - no-code

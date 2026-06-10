@@ -4,7 +4,7 @@ description: Корпоративное приложение CRM, разрабо
 pubDate: '2024-03-07'
 category: Проекты
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2024/03/crm-sistema-dlya-srednego-biznesa
+originalUrl: https://blog.ideav.online/2024/03/crm-sistema-dlya-srednego-biznesa
 tags:
 - кейсы
 ---

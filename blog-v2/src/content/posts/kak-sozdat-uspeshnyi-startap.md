@@ -5,7 +5,7 @@ description: Стартап – это новаторский продукт, с
 pubDate: '2024-01-17'
 category: Обучение
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2024/01/kak-sozdat-uspeshnyi-startap
+originalUrl: https://blog.ideav.online/2024/01/kak-sozdat-uspeshnyi-startap
 tags:
 - бизнес
 ---

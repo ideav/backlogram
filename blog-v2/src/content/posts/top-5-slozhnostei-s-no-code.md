@@ -4,7 +4,7 @@ description: Несмотря на преимущества no-code разраб
 pubDate: '2024-02-26'
 category: Технологии
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2024/02/top-5-slozhnostei-s-no-code
+originalUrl: https://blog.ideav.online/2024/02/top-5-slozhnostei-s-no-code
 tags:
 - разработка
 ---

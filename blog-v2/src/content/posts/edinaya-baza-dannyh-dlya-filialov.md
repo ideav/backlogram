@@ -4,7 +4,7 @@ description: Масштабирование бизнеса повышает ур
 pubDate: '2024-04-19'
 category: Проекты
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2024/04/edinaya-baza-dannyh-dlya-filialov
+originalUrl: https://blog.ideav.online/2024/04/edinaya-baza-dannyh-dlya-filialov
 tags:
 - кейсы
 ---

@@ -4,7 +4,7 @@ description: Важно учесть время на разработку отч
 pubDate: '2024-04-26'
 category: Правила предпринимателя в IT
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2024/04/pravilo-10-otchety-i-informacionnye-tablo
+originalUrl: https://blog.ideav.online/2024/04/pravilo-10-otchety-i-informacionnye-tablo
 tags:
 - обучение
 ---

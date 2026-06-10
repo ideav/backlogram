@@ -4,7 +4,7 @@ description: Неделю назад мы начали активное прод
 pubDate: '2025-07-12'
 category: Технологии
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2025/07/16000-klikov-i-333-konversii-v-direkte-za-2500-rublei-743-rublya-za-konversiyu
+originalUrl: https://blog.ideav.online/2025/07/16000-klikov-i-333-konversii-v-direkte-za-2500-rublei-743-rublya-za-konversiyu
 tags:
 - Яндекс.Директ
 - Интеграм

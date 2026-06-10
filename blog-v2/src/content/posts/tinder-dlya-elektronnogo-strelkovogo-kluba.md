@@ -4,7 +4,7 @@ description: Разработка закрытого приложения для
 pubDate: '2023-10-27'
 category: Проекты
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2023/10/tinder-dlya-elektronnogo-strelkovogo-kluba
+originalUrl: https://blog.ideav.online/2023/10/tinder-dlya-elektronnogo-strelkovogo-kluba
 tags:
 - кейсы
 ---

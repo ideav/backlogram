@@ -5,7 +5,7 @@ description: Интеграм имеет встроенный текстовый
 pubDate: '2025-02-13'
 category: Разработка
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2025/02/kak-redaktirovat-shablon-integrama-lokalno
+originalUrl: https://blog.ideav.online/2025/02/kak-redaktirovat-shablon-integrama-lokalno
 tags:
 - разработка
 ---

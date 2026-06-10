@@ -4,7 +4,7 @@ description: Гибкий BI-инструмент, использующий open
 pubDate: '2024-02-12'
 category: Проекты
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2024/02/bi-instrument-dlya-bankovskoi-otchetnosti-na-kvintetah
+originalUrl: https://blog.ideav.online/2024/02/bi-instrument-dlya-bankovskoi-otchetnosti-na-kvintetah
 tags:
 - кейсы
 ---
