@@ -445,18 +445,6 @@ export default function ExcelToApp() {
             Никаких формул, макросов и настройки — только готовый результат со ссылкой.
           </motion.p>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.25 }}
-            className="max-w-3xl mx-auto text-lg md:text-xl text-slate-600 dark:text-slate-300 leading-relaxed mb-10"
-          >
-            Приложение будет в виде схемы данных, основных рабочих мест и базовых
-            действий, которые описаны в вашем ТЗ или могут быть из него однозначно
-            поняты. Вы сможете сразу его протестировать и потом забрать себе навсегда
-            за <span className="font-bold text-slate-900 dark:text-white">12 500 ₽</span>.
-          </motion.p>
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -694,6 +682,15 @@ export default function ExcelToApp() {
           </p>
         </div>
       </section>
+
+      <div className="max-w-2xl mx-auto px-4 pb-16">
+        <p className="text-center text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+          Приложение будет в виде схемы данных, основных рабочих мест и базовых
+          действий, которые описаны в вашем ТЗ или могут быть из него однозначно
+          поняты. Вы сможете сразу его протестировать и потом забрать себе навсегда
+          за 12 500 ₽.
+        </p>
+      </div>
     </div>
   )
 }

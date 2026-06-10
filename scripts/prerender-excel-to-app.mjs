@@ -110,15 +110,15 @@ const bodyHtml = `
       Никаких формул, макросов и настройки: загружаете файлы, указываете тематику и
       контакт — и получаете ссылку на готовую базу со своими данными.
     </p>
-    <p class="etl-prerender__lead">
-      Приложение будет в виде схемы данных, основных рабочих мест и базовых действий,
-      которые описаны в вашем ТЗ или могут быть из него однозначно поняты. Вы сможете
-      сразу его протестировать и потом забрать себе навсегда за 12 500 ₽.
-    </p>
   </header>
   ${stepsHtml}
   <h2>Частые вопросы</h2>
   ${faqHtml}
+  <p class="etl-prerender__note">
+    Приложение будет в виде схемы данных, основных рабочих мест и базовых действий,
+    которые описаны в вашем ТЗ или могут быть из него однозначно поняты. Вы сможете
+    сразу его протестировать и потом забрать себе навсегда за 12 500 ₽.
+  </p>
   <footer class="etl-prerender__footer">
     <p>
       <a href="${PATH}#excel-form">Загрузить файлы</a> ·
@@ -137,6 +137,8 @@ const bodyHtml = `
   #etl-prerender .etl-prerender__eyebrow { text-transform: uppercase; letter-spacing: 0.1em;
     font-size: 0.72rem; color: #3b82f6; font-weight: 700; margin: 0; }
   #etl-prerender .etl-prerender__lead { font-size: 1.1rem; color: #475569; max-width: 50rem; }
+  #etl-prerender .etl-prerender__note { margin-top: 2.5rem; font-size: 1rem;
+    color: #475569; max-width: 50rem; }
   #etl-prerender .etl-prerender__footer { margin-top: 3rem; padding-top: 1.5rem;
     border-top: 1px solid #e2e8f0; font-size: 0.92rem; color: #475569; }
   /* Dark colours follow the app theme (.dark on <html>, set synchronously by the
@@ -146,7 +148,7 @@ const bodyHtml = `
      site's dark theme while the OS is light sees dark text on a dark background —
      a black screen during loading (issue #325). */
   .dark #etl-prerender { color: #e2e8f0; }
-  .dark #etl-prerender .etl-prerender__lead, .dark #etl-prerender .etl-prerender__footer { color: #94a3b8; }
+  .dark #etl-prerender .etl-prerender__lead, .dark #etl-prerender .etl-prerender__note, .dark #etl-prerender .etl-prerender__footer { color: #94a3b8; }
 </style>`
 
 // ───────────────────────────────────────────────────────────────────────────
