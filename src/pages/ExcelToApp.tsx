@@ -431,7 +431,7 @@ export default function ExcelToApp() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8"
           >
-            Загрузите Excel — <span className="text-blue-500 italic">получите приложение</span>
+            Загрузите ваши Excel — <span className="text-blue-500 italic">получите приложение</span>
           </motion.h1>
 
           <motion.p
@@ -443,6 +443,18 @@ export default function ExcelToApp() {
             Пришлите свои таблицы и пару слов о задаче. Мы превратим их в работающее
             веб-приложение на платформе Интеграм — быстрее, чем вы найдёте фрилансера.
             Никаких формул, макросов и настройки — только готовый результат со ссылкой.
+          </motion.p>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.25 }}
+            className="max-w-3xl mx-auto text-lg md:text-xl text-slate-600 dark:text-slate-300 leading-relaxed mb-10"
+          >
+            Приложение будет в виде схемы данных, основных рабочих мест и базовых
+            действий, которые описаны в вашем ТЗ или могут быть из него однозначно
+            поняты. Вы сможете сразу его протестировать и потом забрать себе навсегда
+            за <span className="font-bold text-slate-900 dark:text-white">12 500 ₽</span>.
           </motion.p>
 
           <motion.div
