@@ -46,7 +46,7 @@ test('prerender-excel-to-app writes a crawlable dist/excel-to-app.html', () => {
   // #root carries a crawlable H1 with the offer.
   assert.doesNotMatch(out, /<div id="root"><\/div>/, '#root must not be left empty')
   assert.match(out, /<div id="root">\s*<article id="etl-prerender"/)
-  assert.match(out, /<h1[^>]*>Загрузите Excel — получите приложение<\/h1>/)
+  assert.match(out, /<h1[^>]*>Загрузите ваши Excel — получите приложение<\/h1>/)
 
   // Representative step headings + FAQ.
   assert.match(out, /Шаг 1\. Загружаете Excel/)
