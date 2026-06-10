@@ -12,8 +12,10 @@ import {
   Trash2,
   Mail,
   MessageSquare,
+  Archive,
+  Wallet,
 } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 declare global {
   interface Window {
@@ -46,6 +48,14 @@ const ACCEPT_ATTR = ACCEPTED_EXTENSIONS.join(',')
 const MAX_FILE_BYTES = 25 * 1024 * 1024 // 25 MB per file
 const MAX_FILES = 10
 
+// Visitors who received the "заберите свою базу" email arrive at
+// /excel-to-app.html#12500. That hash reveals — and focuses — the payment
+// offer below; without it the block stays hidden. Same hash-reveal pattern as
+// start.html#reg (#promoForm), kept here so the email's payment link works.
+const PAYMENT_HASH = '#12500'
+// Telegram contact that confirms payment and hands over the database.
+const PAYMENT_CONTACT_URL = 'https://t.me/qdmadept'
+
 function hasIdbCookie(): boolean {
   return document.cookie.split(';').some(c => c.trimStart().startsWith('idb_'))
 }
@@ -62,6 +72,21 @@ function hasAcceptedExtension(name: string): boolean {
 }
 
 export default function ExcelToApp() {
+  const { hash } = useLocation()
+  const showPaymentOffer = hash === PAYMENT_HASH
+  const paymentRef = React.useRef<HTMLElement>(null)
+
+  // Bring the payment offer into focus the moment it is revealed — the email
+  // promises this block, so it must lead the page (App's ScrollToRouteTarget
+  // also targets id="12500", this guarantees focus even on client navigation).
+  React.useEffect(() => {
+    if (!showPaymentOffer) return
+    const el = paymentRef.current
+    if (!el) return
+    el.scrollIntoView({ behavior: 'smooth' })
+    el.focus({ preventScroll: true })
+  }, [showPaymentOffer])
+
   const [formState, setFormState] = React.useState<FormState>('idle')
   const [errorMsg, setErrorMsg] = React.useState('')
   const [files, setFiles] = React.useState<File[]>([])
@@ -259,6 +284,69 @@ export default function ExcelToApp() {
 
   return (
     <div className="overflow-hidden">
+      {/* Payment offer — shown only for visitors arriving via the email link
+          /excel-to-app.html#12500. Hidden (and absent from prerender/SEO) otherwise. */}
+      {showPaymentOffer && (
+        <section
+          id="12500"
+          ref={paymentRef}
+          tabIndex={-1}
+          className="scroll-mt-24 outline-none pt-32 pb-12 lg:pt-44 lg:pb-16"
+        >
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="rounded-2xl sm:rounded-3xl border border-blue-500/30 bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/40 dark:to-slate-950 shadow-xl dark:shadow-2xl px-4 py-8 sm:p-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 text-blue-500 dark:text-blue-400 text-sm font-medium mb-6">
+                <Clock size={14} />
+                Демонстрация доступна 3 часа
+              </div>
+
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
+                Заберите свою базу данных, <span className="text-blue-500 italic">созданную ИИ</span>
+              </h2>
+
+              <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-8">
+                Это демонстрация, которую вы можете забрать себе в течение 3 часов за{' '}
+                <span className="font-bold text-slate-900 dark:text-white">12 500 ₽</span>.
+                Ограничение по времени связано с текущим большим наплывом пользователей.
+              </p>
+
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-start gap-3 text-slate-600 dark:text-slate-300">
+                  <Archive size={20} className="text-blue-500 shrink-0 mt-0.5" />
+                  <span>
+                    Ваша база в любом случае не пропадёт: она будет заархивирована и может быть
+                    восстановлена позже за{' '}
+                    <span className="font-semibold text-slate-900 dark:text-white">28 500 ₽</span>.
+                  </span>
+                </li>
+                <li className="flex items-start gap-3 text-slate-600 dark:text-slate-300">
+                  <Sparkles size={20} className="text-blue-500 shrink-0 mt-0.5" />
+                  <span>
+                    Дальше дорабатываете самостоятельно или с нашей помощью — стоимость владения{' '}
+                    <span className="font-semibold text-slate-900 dark:text-white">1 950 ₽ в месяц</span>.
+                  </span>
+                </li>
+              </ul>
+
+              <a
+                href={PAYMENT_CONTACT_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all inline-flex items-center justify-center gap-2 group"
+              >
+                <Wallet size={18} />
+                Оплатить 12 500 ₽ и забрать базу
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </a>
+
+              <p className="mt-4 text-sm text-slate-400 dark:text-slate-500">
+                После оплаты пришлём доступ к вашей базе Интеграм.
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Hero */}
       <section className="relative isolate overflow-hidden pt-32 pb-16 lg:pt-44 lg:pb-24">
         <div className="absolute inset-0 -z-10">
