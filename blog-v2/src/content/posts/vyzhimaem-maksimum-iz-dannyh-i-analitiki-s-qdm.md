@@ -4,7 +4,7 @@ description: Квинтетная модель данных (QDM) – систе
 pubDate: '2023-09-15'
 category: О платформе
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2023/09/vyzhimaem-maksimum-iz-dannyh-i-analitiki-s-qdm
+originalUrl: https://blog.ideav.online/2023/09/vyzhimaem-maksimum-iz-dannyh-i-analitiki-s-qdm
 tags:
 - разработка
 ---

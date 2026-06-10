@@ -4,7 +4,7 @@ description: Мы занимаемся развитием конструктор
 pubDate: '2025-10-24'
 category: Технологии
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2025/10/ubiica-excel-kak-no-code-adeptu-podstupitsya-k-zakazchiku
+originalUrl: https://blog.ideav.online/2025/10/ubiica-excel-kak-no-code-adeptu-podstupitsya-k-zakazchiku
 tags:
 - Интеграм
 ---

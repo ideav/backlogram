@@ -4,7 +4,7 @@ description: Дорогие клиенты! От лица всей нашей к
 pubDate: '2023-12-31'
 category: О платформе
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2023/12/s-nastupayushim-novym-godom
+originalUrl: https://blog.ideav.online/2023/12/s-nastupayushim-novym-godom
 tags:
 - конструктор
 ---

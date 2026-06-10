@@ -4,7 +4,7 @@ description: Любому проекту необходимо имя. Бывае
 pubDate: '2024-07-20'
 category: О платформе
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2024/07/rebrending-integral-integram
+originalUrl: https://blog.ideav.online/2024/07/rebrending-integral-integram
 tags:
 - Интеграм
 ---

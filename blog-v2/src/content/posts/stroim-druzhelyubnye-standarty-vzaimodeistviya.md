@@ -5,7 +5,7 @@ description: 'API (Application Programming Interface, или Интерфейс 
 pubDate: '2023-12-10'
 category: Технологии
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2023/12/stroim-druzhelyubnye-standarty-vzaimodeistviya
+originalUrl: https://blog.ideav.online/2023/12/stroim-druzhelyubnye-standarty-vzaimodeistviya
 tags:
 - разработка
 ---

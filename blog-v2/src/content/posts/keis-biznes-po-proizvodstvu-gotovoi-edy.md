@@ -5,7 +5,7 @@ description: Много позиций в арсенале компании ра
 pubDate: '2024-01-07'
 category: Проекты
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2024/01/keis-biznes-po-proizvodstvu-gotovoi-edy
+originalUrl: https://blog.ideav.online/2024/01/keis-biznes-po-proizvodstvu-gotovoi-edy
 tags:
 - кейсы
 ---

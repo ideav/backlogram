@@ -4,7 +4,7 @@ description: Мы уже рассказывали в блоге о нашей п
 pubDate: '2024-01-04'
 category: О платформе
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2024/01/vklad-v-razvitie-integrala-ocenivaetsya-dengami
+originalUrl: https://blog.ideav.online/2024/01/vklad-v-razvitie-integrala-ocenivaetsya-dengami
 tags:
 - конструктор
 ---

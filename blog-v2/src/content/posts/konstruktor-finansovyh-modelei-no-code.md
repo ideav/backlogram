@@ -4,7 +4,7 @@ description: финансовая модель Интеграм
 pubDate: '2025-09-03'
 category: Проекты
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2025/09/konstruktor-finansovyh-modelei-no-code
+originalUrl: https://blog.ideav.online/2025/09/konstruktor-finansovyh-modelei-no-code
 tags:
 - разработка
 - финмодель

@@ -4,7 +4,7 @@ description: Всем привет! Сегодня рассмотрим, как 
 pubDate: '2023-12-13'
 category: Обучение
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2023/12/ocenivaem-it-proekt-za-5-minut-s-pomoshyu-no-code
+originalUrl: https://blog.ideav.online/2023/12/ocenivaem-it-proekt-za-5-minut-s-pomoshyu-no-code
 tags:
 - разработка
 ---

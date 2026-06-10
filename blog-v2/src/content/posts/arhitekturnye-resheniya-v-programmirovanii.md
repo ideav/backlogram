@@ -4,7 +4,7 @@ description: Программная архитектура – это плани
 pubDate: '2023-12-19'
 category: Обучение
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2023/12/arhitekturnye-resheniya-v-programmirovanii
+originalUrl: https://blog.ideav.online/2023/12/arhitekturnye-resheniya-v-programmirovanii
 tags:
 - разработка
 ---

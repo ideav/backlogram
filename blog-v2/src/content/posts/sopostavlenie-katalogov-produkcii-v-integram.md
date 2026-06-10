@@ -4,7 +4,7 @@ description: 'Как за 15 минут сопоставить десятки т
 pubDate: '2026-05-24'
 category: Обучение
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2026/05/sopostavlenie-katalogov-produkcii-v-integram
+originalUrl: https://blog.ideav.online/2026/05/sopostavlenie-katalogov-produkcii-v-integram
 tags:
 - обучение
 - работа с данными

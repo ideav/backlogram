@@ -4,7 +4,7 @@ description: Сквозная система учета данных для ск
 pubDate: '2024-05-24'
 category: Проекты
 author: Команда Интеграм
-canonical: https://blog.ideav.online/2024/05/uproshennyi-analog-1c-dlya-riteila
+originalUrl: https://blog.ideav.online/2024/05/uproshennyi-analog-1c-dlya-riteila
 tags:
 - кейсы
 ---
