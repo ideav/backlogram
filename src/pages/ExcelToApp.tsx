@@ -53,8 +53,16 @@ const MAX_FILES = 10
 // offer below; without it the block stays hidden. Same hash-reveal pattern as
 // start.html#reg (#promoForm), kept here so the email's payment link works.
 const PAYMENT_HASH = '#12500'
-// Telegram contact that confirms payment and hands over the database.
-const PAYMENT_CONTACT_URL = 'https://t.me/qdmadept'
+// Tochka checkout link for the 12 500 ₽ offer. Same two-step pattern as
+// start.html #promoButton/#promoPayButton: the CTA reveals an email field,
+// validates it, then redirects to the payment page.
+const PAYMENT_CHECKOUT_URL = 'https://checkout.tochka.com/cc7f594c-58a5-4ada-8c13-91b678ac2868'
+
+// Payment email is only validated client-side before redirect (mirrors
+// start.html's #promoPayButton); it is not sent anywhere.
+function isPaymentEmailValid(email: string): boolean {
+  return /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/.test(email)
+}
 
 function hasIdbCookie(): boolean {
   return document.cookie.split(';').some(c => c.trimStart().startsWith('idb_'))
@@ -100,6 +108,26 @@ export default function ExcelToApp() {
   const fileInputRef = React.useRef<HTMLInputElement>(null)
   const captchaContainerRef = React.useRef<HTMLDivElement>(null)
   const captchaWidgetIdRef = React.useRef<number | null>(null)
+
+  // Two-step payment CTA (mirrors start.html #promoButton/#promoPayButton):
+  // step 1 reveals the email field, step 2 validates and redirects to checkout.
+  const [showPayForm, setShowPayForm] = React.useState(false)
+  const [payEmail, setPayEmail] = React.useState('')
+  const [payError, setPayError] = React.useState('')
+
+  const handlePay = () => {
+    const email = payEmail.trim()
+    if (!email) {
+      setPayError('Введите email')
+      return
+    }
+    if (!isPaymentEmailValid(email)) {
+      setPayError('Введите корректный email (например, name@example.com)')
+      return
+    }
+    setPayError('')
+    window.location.href = PAYMENT_CHECKOUT_URL
+  }
 
   // Mirror the CTA form: SmartCaptcha is loaded lazily, only once the visitor
   // starts filling the form, and skipped entirely for known users (idb_* cookie).
@@ -328,16 +356,48 @@ export default function ExcelToApp() {
                 </li>
               </ul>
 
-              <a
-                href={PAYMENT_CONTACT_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all inline-flex items-center justify-center gap-2 group"
-              >
-                <Wallet size={18} />
-                Оплатить 12 500 ₽ и забрать базу
-                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-              </a>
+              {!showPayForm ? (
+                <button
+                  type="button"
+                  onClick={() => setShowPayForm(true)}
+                  className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all inline-flex items-center justify-center gap-2 group"
+                >
+                  <Wallet size={18} />
+                  Оплатить 12 500 ₽ и забрать базу
+                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+              ) : (
+                <div className="max-w-sm">
+                  <label htmlFor="pay-email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    Email для оплаты
+                  </label>
+                  <div className="relative">
+                    <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      id="pay-email"
+                      type="email"
+                      autoFocus
+                      value={payEmail}
+                      onChange={e => { setPayEmail(e.target.value); if (payError) setPayError('') }}
+                      onKeyDown={e => { if (e.key === 'Enter') handlePay() }}
+                      placeholder="your@email.com"
+                      className={`w-full pl-9 pr-3 py-3 rounded-xl border bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${payError ? 'border-red-500' : 'border-slate-300 dark:border-slate-700'}`}
+                    />
+                  </div>
+                  {payError && (
+                    <p className="mt-2 text-sm text-red-600 dark:text-red-400">{payError}</p>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handlePay}
+                    className="mt-4 w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all inline-flex items-center justify-center gap-2 group"
+                  >
+                    <Wallet size={18} />
+                    Оплатить 12 500 ₽
+                    <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </div>
+              )}
 
               <p className="mt-4 text-sm text-slate-400 dark:text-slate-500">
                 После оплаты пришлём доступ к вашей базе Интеграм.
