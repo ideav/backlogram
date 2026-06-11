@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Menu, X, Sun, Moon } from 'lucide-react'
 import { useState } from 'react'
 import { useTheme } from '../context/ThemeContext'
+import { Logo } from './Logo'
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -22,9 +23,8 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <Link to="/" className="text-xl font-bold tracking-tight flex items-center gap-2">
-              <span className="bg-blue-600 w-8 h-8 rounded flex items-center justify-center text-white font-black italic">I</span>
-              <span>Интеграм</span>
+            <Link to="/" aria-label="Интеграм — на главную" className="flex items-center">
+              <Logo className="h-8 w-auto text-slate-900 dark:text-white" />
             </Link>
           </div>
 
