@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Send, Mail, Phone, ExternalLink } from 'lucide-react'
+import { Logo } from './Logo'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -10,9 +11,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand and Mission */}
           <div className="lg:col-span-1">
-            <Link to="/" className="text-xl font-bold tracking-tight flex items-center gap-2 mb-6">
-              <span className="bg-blue-600 w-8 h-8 rounded flex items-center justify-center text-white font-black italic shadow-lg shadow-blue-900/20">I</span>
-              <span>Интеграм</span>
+            <Link to="/" aria-label="Интеграм — на главную" className="inline-flex items-center mb-6">
+              <Logo className="h-8 w-auto text-slate-900 dark:text-white" />
             </Link>
             <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">
               Промышленная платформа для корпоративной разработки без программирования.<br />
