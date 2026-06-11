@@ -15,7 +15,12 @@
  * Generates:
  *   dist/knowledge-base.html              — collection page (16+ groups)
  *   dist/knowledge-base/index.html        — same, served at the no-suffix URL
- *   dist/knowledge-base/<slug>/index.html — one per article
+ *   dist/knowledge-base/<slug>.html       — one per article (canonical URL)
+ *   dist/knowledge-base/<slug>/index.html — same, served at the no-suffix URL
+ *
+ * Every page is self-canonical on its .html URL — the exact URL listed in
+ * sitemap.xml and linked from the SPA — so Google does not pick a different
+ * canonical and flag the page as a duplicate (issue #341).
  *
  * Each file gets:
  *   - tightened <title>
@@ -208,7 +213,7 @@ const groupsHtml = groups
       .map(
         (a) => `
           <li class="kb-prerender__item">
-            <a href="/knowledge-base/${escape(a.slug)}">
+            <a href="/knowledge-base/${escape(a.slug)}.html">
               <h3>${escape(a.shortTitle || a.title)}</h3>
               <p>${escape(a.compare || trim(a.summary, 220))}</p>
             </a>
@@ -242,7 +247,7 @@ const indexBody = `
     <p>
       Все ${totalCount} статей в одном списке, в&nbsp;хронологическом порядке выхода —
       доступны через интерактивный фильтр и&nbsp;поиск выше. Перейти к&nbsp;каталогу:
-      <a href="/knowledge-base">/knowledge-base</a>.
+      <a href="/knowledge-base.html">/knowledge-base.html</a>.
     </p>
   </footer>
 </article>
@@ -287,8 +292,8 @@ const collectionJsonLd = {
   '@graph': [
     {
       '@type': 'CollectionPage',
-      '@id': `${SITE}/knowledge-base#collection`,
-      url: `${SITE}/knowledge-base`,
+      '@id': `${SITE}/knowledge-base.html#collection`,
+      url: `${SITE}/knowledge-base.html`,
       name: indexTitle,
       description: indexDescription,
       inLanguage: 'ru',
@@ -297,12 +302,12 @@ const collectionJsonLd = {
     },
     {
       '@type': 'ItemList',
-      '@id': `${SITE}/knowledge-base#articles`,
+      '@id': `${SITE}/knowledge-base.html#articles`,
       numberOfItems: totalCount,
       itemListElement: knowledgeBaseArticles.map((a, i) => ({
         '@type': 'ListItem',
         position: i + 1,
-        url: `${SITE}/knowledge-base/${a.slug}`,
+        url: `${SITE}/knowledge-base/${a.slug}.html`,
         name: a.shortTitle || a.title,
       })),
     },
@@ -312,7 +317,7 @@ const collectionJsonLd = {
 const indexHtml = patchHtml({
   title: indexTitle,
   description: indexDescription,
-  canonical: `${SITE}/knowledge-base`,
+  canonical: `${SITE}/knowledge-base.html`,
   ogType: 'website',
   ogImage: `${SITE}/og/knowledge-base.png`,
   jsonLd: collectionJsonLd,
@@ -330,7 +335,7 @@ console.log(`✓ /knowledge-base{,.html}/index.html  (${indexHtml.length} bytes,
 //  Per-article pages
 // ───────────────────────────────────────────────────────────────────────────
 for (const article of knowledgeBaseArticles) {
-  const url = `${SITE}/knowledge-base/${article.slug}`
+  const url = `${SITE}/knowledge-base/${article.slug}.html`
   const title = article.seoTitle || article.title
   const description = article.metaDescription || article.seoDescription || trim(article.summary, 260)
   const ogTitle = article.ogTitle || title
@@ -360,7 +365,7 @@ for (const article of knowledgeBaseArticles) {
     isPartOf: {
       '@type': 'CollectionPage',
       name: 'База знаний',
-      url: `${SITE}/knowledge-base`,
+      url: `${SITE}/knowledge-base.html`,
     },
     mainEntityOfPage: url,
   }
@@ -387,7 +392,7 @@ for (const article of knowledgeBaseArticles) {
 
   const articleBody = `
 <article id="kb-prerender" itemscope itemtype="https://schema.org/TechArticle">
-  <nav class="kb-article__nav"><a href="/knowledge-base">← База знаний</a></nav>
+  <nav class="kb-article__nav"><a href="/knowledge-base.html">← База знаний</a></nav>
   <header>
     <p class="kb-prerender__eyebrow">${escape(article.compare ? `Сравнение с ${article.compare}` : 'База знаний')}</p>
     <h1 itemprop="headline">${escape(article.title)}</h1>
@@ -401,7 +406,7 @@ for (const article of knowledgeBaseArticles) {
   ${scenarioHtml}
   ${integramHtml}
   <footer class="kb-prerender__footer">
-    <a href="/knowledge-base">← Все статьи базы знаний</a>
+    <a href="/knowledge-base.html">← Все статьи базы знаний</a>
   </footer>
 </article>
 <style>
@@ -446,9 +451,18 @@ for (const article of knowledgeBaseArticles) {
     keywords,
   })
 
+  // The canonical/public URL is /knowledge-base/<slug>.html (matches the
+  // sitemap, internal links and the client-side React canonical). Write the
+  // page at that exact path so the crawled URL is self-canonical.
+  mkdirSync(resolve(dist, 'knowledge-base'), { recursive: true })
+  writeFileSync(resolve(dist, 'knowledge-base', `${article.slug}.html`), html)
+
+  // Also serve the directory-style URL /knowledge-base/<slug> with the same
+  // content; its canonical points back at the .html URL so Google consolidates
+  // the two instead of flagging a duplicate (issue #341).
   const dir = resolve(dist, 'knowledge-base', article.slug)
   mkdirSync(dir, { recursive: true })
   writeFileSync(resolve(dir, 'index.html'), html)
 }
 
-console.log(`✓ ${knowledgeBaseArticles.length} article pages → dist/knowledge-base/<slug>/index.html`)
+console.log(`✓ ${knowledgeBaseArticles.length} article pages → dist/knowledge-base/<slug>.html{,/index.html}`)
