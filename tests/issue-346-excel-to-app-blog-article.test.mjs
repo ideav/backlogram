@@ -43,8 +43,33 @@ test('blog publishes the Excel to app AI-agent article requested in issue 346', 
   assert.match(post, /## Как корректно говорить про «аналогов нет»/)
   assert.match(post, /## Практический вывод/)
 
-  assert.match(post, /\| Подход \| Что получает заказчик \| Главный компромисс \|/)
+  assert.match(post, /\| Подход \| Что получает заказчик \| Главное ограничение \|/)
   assert.match(post, /не нужно формулировать как «в мире нет ничего похожего»/)
+})
+
+test('Excel to app article incorporates the issue 351 editorial improvements', () => {
+  const post = readFileSync(postPath, 'utf8')
+
+  // 1. The human role inside the 45 minutes is made transparent.
+  assert.match(post, /### Где в этих 45 минутах участвует человек/)
+  assert.match(post, /оператором Интеграма/)
+
+  // 2. It states what does NOT migrate from Excel (formulas, VBA, conditional formatting).
+  assert.match(post, /макросы VBA/)
+  assert.match(post, /ЕСЛИ, ВПР, СУММЕСЛИ/)
+  assert.match(post, /условное форматирование/i)
+
+  // 3. The no-code contrast highlights the cost of maintaining changes.
+  assert.match(post, /поменяли исходный Excel — агент пересобирает приложение/)
+
+  // 4. The site-style extraction lists concrete signals.
+  assert.match(post, /акцентный цвет/)
+  assert.match(post, /семейство шрифтов/)
+  assert.match(post, /скругление углов/)
+
+  // 5. The closing no longer blames the client for a failed extraction.
+  assert.doesNotMatch(post, /сначала нужно привести в порядок исходные правила/)
+  assert.match(post, /мы вернём не «нет», а разбор/)
 })
 
 test('Excel to app AI-agent article is issue 65 in the chronological blog archive', () => {
