@@ -72,7 +72,7 @@ test('blog publishes the industrial automation / Living TZ article (issue 286)',
   assert.doesNotMatch(post, /риббон/i, 'article should describe an abstract production task, not ribbons')
 })
 
-test('industrial automation article is the latest issue in the chronological archive', () => {
+test('industrial automation article remains issue 57 in the chronological archive', () => {
   assert.ok(existsSync(postPath), `expected ${postFile} to exist`)
 
   const posts = readdirSync(postsDir)
@@ -89,8 +89,7 @@ test('industrial automation article is the latest issue in the chronological arc
     .sort((a, b) => a.pubDate.localeCompare(b.pubDate) || a.file.localeCompare(b.file))
 
   const position = posts.findIndex((post) => post.file === postFile) + 1
-  assert.ok(position > 0, 'published article should appear in the archive')
-  assert.equal(position, posts.length, 'article with the newest pubDate should be the latest issue')
+  assert.equal(position, 57, 'published article should keep its historical archive position')
 })
 
 test('industrial automation article uses the colorful V-Tech hero screenshot (issue 288)', () => {
