@@ -1467,6 +1467,14 @@ img {
   padding-left: 1.45rem;
 }
 
+.prose-article ul {
+  list-style: disc;
+}
+
+.prose-article ol {
+  list-style: decimal;
+}
+
 .prose-article li {
   margin-bottom: 0.5rem;
 }
