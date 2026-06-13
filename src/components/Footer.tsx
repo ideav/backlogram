@@ -18,6 +18,10 @@ export function Footer() {
               Промышленная платформа для корпоративной разработки без программирования.<br />
               Разгружаем программистов, сохраняя контроль над архитектурой и безопасностью.
             </p>
+            <div className="inline-flex flex-col rounded-2xl border border-blue-500/20 bg-blue-500/5 px-4 py-3 text-sm leading-snug">
+              <span className="font-semibold text-slate-700 dark:text-slate-200">В реестре отечественного ПО</span>
+              <span className="mt-1 text-slate-500 dark:text-slate-400">Реестровая запись №30872</span>
+            </div>
           </div>
 
           {/* Quick Links */}
