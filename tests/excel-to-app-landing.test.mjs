@@ -67,6 +67,14 @@ test('the landing uses the same SmartCaptcha flow as the CTA form', () => {
   assert.match(pageSource, /captcha_token/)
 })
 
+test('the landing offers the @Integrammbot Telegram shortcut next to the upload CTA', () => {
+  // Issue #355: a faster, alternative path for visitors who already use Telegram.
+  assert.match(pageSource, /const TELEGRAM_BOT_URL = 'https:\/\/t\.me\/Integrammbot'/)
+  assert.match(pageSource, /href=\{TELEGRAM_BOT_URL\}/)
+  assert.match(pageSource, /Открыть в Telegram-боте/)
+  assert.match(pageSource, /@Integrammbot/)
+})
+
 test('the landing form anchor has scroll margin for the fixed header', () => {
   const section = pageSource.match(/<section\s+id="excel-form"\s+className="([^"]+)"/)
   assert.ok(section, 'expected a form section with id="excel-form"')

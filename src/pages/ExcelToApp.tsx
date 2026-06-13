@@ -41,6 +41,11 @@ const CAPTCHA_CLIENT_KEY = (import.meta.env.VITE_SMARTCAPTCHA_CLIENT_KEY as stri
 // as an extension of public/telegram-notify.php; the landing only needs to POST here.
 const SUBMIT_ENDPOINT = '/excel-to-app.php'
 
+// Telegram bot alternative to the on-page form (#355). @Integrammbot accepts the
+// same files and task description right inside Telegram — a faster path for the
+// people who already have it, offered next to the upload CTA.
+const TELEGRAM_BOT_URL = 'https://t.me/Integrammbot'
+
 // Accepted spreadsheet types. Matches the formats people export from Excel,
 // Google Sheets and 1С.
 const ACCEPTED_EXTENSIONS = ['.xls', '.xlsx', '.xlsm', '.csv', '.ods']
@@ -449,15 +454,30 @@ export default function ExcelToApp() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex justify-center"
+            className="flex flex-col items-center gap-3"
           >
-            <a
-              href="#excel-form"
-              className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2 group"
-            >
-              Загрузить файлы
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-            </a>
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 w-full sm:w-auto">
+              <a
+                href="#excel-form"
+                className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2 group"
+              >
+                Загрузить файлы
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </a>
+              {/* Alternative, faster path for Telegram users (#355). */}
+              <a
+                href={TELEGRAM_BOT_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-slate-900 border border-blue-500/40 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+              >
+                <Send size={18} />
+                Открыть в Telegram-боте
+              </a>
+            </div>
+            <p className="text-sm text-slate-400 dark:text-slate-500">
+              Через <span className="font-semibold text-slate-500 dark:text-slate-400">@Integrammbot</span> — быстрее, если у вас есть Telegram
+            </p>
           </motion.div>
         </div>
       </section>
