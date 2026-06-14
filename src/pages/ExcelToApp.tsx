@@ -707,8 +707,27 @@ export default function ExcelToApp() {
         <p className="text-center text-base text-slate-600 dark:text-slate-300 leading-relaxed">
           Приложение будет в виде схемы данных, основных рабочих мест и базовых
           действий, которые описаны в вашем ТЗ или могут быть из него однозначно
-          поняты. Вы сможете сразу его протестировать и потом забрать себе навсегда
-          за 12 500 ₽.
+          поняты. Вы сможете сразу его протестировать и потом забрать себе
+          за 12 500 ₽. В первый месяц вам доступны доработки вашего проекта с
+          использованием ИИ-агента. Дальнейшее использование ИИ-агента —
+          дополнительно 5950 рублей в месяц к{' '}
+          <a
+            href="https://ideav.ru/start.html#tarif"
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            основному тарифу
+          </a>
+          .
+        </p>
+        <p className="mt-4 text-center text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+          Стоимость владения этой базой согласно{' '}
+          <a
+            href="https://ideav.ru/start.html#tarif"
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            тарифам ideav.ru
+          </a>{' '}
+          — от 1950 рублей в месяц.
         </p>
       </div>
     </div>
