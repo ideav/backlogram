@@ -49,6 +49,14 @@ test('the detailed page covers all four foreign competitors and the Integram pil
   assert.match(pageSource, /Агент полного цикла/)
 })
 
+test('the detailed page covers Russian low-code analogs', () => {
+  assert.match(pageSource, /Российские аналоги/)
+  assert.match(pageSource, /Bpium/)
+  assert.match(pageSource, /ELMA365/)
+  assert.match(pageSource, /BPMSoft/)
+  assert.match(pageSource, /AppMaster/)
+})
+
 test('the detailed page sets its own SEO title, description and canonical', () => {
   assert.match(pageSource, /document\.title = PAGE_TITLE/)
   assert.match(pageSource, /const canonical = `\$\{SITE\}\$\{PATH\}`/)
@@ -99,6 +107,11 @@ test('prerender-agent-platforms writes a crawlable dist/agent-platforms.html', (
   assert.match(out, /Microsoft Power Platform \+ Copilot/)
   assert.match(out, /NocoDB/)
   assert.match(out, /Appsmith/)
+
+  // Russian analogs section is crawlable too.
+  assert.match(out, /Российские аналоги/)
+  assert.match(out, /Bpium/)
+  assert.match(out, /BPMSoft/)
 
   // SEO head tags: canonical, Open Graph, Article JSON-LD, tightened title.
   assert.match(out, /<link rel="canonical" href="https:\/\/ideav\.ru\/agent-platforms\.html" \/>/)

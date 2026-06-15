@@ -21,15 +21,16 @@ import {
   KeyRound,
   FileCode2,
   Sparkles,
+  Building2,
 } from 'lucide-react'
 
 const SITE = 'https://ideav.ru'
 const PATH = '/agent-platforms.html'
 
 const PAGE_TITLE =
-  'Агент создаёт приложение: Интеграм против Retool, Power Platform, NocoDB и Appsmith'
+  'Агент создаёт приложение: Интеграм против зарубежных и российских low-code платформ'
 const PAGE_DESCRIPTION =
-  'Подробное сравнение Интеграма с лучшими зарубежными low-code платформами по модели «ИИ-агент создаёт и администрирует сервис под ключ»: Retool AI, Power Platform Copilot, NocoDB, Appsmith.'
+  'Подробное сравнение Интеграма с low-code платформами по модели «ИИ-агент создаёт и администрирует сервис под ключ»: за рубежом — Retool AI, Power Platform Copilot, NocoDB, Appsmith; в России — Bpium, ELMA365, BPMSoft, AppMaster.'
 
 function setMetaTag(selector: string, attr: 'name' | 'property', key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(selector)
@@ -173,6 +174,35 @@ const pillars = [
   },
 ]
 
+// Российские low-code/no-code платформы — что умеет ИИ сегодня и где упирается
+// сценарий «агент собирает сервис целиком». Факты по открытым источникам (2025–2026).
+const ruPlatforms = [
+  {
+    name: 'Bpium',
+    what: 'No-code конструктор: таблицы, формы, API, права до уровня поля',
+    ai: 'Приложение собирает человек — ИИ-генерации нет',
+    gap: 'Права настраиваются в интерфейсе',
+  },
+  {
+    name: 'ELMA365',
+    what: 'Low-code экосистема BPM / CRM / КЭДО',
+    ai: 'ИИ-ассистент помогает в визуальном конструкторе',
+    gap: 'Human-in-the-loop',
+  },
+  {
+    name: 'BPMSoft',
+    what: 'Low-code BPM / CRM (замена Creatio), реестр РФ, ФСТЭК',
+    ai: 'LLM-агенты автоматизируют бизнес-процессы',
+    gap: 'Агент — это шаги процесса, не схема и права',
+  },
+  {
+    name: 'AppMaster',
+    what: 'No-code: генерирует исходный код (бэкенд, веб, мобайл)',
+    ai: 'ИИ собирает приложение и API по описанию',
+    gap: 'Реальный код — риск; нет единого админ-API',
+  },
+]
+
 // Полный цикл, который агент проходит без захода в интерфейс.
 const fullCycle = [
   { icon: <Database size={18} />, label: 'Структура базы' },
@@ -191,7 +221,7 @@ export default function AgentPlatforms() {
 
     setMetaTag('meta[name="description"]', 'name', 'description', PAGE_DESCRIPTION)
     setMetaTag('meta[name="keywords"]', 'name', 'keywords',
-      'ии-агент создаёт приложение,low-code,retool ai,power platform copilot,nocodb,appsmith,интеграм,автоматизация без программиста,замена разработчика')
+      'ии-агент создаёт приложение,low-code,no-code,retool ai,power platform copilot,nocodb,appsmith,bpium,elma365,bpmsoft,appmaster,российские low-code платформы,интеграм,автоматизация без программиста,замена разработчика')
     setMetaTag('meta[property="og:type"]', 'property', 'og:type', 'article')
     setMetaTag('meta[property="og:title"]', 'property', 'og:title', PAGE_TITLE)
     setMetaTag('meta[property="og:description"]', 'property', 'og:description', PAGE_DESCRIPTION)
@@ -234,10 +264,9 @@ export default function AgentPlatforms() {
           </motion.h1>
 
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
-            Подход «приложение полностью собирается ИИ-агентом» — горячий фронт, и за рубежом есть
-            сильные игроки, которые либо уже умеют такое, либо идут к этому семимильными шагами. Ниже —
-            честное сравнение Интеграма с лучшими зарубежными решениями, где агент может выступать
-            разработчиком и администратором.
+            Подход «приложение полностью собирается ИИ-агентом» — горячий фронт, и сильные игроки есть
+            и за рубежом, и в России. Ниже — честное сравнение Интеграма с лучшими решениями обоих
+            рынков, где агент может выступать разработчиком и администратором.
           </p>
         </div>
       </section>
@@ -382,6 +411,61 @@ export default function AgentPlatforms() {
         </div>
       </section>
 
+      {/* Russian analogs */}
+      <section className="py-16 border-t border-slate-200 dark:border-slate-900">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2 mb-2">
+            <Building2 size={22} className="text-blue-600 dark:text-blue-400" />
+            <h2 className="text-2xl md:text-3xl font-bold">Российские аналоги</h2>
+          </div>
+          <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-2xl">
+            В России low-code-рынок тоже идёт в ИИ — но по той же модели: ассистент помогает человеку
+            в конструкторе либо агент автоматизирует бизнес-процессы. Полную сборку сервиса агентом не
+            закрывает никто.
+          </p>
+
+          <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
+            <table className="w-full border-collapse text-sm">
+              <thead>
+                <tr className="bg-slate-50 dark:bg-slate-900/50">
+                  <th className="text-left py-3 px-4 font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest text-xs">Платформа</th>
+                  <th className="text-left py-3 px-4 font-bold text-slate-500 dark:text-slate-400">Роль ИИ сегодня</th>
+                  <th className="text-left py-3 px-4 font-bold text-amber-600 dark:text-amber-400">Чего нет для «агент делает всё»</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ruPlatforms.map((p, i) => (
+                  <tr key={i} className="border-t border-slate-100 dark:border-slate-800/60 align-top">
+                    <td className="py-3 px-4">
+                      <div className="font-bold text-slate-900 dark:text-white">{p.name}</div>
+                      <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{p.what}</div>
+                    </td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-300">{p.ai}</td>
+                    <td className="py-3 px-4">
+                      <span className="inline-flex items-start gap-1.5 text-slate-500 dark:text-slate-400">
+                        <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-0.5" />
+                        {p.gap}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-3">
+            Visary, SimpleOne, Triafly и другие российские low-code-платформы тоже добавляют ИИ — как
+            ассистентов, а не как самостоятельных сборщиков сервиса.
+          </p>
+
+          <p className="text-slate-600 dark:text-slate-300 leading-relaxed mt-6 max-w-2xl">
+            Полный цикл «структура базы → данные → роли и права → меню → шаблоны» одним идемпотентным
+            API на безопасной EAV-модели — отличие <span className="font-semibold text-blue-600 dark:text-blue-400">Интеграма</span>,
+            к тому же с хостингом в России.
+          </p>
+        </div>
+      </section>
+
       {/* Three pillars */}
       <section className="py-16 border-t border-slate-200 dark:border-slate-900 bg-slate-50/60 dark:bg-slate-900/30">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -413,9 +497,10 @@ export default function AgentPlatforms() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">Вывод</h2>
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
-            За рубежом нет точного аналога Интеграма по уровню контроля агента над платформой. Ближайшие
-            конкуренты — Retool, Power Platform, NocoDB, Appsmith — заточены на human-in-the-loop: человек
-            кликает в интерфейсе, агент помогает.
+            Ни за рубежом, ни в России нет точного аналога Интеграма по уровню контроля агента над
+            платформой. Зарубежные (Retool, Power Platform, NocoDB, Appsmith) и российские (Bpium,
+            ELMA365, BPMSoft, AppMaster) решения заточены на human-in-the-loop: человек кликает в
+            интерфейсе, агент помогает.
           </p>
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-10">
             Интеграм — платформа, где агент проходит полный цикл: структура базы → наполнение → роли и

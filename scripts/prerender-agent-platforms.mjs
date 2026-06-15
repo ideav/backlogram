@@ -111,6 +111,23 @@ const pillarsHtml = pillars
   )
   .join('')
 
+const ruPlatforms = [
+  { h: 'Bpium', p: 'No-code конструктор с таблицами, формами, API и правами до уровня поля, но приложение собирает человек — ИИ-генерации нет.' },
+  { h: 'ELMA365', p: 'Low-code экосистема BPM/CRM/КЭДО с ИИ-ассистентом, который помогает человеку в визуальном конструкторе (human-in-the-loop).' },
+  { h: 'BPMSoft', p: 'Low-code BPM/CRM (замена Creatio, реестр РФ, ФСТЭК) с LLM-агентами, но агент автоматизирует бизнес-процессы, а не схему и права.' },
+  { h: 'AppMaster', p: 'No-code с ИИ-генерацией исходного кода (бэкенд, веб, мобайл), но это реальный код с риском поломки и без единого админ-API.' },
+]
+
+const ruPlatformsHtml = ruPlatforms
+  .map(
+    (p) => `
+      <section class="ap-prerender__group">
+        <h3>${escape(p.h)}</h3>
+        <p>${escape(p.p)}</p>
+      </section>`
+  )
+  .join('')
+
 const bodyHtml = `
 <article id="ap-prerender" itemscope itemtype="https://schema.org/Article">
   <header>
@@ -118,21 +135,25 @@ const bodyHtml = `
     <h1 itemprop="headline">Сервис целиком создаёт и администрирует агент — кто это уже умеет</h1>
     <p class="ap-prerender__lead" itemprop="description">
       Подход «приложение полностью собирается ИИ-агентом» — горячий фронт. Ниже честное сравнение
-      Интеграма с лучшими зарубежными решениями (Retool AI, Power Platform Copilot, NocoDB, Appsmith),
-      где агент может выступать разработчиком и администратором.
+      Интеграма с лучшими решениями за рубежом (Retool AI, Power Platform Copilot, NocoDB, Appsmith)
+      и в России (Bpium, ELMA365, BPMSoft, AppMaster), где агент может выступать разработчиком и
+      администратором.
     </p>
   </header>
   <h2>Главные зарубежные конкуренты</h2>
   ${competitorsHtml}
+  <h2>Российские аналоги</h2>
+  ${ruPlatformsHtml}
   <h2>Чем Интеграм уникален для полной автоматизации</h2>
   ${pillarsHtml}
   <section class="ap-prerender__group">
     <h2>Вывод</h2>
     <p>
-      За рубежом нет точного аналога Интеграма по уровню контроля агента над платформой. Ближайшие
-      конкуренты заточены на human-in-the-loop: человек кликает в интерфейсе, агент помогает.
-      Интеграм — платформа, где агент проходит полный цикл: структура базы → наполнение → роли и
-      права → меню → шаблоны → тестовые данные, и всё это единообразными API-вызовами.
+      Ни за рубежом, ни в России нет точного аналога Интеграма по уровню контроля агента над
+      платформой. Зарубежные и российские конкуренты заточены на human-in-the-loop: человек кликает
+      в интерфейсе, агент помогает. Интеграм — платформа, где агент проходит полный цикл: структура
+      базы → наполнение → роли и права → меню → шаблоны → тестовые данные, и всё это единообразными
+      API-вызовами.
     </p>
   </section>
   <footer class="ap-prerender__footer">
@@ -168,9 +189,9 @@ const bodyHtml = `
 // ───────────────────────────────────────────────────────────────────────────
 const canonical = `${SITE}${PATH}`
 const ogTitle =
-  'Агент создаёт приложение: Интеграм против Retool, Power Platform, NocoDB и Appsmith'
+  'Агент создаёт приложение: Интеграм против зарубежных и российских low-code платформ'
 const ogDescription =
-  'Подробное сравнение Интеграма с лучшими зарубежными low-code платформами по модели «ИИ-агент создаёт и администрирует сервис под ключ»: Retool AI, Power Platform Copilot, NocoDB, Appsmith.'
+  'Подробное сравнение Интеграма с low-code платформами по модели «ИИ-агент создаёт и администрирует сервис под ключ»: за рубежом — Retool AI, Power Platform Copilot, NocoDB, Appsmith; в России — Bpium, ELMA365, BPMSoft, AppMaster.'
 const ogImage = `${SITE}/og/knowledge-base.png`
 
 const jsonLd = {
