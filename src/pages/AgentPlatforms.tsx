@@ -266,8 +266,8 @@ export default function AgentPlatforms() {
             transition={{ duration: 0.5 }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5"
           >
-            Сервис целиком создаёт и администрирует агент —{' '}
-            <span className="text-blue-500">кто это уже умеет</span>
+            ИИ-агент собирает и ведёт приложение{' '}
+            <span className="text-blue-500">под ключ</span>
           </motion.h1>
 
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">

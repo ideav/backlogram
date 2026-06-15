@@ -147,7 +147,7 @@ const bodyHtml = `
 <article id="ap-prerender" itemscope itemtype="https://schema.org/Article">
   <header>
     <p class="ap-prerender__eyebrow">Агент как полноценный разработчик</p>
-    <h1 itemprop="headline">Сервис целиком создаёт и администрирует агент — кто это уже умеет</h1>
+    <h1 itemprop="headline">ИИ-агент собирает и ведёт приложение под ключ</h1>
     <p class="ap-prerender__lead" itemprop="description">
       Подход «приложение полностью собирается ИИ-агентом» — горячий фронт. Ниже честное сравнение
       Интеграма с лучшими решениями за рубежом (Retool AI, Power Platform Copilot, NocoDB, Appsmith)
