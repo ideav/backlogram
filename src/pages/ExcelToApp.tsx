@@ -14,6 +14,14 @@ import {
   MessageSquare,
   Archive,
   Wallet,
+  Database,
+  Users,
+  BrainCircuit,
+  Zap,
+  Lock,
+  Eye,
+  TrendingUp,
+  AlertTriangle,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 
@@ -37,34 +45,17 @@ type FormState = 'idle' | 'sending' | 'success' | 'error'
 
 const CAPTCHA_CLIENT_KEY = (import.meta.env.VITE_SMARTCAPTCHA_CLIENT_KEY as string | undefined) ?? ''
 
-// Endpoint that accepts the form with attachments. Built in activity A2 (#304)
-// as an extension of public/telegram-notify.php; the landing only needs to POST here.
 const SUBMIT_ENDPOINT = '/excel-to-app.php'
-
-// Telegram bot alternative to the on-page form (#355). @Integrammbot accepts the
-// same files and task description right inside Telegram — a faster path for the
-// people who already have it, offered next to the upload CTA.
 const TELEGRAM_BOT_URL = 'https://t.me/Integrammbot'
 
-// Accepted spreadsheet types. Matches the formats people export from Excel,
-// Google Sheets and 1С.
 const ACCEPTED_EXTENSIONS = ['.xls', '.xlsx', '.xlsm', '.csv', '.ods']
 const ACCEPT_ATTR = ACCEPTED_EXTENSIONS.join(',')
-const MAX_FILE_BYTES = 25 * 1024 * 1024 // 25 MB per file
+const MAX_FILE_BYTES = 25 * 1024 * 1024
 const MAX_FILES = 10
 
-// Visitors who received the "заберите свою базу" email arrive at
-// /excel-to-app.html#12500. That hash reveals — and focuses — the payment
-// offer below; without it the block stays hidden. Same hash-reveal pattern as
-// start.html#reg (#promoForm), kept here so the email's payment link works.
 const PAYMENT_HASH = '#12500'
-// Tochka checkout link for the 12 500 ₽ offer. Same two-step pattern as
-// start.html #promoButton/#promoPayButton: the CTA reveals an email field,
-// validates it, then redirects to the payment page.
 const PAYMENT_CHECKOUT_URL = 'https://checkout.tochka.com/cc7f594c-58a5-4ada-8c13-91b678ac2868'
 
-// Payment email is only validated client-side before redirect (mirrors
-// start.html's #promoPayButton); it is not sent anywhere.
 function isPaymentEmailValid(email: string): boolean {
   return /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/.test(email)
 }
@@ -89,9 +80,6 @@ export default function ExcelToApp() {
   const showPaymentOffer = hash === PAYMENT_HASH
   const paymentRef = React.useRef<HTMLElement>(null)
 
-  // Bring the payment offer into focus the moment it is revealed — the email
-  // promises this block, so it must lead the page (App's ScrollToRouteTarget
-  // also targets id="12500", this guarantees focus even on client navigation).
   React.useEffect(() => {
     if (!showPaymentOffer) return
     const el = paymentRef.current
@@ -114,8 +102,6 @@ export default function ExcelToApp() {
   const captchaContainerRef = React.useRef<HTMLDivElement>(null)
   const captchaWidgetIdRef = React.useRef<number | null>(null)
 
-  // Two-step payment CTA (mirrors start.html #promoButton/#promoPayButton):
-  // step 1 reveals the email field, step 2 validates and redirects to checkout.
   const [showPayForm, setShowPayForm] = React.useState(false)
   const [payEmail, setPayEmail] = React.useState('')
   const [payError, setPayError] = React.useState('')
@@ -134,8 +120,6 @@ export default function ExcelToApp() {
     window.location.href = PAYMENT_CHECKOUT_URL
   }
 
-  // Mirror the CTA form: SmartCaptcha is loaded lazily, only once the visitor
-  // starts filling the form, and skipped entirely for known users (idb_* cookie).
   React.useEffect(() => {
     if (!CAPTCHA_CLIENT_KEY || !isCaptchaRequested || idbCookieFound) return
 
@@ -187,7 +171,6 @@ export default function ExcelToApp() {
     }
 
     setFiles(prev => {
-      // De-duplicate by name + size so re-selecting the same file is a no-op.
       const seen = new Set(prev.map(f => `${f.name}:${f.size}`))
       const merged = [...prev]
       for (const file of accepted) {
@@ -238,7 +221,7 @@ export default function ExcelToApp() {
       return
     }
     if (!contact.trim()) {
-      setErrorMsg('Укажите контакт — email или Telegram, куда прислать ссылку.')
+      setErrorMsg('Укажите контакт — email или Telegram, куда пришлем ссылку.')
       setFormState('error')
       return
     }
@@ -257,7 +240,6 @@ export default function ExcelToApp() {
     payload.append('source', 'excel-to-app')
     payload.append('topic', topic.trim())
     payload.append('contact', contact.trim())
-    // `task` mirrors the CTA form field so the shared notifier understands it.
     payload.append('task', topic.trim())
     if (captchaActive) {
       payload.append('captcha_token', captchaToken)
@@ -315,10 +297,76 @@ export default function ExcelToApp() {
     },
   ]
 
+  const comparisonData = [
+    {
+      label: 'Скорость запуска',
+      integram: '45 минут',
+      saas: '1–2 недели настройки',
+      custom: '3–4 месяца',
+      winner: 'integram' as const,
+    },
+    {
+      label: 'Бюджет (MVP)',
+      integram: '12 500 ₽',
+      saas: 'от 50 000 ₽ + подписки',
+      custom: 'от 1 500 000 ₽',
+      winner: 'integram' as const,
+    },
+    {
+      label: 'Адаптация под процессы',
+      integram: '100%, логика из вашего Excel',
+      saas: 'Работа по шаблону',
+      custom: '100%, но дорого и долго',
+      winner: 'integram' as const,
+    },
+    {
+      label: 'Изменения без подрядчика',
+      integram: 'Самостоятельно за 5 минут',
+      saas: 'Через техподдержку',
+      custom: 'Очередь в бэклог',
+      winner: 'integram' as const,
+    },
+  ]
+
+  const securityFeatures = [
+    {
+      icon: <Database size={24} />,
+      title: 'Изолированная среда',
+      desc: 'Каждый проект разворачивается в отдельной реляционной базе данных. Ваши Excel-файлы не смешиваются с данными других клиентов.',
+    },
+    {
+      icon: <Lock size={24} />,
+      title: '100% ваши права',
+      desc: 'Данные и логика, сгенерированные из ваших таблиц, принадлежат только вам. Integram AI не использует их для обучения моделей.',
+    },
+    {
+      icon: <Eye size={24} />,
+      title: 'Гибкие роли доступа',
+      desc: 'Вы управляете правами сотрудников: от режима «только чтение» до полного администрирования. Каждый видит только своё.',
+    },
+  ]
+
+  const deliverables = [
+    {
+      icon: <Database size={28} />,
+      title: 'Реляционная база данных',
+      desc: 'Ваши прайс-листы, клиенты и заказы превратятся в связанные таблицы. Заказы ссылаются на Клиентов, Товары на Склад. Никакого ВПР и дублирования.',
+    },
+    {
+      icon: <Users size={28} />,
+      title: 'Рабочие места для сотрудников',
+      desc: 'Прораб получит простую форму для расхода материалов на телефоне, а руководитель — дашборд. Интерфейс под каждую роль.',
+    },
+    {
+      icon: <BrainCircuit size={28} />,
+      title: 'Бизнес-логика 24/7',
+      desc: 'Система сама считает дедлайны, формирует заявки на закупку и отправляет уведомления в Telegram. Логика, что была «в голове», теперь в облаке.',
+    },
+  ]
+
   return (
     <div className="overflow-hidden">
-      {/* Payment offer — shown only for visitors arriving via the email link
-          /excel-to-app.html#12500. Hidden (and absent from prerender/SEO) otherwise. */}
+      {/* Payment offer */}
       {showPaymentOffer && (
         <section
           id="12500"
@@ -464,7 +512,6 @@ export default function ExcelToApp() {
                 Загрузить файлы
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </a>
-              {/* Alternative, faster path for Telegram users (#355). */}
               <a
                 href={TELEGRAM_BOT_URL}
                 target="_blank"
@@ -482,9 +529,103 @@ export default function ExcelToApp() {
         </div>
       </section>
 
+      {/* Comparison Table */}
+      <section className="py-16 border-t border-slate-200 dark:border-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Прекратите подстраивать бизнес под софт
+            </h2>
+            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+              Создайте софт под свой бизнес. Сравните Integram AI с привычными подходами — цифры говорят сами за себя.
+            </p>
+          </div>
+
+          {/* Mobile cards */}
+          <div className="md:hidden space-y-4">
+            {comparisonData.map((row, i) => (
+              <div
+                key={i}
+                className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950"
+              >
+                <div className="text-sm font-bold text-slate-900 dark:text-white mb-3">{row.label}</div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Zap size={16} className="text-blue-500 shrink-0" />
+                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400">Integram AI:</span>
+                    <span className="text-sm text-slate-700 dark:text-slate-300">{row.integram}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle size={16} className="text-amber-500 shrink-0" />
+                    <span className="text-sm font-medium text-amber-600 dark:text-amber-400">SaaS:</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">{row.saas}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <TrendingUp size={16} className="text-red-500 shrink-0" />
+                    <span className="text-sm font-medium text-red-600 dark:text-red-400">Разработка:</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">{row.custom}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop table */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 dark:border-slate-800">
+                  <th className="text-left py-4 px-6 text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Критерий</th>
+                  <th className="text-left py-4 px-6">
+                    <div className="flex items-center gap-2">
+                      <Zap size={16} className="text-blue-500" />
+                      <span className="text-sm font-bold text-blue-600 dark:text-blue-400">Integram AI</span>
+                    </div>
+                  </th>
+                  <th className="text-left py-4 px-6">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle size={16} className="text-amber-500" />
+                      <span className="text-sm font-bold text-amber-600 dark:text-amber-400">Типовые SaaS</span>
+                    </div>
+                  </th>
+                  <th className="text-left py-4 px-6">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp size={16} className="text-red-500" />
+                      <span className="text-sm font-bold text-red-600 dark:text-red-400">Кастомная разработка</span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {comparisonData.map((row, i) => (
+                  <tr
+                    key={i}
+                    className="border-b border-slate-100 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors"
+                  >
+                    <td className="py-4 px-6 text-sm font-medium text-slate-900 dark:text-white">{row.label}</td>
+                    <td className="py-4 px-6">
+                      <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2.5 py-1 rounded-lg">
+                        <CheckCircle2 size={14} />
+                        {row.integram}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6 text-sm text-slate-500 dark:text-slate-400">{row.saas}</td>
+                    <td className="py-4 px-6 text-sm text-slate-500 dark:text-slate-400">{row.custom}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       {/* How it works */}
       <section className="py-16 border-t border-slate-200 dark:border-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Как это работает</h2>
+            <p className="text-lg text-slate-600 dark:text-slate-300">Три простых шага до вашего рабочего приложения</p>
+          </div>
           <div className="grid gap-6 md:grid-cols-3">
             {steps.map((step, i) => (
               <div
@@ -499,6 +640,66 @@ export default function ExcelToApp() {
                 </div>
                 <h3 className="text-xl font-bold mb-2">{step.title}</h3>
                 <p className="text-slate-500 dark:text-slate-400 leading-relaxed">{step.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* What you get */}
+      <section className="py-16 border-t border-slate-200 dark:border-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Что конкретно вы получите через 45 минут?
+            </h2>
+            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+              Не просто таблицу, а полноценную рабочую IT-инфраструктуру для вашего бизнеса
+            </p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {deliverables.map((item, i) => (
+              <div
+                key={i}
+                className="relative p-8 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm dark:shadow-none group hover:border-blue-500/30 transition-colors"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/40 dark:to-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                  {item.icon}
+                </div>
+                <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+                <p className="text-slate-500 dark:text-slate-400 leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Security */}
+      <section className="py-16 border-t border-slate-200 dark:border-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-green-500/30 text-green-600 dark:text-green-400 text-sm font-medium mb-4">
+              <ShieldCheck size={14} />
+              Конфиденциальность и безопасность
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Ваши данные — ваша собственность
+            </h2>
+            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+              Мы понимаем: ваши таблицы с финансами и клиентами — это сердце бизнеса. Мы это гарантируем.
+            </p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {securityFeatures.map((item, i) => (
+              <div
+                key={i}
+                className="relative p-8 rounded-3xl border border-green-200 dark:border-green-900/30 bg-white dark:bg-slate-950 shadow-sm dark:shadow-none"
+              >
+                <div className="w-12 h-12 rounded-2xl bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-400 flex items-center justify-center mb-5">
+                  {item.icon}
+                </div>
+                <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+                <p className="text-slate-500 dark:text-slate-400 leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -522,6 +723,11 @@ export default function ExcelToApp() {
                     Мы уже взялись за ваши файлы. Примерно через 45 минут пришлём ссылку на
                     готовую базу Интеграм на указанный контакт.
                   </p>
+                  <div className="mt-4 p-4 rounded-xl bg-blue-50 dark:bg-blue-950/30 text-sm text-blue-700 dark:text-blue-300 text-left">
+                    <strong>Что будет дальше:</strong> вы получите реляционную базу данных, рабочие
+                    места для сотрудников и бизнес-логику, готовую к использованию. Всё это будет
+                    доступно по ссылке в вашем браузере или телефоне.
+                  </div>
                 </div>
                 <button
                   type="button"
@@ -575,7 +781,6 @@ export default function ExcelToApp() {
                       className="sr-only"
                       onChange={e => {
                         if (e.target.files?.length) addFiles(e.target.files)
-                        // Reset so selecting the same file again re-triggers onChange.
                         e.target.value = ''
                       }}
                     />
