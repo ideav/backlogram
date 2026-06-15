@@ -55,6 +55,13 @@ test('the detailed page covers Russian low-code analogs', () => {
   assert.match(pageSource, /ELMA365/)
   assert.match(pageSource, /BPMSoft/)
   assert.match(pageSource, /AppMaster/)
+  assert.match(pageSource, /1С:Элемент/)
+})
+
+test('the detailed page covers AI coding agents (Claude Code, Codex)', () => {
+  assert.match(pageSource, /ИИ-агенты-программисты/)
+  assert.match(pageSource, /Claude Code/)
+  assert.match(pageSource, /Codex/)
 })
 
 test('the detailed page sets its own SEO title, description and canonical', () => {
@@ -114,6 +121,11 @@ test('prerender-agent-platforms writes a crawlable dist/agent-platforms.html', (
   assert.match(out, /Российские аналоги/)
   assert.match(out, /Bpium/)
   assert.match(out, /BPMSoft/)
+  assert.match(out, /1С:Элемент/)
+
+  // AI coding agents section is crawlable too.
+  assert.match(out, /Claude Code/)
+  assert.match(out, /Codex/)
 
   // SEO head tags: canonical, Open Graph, Article JSON-LD, tightened title.
   assert.match(out, /<link rel="canonical" href="https:\/\/ideav\.ru\/agent-platforms\.html" \/>/)
