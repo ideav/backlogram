@@ -22,6 +22,7 @@ import {
   FileCode2,
   Sparkles,
   Building2,
+  Terminal,
 } from 'lucide-react'
 
 const SITE = 'https://ideav.ru'
@@ -30,7 +31,7 @@ const PATH = '/agent-platforms.html'
 const PAGE_TITLE =
   'Агент создаёт приложение: Интеграм против зарубежных и российских low-code платформ'
 const PAGE_DESCRIPTION =
-  'Подробное сравнение Интеграма с low-code платформами по модели «ИИ-агент создаёт и администрирует сервис под ключ»: за рубежом — Retool AI, Power Platform Copilot, NocoDB, Appsmith; в России — Bpium, ELMA365, BPMSoft, AppMaster.'
+  'Подробное сравнение Интеграма с low-code платформами и агентами-программистами по модели «ИИ-агент создаёт и администрирует сервис под ключ»: за рубежом — Retool AI, Power Platform Copilot, NocoDB, Appsmith; в России — Bpium, ELMA365, BPMSoft, AppMaster, 1С:Элемент; агенты-кодеры — Claude Code, Codex.'
 
 function setMetaTag(selector: string, attr: 'name' | 'property', key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(selector)
@@ -201,6 +202,12 @@ const ruPlatforms = [
     ai: 'ИИ собирает приложение и API по описанию',
     gap: 'Реальный код — риск; нет единого админ-API',
   },
+  {
+    name: '1С:Элемент',
+    what: 'Облачная low-code среда 1С: веб-кабинеты, порталы, мобайл',
+    ai: 'ИИ-сборки приложения нет — пишет разработчик',
+    gap: 'Среда для разработчика, не для не-кодера',
+  },
 ]
 
 // Полный цикл, который агент проходит без захода в интерфейс.
@@ -221,7 +228,7 @@ export default function AgentPlatforms() {
 
     setMetaTag('meta[name="description"]', 'name', 'description', PAGE_DESCRIPTION)
     setMetaTag('meta[name="keywords"]', 'name', 'keywords',
-      'ии-агент создаёт приложение,low-code,no-code,retool ai,power platform copilot,nocodb,appsmith,bpium,elma365,bpmsoft,appmaster,российские low-code платформы,интеграм,автоматизация без программиста,замена разработчика')
+      'ии-агент создаёт приложение,low-code,no-code,retool ai,power platform copilot,nocodb,appsmith,bpium,elma365,bpmsoft,appmaster,1с:элемент,claude code,codex,агент-программист,российские low-code платформы,интеграм,автоматизация без программиста,замена разработчика')
     setMetaTag('meta[property="og:type"]', 'property', 'og:type', 'article')
     setMetaTag('meta[property="og:title"]', 'property', 'og:title', PAGE_TITLE)
     setMetaTag('meta[property="og:description"]', 'property', 'og:description', PAGE_DESCRIPTION)
@@ -466,6 +473,56 @@ export default function AgentPlatforms() {
         </div>
       </section>
 
+      {/* AI coding agents */}
+      <section className="py-16 border-t border-slate-200 dark:border-slate-900">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2 mb-2">
+            <Terminal size={22} className="text-blue-600 dark:text-blue-400" />
+            <h2 className="text-2xl md:text-3xl font-bold">А ИИ-агенты-программисты?</h2>
+          </div>
+          <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-2xl">
+            Claude Code (Anthropic) и Codex (OpenAI) — автономные агенты, которые сами пишут реальный
+            код: читают репозиторий, правят файлы, гоняют тесты, делают коммиты и PR. Мощно и гибко —
+            но это другой класс инструмента.
+          </p>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* Coding agents */}
+            <div className="p-6 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+              <div className="flex items-center gap-2 mb-4">
+                <Code2 size={20} className="text-amber-500" />
+                <h3 className="text-lg font-bold">Агент-программист — Claude Code, Codex</h3>
+              </div>
+              <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                <li className="flex items-start gap-2"><CheckCircle2 size={16} className="text-slate-400 shrink-0 mt-0.5" /> Пишет настоящий код в настоящем репозитории</li>
+                <li className="flex items-start gap-2"><AlertTriangle size={16} className="text-amber-500 shrink-0 mt-0.5" /> БД, миграции, права, деплой, хостинг и безопасность — на вас</li>
+                <li className="flex items-start gap-2"><AlertTriangle size={16} className="text-amber-500 shrink-0 mt-0.5" /> Нет встроенной безопасной модели данных и единого админ-API</li>
+                <li className="flex items-start gap-2"><AlertTriangle size={16} className="text-amber-500 shrink-0 mt-0.5" /> Не-разработчик получает код, а не готовый сервис</li>
+              </ul>
+            </div>
+
+            {/* Integram */}
+            <div className="p-6 rounded-3xl border border-blue-300 dark:border-blue-900/50 bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/40 dark:to-slate-950">
+              <div className="flex items-center gap-2 mb-4">
+                <Bot size={20} className="text-blue-500" />
+                <h3 className="text-lg font-bold">Интеграм</h3>
+              </div>
+              <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                <li className="flex items-start gap-2"><CheckCircle2 size={16} className="text-blue-500 shrink-0 mt-0.5" /> Агент собирает на управляемой платформе, а не в сыром коде</li>
+                <li className="flex items-start gap-2"><CheckCircle2 size={16} className="text-blue-500 shrink-0 mt-0.5" /> Единый безопасный API: схема, данные, роли, шаблоны</li>
+                <li className="flex items-start gap-2"><CheckCircle2 size={16} className="text-blue-500 shrink-0 mt-0.5" /> Роли, права и хостинг в РФ — из коробки</li>
+                <li className="flex items-start gap-2"><CheckCircle2 size={16} className="text-blue-500 shrink-0 mt-0.5" /> Не-разработчик получает работающий сервис, который агент админит</li>
+              </ul>
+            </div>
+          </div>
+
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-3">
+            То же касается Cursor, GitHub Copilot и других агентов-кодеров: это инструменты разработчика,
+            а не платформа, отдающая бизнесу готовый самоадминистрируемый сервис.
+          </p>
+        </div>
+      </section>
+
       {/* Three pillars */}
       <section className="py-16 border-t border-slate-200 dark:border-slate-900 bg-slate-50/60 dark:bg-slate-900/30">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -499,8 +556,13 @@ export default function AgentPlatforms() {
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
             Ни за рубежом, ни в России нет точного аналога Интеграма по уровню контроля агента над
             платформой. Зарубежные (Retool, Power Platform, NocoDB, Appsmith) и российские (Bpium,
-            ELMA365, BPMSoft, AppMaster) решения заточены на human-in-the-loop: человек кликает в
-            интерфейсе, агент помогает.
+            ELMA365, BPMSoft, AppMaster, 1С:Элемент) решения заточены на human-in-the-loop: человек
+            кликает в интерфейсе, агент помогает.
+          </p>
+          <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+            Универсальные агенты-программисты (Claude Code, Codex) умеют больше — но отдают исходный
+            код, который вам нужно хостить, администрировать и защищать; готового самоадминистрируемого
+            сервиса не-разработчик не получает.
           </p>
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-10">
             Интеграм — платформа, где агент проходит полный цикл: структура базы → наполнение → роли и

@@ -116,9 +116,24 @@ const ruPlatforms = [
   { h: 'ELMA365', p: 'Low-code экосистема BPM/CRM/КЭДО с ИИ-ассистентом, который помогает человеку в визуальном конструкторе (human-in-the-loop).' },
   { h: 'BPMSoft', p: 'Low-code BPM/CRM (замена Creatio, реестр РФ, ФСТЭК) с LLM-агентами, но агент автоматизирует бизнес-процессы, а не схему и права.' },
   { h: 'AppMaster', p: 'No-code с ИИ-генерацией исходного кода (бэкенд, веб, мобайл), но это реальный код с риском поломки и без единого админ-API.' },
+  { h: '1С:Элемент', p: 'Облачная low-code среда 1С для веб-кабинетов, порталов, браузерных и мобильных приложений, но приложение пишет разработчик — ИИ-сборки нет.' },
 ]
 
 const ruPlatformsHtml = ruPlatforms
+  .map(
+    (p) => `
+      <section class="ap-prerender__group">
+        <h3>${escape(p.h)}</h3>
+        <p>${escape(p.p)}</p>
+      </section>`
+  )
+  .join('')
+
+const codingAgents = [
+  { h: 'Claude Code, Codex и другие агенты-кодеры', p: 'Автономные агенты-программисты сами пишут реальный код в репозитории, гоняют тесты и делают PR — мощно и гибко. Но БД, миграции, права, деплой и безопасность остаются на вас, нет встроенной безопасной модели данных и единого админ-API, а не-разработчик получает код, а не готовый самоадминистрируемый сервис.' },
+]
+
+const codingAgentsHtml = codingAgents
   .map(
     (p) => `
       <section class="ap-prerender__group">
@@ -144,6 +159,8 @@ const bodyHtml = `
   ${competitorsHtml}
   <h2>Российские аналоги</h2>
   ${ruPlatformsHtml}
+  <h2>А ИИ-агенты-программисты?</h2>
+  ${codingAgentsHtml}
   <h2>Чем Интеграм уникален для полной автоматизации</h2>
   ${pillarsHtml}
   <section class="ap-prerender__group">
@@ -191,7 +208,7 @@ const canonical = `${SITE}${PATH}`
 const ogTitle =
   'Агент создаёт приложение: Интеграм против зарубежных и российских low-code платформ'
 const ogDescription =
-  'Подробное сравнение Интеграма с low-code платформами по модели «ИИ-агент создаёт и администрирует сервис под ключ»: за рубежом — Retool AI, Power Platform Copilot, NocoDB, Appsmith; в России — Bpium, ELMA365, BPMSoft, AppMaster.'
+  'Подробное сравнение Интеграма с low-code платформами и агентами-программистами по модели «ИИ-агент создаёт и администрирует сервис под ключ»: за рубежом — Retool AI, Power Platform Copilot, NocoDB, Appsmith; в России — Bpium, ELMA365, BPMSoft, AppMaster, 1С:Элемент; агенты-кодеры — Claude Code, Codex.'
 const ogImage = `${SITE}/og/knowledge-base.png`
 
 const jsonLd = {
