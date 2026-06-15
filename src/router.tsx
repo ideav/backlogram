@@ -4,6 +4,7 @@ import NotFound from './pages/NotFound'
 import Success from './pages/Success'
 import Fail from './pages/Fail'
 import ExcelToApp from './pages/ExcelToApp'
+import AgentPlatforms from './pages/AgentPlatforms'
 import Tokens from './pages/Tokens'
 import AdImages from './pages/AdImages'
 import KnowledgeBase from './pages/KnowledgeBase'
@@ -30,6 +31,14 @@ export const router = createBrowserRouter([
       {
         path: 'excel-to-app.html',
         element: <ExcelToApp />,
+      },
+      {
+        path: 'agent-platforms.html',
+        element: <AgentPlatforms />,
+      },
+      {
+        path: 'agent-platforms',
+        element: <AgentPlatforms />,
       },
       {
         path: 'tokens.html',

@@ -364,6 +364,31 @@ export default function ExcelToApp() {
     },
   ]
 
+  // Сравнение языком бизнеса с зарубежными low-code платформами,
+  // где приложение тоже собирает ИИ-агент. Подробности — на /agent-platforms.html.
+  const agentCompare = [
+    {
+      label: 'Кто настраивает права доступа',
+      integram: 'Агент — сам, по описанию',
+      world: 'Человек вручную в интерфейсе',
+    },
+    {
+      label: 'Интерфейс под ваш бренд',
+      integram: 'Чистый HTML/CSS без ограничений',
+      world: 'Готовые виджеты платформы',
+    },
+    {
+      label: 'Где лежат данные',
+      integram: 'Сервер в России — ideav.ru',
+      world: 'Зарубежный хостинг',
+    },
+    {
+      label: 'Привязка к вендору',
+      integram: 'Нет — можно свой сервер',
+      world: 'Высокая',
+    },
+  ]
+
   return (
     <div className="overflow-hidden">
       {/* Payment offer */}
@@ -935,6 +960,61 @@ export default function ExcelToApp() {
           — от 1950 рублей в месяц.
         </p>
       </div>
+
+      {/* Comparison with foreign agent-platforms (business language) */}
+      <section className="py-16 border-t border-slate-200 dark:border-slate-900 bg-slate-50/60 dark:bg-slate-900/30">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 text-blue-600 dark:text-blue-400 text-sm font-medium mb-4">
+              <Sparkles size={14} />
+              Интеграм и аналоги
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold mb-3">А что у конкурентов?</h2>
+            <p className="text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+              Приложение умеют собирать ИИ-агентом и за рубежом (Retool, Power Apps, NocoDB, Appsmith),
+              и в России (Bpium, ELMA365, BPMSoft). Но почти везде человек всё равно доделывает руками
+              в интерфейсе. У Интеграма агент проходит весь путь сам.
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:gap-4 max-w-2xl mx-auto">
+            {agentCompare.map((row, i) => (
+              <div
+                key={i}
+                className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 sm:p-5"
+              >
+                <div className="text-sm font-bold text-slate-900 dark:text-white mb-3">{row.label}</div>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 size={16} className="text-blue-500 shrink-0 mt-0.5" />
+                    <span className="text-sm text-slate-700 dark:text-slate-200">
+                      <span className="font-semibold text-blue-600 dark:text-blue-400">Интеграм:</span>{' '}
+                      {row.integram}
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle size={16} className="text-amber-500 shrink-0 mt-0.5" />
+                    <span className="text-sm text-slate-500 dark:text-slate-400">
+                      <span className="font-semibold text-amber-600 dark:text-amber-400">Зарубежные:</span>{' '}
+                      {row.world}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-8">
+            <Link
+              to="/agent-platforms.html"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-blue-500/40 text-blue-600 dark:text-blue-400 font-semibold hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors"
+            >
+              Подробный разбор: Интеграм против зарубежных и российских платформ
+              <ArrowRight size={18} />
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
