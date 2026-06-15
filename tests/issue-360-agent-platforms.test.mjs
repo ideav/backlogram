@@ -75,6 +75,8 @@ test('the Excel→app landing ends with a compact comparison linking to the deta
     'the landing must link to the detailed comparison page',
   )
   assert.match(excelSource, /Подробный разбор/)
+  // Mini-mention of Russian analogs, not just foreign ones.
+  assert.match(excelSource, /Bpium/)
 })
 
 test('build pipeline runs the agent-platforms prerender after excel-to-app and before landing', () => {

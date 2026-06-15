@@ -967,13 +967,13 @@ export default function ExcelToApp() {
           <div className="text-center mb-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 text-blue-600 dark:text-blue-400 text-sm font-medium mb-4">
               <Sparkles size={14} />
-              Интеграм и зарубежные платформы
+              Интеграм и аналоги
             </div>
             <h2 className="text-2xl md:text-3xl font-bold mb-3">А что у конкурентов?</h2>
             <p className="text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              За рубежом приложение тоже умеют собирать ИИ-агентом — Retool, Power Apps, NocoDB,
-              Appsmith. Но почти везде человек всё равно доделывает руками в интерфейсе. У Интеграма
-              агент проходит весь путь сам.
+              Приложение умеют собирать ИИ-агентом и за рубежом (Retool, Power Apps, NocoDB, Appsmith),
+              и в России (Bpium, ELMA365, BPMSoft). Но почти везде человек всё равно доделывает руками
+              в интерфейсе. У Интеграма агент проходит весь путь сам.
             </p>
           </div>
 
@@ -1009,7 +1009,7 @@ export default function ExcelToApp() {
               to="/agent-platforms.html"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-blue-500/40 text-blue-600 dark:text-blue-400 font-semibold hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors"
             >
-              Подробный разбор: Интеграм против Retool, Power Platform, NocoDB и Appsmith
+              Подробный разбор: Интеграм против зарубежных и российских платформ
               <ArrowRight size={18} />
             </Link>
           </div>
