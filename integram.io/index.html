@@ -1,0 +1,2226 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Конструктор баз данных и приложений для создания форм и замены экселя" />
+    <meta name="keywords" content="интеграмщик,автоматизация бизнеса,гугл таблицы,создать базу данных,конструктор интеграм,интеграм,российский airtable,аналог airtable,airtable,google-tables,конструктор приложений,приложение без программирования,квинтетная модель данных,no-code,nocode,low code,зерокод,конструктор SQL,замена excel" />
+    <link rel="stylesheet" href="css/libs.min.css">
+    <link rel="stylesheet" href="css/style.min.css?1">
+    <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+    <title>Интеграм — автоматизация бизнеса, конструктор приложений</title>
+</head>
+
+<body class="m-page">
+    <div class="wrapper">
+        <header class="header">
+            <div class="header__wrap">
+                <div class="container">
+                    <div class="header__inner">
+                        <a href="/" class="header__logo">
+                            <img src="img/logo2.svg" alt="">
+                        </a>
+
+                        <div class="menu">
+                            <div class="menu__scroll">
+                                <nav class="nav">
+                                    <ul>
+                                        <li><a href="/#alternative">Что предлагаем</a></li>
+                                        <li><a href="/#solution">Как это работает</a></li>
+                                        <li><a href="/#for-who">Для кого подходит</a></li>
+                                        <li><a href="/#advantages">Преимущества</a></li>
+                                        <li><a href="/#results">Примеры</a></li>
+                                        <li><a href="/#about">О нас</a></li>
+                                        <li><a href="/#tariffs">Тарифы</a></li>
+                                    </ul>
+                                </nav>
+                                <div class="header-user">
+                                    <a target="login" href="https://app.integram.io">
+                                    <button class="header-user__btn1 m-btn m-btn-blue-outline">
+                                        <span>Войти</span>
+                                    </button>
+                                    </a>
+
+                                    <div class="auth">
+                                        <div class="auth__bg modal-bg"></div>
+                                        <div class="auth__dialog">
+                                            <form class="auth-form _login _active">
+                                                    <div class="text36 medium-text text-center">
+                                                        Войти
+                                                    </div>
+                                                <div class="auth-form__fields">
+                                                    <div class="fg fg-dynamic">
+                                                        <input type="text">
+                                                        <label>E-mail</label>
+                                                    </div>
+                                                    <div class="fg fg-dynamic">
+                                                        <input type="password">
+                                                        <label>Пароль</label>
+                                                    </div>
+                                                </div>
+                                                <button class="auth-form__btn m-btn m-btn-blue">
+                                                    <span>Войти</span>
+                                                </button>
+                                                <button type="button" class="_show-reg auth-form__btn2">
+                                                    <span>Зарегистрироваться</span>
+                                                </button>
+                                            </form>
+                                            <form class="auth-form _reg">
+                                                <div class="text36 medium-text text-center">
+                                                    Регистрация
+                                                </div>
+                                                <div class="auth-form__fields">
+                                                    <div class="fg fg-dynamic">
+                                                        <input type="text">
+                                                        <label>E-mail</label>
+                                                    </div>
+                                                    <div class="fg fg-dynamic">
+                                                        <input type="password">
+                                                        <label>Пароль</label>
+                                                    </div>
+                                                    <div class="fg fg-dynamic">
+                                                        <input type="password">
+                                                        <label>Повторите пароль</label>
+                                                    </div>
+                                                </div>
+                                                <button class="auth-form__btn m-btn m-btn-blue">
+                                                    <span>Зарегистрироваться</span>
+                                                </button>
+                                                <button type="button" class="_show-login auth-form__btn2">
+                                                    <span>Войти</span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <button class="burger _toggle-menu">
+                            <svg class="_view1" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3.75 12H20.25" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M3.75 6H20.25" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M3.75 18H20.25" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <svg class="_view2" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4.78141 20.0001C4.62687 20.0001 4.47579 19.9543 4.34729 19.8685C4.21878 19.7826 4.11862 19.6606 4.05948 19.5178C4.00033 19.3751 3.98486 19.2179 4.01502 19.0664C4.04518 18.9148 4.11961 18.7756 4.2289 18.6663L18.6666 4.22861C18.8132 4.08208 19.0119 3.99976 19.2191 3.99976C19.4264 3.99976 19.6251 4.08208 19.7716 4.22861C19.9182 4.37515 20.0005 4.57389 20.0005 4.78112C20.0005 4.98835 19.9182 5.18709 19.7716 5.33363L5.33392 19.7713C5.26143 19.844 5.1753 19.9016 5.08048 19.9408C4.98567 19.9801 4.88403 20.0002 4.78141 20.0001Z" fill="black" />
+                                <path d="M19.2192 20.0001C19.1166 20.0002 19.0149 19.9801 18.9201 19.9408C18.8253 19.9016 18.7392 19.844 18.6667 19.7713L4.22898 5.33363C4.08244 5.18709 4.00012 4.98835 4.00012 4.78112C4.00012 4.57389 4.08244 4.37515 4.22898 4.22861C4.37551 4.08208 4.57426 3.99976 4.78149 3.99976C4.98872 3.99976 5.18746 4.08208 5.334 4.22861L19.7717 18.6663C19.881 18.7756 19.9554 18.9148 19.9856 19.0664C20.0157 19.2179 20.0003 19.3751 19.9411 19.5178C19.882 19.6606 19.7818 19.7826 19.6533 19.8685C19.5248 19.9543 19.3737 20.0001 19.2192 20.0001Z" fill="black" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+        </header>
+        <main class="content">
+
+            <div class="main m-section _first">
+                <div class="main__wrap">
+                    <div class="container">
+                        <h1 class="h1 text-center animated animated-opacity">
+                            Cистема управления бизнесом,<br />которая подстраивается под вас
+                        </h1>
+                        <div class="main__desc animated animated-opacity">
+                            <div class="text36 text20-tablet medium-text" style="margin-top: 36px;">
+                                Конструктор ИТ-решений с гибким функционалом и простой настройкой: прототип уже послезавтра
+                            </div>
+                        </div>
+                        <div class="main__items">
+                            <div class="main-item animated animated-opacity">
+                                <img src="img/main-icon.svg" alt="">
+                                <span class="text22">Российский продукт</span>
+                            </div>
+                            <div class="main-item animated animated-opacity">
+                                <img src="img/main-icon2.svg" alt="">
+                                <span class="text22">Шаблоны для бизнеса</span>
+                            </div>
+                            <div class="main-item animated animated-opacity">
+                                <img src="img/main-icon3.svg" alt="">
+                                <span class="text22">Обучение за 7 дней</span>
+                            </div>
+                            <div class="main-item animated animated-opacity">
+                                <img src="img/main-icon4.svg" alt="">
+                                <span class="text22">Без программирования</span>
+                            </div>
+                        </div>
+                        <div class="main__nav _flex-center animated animated-opacity">
+                            <a href="https://app.integram.io#reg" target="reg">
+                                <button data-modal="" class="main__link m-btn m-btn-blue">
+                                    <span>Протестировать сервис</span>
+                                </button>
+                            </a>
+                        </div>
+                        <div class="main__img animated animated-opacity">
+                            <img src="img/main-img.svg" alt="">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="alternative" class="alternative m-section" style="z-index: 1;">
+                <div class="container">
+                    <div class="alternative__top animated animated-opacity">
+                        <div class="h2">
+                            Вместо «тяжелого» и дорогостоящего ПО — простая система с неограниченными возможностями
+                        </div>
+                        <div class="alternative__desc">
+                            <div class="text22 text18-tablet medium-text">
+                                Интеграм — самодостаточная no-code платформа (без программирования), чтобы создавать простые, гибкие и надёжные IT‑решения «под себя». Для начала работы не требуются знание программирования и опыт разработки.
+                            </div>
+                        </div>
+                        <div class="alternative__desc2">
+                            <div class="text36 text20-tablet medium-text">
+                                ИИ-агенты для создания интерфейсов, любые интеграции по API и Webhook позволяют быстро запускать и использовать:
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alternative__grid">
+                        <div class="alternative-card _big animated animated-opacity">
+                            <div class="alternative-card__img">
+                                <img src="img/alternative-img.svg" alt="">
+                            </div>
+                            <div class="alternative-card__text text24 medium-text">
+                                Базы данных <br> на 500 млн записей
+                            </div>
+                            <div class="rect rect1"></div>
+                            <div class="rect rect2"></div>
+                            <div class="rect rect3"></div>
+                            <div class="rect rect4"></div>
+                        </div>
+
+                        <div class="alternative-card _big animated animated-opacity">
+                            <div class="alternative-card__img">
+                                <img src="img/alternative-img2.svg" alt="">
+                            </div>
+                            <div class="alternative-card__text text24 medium-text">
+                                Системы управления безопасностью
+                            </div>
+                            <div class="rect rect1"></div>
+                            <div class="rect rect2"></div>
+                            <div class="rect rect3"></div>
+                            <div class="rect rect4"></div>
+                        </div>
+
+                        <div class="alternative-card _big animated animated-opacity">
+                            <div class="alternative-card__img">
+                                <img src="img/alternative-img3.svg" alt="">
+                            </div>
+                            <div class="alternative-card__text text24 medium-text">
+                                Конструкторы форм, <br> отчетов, логики
+                            </div>
+                            <div class="rect rect1"></div>
+                            <div class="rect rect2"></div>
+                            <div class="rect rect3"></div>
+                            <div class="rect rect4"></div>
+                        </div>
+
+                        <div class="alternative-card  animated animated-opacity">
+                            <div class="alternative-card__img">
+                                <img src="img/alternative-img6.svg" alt="">
+                            </div>
+                            <div class="alternative-card__text text24 medium-text">
+                                Построитель <br> запросов
+                            </div>
+                            <div class="rect rect1"></div>
+                            <div class="rect rect2"></div>
+                            <div class="rect rect3"></div>
+                            <div class="rect rect4"></div>
+                        </div>
+
+                        <div class="alternative-card  animated animated-opacity">
+                            <div class="alternative-card__img">
+                                <img src="img/alternative-img5.svg" alt="">
+                            </div>
+                            <div class="alternative-card__text text24 medium-text">
+                                Шаблонизатор
+                            </div>
+                            <div class="rect rect1"></div>
+                            <div class="rect rect2"></div>
+                            <div class="rect rect3"></div>
+                            <div class="rect rect4"></div>
+                        </div>
+
+                        <div class="alternative-card  animated animated-opacity">
+                            <div class="alternative-card__img">
+                                <img src="img/alternative-img4.svg" alt="">
+                            </div>
+                            <div class="alternative-card__text text24 medium-text">
+                                Навигатор данных
+                            </div>
+                            <div class="rect rect1"></div>
+                            <div class="rect rect2"></div>
+                            <div class="rect rect3"></div>
+                            <div class="rect rect4"></div>
+                        </div>
+
+                        <div class="alternative-card  animated animated-opacity">
+                            <div class="alternative-card__img">
+                                <img src="img/alternative-img7.svg" alt="">
+                            </div>
+                            <div class="alternative-card__text text24 medium-text">
+                                Аналитика данных
+                            </div>
+                            <div class="rect rect1"></div>
+                            <div class="rect rect2"></div>
+                            <div class="rect rect3"></div>
+                            <div class="rect rect4"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            
+            <div id="wot4" class="alternative m-section" style="z-index: 1;">
+                <div class="container">
+                    <div class="alternative__top animated animated-opacity">
+                        <div class="h2">
+                            Что вы сможете делать «из коробки»?
+                        </div>
+                        <ul class="integram__text create__list animated animated-opacity animated--active">
+                            <li>
+                                <div class="text22">Сводить таблицы из множества файлов в удобные представления</div>
+                            </li>
+                            <li>
+                                <div class="text22">Собирать данные, делать аналитические срезы и выводы из них</div>
+                            </li>
+                            <li>
+                                <div class="text22">Делать красивые дэшборды с графиками и диаграммами</div>
+                            </li>
+                            <li>
+                                <div class="text22">Планомерно наводить порядок в данных вашего подразделения</div>
+                            </li>
+                            <li>
+                                <div class="text22">Создавать рабочие места с помощью ИИ - человеческим языком</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                a[target="yt"]:hover svg,
+                a[target="vc"]:hover svg {
+                    stroke: white;
+                }
+                @media only screen and (max-width: 768px) {
+                    .scheme6{
+                        height: 42%;
+                        overflow: hidden;
+                    }
+                    .scheme-img6{
+                        margin-top: -37%;
+                    }
+                    .scheme2{
+                        height: 42%;
+                        overflow: hidden;
+                    }
+                    .scheme-img2{
+                        margin-top: -37%;
+                    }
+                    .scheme3{
+                        height: 42%;
+                        overflow: hidden;
+                    }
+                    .scheme-img3{
+                        margin-top: -39%;
+                    }
+                    .scheme4{
+                        height: 42%;
+                        overflow: hidden;
+                    }
+                    .scheme-img4{
+                        margin-top: -3%;
+                    }
+                    .scheme5{
+                        height: 42%;
+                        overflow: hidden;
+                    }
+                    .scheme-img5{
+                        margin-top: -12%;
+                    }
+                }
+            </style>
+            <div id="scheme" class="scheme m-section" style="display: none">
+                <div class="container">
+                    <div class="scheme__inner">
+                        <div class="scheme__title h2 animated animated-opacity"><span>Простая схема</span> работы с обучением <br> и поддержкой</div>
+                        <div class="scheme__items">
+                            <div class="scheme__item animated animated-opacity">
+                                <div class="scheme__item-desc">
+                                    <div class="scheme__item-nav text18">
+                                        <span>01</span> из 05
+                                    </div>
+                                    <div class="scheme__item-title">
+                                        <span>Регистрация и обучение</span>
+                                    </div>
+                                    <div class="scheme__item-text">
+                                        <p class="text22">Создаем корпоративный аккаунт и проводим несколько интерактивных уроков по работе с системой, чтобы руководители и сотрудники быстро освоили новое ПО</p>
+                                    </div>
+                                </div>
+                                <div class="scheme__item-img scheme6">
+                                    <img src="img/scheme-img6.webp" alt="" class="scheme-img6">
+                                </div>
+                            </div>
+
+                            <div class="scheme__item animated animated-opacity">
+                                <div class="scheme__item-desc">
+                                    <div class="scheme__item-nav text18">
+                                        <span>02</span> из 05
+                                    </div>
+                                    <div class="scheme__item-title">
+                                        <span>Создание структуры данных</span>
+                                    </div>
+                                    <div class="scheme__item-text">
+                                        <p class="text22">Собираем, трансформируем и переносим необходимую информацию из ваших баз данных, гугл-таблиц или Airtable в новое хранилище</p>
+                                    </div>
+                                </div>
+                                <div class="scheme__item-img scheme2">
+                                    <img src="img/scheme-img2.webp" alt="" class="scheme-img2">
+                                </div>
+                            </div>
+
+                            <div class="scheme__item animated animated-opacity">
+                                <div class="scheme__item-desc">
+                                    <div class="scheme__item-nav text18">
+                                        <span>03</span> из 05
+                                    </div>
+                                    <div class="scheme__item-title">
+                                        <span>Настройка представлений данных</span>
+                                    </div>
+                                    <div class="scheme__item-text">
+                                        <p class="text22">Задаем параметры отчетов, форм, добавляем разделы меню, открываем доступы и распределяем права пользователей</p>
+                                    </div>
+                                </div>
+                                <div class="scheme__item-img scheme3">
+                                    <img src="img/scheme-img3.webp" alt="" class="scheme-img3">
+                                </div>
+                            </div>
+
+                            <div class="scheme__item animated animated-opacity">
+                                <div class="scheme__item-desc">
+                                    <div class="scheme__item-nav text18">
+                                        <span>04</span> из 05
+                                    </div>
+                                    <div class="scheme__item-title">
+                                        <span>Интеграция</span>
+                                    </div>
+                                    <div class="scheme__item-text">
+                                        <p class="text22">Организуем бесперебойную передачу данных между системой и сторонними сервисами, включая электронные таблицы</p>
+                                    </div>
+                                </div>
+                                <div class="scheme__item-img scheme4">
+                                    <img src="img/scheme-img4.webp" alt="" class="scheme-img4">
+                                </div>
+                            </div>
+
+                            <div class="scheme__item animated animated-opacity">
+                                <div class="scheme__item-desc">
+                                    <div class="scheme__item-nav text18">
+                                        <span>05</span> из 05
+                                    </div>
+                                    <div class="scheme__item-title">
+                                        <span>Сопровождение</span>
+                                    </div>
+                                    <div class="scheme__item-text">
+                                        <p class="text22">Гарантируем всестороннюю поддержку — наша команда всегда на связи, чтобы проконсультировать и помочь с любой задачей</p>
+                                    </div>
+                                </div>
+                                <div class="scheme__item-img scheme5">
+                                    <img src="img/scheme-img5.webp" alt="" class="scheme-img5">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="scheme__img">
+                    <img src="img/scheme-bg.jpg" alt="">
+                </div>
+
+            </div>
+
+            <div id="solution" class="solution m-section" style="z-index: 1;">
+                <div class="container">
+                    <div class="h2 text-center animated animated-opacity">
+                        Инструментарий платформы
+                    </div>
+
+                    <div class="solution__grid animated animated-opacity">
+                        <div class="solution__items">
+                            <div class="solution-item _active">
+                                <button class="solution-item__btn">
+                                    <img src="img/solution-icon.svg" alt="">
+                                    <span class="text22">
+										Описание структуры данных
+									</span>
+                                </button>
+                                <div class="solution-item__hidden">
+                                    <div class="solution-slider slider">
+                                        <div class="swiper-container">
+                                            <div class="swiper-wrapper">
+                                                <div class="swiper-slide">
+                                                    <div class="solution-item__img">
+                                                        <img src="img/solution-img1.png" alt="">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="solution-item ">
+                                <button class="solution-item__btn">
+                                    <img src="img/solution-icon2.svg" alt="">
+                                    <span class="text22">
+            Инструмент доступа к связанным данным
+        </span>
+                                </button>
+                                <div class="solution-item__hidden">
+                                    <div class="solution-slider slider">
+                                        <div class="swiper-container">
+                                            <div class="swiper-wrapper">
+                                                <div class="swiper-slide">
+                                                    <div class="solution-item__img">
+                                                        <img src="img/solution-img2.png" alt="">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="solution-item ">
+                                <button class="solution-item__btn">
+                                    <img src="img/solution-icon3.svg" alt="">
+                                    <span class="text22">
+            Построитель запросов
+        </span>
+                                </button>
+                                <div class="solution-item__hidden">
+                                    <div class="solution-slider slider">
+                                        <div class="swiper-container">
+                                            <div class="swiper-wrapper">
+                                                <div class="swiper-slide">
+                                                    <div class="solution-item__img">
+                                                        <img src="img/solution-img3.png" alt="">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="solution-item ">
+                                <button class="solution-item__btn">
+                                    <img src="img/solution-icon4.svg" alt="">
+                                    <span class="text22">
+            Шаблонизатор
+        </span>
+                                </button>
+                                <div class="solution-item__hidden">
+                                    <div class="solution-slider slider">
+                                        <div class="swiper-container">
+                                            <div class="swiper-wrapper">
+                                                <div class="swiper-slide">
+                                                    <div class="solution-item__img">
+                                                        <img src="img/solution-img4.png" alt="">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="solution-item ">
+                                <button class="solution-item__btn">
+                                    <img src="img/solution-icon5.svg" alt="">
+                                    <span class="text22">
+            Интеллектуальный отчет
+        </span>
+                                </button>
+                                <div class="solution-item__hidden">
+                                    <div class="solution-slider slider">
+                                        <div class="swiper-container">
+                                            <div class="swiper-wrapper">
+                                                <div class="swiper-slide">
+                                                    <div class="solution-item__img">
+                                                        <img src="img/solution-img5.png" alt="">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="solution__nav _flex-center animated animated-opacity">
+                        <a href="https://app.integram.io#reg" target="reg">
+                            <button data-modal="" class="main__link m-btn m-btn-blue">
+                                <span>Начать бесплатно</span>
+                            </button>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="integram m-section">
+                <div class="container">
+                    <div class="integram__inner">
+                        <div class="integram__title h2 animated animated-opacity">С Интеграмом все под контролем</div>
+                        <div class="integram__text animated animated-opacity">
+                            <p class="text36 text20-tablet medium-text">Внедрение платформы поможет эффективнее управлять бизнесом, построить надёжную ИТ-инфраструктуру, а также:</p>
+                        </div>
+                        <div class="integram__cards">
+                            <div class="integram-card animated animated-opacity">
+                                <div class="integram-card__icon">
+                                    <img src="img/integram-card__icon.svg" alt="">
+                                </div>
+                                <div class="integram-card__number">
+                                    <span class="text22">01</span>
+                                </div>
+                                <div class="integram-card__text">
+
+                                    <p class="text22">Сократить затраты на&nbsp;разработку и&nbsp;направлять больше средств на&nbsp;развитие компании</p>
+                                </div>
+                            </div>
+
+                            <div class="integram-card animated animated-opacity">
+                                <div class="integram-card__icon">
+                                    <img src="img/integram-card__icon2.svg" alt="">
+                                </div>
+                                <div class="integram-card__number">
+                                    <span class="text22">02</span>
+                                </div>
+                                <div class="integram-card__text">
+
+                                    <p class="text22">Систематизировать отчётность, автоматизировать выполнение рутинных задач</p>
+                                </div>
+                            </div>
+
+                            <div class="integram-card animated animated-opacity">
+                                <div class="integram-card__icon">
+                                    <img src="img/integram-card__icon3.svg" alt="">
+                                </div>
+                                <div class="integram-card__number">
+                                    <span class="text22">03</span>
+                                </div>
+                                <div class="integram-card__text">
+
+                                    <p class="text22">Оптимизировать текущие процессы и в сжатые сроки создавать идеальные модели будущих возможностей бизнеса</p>
+                                </div>
+                            </div>
+
+                            <div class="integram-card animated animated-opacity">
+                                <div class="integram-card__icon">
+                                    <img src="img/integram-card__icon4.svg" alt="">
+                                </div>
+                                <div class="integram-card__number">
+                                    <span class="text22">04</span>
+                                </div>
+                                <div class="integram-card__text">
+
+                                    <p class="text22">Уменьшить штат ИТ-специалистов и снизить нагрузку на сотрудников</p>
+                                </div>
+                            </div>
+
+                            <div class="integram-card animated animated-opacity">
+                                <div class="integram-card__icon">
+                                    <img src="img/integram-card__icon5.svg" alt="">
+                                </div>
+                                <div class="integram-card__number">
+                                    <span class="text22">05</span>
+                                </div>
+                                <div class="integram-card__text">
+
+                                    <p class="text22">Повысить производительность за счёт автоматизации бизнес-процессов</p>
+                                </div>
+                            </div>
+
+                            <div class="integram-card animated animated-opacity">
+                                <div class="integram-card__icon">
+                                    <img src="img/integram-card__icon6.svg" alt="">
+                                </div>
+                                <div class="integram-card__number">
+                                    <span class="text22">06</span>
+                                </div>
+                                <div class="integram-card__text">
+
+                                    <p class="text22">Контролировать все процессы в&nbsp;одном&nbsp;ПО, не&nbsp;переплачивая за&nbsp;множество других продуктов</p>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="solution__nav animated animated-opacity">
+                            <a href="https://app.integram.io#reg" target="reg">
+                                <button data-modal="" class="main__link m-btn m-btn-blue">
+                                    <span>Протестировать сервис</span>
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="integram__img">
+                    <img src="img/integram-bg.jpg" alt="">
+                </div>
+
+            </div>
+
+            <div id="for-who" class="effective m-section">
+                <div class="effective__wrap">
+                    <div class="container">
+                        <div class="h2 text-center ">
+                            Интеграм эффективен для компаний из множества сфер
+                        </div>
+                        <div class="effective__desc ">
+                            <div class="text22 text18-tablet">
+                                Платформа создана для тех, кто устал от хаоса в бизнес-процессах. Система позволит наладить логистику, заменить сложное ПО в планово-экономическом и смежных отделах, прогнозировать доходы от проектов, снизить расходы, в том числе НДС, и многое другое.
+                            </div>
+                        </div>
+                        <div class="effective__content">
+                            <img src="img/logo.png" alt="" class="effective__logo animated animated-opacity">
+                            <div class="effective__items">
+                                <div class="effective-item animated animated-opacity">
+                                    <img src="img/effective-icon.jpg" alt="">
+                                    <span class="text22 text18-tablet">
+        Юридические фирмы
+    </span>
+                                </div>
+
+                                <div class="effective-item animated animated-opacity">
+                                    <img src="img/effective-icon2.jpg" alt="">
+                                    <span class="text22 text18-tablet">
+        Рекламные агентства
+    </span>
+                                </div>
+
+                                <div class="effective-item animated animated-opacity">
+                                    <img src="img/effective-icon3.jpg" alt="">
+                                    <span class="text22 text18-tablet">
+        Строительные компании
+    </span>
+                                </div>
+
+                                <div class="effective-item animated animated-opacity">
+                                    <img src="img/effective-icon4.jpg" alt="">
+                                    <span class="text22 text18-tablet">
+        Медицинские клиники
+    </span>
+                                </div>
+
+                                <div class="effective-item animated animated-opacity">
+                                    <img src="img/effective-icon5.jpg" alt="">
+                                    <span class="text22 text18-tablet">
+        Образовательные учреждения
+    </span>
+                                </div>
+
+                                <div class="effective-item animated animated-opacity">
+                                    <img src="img/effective-icon6.jpg" alt="">
+                                    <span class="text22 text18-tablet">
+        ИТ-компании
+    </span>
+                                </div>
+
+                                <div class="effective-item animated animated-opacity">
+                                    <img src="img/effective-icon7.jpg" alt="">
+                                    <span class="text22 text18-tablet">
+        Туристические агентства
+    </span>
+                                </div>
+
+                                <div class="effective-item animated animated-opacity">
+                                    <img src="img/effective-icon8.jpg" alt="">
+                                    <span class="text22 text18-tablet">
+        Страховые компании
+    </span>
+                                </div>
+
+                                <div class="effective-item animated animated-opacity">
+                                    <img src="img/effective-icon9.jpg" alt="">
+                                    <span class="text22 text18-tablet">
+        Финансовые компании
+    </span>
+                                </div>
+
+                                <div class="effective-item animated animated-opacity">
+                                    <img src="img/effective-icon10.jpg" alt="">
+                                    <span class="text22 text18-tablet">
+        Логистические компании
+    </span>
+                                </div>
+
+                                <div class="effective-item animated animated-opacity">
+                                    <img src="img/effective-icon11.jpg" alt="">
+                                    <span class="text22 text18-tablet">
+        Технический сервис
+    </span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="effective__bottom">
+                            <div class="text24 text18-tablet medium-text">
+                                Интеграм — идеальное решение для компаний со штатом до 700 сотрудников с собственным ИТ-отделом или специалистами на внешнем обслуживании (аутсорсинге)
+                            </div>
+                            <button data-modal="reqModal" class="effective__link m-btn m-btn-blue">
+                                <span>Получить консультацию</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="advantages" class="advantages m-section">
+                <img src="img/advantages-bg.svg" alt="" class="advantages__bg">
+                <div class="container">
+                    <div class="advantages__items">
+                        <div class="advantage-item">
+                            <div class="advantage-item__col">
+                                <div class="advantage-item__img animated animated-opacity">
+                                    <img src="img/advantage-img.svg" alt="">
+                                </div>
+                            </div>
+                            <div class="advantage-item__col2">
+                                <div class="h2 animated animated-opacity">
+                                    Лёгкая интеграция <br> с другими ИТ-продуктами
+                                </div>
+                                <div class="advantage-item__text animated animated-opacity">
+                                    <div class="text">
+                                        <p>Платформа быстро внедряется в ИТ-инфраструктуру компании и не конфликтует с другим ПО. Интеграм поддерживает обмен данными с большинством ИТ-продуктов, требующих сложной установки, таких как система управления взаимоотношениями с клиентами (CRM) или модули 1С, и может взять на себя часть их функционала.</p>
+                                        <p>Даже если вы храните информацию в нескольких источниках — запустите универсальный загрузчик и через 30 минут увидите данные в Интеграме в нужном вам формате.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="advantage-item">
+                            <div class="advantage-item__col">
+                                <div class="advantage-item__img animated animated-opacity">
+                                    <img src="img/advantage-img2.svg" alt="">
+                                </div>
+                            </div>
+                            <div class="advantage-item__col2">
+                                <div class="h2 animated animated-opacity">
+                                    Консультации и любые доработки по проекту в течение 30 минут
+                                </div>
+                                <div class="advantage-item__text animated animated-opacity">
+                                    <div class="text">
+                                        <p>Гибкость конструктора позволяет полностью перестроить, адаптировать или расширить инструментарий платформы всего за 2–3 часа.</p>
+                                        <p>Если возникнет необходимость срочной консультации, обновления или устранения неполадок — ответим в течение 30 минут. Также по запросу создадим различные интерактивные формы, дизайн или интегрируем новый сервис.</p>
+                                    </div>
+                                </div>
+                                <div class="advantage-item__nav _flex animated animated-opacity">
+                                    <button data-modal="reqModal" class="advantage-item__link m-btn m-btn-blue">
+                                        <span>Узнать стоимость</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="integram m-section">
+                <div class="container">
+                    <div class="integram__inner">
+                        <div class="integram__title h2 animated animated-opacity">Ещё больше преимуществ <br> конструктора Интеграм</div>
+                        <div class="integram__cards">
+                            <div class="integram-card animated animated-opacity">
+                                <div class="integram-card__icon">
+                                    <img src="img/integram-card__icon7.svg" alt="">
+                                </div>
+                                <div class="integram-card__number">
+                                    <span class="text22">01</span>
+                                </div>
+                                <div class="integram-card__text">
+
+                                    <span class="text24 medium-text">
+            Российская разработка
+        </span>
+                                    <p class="text22">Отечественный продукт, не зависящий от зарубежных санкций. Основан на уникальной Квинтетной модели данных.</p>
+                                </div>
+                            </div>
+
+                            <div class="integram-card animated animated-opacity">
+                                <div class="integram-card__icon">
+                                    <img src="img/integram-card__icon8.svg" alt="">
+                                </div>
+                                <div class="integram-card__number">
+                                    <span class="text22">02</span>
+                                </div>
+                                <div class="integram-card__text">
+
+                                    <span class="text24 medium-text">
+            Готовые решения
+        </span>
+                                    <p class="text22">Доступно более 50 бесплатных шаблонов для разных задач бизнеса — от создания справочников до ведения полноценной системы учёта</p>
+                                </div>
+                            </div>
+
+                            <div class="integram-card animated animated-opacity">
+                                <div class="integram-card__icon">
+                                    <img src="img/integram-card__icon9.svg" alt="">
+                                </div>
+                                <div class="integram-card__number">
+                                    <span class="text22">03</span>
+                                </div>
+                                <div class="integram-card__text">
+
+                                    <span class="text24 medium-text">
+            Надёжность
+        </span>
+                                    <p class="text22">Платформа оснащена качественной облачной защитой — ваши данные в безопасности и не попадут к третьим лицам</p>
+                                </div>
+                            </div>
+
+                            <div class="integram-card animated animated-opacity">
+                                <div class="integram-card__icon">
+                                    <img src="img/integram-card__icon10.svg" alt="">
+                                </div>
+                                <div class="integram-card__number">
+                                    <span class="text22">04</span>
+                                </div>
+                                <div class="integram-card__text">
+
+                                    <span class="text24 medium-text">
+            Партнёрская программа
+        </span>
+                                    <p class="text22">За любой платёж каждого приглашённого пользователя партнёр получает вознаграждение, поэтому выжмет для вас максимум из нашего сервиса</p>
+                                </div>
+                            </div>
+
+                            <div class="integram-card animated animated-opacity">
+                                <div class="integram-card__icon">
+                                    <img src="img/integram-card__icon11.svg" alt="">
+                                </div>
+                                <div class="integram-card__number">
+                                    <span class="text22">05</span>
+                                </div>
+                                <div class="integram-card__text">
+
+                                    <span class="text24 medium-text">
+            Профессиональное сообщество
+        </span>
+                                    <p class="text22">Обменивайтесь знаниями с опытными пользователями платформы в закрытом чате, чтобы создавать оптимальные ИТ-решения</p>
+                                </div>
+                            </div>
+
+                            <div class="integram-card animated animated-opacity">
+                                <div class="integram-card__icon">
+                                    <img src="img/integram-card__icon12.svg" alt="">
+                                </div>
+                                <div class="integram-card__number">
+                                    <span class="text22">06</span>
+                                </div>
+                                <div class="integram-card__text">
+
+                                    <span class="text24 medium-text">
+            Быстрая адаптация персонала
+        </span>
+                                    <p class="text22">Простой интерфейс, интерактивные уроки, обучающие ролики для освоения платформы</p>
+                                </div>
+                            </div>
+
+                        </div>
+						<span id="copy"> </span>
+                    </div>
+                </div>
+
+            </div>
+			<div id="copy" class="text-center container">
+				<p class="text36 text20-tablet medium-text">
+					По вашему запросу сделаем копию любого понравившегося вам сервиса, в том числе можем объединить несколько копий в одно удобное приложение
+				</p>
+            </div>
+            <div class="demo m-section">
+                <div class="container">
+                    <div class="demo__inner animated animated-opacity">
+                        <div class="demo__text">
+                            <div class="h2">
+                                Рабочий прототип ИТ-решения для бизнеса готов послезавтра
+                            </div>
+                            <div class="text36 text18-tablet medium-text">
+                                если создавать его в конструкторе Интеграм
+                            </div>
+                        </div>
+                        <button data-modal="reqModal" class="demo__btn m-btn m-btn-blue">
+                            <span>Заказать демо</span>
+                        </button>
+
+                        <img src="img/demo-bg2.svg" alt="" class="demo__bg">
+                        <img src="img/demo-img.webp" alt="" class="demo__img">
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="results" class="results m-section">
+                <div class="container">
+                    <div class="h2 text-center animated animated-opacity">
+                        Проекты Интеграма<br>в цифрах и фактах
+                    </div>
+                    <div class="results-slider slider">
+                        <div class="swiper-container">
+                            <div class="swiper-wrapper">
+                                <div class="swiper-slide">
+                                    <div class="results__wrap">
+                                        <div class="results__col animated animated-opacity">
+                                            <div class="text">
+                                                <div class="results__subtitle">
+                                                    Клиент:
+                                                </div>
+                                                <h3>Производство готовой еды</h3>
+
+                                                <div class="results__subtitle">
+                                                    Проблема:
+                                                </div>
+                                                <p>Нет подходящего приложения для организации существующего производства и управления процессами, на заказ — очень дорого</p>
+
+                                                <div class="results__subtitle">
+                                                    Решение:
+                                                </div>
+                                                <p>Точно повторили этапы производственного конвейера в таблицах Интеграма и сделали простые и  понятные рабочие места</p>
+
+                                                <div class="results__subtitle">
+                                                    Результат:
+                                                </div>
+                                                <p>
+                                                   Полностью автоматизируем весь процесс, переводя его из экселей: 8 этапов, 12 ролей, сотни позиций, десяток клиентов, десятки распределительных центров.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="results__col2 animated animated-opacity">
+                                            <div class="results-slider__img">
+                                                <img src="img/case2.png" alt="">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="results__wrap">
+                                        <div class="results__col animated animated-opacity">
+                                            <div class="text">
+                                                <div class="results__subtitle">
+                                                    Клиент:
+                                                </div>
+                                                <h3>Производство для водоочистки</h3>
+
+                                                <div class="results__subtitle">
+                                                    Проблема:
+                                                </div>
+                                                <p>Директор не мог получить ответы, сколько придет выручки, какой НДС к оплате в следующем квартале, какие этапы договоров горят, какие фактические финансовые потоки на проектах</p>
+
+                                                <div class="results__subtitle">
+                                                    Решение:
+                                                </div>
+                                                <p>Локальная установка системы, в периметре заказчика. Внедрена система управления: договора, счета, оплаты, этапы, ответственные, товары, материалы, калькуляции и т.п.
+                                                    <br />
+                                                    Созданы десятки отчетов о состоянии дел, отображающие информацию онлайн.
+                                                </p>
+
+                                                <div class="results__subtitle">
+                                                    Результат:
+                                                </div>
+                                                <p>
+                                                    За 2 месяца прошли с нуля — от бумажных журналов к веб-сервису в Планово-экономическом отделе. Через год уже 12 различных отделов и около 60 пользователей организованы в единый процесс.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="results__col2 animated animated-opacity">
+                                            <div class="results-slider__img">
+                                                <img src="img/case11.png" alt="">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="results__wrap">
+                                        <div class="results__col animated animated-opacity">
+                                            <div class="text">
+                                                <div class="results__subtitle">
+                                                    Клиент:
+                                                </div>
+                                                <h3>Рекрутинговый стартап</h3>
+
+                                                <div class="results__subtitle">
+                                                    Проблема:
+                                                </div>
+                                                <p>Потоковый найм 200-500 человек в сжатые сроки:</p>
+                                                <ul>
+                                                    <li>рекрутеров сложно учить</li>
+                                                    <li>большая текучка</li>
+                                                    <li>воровали базу hh, парсили её, из-за чего учётку блокировали</li>
+                                                </ul>
+
+                                                <div class="results__subtitle">
+                                                    Решение:
+                                                </div>
+                                                <p>Сервис с интеграцией HH.ru, email и SMS был сделан точно под требования клиента, ничего лишнего — легко обучить низкооплачиваемого рекрутера и не жалко его терять</p>
+
+                                                <div class="results__subtitle">
+                                                    Результат:
+                                                </div>
+                                                <p>
+                                                    Воровство и парсинг hh стали невозможны. Работало до 40 рекрутеров одновременно, импортировали боле 85 тысяч кандидатов за 3 месяца.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="results__col2 animated animated-opacity">
+                                            <div class="results-slider__img">
+                                                <img src="img/case8.jpg" alt="">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="results__wrap">
+                                        <div class="results__col animated animated-opacity">
+                                            <div class="text">
+                                                <div class="results__subtitle">
+                                                    Клиент:
+                                                </div>
+                                                <h3>Банковская отчетность</h3>
+
+                                                <div class="results__subtitle">
+                                                    Проблема:
+                                                </div>
+                                                <p>Существующее решение работает медленно (40-100 секунд на почти любое действие), дорогое в обслуживании и не подходит под импортозамещение</p>
+
+                                                <div class="results__subtitle">
+                                                    Решение:
+                                                </div>
+                                                <p>Была сделана <span id="bo">точная копия</span> существующего сервиса со всеми его возможностями, часть отчетов бесшовно интегрированы с существующими витринами данных на Postgres</p>
+
+                                                <div class="results__subtitle">
+                                                    Результат:
+                                                </div>
+                                                <p>
+                                                    Страницы и отчеты строятся за доли секунды, система стала на 100% импортозамещающая
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="results__col2 animated animated-opacity">
+                                            <div class="results-slider__img">
+                                                <img src="img/neo.png" alt="">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="results__wrap">
+                                        <div class="results__col animated animated-opacity">
+                                            <div class="text">
+                                                <div class="results__subtitle">
+                                                    Клиент:
+                                                </div>
+                                                <h3>Небольшой фитнес-клуб</h3>
+
+                                                <div class="results__subtitle">
+                                                    Проблема:
+                                                </div>
+                                                <p>Сотрудники присваивали наличность, невозможно проанализировать показатели, кроме валовой выручки</p>
+
+                                                <div class="results__subtitle">
+                                                    Решение:
+                                                </div>
+                                                <p>Сначала сделана точная копия используемой системы управления взаимоотношениями с клиентами(CRM), чтобы облегчить переход, далее из простого сервиса сделали полноценную систему управления клубом</p>
+
+                                                <div class="results__subtitle">
+                                                    Результат:
+                                                </div>
+                                                <p>
+                                                    Клуб начал экономить 50-60 тысяч рублей в месяц (теперь нельзя украсть), могут обзванивать клиентов с предложениями, бороться с оттоком, анализировать показатели работы клуба
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="results__col2 animated animated-opacity">
+                                            <div class="results-slider__img">
+                                                <img src="img/case3.png" alt="">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="results__wrap">
+                                        <div class="results__col animated animated-opacity">
+                                            <div class="text">
+                                                <div class="results__subtitle">
+                                                    Клиент:
+                                                </div>
+                                                <h3>Магазин одежды</h3>
+
+                                                <div class="results__subtitle">
+                                                    Проблема:
+                                                </div>
+                                                <p>Информация о товарах хранилась в бумажных журналах. Купили решение 1С, но сотрудники не смогли в нем работать из-за сложной настройки и функционала</p>
+
+                                                <div class="results__subtitle">
+                                                    Решение:
+                                                </div>
+                                                <p>Внедрили наше простое веб-приложение для розницы: просмотр информации о товаре, продажи, учёт наличности</p>
+
+                                                <div class="results__subtitle">
+                                                    Результат:
+                                                </div>
+                                                <p>
+                                                    Информация о товаре и продажах доступна с любого устройства
+                                                    <br>
+                                                    Сквозной учёт наличности ведётся непрерывно — есть возможность отследить любое движение по кассе, перемещение товара
+                                                    <br>
+                                                    Операции «задним числом» сразу обнаруживаются
+
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="results__col2 animated animated-opacity">
+                                            <div class="results-slider__img">
+                                                <img src="img/case5.jpg" alt="" old="img/case5.png">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="results__wrap">
+                                        <div class="results__col animated animated-opacity">
+                                            <div class="text">
+                                                <div class="results__subtitle">
+                                                    Клиент:
+                                                </div>
+                                                <h3>Обучение технике безопасности</h3>
+
+                                                <div class="results__subtitle">
+                                                    Проблема:
+                                                </div>
+                                                <p>Бизнес использовал Битрикс24 как недоделанную систему управления взаимоотношениями с клиентами (CRM), без какой-либо интеграции</p>
+
+                                                <div class="results__subtitle">
+                                                    Решение:
+                                                </div>
+                                                <p>Сделана ультра-легкая версия Битрикс, но в ней были добавлены новые сущности, реквизиты, функции, отчеты и формы</p>
+
+                                                <div class="results__subtitle">
+                                                    Результат:
+                                                </div>
+                                                <p>Компания смогла точно воспроизвести модель своего бизнеса и снизила стоимость владения системой более чем в 2 раза
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="results__col2 animated animated-opacity">
+                                            <div class="results-slider__img">
+                                                <img src="img/case7.png" alt="">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="results__wrap">
+                                        <div class="results__col animated animated-opacity">
+                                            <div class="text">
+                                                <div class="results__subtitle">
+                                                    Клиент:
+                                                </div>
+                                                <h3>Мелкооптовый магазин</h3>
+
+                                                <div class="results__subtitle">
+                                                    Проблема:
+                                                </div>
+                                                <p>Дорогие доработки существующей 1С, невозможность добавить функционал</p>
+
+                                                <div class="results__subtitle">
+                                                    Решение:
+                                                </div>
+                                                <p>Решение для розницы было расширено стандартными формами 1С, системой скидок и предзаказов, модулем для работы с агентами</p>
+
+                                                <div class="results__subtitle">
+                                                    Результат:
+                                                </div>
+                                                <p>Получилось сократить бюджет на желаемый функционал в 10 раз по сравнению с предложениями партнеров 1С
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="results__col2 animated animated-opacity">
+                                            <div class="results-slider__img">
+                                                <img src="img/case4.1.png" alt="">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="results__wrap">
+                                        <div class="results__col animated animated-opacity">
+                                            <div class="text">
+                                                <div class="results__subtitle">
+                                                    Клиент:
+                                                </div>
+                                                <h3>Система личностного роста</h3>
+
+                                                <div class="results__subtitle">
+                                                    Проблема:
+                                                </div>
+                                                <p>Стартапу необходимо MVP для работы с фокусными группами клиентов при минимальом бюджете</p>
+
+                                                <div class="results__subtitle">
+                                                    Решение:
+                                                </div>
+                                                <p>Создан прототип сервиса для планирования дел пользователем с возможностью получения напоминаний о необходимости выполнить их</p>
+
+                                                <div class="results__subtitle">
+                                                    Результат:
+                                                </div>
+                                                <p>
+                                                    Заказчик смог представить красивую реализацию своей идеи инвесторам, уложившись в 50 тысяч на разработку MVP
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="results__col2 animated animated-opacity">
+                                            <div class="results-slider__img">
+                                                <img src="img/case10.jpg" alt="">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="results__wrap">
+                                        <div class="results__col animated animated-opacity">
+                                            <div class="text">
+                                                <div class="results__subtitle">
+                                                    Клиент:
+                                                </div>
+                                                <h3>Лендинг промо-кампании</h3>
+
+                                                <div class="results__subtitle">
+                                                    Проблема:
+                                                </div>
+                                                <p>Требовалось за 3 недели сделать высоконагруженный мультиязычный сайт на 5 языках с хранением персональных данных в разных странах</p>
+
+                                                <div class="results__subtitle">
+                                                    Решение:
+                                                </div>
+                                                <p>Сделан лендинг с личным кабинетом и рабочими местами администратора и верстальщика; сайт интегрирован со сторонними сервисами по генерации песен с помощью ИИ, СМС-шлюзом и аналитическими системами
+                                                </p>
+
+                                                <div class="results__subtitle">
+                                                    Результат:
+                                                </div>
+                                                <p>
+                                                    Предоставили самую богатую аналитику из всех подрядчиков, выполнили цель в 20000 регистраций и держали в пике нагрузку до 200 действий пользователей в секунду, в том числе генерации контента
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="results__col2 animated animated-opacity">
+                                            <div class="results-slider__img">
+                                                <img src="img/case6.jpg" alt="">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="swiper-nav">
+                            <div class="m-btn-blue swiper-button swiper-button-prev">
+                                <img src="img/prev.svg" alt="">
+                            </div>
+                            <div class="m-btn-blue swiper-button swiper-button-next">
+                                <img src="img/next.svg" alt="">
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="results__nav _flex-center animated animated-opacity">
+                        <button data-modal="reqModal" class="results__link m-btn m-btn-blue">
+                            <span>Хочу так же</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="about" class="create m-section">
+                <img src="img/create-bg.svg" alt="" class="create__bg">
+                <div class="container">
+                    <div class="create__inner">
+                        <div class="create__col">
+                            <div class="create__title animated animated-opacity">
+                                Создаём <span>инновационные продукты для бизнеса</span> <br> с 2001 года
+                            </div>
+                            <ul class="create__list animated animated-opacity">
+                                <li>
+                                    <div class="text22">Подходит для любых ниш бизнеса</div>
+                                </li>
+                                <li>
+                                    <div class="text22">Запатентованный способ работы с данными</div>
+                                </li>
+                                <li>
+                                    <div class="text22">150+ компаний уже используют Интеграм</div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="create__col">
+                            <div class="text36 text18-tablet medium-text animated animated-opacity">
+                                Разработали Интеграм для личного пользования и, убедившись в эффективности системы, предложили клиентам. После успешного запуска популяризируем сервис и учим людей программировать, развивая полноценную экосистему.
+                            </div>
+                            <div class="create__desc animated animated-opacity">
+                                <div class="text22 text16-tablet">
+                                    Интеграм — это больше чем команда одного проекта. Это сообщество адептов — специалистов, которые зарабатывают на продукте и всегда готовы прийти на помощь.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="team" class="team m-section">
+                <div class="container">
+                    <div class="h2 text-center animated animated-opacity">
+                        Команда Интеграма: <br>  эксперты в области ИТ-разработок
+                    </div>
+                    <div class="team__grid">
+                        <div class="team__col">
+                            <div class="text22 text18-tablet animated animated-opacity">
+                                <span class="medium-text">Каждый год наши специалисты — квалифицированные разработчики, программисты и аналитики с опытом до 20 лет — растут, развиваются, посещают тематические форумы, выставки и мероприятия.</span> Все члены сообщества расширяют кругозор, обмениваются опытом и совершенствуют существующие инструменты и продукты
+                            </div>
+                        </div>
+                        <div class="team__col2">
+                            <div class="team-slider slider">
+                                <div class="swiper-container">
+                                    <div class="swiper-wrapper">
+                                        <div class="swiper-slide">
+                                            <div class="team-card animated animated-opacity">
+                                                <div class="team-card__img">
+                                                    <img src="img/team-img11.jpg" alt="">
+                                                </div>
+                                                <div class="team-card__content">
+                                                    <div class="team-card__name text24 medium-text">
+                                                        Виталий
+                                                    </div>
+                                                    <div class="team-card__prof">
+                                                        Аналитик и разработчик
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <div class="team-card animated animated-opacity">
+                                                <div class="team-card__img">
+                                                    <img src="img/Anton.jpg" alt="">
+                                                </div>
+                                                <div class="team-card__content">
+                                                    <div class="team-card__name text24 medium-text">
+                                                        Антон
+                                                    </div>
+                                                    <div class="team-card__prof">
+                                                        Консультант, менеджер проектов
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <div class="team-card animated animated-opacity">
+                                                <div class="team-card__img">
+                                                    <img src="img/team-img7.jpg" alt="">
+                                                </div>
+                                                <div class="team-card__content">
+                                                    <div class="team-card__name text24 medium-text">
+                                                        Александр
+                                                    </div>
+                                                    <div class="team-card__prof">
+                                                        Специалист по интеграции
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <div class="team-card animated animated-opacity">
+                                                <div class="team-card__img">
+                                                    <img src="img/team-img6.jpg" alt="">
+                                                </div>
+                                                <div class="team-card__content">
+                                                    <div class="team-card__name text24 medium-text">
+                                                        Алексей
+                                                    </div>
+                                                    <div class="team-card__prof">
+                                                        Интеграмщик со стажем
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <div class="team-card animated animated-opacity">
+                                                <div class="team-card__img">
+                                                    <img src="img/team-img10.jpg" alt="">
+                                                </div>
+                                                <div class="team-card__content">
+                                                    <div class="team-card__name text24 medium-text">
+                                                        Никита
+                                                    </div>
+                                                    <div class="team-card__prof">
+                                                        Аналитик Интеграм, интеграмщик по духу
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <div class="team-card animated animated-opacity">
+                                                <div class="team-card__img">
+                                                    <img src="img/team-img8.jpg" alt="">
+                                                </div>
+                                                <div class="team-card__content">
+                                                    <div class="team-card__name text24 medium-text">
+                                                        Настя
+                                                    </div>
+                                                    <div class="team-card__prof">
+                                                        Аналитик и тренер, мама интеграмщиков
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <div class="team-card animated animated-opacity">
+                                                <div class="team-card__img">
+                                                    <img src="img/team-img9.jpg" alt="">
+                                                </div>
+                                                <div class="team-card__content">
+                                                    <div class="team-card__name text24 medium-text">
+                                                        Виталий
+                                                    </div>
+                                                    <div class="team-card__prof">
+                                                        Куратор обучающих курсов
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swiper-nav">
+                                    <div class="m-btn-blue swiper-button swiper-button-prev">
+                                        <img src="img/prev.svg" alt="">
+                                    </div>
+                                    <div class="m-btn-blue swiper-button swiper-button-next">
+                                        <img src="img/next.svg" alt="">
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        <script type="text/javascript">
+            function t_onReady(func) {
+                if (document.readyState != "loading") {
+                    func();
+                } else {
+                    document.addEventListener("DOMContentLoaded", func);
+                }
+            }
+            function t_onFuncLoad(funcName, okFunc, time) {
+                if (typeof window[funcName] === "function") {
+                    okFunc();
+                } else {
+                    setTimeout(function () {
+                        t_onFuncLoad(funcName, okFunc, time);
+                    }, time || 100);
+                }
+            }
+        </script>
+        <script src="https://static.tildacdn.com/js/tilda-scripts-3.0.min.js" charset="utf-8" defer onerror="this.loaderr='y';"></script>
+        <script src="https://static.tildacdn.com/ws/project11916295/tilda-blocks-page61770909.min.js?t=1745254155" charset="utf-8" async onerror="this.loaderr='y';"></script>
+        <script src="https://static.tildacdn.com/js/tilda-lazyload-1.0.min.js" charset="utf-8" async onerror="this.loaderr='y';"></script>
+        <script src="https://static.tildacdn.com/js/tilda-forms-1.0.min.js" charset="utf-8" async onerror="this.loaderr='y';"></script>
+
+<div id="allrecords" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="11916295" data-tilda-page-id="61770909" data-tilda-formskey="841ca69948599d4ff09b826b11916295" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com"> <div id="rec854405824" class="r t-rec r_showed r_anim" style=" " data-record-type="782"> <div style="position:relative; display:none;" class="js-payment-systembox"> <ul class="js-dropdown-paysystem"> <li> <a href="#" style="color:" data-payment-system="custom.tochka" class="js-payment-system t-name">
+Платёжная система Банк Точка
+</a> </li> </ul> </div> </div> 
+</div>
+            <div class="tariffs m-section">
+                <div class="tariffs__inner">
+                    <div class="container">
+                        <div id="tariffs" class="tariffs__title h2 animated animated-opacity">От разработки ПО<br />
+						до поддержки и хостинга</div>
+                        <div class="tariffs__text animated animated-opacity">
+                            <p class="text36 text20-tablet medium-text">Заказная разработка</p>
+                        </div>
+                        <div class="tariffs__cards">
+                            <div class="tariff-card animated animated-opacity">
+                                <div class="tariff-card__title">
+                                    <div class='tariff-card__title-row1'>«Мгновенный старт»</div>
+									<div class="tariff-card__title-row2">пакет услуг</div>
+                                </div>
+                                <div class="tariff-card__price">
+                                    <span class="text36 text20-tablet medium-text">18 500 ₽ / 5 часов</span>
+                                </div>
+                                <div class="tariff-card__text">
+                                    <p class="text22">Адепт Интеграма перенесёт ваши данные в&nbsp;систему, настроит отчёты, меню и&nbsp;права пользователей в&nbsp;удобное вам&nbsp;время</p>
+                                </div>
+								<div id="rec974020291" class="r" data-record-type="191"> <!-- T142 -->
+								<div class="t142"> 
+								<a class="t142__submit" href="#order:Пакет Мгновенный старт (5 часов)=18500" target="" data-buttonfieldset="button"> 
+									<button class="tariff-card__btn m-btn m-btn-red">
+										<span>Начать</span>
+									</button>
+								</a>  </div>  </div>
+                            </div>
+
+                            <div class="tariff-card animated animated-opacity">
+                                <div class="tariff-card__title">
+                                    <div class='tariff-card__title-row1'>Разработка</div>
+                                    <div class='tariff-card__title-row2'>аналитика</div>
+                                </div>
+                                <div class="tariff-card__price">
+                                    <span class="text36 text20-tablet medium-text">3 750 ₽ / 1 час</span>
+                                </div>
+                                <div class="tariff-card__text">
+                                    <p class="text22">Разработка вашей системы адептом Интеграма по ТЗ заказчика или по устным указаниям</p>
+                                </div>
+                                <button data-modal="reqModal" class="tariff-card__btn m-btn m-btn-blue">
+                                    <span>Заказать</span>
+                                </button>
+                            </div>
+
+                            <div class="tariff-card animated animated-opacity">
+                                <div class="tariff-card__title">
+                                    <div class='tariff-card__title-row1'>Сопровождение</div>
+                                    <div class='tariff-card__title-row2'>дежурство</div>
+                                </div>
+                                <div class="tariff-card__price">
+                                    <span class="text36 text20-tablet medium-text">2 900 ₽ / 1 час</span>
+                                </div>
+                                <div class="tariff-card__text">
+                                    <p class="text22">Ответы на&nbsp;любые вопросы о&nbsp;сервисе, советы по&nbsp;использованию, небольшие доработки</p>
+                                </div>
+                                <button data-modal="reqModal" class="tariff-card__btn m-btn m-btn-blue">
+                                    <span>Получить поддержку</span>
+                                </button>
+                            </div>
+
+                        </div>
+                        <div class="tariffs__text animated animated-opacity">
+							<br /><br />
+                            <p class="text36 text20-tablet medium-text">Тарифы для хранения ваших данных</p>
+                        </div>
+                        <div class="tariffs__cards">
+                            <div class="tariff-card animated animated-opacity">
+                                <div class="tariff-card__title">
+                                    <div class='tariff-card__title-row1'>Стартап</div>
+                                    <div class='tariff-card__title-row2'>в месяц</div>
+                                </div>
+                                <div class="tariff-card__price">
+                                    <span class="text36 text20-tablet medium-text">1&nbsp;950&nbsp;₽</span>
+                                </div>
+                                <div class="tariff-card__text">
+                                    <p class="text22">Подходит для небольшой компании или ИП с 2-3 тысячами активностей в день</p>
+                                </div>
+								<a href="https://checkout.tochka.com/0c440f87-a606-4f23-8990-83b0c87117e5">
+                                <button data-modal="" class="tariff-card__btn m-btn m-btn-red">
+                                    <span>Купить</span>
+                                </button>
+								</a>
+                            </div>
+
+                            <div class="tariff-card animated animated-opacity">
+                                <div class="tariff-card__title">
+                                    <div class='tariff-card__title-row1'>Масштабируемый</div>
+                                    <div class='tariff-card__title-row2'>в месяц</div>
+                                </div>
+                                <div class="tariff-card__price">
+                                    <span class="text36 text20-tablet medium-text">от 4 900 ₽</span>
+                                </div>
+                                <div class="tariff-card__text">
+                                    <p class="text22">Платите по фактическому пользованию, стоимость снижается с ростом объема</p>
+                                </div>
+                                <button data-modal="reqModal" class="tariff-card__btn m-btn m-btn-blue">
+                                    <span>Купить</span>
+                                </button>
+                            </div>
+
+                            <div class="tariff-card animated animated-opacity">
+                                <div class="tariff-card__title">
+                                    <div class='tariff-card__title-row1'>Локальная установка</div>
+									<div class='tariff-card__title-row2'>в год</div>
+                                </div>
+                                <div class="tariff-card__price">
+                                    <span class="text36 text20-tablet medium-text">от 290 000 ₽</span>
+                               </div>
+                                <div class="tariff-card__text">
+                                    <p class="text22">Размещение в инфраструктуре заказчика в рамках 1 проекта или сервера</p>
+                                </div>
+                                <button data-modal="reqModal" class="tariff-card__btn m-btn m-btn-blue">
+                                    <span>Установить</span>
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq m-section">
+                <div class="container">
+                    <div class="faq__title h2 animated animated-opacity">
+                        Интеграм в деталях: ответы на частые вопросы
+                    </div>
+                    <div class="faq__items">
+                        <div class="qa-card animated animated-opacity">
+                            <div class="qa-card__show">
+                                <div class="qa-card__title">
+                                    <b>Что&nbsp;я получу в&nbsp;итоге?</b>
+                                </div>
+                                <button class="qa-card__btn">
+                                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19.1162 39.6338L0.366168 20.8838C0.136081 20.6485 0.00806338 20.332 0.00990589 20.0029C0.0117484 19.6738 0.143294 19.3587 0.376002 19.126C0.60871 18.8933 0.923801 18.7618 1.25289 18.7599C1.58198 18.7581 1.89852 18.8861 2.13382 19.1162L18.75 35.7323L18.75 1.25C18.75 0.918478 18.8817 0.600536 19.1161 0.366116C19.3505 0.131695 19.6685 -8.89151e-07 20 -8.7466e-07C20.3315 -8.60169e-07 20.6495 0.131695 20.8839 0.366116C21.1183 0.600536 21.25 0.918479 21.25 1.25L21.25 35.7323L37.8662 19.1162C37.9818 18.998 38.1196 18.9039 38.2719 18.8393C38.4241 18.7748 38.5876 18.7411 38.7529 18.7401C38.9182 18.7392 39.0821 18.7711 39.235 18.8339C39.3879 18.8968 39.5269 18.9893 39.6438 19.1062C39.7607 19.2231 39.8532 19.3621 39.9161 19.515C39.9789 19.6679 40.0108 19.8318 40.0099 19.9971C40.0089 20.1624 39.9752 20.3259 39.9107 20.4781C39.8461 20.6303 39.752 20.7682 39.6338 20.8838L20.8838 39.6338C20.6494 39.8682 20.3315 39.9999 20 39.9999C19.6685 39.9999 19.3506 39.8682 19.1162 39.6338Z" fill="#E2E6F3" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="qa-card__hidden">
+                                <div class="text">
+                                    Аналитик сделает вам веб-приложение под ключ: все ваши данные будут храниться в удобных таблицах с поиском и сортировкой, простые рабочие места будут отображать только нужную информацию, а пользователь увидит то, что позволено его роли. При необходимости настроим интеграции с внешними системами.<br />
+									В общем, вы получите полноценную программу, как при обычной заказной разработке.
+                                </div>
+                            </div>
+						</div>
+                        <div class="qa-card animated animated-opacity">
+                            <div class="qa-card__show">
+                                <div class="qa-card__title">
+                                    <b>Используете ли вы искусственный интеллект (ИИ) и&nbsp;как?</b>
+                                </div>
+                                <button class="qa-card__btn">
+                                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19.1162 39.6338L0.366168 20.8838C0.136081 20.6485 0.00806338 20.332 0.00990589 20.0029C0.0117484 19.6738 0.143294 19.3587 0.376002 19.126C0.60871 18.8933 0.923801 18.7618 1.25289 18.7599C1.58198 18.7581 1.89852 18.8861 2.13382 19.1162L18.75 35.7323L18.75 1.25C18.75 0.918478 18.8817 0.600536 19.1161 0.366116C19.3505 0.131695 19.6685 -8.89151e-07 20 -8.7466e-07C20.3315 -8.60169e-07 20.6495 0.131695 20.8839 0.366116C21.1183 0.600536 21.25 0.918479 21.25 1.25L21.25 35.7323L37.8662 19.1162C37.9818 18.998 38.1196 18.9039 38.2719 18.8393C38.4241 18.7748 38.5876 18.7411 38.7529 18.7401C38.9182 18.7392 39.0821 18.7711 39.235 18.8339C39.3879 18.8968 39.5269 18.9893 39.6438 19.1062C39.7607 19.2231 39.8532 19.3621 39.9161 19.515C39.9789 19.6679 40.0108 19.8318 40.0099 19.9971C40.0089 20.1624 39.9752 20.3259 39.9107 20.4781C39.8461 20.6303 39.752 20.7682 39.6338 20.8838L20.8838 39.6338C20.6494 39.8682 20.3315 39.9999 20 39.9999C19.6685 39.9999 19.3506 39.8682 19.1162 39.6338Z" fill="#E2E6F3" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="qa-card__hidden">
+                                <div class="text">
+                                    С 2025 года почти все пользовательские интерфейсы мы делаем с помощью ИИ. Мы научим вас ставить задачи на&nbsp;создание новых рабочих мест человеческим языком, а&nbsp;ИИ-агент будет за&nbsp;минуты выполнять вам эту&nbsp;работу.
+                                </div>
+                            </div>
+						</div>
+                        <div class="qa-card animated animated-opacity">
+                            <div class="qa-card__show">
+                                <div class="qa-card__title">
+                                    Что входит в сопровождение системы?
+                                </div>
+                                <button class="qa-card__btn">
+                                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19.1162 39.6338L0.366168 20.8838C0.136081 20.6485 0.00806338 20.332 0.00990589 20.0029C0.0117484 19.6738 0.143294 19.3587 0.376002 19.126C0.60871 18.8933 0.923801 18.7618 1.25289 18.7599C1.58198 18.7581 1.89852 18.8861 2.13382 19.1162L18.75 35.7323L18.75 1.25C18.75 0.918478 18.8817 0.600536 19.1161 0.366116C19.3505 0.131695 19.6685 -8.89151e-07 20 -8.7466e-07C20.3315 -8.60169e-07 20.6495 0.131695 20.8839 0.366116C21.1183 0.600536 21.25 0.918479 21.25 1.25L21.25 35.7323L37.8662 19.1162C37.9818 18.998 38.1196 18.9039 38.2719 18.8393C38.4241 18.7748 38.5876 18.7411 38.7529 18.7401C38.9182 18.7392 39.0821 18.7711 39.235 18.8339C39.3879 18.8968 39.5269 18.9893 39.6438 19.1062C39.7607 19.2231 39.8532 19.3621 39.9161 19.515C39.9789 19.6679 40.0108 19.8318 40.0099 19.9971C40.0089 20.1624 39.9752 20.3259 39.9107 20.4781C39.8461 20.6303 39.752 20.7682 39.6338 20.8838L20.8838 39.6338C20.6494 39.8682 20.3315 39.9999 20 39.9999C19.6685 39.9999 19.3506 39.8682 19.1162 39.6338Z" fill="#E2E6F3" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="qa-card__hidden">
+                                <div class="text">
+                                    Сопровождение и обслуживание платформы включает в себя бесплатные консультации, автоматические обновления, поиск причины и устранение ошибок.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="qa-card animated animated-opacity">
+                            <div class="qa-card__show">
+                                <div class="qa-card__title">
+                                    Как организовано программирование бизнес-процессов?
+                                </div>
+                                <button class="qa-card__btn">
+                                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19.1162 39.6338L0.366168 20.8838C0.136081 20.6485 0.00806338 20.332 0.00990589 20.0029C0.0117484 19.6738 0.143294 19.3587 0.376002 19.126C0.60871 18.8933 0.923801 18.7618 1.25289 18.7599C1.58198 18.7581 1.89852 18.8861 2.13382 19.1162L18.75 35.7323L18.75 1.25C18.75 0.918478 18.8817 0.600536 19.1161 0.366116C19.3505 0.131695 19.6685 -8.89151e-07 20 -8.7466e-07C20.3315 -8.60169e-07 20.6495 0.131695 20.8839 0.366116C21.1183 0.600536 21.25 0.918479 21.25 1.25L21.25 35.7323L37.8662 19.1162C37.9818 18.998 38.1196 18.9039 38.2719 18.8393C38.4241 18.7748 38.5876 18.7411 38.7529 18.7401C38.9182 18.7392 39.0821 18.7711 39.235 18.8339C39.3879 18.8968 39.5269 18.9893 39.6438 19.1062C39.7607 19.2231 39.8532 19.3621 39.9161 19.515C39.9789 19.6679 40.0108 19.8318 40.0099 19.9971C40.0089 20.1624 39.9752 20.3259 39.9107 20.4781C39.8461 20.6303 39.752 20.7682 39.6338 20.8838L20.8838 39.6338C20.6494 39.8682 20.3315 39.9999 20 39.9999C19.6685 39.9999 19.3506 39.8682 19.1162 39.6338Z" fill="#E2E6F3" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="qa-card__hidden">
+                                <div class="text">
+                                    Разработкой новых решений занимаются штатные сотрудники вашей компании или наши специалисты. Перед началом работы с системой проводим подробный инструктаж и несколько обучающих уроков, чтобы сотрудники быстро поняли, как взаимодействовать с платформой. Также наши адепты готовы создать веб-приложение или базу данных любой сложности под ваш запрос.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="qa-card animated animated-opacity">
+                            <div class="qa-card__show">
+                                <div class="qa-card__title">
+                                    Смогу ли я самостоятельно сделать что-то в конструкторе?
+                                </div>
+                                <button class="qa-card__btn">
+                                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19.1162 39.6338L0.366168 20.8838C0.136081 20.6485 0.00806338 20.332 0.00990589 20.0029C0.0117484 19.6738 0.143294 19.3587 0.376002 19.126C0.60871 18.8933 0.923801 18.7618 1.25289 18.7599C1.58198 18.7581 1.89852 18.8861 2.13382 19.1162L18.75 35.7323L18.75 1.25C18.75 0.918478 18.8817 0.600536 19.1161 0.366116C19.3505 0.131695 19.6685 -8.89151e-07 20 -8.7466e-07C20.3315 -8.60169e-07 20.6495 0.131695 20.8839 0.366116C21.1183 0.600536 21.25 0.918479 21.25 1.25L21.25 35.7323L37.8662 19.1162C37.9818 18.998 38.1196 18.9039 38.2719 18.8393C38.4241 18.7748 38.5876 18.7411 38.7529 18.7401C38.9182 18.7392 39.0821 18.7711 39.235 18.8339C39.3879 18.8968 39.5269 18.9893 39.6438 19.1062C39.7607 19.2231 39.8532 19.3621 39.9161 19.515C39.9789 19.6679 40.0108 19.8318 40.0099 19.9971C40.0089 20.1624 39.9752 20.3259 39.9107 20.4781C39.8461 20.6303 39.752 20.7682 39.6338 20.8838L20.8838 39.6338C20.6494 39.8682 20.3315 39.9999 20 39.9999C19.6685 39.9999 19.3506 39.8682 19.1162 39.6338Z" fill="#E2E6F3" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="qa-card__hidden">
+                                <div class="text">
+                                    Да, вы можете начать делать основные вещи буквально через 15 минут после <a target="reg" href="https://app.integram.io#reg"><b>регистрации</b></a>. Вы получите 5 интерактивных уроков и пройдете знакомство с инструментом, импортируя данные, создавая отчеты, формы и сложные структуры данных. 
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="qa-card animated animated-opacity">
+                            <div class="qa-card__show">
+                                <div class="qa-card__title">
+                                    Какой уровень квалификации требуется ИТ-специалисту, чтобы свободно работать с платформой?
+                                </div>
+                                <button class="qa-card__btn">
+                                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19.1162 39.6338L0.366168 20.8838C0.136081 20.6485 0.00806338 20.332 0.00990589 20.0029C0.0117484 19.6738 0.143294 19.3587 0.376002 19.126C0.60871 18.8933 0.923801 18.7618 1.25289 18.7599C1.58198 18.7581 1.89852 18.8861 2.13382 19.1162L18.75 35.7323L18.75 1.25C18.75 0.918478 18.8817 0.600536 19.1161 0.366116C19.3505 0.131695 19.6685 -8.89151e-07 20 -8.7466e-07C20.3315 -8.60169e-07 20.6495 0.131695 20.8839 0.366116C21.1183 0.600536 21.25 0.918479 21.25 1.25L21.25 35.7323L37.8662 19.1162C37.9818 18.998 38.1196 18.9039 38.2719 18.8393C38.4241 18.7748 38.5876 18.7411 38.7529 18.7401C38.9182 18.7392 39.0821 18.7711 39.235 18.8339C39.3879 18.8968 39.5269 18.9893 39.6438 19.1062C39.7607 19.2231 39.8532 19.3621 39.9161 19.515C39.9789 19.6679 40.0108 19.8318 40.0099 19.9971C40.0089 20.1624 39.9752 20.3259 39.9107 20.4781C39.8461 20.6303 39.752 20.7682 39.6338 20.8838L20.8838 39.6338C20.6494 39.8682 20.3315 39.9999 20 39.9999C19.6685 39.9999 19.3506 39.8682 19.1162 39.6338Z" fill="#E2E6F3" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="qa-card__hidden">
+                                <div class="text">
+                                    Для создания баз данных пользователю не нужны специальные знания — чаще всего достаточно пройти наше интерактивное обучение.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="qa-card animated animated-opacity">
+                            <div class="qa-card__show">
+                                <div class="qa-card__title">
+                                    Говорят, что Интеграм — это российский аналог Airtable. В чем сходство и разница?
+                                </div>
+                                <button class="qa-card__btn">
+                                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19.1162 39.6338L0.366168 20.8838C0.136081 20.6485 0.00806338 20.332 0.00990589 20.0029C0.0117484 19.6738 0.143294 19.3587 0.376002 19.126C0.60871 18.8933 0.923801 18.7618 1.25289 18.7599C1.58198 18.7581 1.89852 18.8861 2.13382 19.1162L18.75 35.7323L18.75 1.25C18.75 0.918478 18.8817 0.600536 19.1161 0.366116C19.3505 0.131695 19.6685 -8.89151e-07 20 -8.7466e-07C20.3315 -8.60169e-07 20.6495 0.131695 20.8839 0.366116C21.1183 0.600536 21.25 0.918479 21.25 1.25L21.25 35.7323L37.8662 19.1162C37.9818 18.998 38.1196 18.9039 38.2719 18.8393C38.4241 18.7748 38.5876 18.7411 38.7529 18.7401C38.9182 18.7392 39.0821 18.7711 39.235 18.8339C39.3879 18.8968 39.5269 18.9893 39.6438 19.1062C39.7607 19.2231 39.8532 19.3621 39.9161 19.515C39.9789 19.6679 40.0108 19.8318 40.0099 19.9971C40.0089 20.1624 39.9752 20.3259 39.9107 20.4781C39.8461 20.6303 39.752 20.7682 39.6338 20.8838L20.8838 39.6338C20.6494 39.8682 20.3315 39.9999 20 39.9999C19.6685 39.9999 19.3506 39.8682 19.1162 39.6338Z" fill="#E2E6F3" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="qa-card__hidden">
+                                <div class="text">
+                                    Интеграм мощнее других электронных таблиц, но пока менее известен. Клиенты меняют Airtable и Google-tables на Интеграм, когда им требуется много записей в базе, сложная стурктура таблиц и бизнес-логика, шаблонизатор произвольные выборки данных.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="qa-card animated animated-opacity">
+                            <div class="qa-card__show">
+                                <div class="qa-card__title">
+                                    Кому будет принадлежать интеллектуальная собственность на результат проекта?
+                                </div>
+                                <button class="qa-card__btn">
+                                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19.1162 39.6338L0.366168 20.8838C0.136081 20.6485 0.00806338 20.332 0.00990589 20.0029C0.0117484 19.6738 0.143294 19.3587 0.376002 19.126C0.60871 18.8933 0.923801 18.7618 1.25289 18.7599C1.58198 18.7581 1.89852 18.8861 2.13382 19.1162L18.75 35.7323L18.75 1.25C18.75 0.918478 18.8817 0.600536 19.1161 0.366116C19.3505 0.131695 19.6685 -8.89151e-07 20 -8.7466e-07C20.3315 -8.60169e-07 20.6495 0.131695 20.8839 0.366116C21.1183 0.600536 21.25 0.918479 21.25 1.25L21.25 35.7323L37.8662 19.1162C37.9818 18.998 38.1196 18.9039 38.2719 18.8393C38.4241 18.7748 38.5876 18.7411 38.7529 18.7401C38.9182 18.7392 39.0821 18.7711 39.235 18.8339C39.3879 18.8968 39.5269 18.9893 39.6438 19.1062C39.7607 19.2231 39.8532 19.3621 39.9161 19.515C39.9789 19.6679 40.0108 19.8318 40.0099 19.9971C40.0089 20.1624 39.9752 20.3259 39.9107 20.4781C39.8461 20.6303 39.752 20.7682 39.6338 20.8838L20.8838 39.6338C20.6494 39.8682 20.3315 39.9999 20 39.9999C19.6685 39.9999 19.3506 39.8682 19.1162 39.6338Z" fill="#E2E6F3" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="qa-card__hidden">
+                                <div class="text">
+                                    Вашей компании. Вы также сможете продавать созданные решения, лицензировать и тиражировать их.
+                                </div>
+                            </div>
+                        </div>
+<!--
+                        <div class="qa-card animated animated-opacity">
+                            <div class="qa-card__show">
+                                <div class="qa-card__title">
+                                    А если стоимость тарифов изменится?
+                                </div>
+                                <button class="qa-card__btn">
+                                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19.1162 39.6338L0.366168 20.8838C0.136081 20.6485 0.00806338 20.332 0.00990589 20.0029C0.0117484 19.6738 0.143294 19.3587 0.376002 19.126C0.60871 18.8933 0.923801 18.7618 1.25289 18.7599C1.58198 18.7581 1.89852 18.8861 2.13382 19.1162L18.75 35.7323L18.75 1.25C18.75 0.918478 18.8817 0.600536 19.1161 0.366116C19.3505 0.131695 19.6685 -8.89151e-07 20 -8.7466e-07C20.3315 -8.60169e-07 20.6495 0.131695 20.8839 0.366116C21.1183 0.600536 21.25 0.918479 21.25 1.25L21.25 35.7323L37.8662 19.1162C37.9818 18.998 38.1196 18.9039 38.2719 18.8393C38.4241 18.7748 38.5876 18.7411 38.7529 18.7401C38.9182 18.7392 39.0821 18.7711 39.235 18.8339C39.3879 18.8968 39.5269 18.9893 39.6438 19.1062C39.7607 19.2231 39.8532 19.3621 39.9161 19.515C39.9789 19.6679 40.0108 19.8318 40.0099 19.9971C40.0089 20.1624 39.9752 20.3259 39.9107 20.4781C39.8461 20.6303 39.752 20.7682 39.6338 20.8838L20.8838 39.6338C20.6494 39.8682 20.3315 39.9999 20 39.9999C19.6685 39.9999 19.3506 39.8682 19.1162 39.6338Z" fill="#E2E6F3" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="qa-card__hidden">
+                                <div class="text">
+                                    Архивные тарифы не меняются. Иначе говоря, для существующих договоров стоимость не увеличится.
+                                </div>
+                            </div>
+                        </div>
+-->
+                    </div>
+                    <div class="faq__nav _flex-center animated animated-opacity">
+                        <button data-modal="reqModal" class="faq__link m-btn m-btn-blue">
+                            <span>Задать другой вопрос</span>
+                        </button>
+                    </div>
+                </div>
+                <img src="img/faq-bg.svg" alt="" class="faq__bg">
+
+            </div>
+
+            <div id="edu" class="edu m-section">
+                <div class="container">
+                    <div class="edu__grid">
+                        <div class="edu__col animated animated-opacity">
+                            <a href="https://www.youtube.com/watch?v=Ma9rxjyhe3w" data-fancybox class="m-video">
+                                <div class="m-video__img">
+                                    <img src="img/video.jpg" alt="">
+                                </div>
+                                <span class="m-video__play m-btn-blue">
+									<img src="img/play.svg" alt="">
+								</span>
+                            </a>
+                        </div>
+                        <div class="edu__col">
+                            <div class="h2 animated animated-opacity">
+                                Изучите конструктор приложений за 30 минут
+                            </div>
+                            <div class="edu__desc animated animated-opacity">
+                                <div class="text24 text18-tablet medium-text">
+                                    Узнайте как платформа будет полезна бизнесу на бесплатной консультации с демонстрацией конструктора:
+                                </div>
+                            </div>
+                            <ul class="create__list animated animated-opacity">
+                                <li>
+                                    <div class="text22">Построим форму для сохранения в таблицу</div>
+                                </li>
+                                <li>
+                                    <div class="text22">Загрузим данные из Excel, настроим отчеты и графики</div>
+                                </li>
+                                <li>
+                                    <div class="text22">Отправим запрос в ChatGPT и сохраним результаты</div>
+                                </li>
+                                <li>
+                                    <div class="text22">Покажем автоматизацию процессов на живых примерах</div>
+                                </li>
+                                <li>
+                                    <div class="text22">Предложим индивидуальные условия сотрудничества</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="edu__hint animated animated-opacity">
+                        <div class="text24 text18-tablet medium-text">
+                            После первой встречи вы уже сможете перенести таблицы Excel в базу данных и настроить расчеты и бизнес-логику
+                        </div>
+                    </div>
+                    <div class="edu__nav _flex-center animated animated-opacity">
+                        <button data-modal="reqModal" class="edu__link m-btn m-btn-blue">
+                            <span>Получить консультацию</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="demo2" class="demo demo2 m-section _last">
+                <div class="container">
+                    <div class="demo__inner animated animated-opacity">
+                        <div class="demo__text">
+                            <div class="h2">
+                                Внедряйте только нужные функции
+                            </div>
+                            <div class="text36 text18-tablet medium-text">
+                                Экономьте на разработке и получайте максимальную выгоду с минимальными затратами
+                            </div>
+                        </div>
+                        <button data-modal="reqModal" class="demo__btn m-btn m-btn-blue">
+                            <span>Заказать демо</span>
+                        </button>
+
+                        <img src="img/demo-bg2.svg" alt="" class="demo__bg">
+                        <img src="img/demo-img2.webp" alt="" class="demo__img">
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+        <footer class="footer">
+            <div class="container">
+                <div class="footer__top">
+                    <div class="footer__top-col">
+                        <a href="" class="footer__logo">
+                            <img src="img/logo2.svg" alt="">
+                        </a>
+                        <div class="footer__desc">
+                            <div class="text22">
+                                В реестре отечественного ПО<br />
+								Реестровая запись №30872
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer__top-col">
+                        <div class="footer-nav">
+                            <ul class="footer-nav__list">
+                                <li><a href="/#solution">Инструментарий</a></li>
+                                <li><a href="/#alternative">Что предлагаем</a></li>
+                                <li><a href="/#tariffs">Тарифы</a></li>
+                                <li><a href="/reestr.html">Документация</a></li>
+                            </ul>
+                            <ul class="footer-nav__list">
+                                <li><a href="/#advantages">Преимущества</a></li>
+                                <li><a href="/#for-who">Для кого подходит</a></li>
+                                <li><a href="/#results">Примеры</a></li>
+                                <li><a href="/#about">О нас</a></li>
+                            </ul>
+                            <ul class="footer-nav__list">
+                                <li><a target="login" href="https://app.integram.io">Вход</a></li>
+                                <li><a target="reg" href="https://app.integram.io#reg">Регистрация</a></li>
+                                <li><a target="rt" href="https://rutube.ru/channel/41204904/videos/">RUTUBE</a></li>
+                                <li><a target="blog" href="https://blog.ideav.online/">Блог</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="footer__top-col">
+                        <div class="footer-contacts">
+                            <a href="tel:+79955060167" class="footer-contacts__phone text36">
+                                +7 (995) 506-01-67
+                            </a>
+                            <div class="text22">
+                                ежедневно с 8:00 до 22:00 (Мск)
+                            </div>
+                            <a href="mailto:care@integram.io" class="footer-contacts__email text24">
+                                care@integram.io
+                            </a>
+                            <div class="socials">
+                                <a href="https://rutube.ru/channel/41204904/videos/" target="yt" class="socials__item">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32px" height="32px" viewBox="-0.64 -0.64 33.28 33.28" enable-background="new 0 0 32 32" xml:space="preserve" stroke="#2C7BE5"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <path fill="#2C7BE5" d="M16-0.035C7.158-0.035-0.034,7.159-0.034,16S7.158,32.035,16,32.035S32.034,24.841,32.034,16 S24.842-0.035,16-0.035z M16,30.965C7.748,30.965,1.034,24.252,1.034,16S7.748,1.035,16,1.035S30.966,7.748,30.966,16 S24.252,30.965,16,30.965z"></path> <path fill="#2C7BE5" d="M19.525,15.616c-0.533-0.278-1.105-0.594-1.678-0.909c-1.194-0.658-2.323-1.28-3.163-1.614 c-0.153-0.062-0.327-0.042-0.465,0.05C14.082,13.237,14,13.392,14,13.558v4.987c0,0.171,0.088,0.331,0.232,0.422 c0.082,0.052,0.175,0.078,0.268,0.078c0.073,0,0.146-0.016,0.215-0.048c1.006-0.478,2.11-1.065,3.179-1.633 c0.545-0.291,1.093-0.582,1.631-0.86c0.165-0.086,0.27-0.256,0.27-0.443S19.69,15.703,19.525,15.616z M17.424,16.48 c-0.809,0.43-1.638,0.871-2.424,1.264v-3.417c0.699,0.337,1.543,0.802,2.365,1.255c0.288,0.159,0.576,0.317,0.86,0.472 C17.959,16.196,17.69,16.338,17.424,16.48z"></path> <path fill="#2C7BE5" d="M22.304,10.626c-0.812-0.293-5-0.316-6.264-0.316c-2.504,0-4.67,0.072-5.795,0.193 c-0.639,0.067-1.198,0.365-1.617,0.859c-1.176,1.383-0.925,7.562-0.412,8.97c0.265,0.725,0.769,1.214,1.498,1.454 c0.984,0.324,5.328,0.34,6.189,0.34c1.759,0,5.934-0.045,6.717-0.456c0.486-0.253,0.842-0.614,1.058-1.075 c0.728-1.561,0.68-7.022,0.087-8.56C23.503,11.355,23.011,10.881,22.304,10.626z M22.771,20.172 c-0.121,0.26-0.322,0.459-0.612,0.61c-0.353,0.167-2.664,0.344-6.256,0.344c-3.279,0-5.438-0.146-5.877-0.291 c-0.436-0.143-0.713-0.412-0.871-0.846c-0.502-1.378-0.551-7.057,0.235-7.98c0.253-0.299,0.576-0.472,0.961-0.512 c1.075-0.116,3.255-0.188,5.688-0.188c3.386,0,5.579,0.132,5.924,0.257c0.435,0.157,0.71,0.42,0.867,0.829 C23.331,13.692,23.378,18.872,22.771,20.172z"></path> </g> </g></svg>
+                                </a>
+                                <a href="https://t.me/ideavr" target="tg" class="socials__item">
+                                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M27.4517 2.29337C27.2301 2.09059 26.9586 1.95046 26.6649 1.88736C26.3712 1.82427 26.0661 1.84048 25.7807 1.93434L1.16108 10.05C0.490122 10.2712 0.0351218 10.8701 0.0019265 11.5757C-0.0312141 12.2814 0.365544 12.9205 1.01272 13.2037L7.10135 15.8676L8.93836 24.3877C9.01465 24.7416 9.19429 25.0569 9.57486 25.1538C9.95981 25.2519 10.2318 25.0415 10.519 24.8265L15.0373 21.4432L20.3195 25.7657C20.6272 26.0176 21.0032 26.1489 21.3866 26.1489C21.5724 26.1488 21.7568 26.1181 21.9327 26.0583C22.4887 25.8698 22.9008 25.4161 23.0352 24.8446L27.9552 3.92655C28.0238 3.63414 28.0133 3.32874 27.9248 3.04172C27.8363 2.7547 27.673 2.4964 27.4517 2.29337ZM10.9126 17.3941C10.9096 17.4012 10.9066 17.4093 10.9038 17.4189L9.88533 20.9773L8.7487 15.7057L16.5645 11.3632L11.1 17.0769C11.0144 17.1671 10.9503 17.2755 10.9126 17.3941ZM11.2358 22.2353L11.6984 20.619L12.1409 19.0731L13.7264 20.3705L11.2358 22.2353ZM26.3544 3.54998L21.4344 24.4681C21.4319 24.4784 21.4287 24.4928 21.4046 24.5009C21.3807 24.509 21.3692 24.4998 21.361 24.493L15.581 19.7632L15.5805 19.7628L12.9025 17.5714L21.5061 8.57537C21.6421 8.43319 21.7226 8.24697 21.733 8.05051C21.7434 7.85405 21.683 7.66037 21.5627 7.50465C21.4425 7.3489 21.2705 7.24143 21.0777 7.20174C20.885 7.16206 20.6845 7.19279 20.5125 7.28836L7.77302 14.3665L1.67192 11.697C1.65333 11.689 1.6431 11.6844 1.64457 11.653C1.64605 11.6216 1.65666 11.6181 1.67591 11.6117L26.2956 3.49611C26.3075 3.49223 26.3209 3.48774 26.3407 3.50579C26.3605 3.52394 26.3573 3.53773 26.3544 3.54998Z" fill="#2C7BE5" />
+                                    </svg>
+                                </a>
+                                <a href="https://chat.whatsapp.com/GtarLIEqlaoAmLSIjNu02R" target="wa" class="socials__item">
+                                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M23.8395 4.06612C21.2091 1.44561 17.71 0.00147656 13.9859 0C10.2701 0 6.76545 1.44282 4.1178 4.06273C1.46546 6.68697 0.00344531 10.1746 0 13.8703V13.8771C0.0004375 16.1139 0.588109 18.3705 1.70362 20.4302L0.0382813 28L7.69519 26.2583C9.63441 27.2356 11.7982 27.7509 13.9806 27.7518H13.9862C17.7013 27.7518 21.206 26.3087 23.854 23.6887C26.5087 21.0622 27.9715 17.579 27.9731 13.881C27.9742 10.2091 26.5064 6.72334 23.8395 4.06612H23.8395ZM13.9859 25.5664H13.981C12.0214 25.5655 10.0798 25.0736 8.36631 24.1433L8.00428 23.9467L2.91277 25.1048L4.01866 20.0786L3.80548 19.711C2.74548 17.883 2.18531 15.8651 2.18531 13.8748C2.18936 7.43258 7.48251 2.18531 13.9854 2.18531C17.127 2.18663 20.0788 3.40452 22.2971 5.61422C24.5489 7.8581 25.7885 10.7937 25.7875 13.8804C25.7849 20.3241 20.4906 25.5664 13.9859 25.5664Z" fill="#2C7BE5" />
+                                        <path d="M10.1803 7.75977H9.56721C9.35377 7.75977 9.00727 7.83966 8.7142 8.1586C8.42085 8.47776 7.59436 9.24918 7.59436 10.8181C7.59436 12.3869 8.74088 13.9027 8.90068 14.1157C9.0607 14.3284 11.1138 17.6507 14.3656 18.9289C17.0681 19.991 17.6182 19.7797 18.2046 19.7265C18.7912 19.6735 20.0975 18.9553 20.3641 18.2109C20.6307 17.4664 20.6307 16.8281 20.5508 16.6948C20.4707 16.5619 20.2573 16.4822 19.9375 16.3229C19.6175 16.1633 18.0495 15.3789 17.7562 15.2722C17.4629 15.1661 17.2497 15.1129 17.0363 15.4323C16.8229 15.751 16.1946 16.4884 16.0079 16.7012C15.8214 16.9142 15.6347 16.9409 15.3147 16.7813C14.9947 16.6213 13.9749 16.2787 12.7527 15.1926C11.8015 14.3473 11.1414 13.2693 10.9546 12.9502C10.7681 12.6312 10.9348 12.4586 11.0952 12.2995C11.239 12.1567 11.4331 11.9615 11.5932 11.7755C11.753 11.5892 11.7985 11.4563 11.9053 11.2435C12.0119 11.0308 11.9585 10.8445 11.8786 10.6852C11.7985 10.5255 11.1845 8.94884 10.8999 8.31818H10.9002C10.6605 7.78716 10.4082 7.76912 10.1803 7.75977Z" fill="#2C7BE5" />
+                                    </svg>
+                                </a>
+                                <a href="https://vc.ru/u/568649-alexey-sidorov" target="vc" class="socials__item">
+                                    <svg fill="#2C7BE5" width="32px" height="32px" viewBox="0 0 64.00 64.00" xmlns="http://www.w3.org/2000/svg" stroke="#2C7BE5"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><title></title><path d="M42,57H22A15,15,0,0,1,7,42V22A15,15,0,0,1,22,7H35A15,15,0,0,1,50,22v.5A2.5,2.5,0,0,0,52.5,25,4.5,4.5,0,0,1,57,29.5V42A15,15,0,0,1,42,57ZM22,9A13,13,0,0,0,9,22V42A13,13,0,0,0,22,55H42A13,13,0,0,0,55,42V29.5A2.5,2.5,0,0,0,52.5,27,4.5,4.5,0,0,1,48,22.5V22A13,13,0,0,0,35,9Z"></path><path d="M35.5,27h-11a4.5,4.5,0,0,1,0-9h11a4.5,4.5,0,0,1,0,9Zm-11-7a2.5,2.5,0,0,0,0,5h11a2.5,2.5,0,0,0,0-5Z"></path><path d="M41.5,45h-17a4.5,4.5,0,0,1,0-9h17a4.5,4.5,0,0,1,0,9Zm-17-7a2.5,2.5,0,0,0,0,5h17a2.5,2.5,0,0,0,0-5Z"></path></g></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer__bottom">
+                    <a href="/terms.html" class="footer__link">
+                        Правила использования
+                    </a>
+                    <a href="/OfferOJSC.pdf" class="footer__link">
+                        Публичная оферта
+                    </a>
+                    <a href="/acct.html" class="footer__link">
+                        Платежная информация
+                    </a>
+                    <div class="footer__info">
+                        АО Интеграм, ИНН: 9716002710
+                    </div>
+                </div>
+            </div>
+
+        </footer>
+    </div>
+
+    <div class="modal" id="reqModal">
+        <div class="modal__bg modal-bg _close-modal"></div>
+        <div class="modal__dialog">
+            <div class="modal__title text36 medium-text text-center">
+                Укажите ваши контакты, и мы свяжемся с вами в течение 15 минут
+            </div>
+            <form action="" class="modal-form _req-form">
+                <div class="modal-form__fields">
+                    <div class="fg fg-dynamic">
+                        <input name="user-name" required type="text">
+                        <label>Ваше имя</label>
+                    </div>
+                    <div class="fg fg-dynamic">
+                        <input name="user-phone" required type="tel">
+                        <label>Номер телефона</label>
+                    </div>
+                    <div class="fg fg-dynamic">
+                        <input name="user-email" required type="email">
+                        <label>E-mail</label>
+                    </div>
+                </div>
+                <button class="modal-form__btn m-btn m-btn-blue">
+                    <span>Отправить заявку</span>
+                </button>
+				<div class="text text-center" style="margin-bottom:-30px">
+					<p><br>Нажимая на кнопку, вы даете согласие на обработку персональных данных и соглашаетесь c <a href="/terms.html" style="color:#2c7be5">Правилами использования</a></p>
+				</div>
+			</form>
+        </div>
+    </div>
+
+    <div class="modal thank-modal" id="thankModal">
+        <div class="modal__bg modal-bg _close-modal"></div>
+        <div class="modal__dialog">
+            <img src="img/thank.svg" alt="" class="thank-modal__icon">
+            <div class="thank-modal__title h2">
+                Спасибо!
+            </div>
+            <div class="thank-modal__desc">
+                <div class="text36 text20-tablet medium-text">
+                    Ваша заявка отправлена
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript" >
+       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+       m[i].l=1*new Date();
+       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+       k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+       (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+    
+       ym(97768013, "init", {
+            clickmap:true,
+            trackLinks:true,
+            accurateTrackBounce:true,
+            webvisor:true
+       });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/97768013" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+    <script src="js/libs.min.js"></script>
+    <script src="js/main.min.js"></script>
+    <script>
+		$('#bo').html('<a target="bank" style="color: orange" href="https://rutube.ru/video/5a662fc2f7a9fea278f2a45e491a0993/">точная копия</a>');
+    </script>
+<style>
+        .cookie-message {
+            position: fixed;
+            z-index: 1000;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            max-width: 75%;
+            padding: 0;
+            animation: fadeIn 0.5s ease-in-out;
+            display: none;
+			background-color: #e52c7b;
+			border-radius: 22px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .cookie-message-inner {
+            display: grid;
+            justify-items: start;
+            grid-gap: 15px;
+            font-size: 16px;
+            padding: 20px;
+            line-height: 1.5;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px 0px rgba(0, 0, 0, 0.15);
+			margin: 3px;
+			border-radius: 10px;
+        }
+        
+        .cookie-message-text {
+            color: #333333;
+        }
+        
+        .cookie-message-link {
+            color: #01356f;
+        }
+        
+        .cookie-message-inner .button {
+            background: #e1e1e1;
+            color: #878787;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .cookie-message-inner .button:hover {
+            background-color: #01356f;
+            color: #fff;
+        }
+        
+        @media (max-width: 480px) {
+            .cookie-message {
+                max-width: 100%;
+                left: 10px;
+                right: 10px;
+                bottom: 10px;
+            }
+        }
+    </style>
+
+    <!-- Основное содержимое вашего сайта -->
+    
+    <!-- Блок уведомления о cookies -->
+    <div class="cookie-message js-cookie-message">
+        <div class="cookie-message-inner">
+            <div class="cookie-message-text">
+                Наш сайт использует cookies, включая сервисы веб-аналитики (файлы с данными о прошлых посещениях сайта). Продолжая пользоваться сайтом, вы соглашаетесь с
+                <a href="/terms.html" class="cookie-message-link">Правилами использования</a>.
+            </div>
+            <button class="btn button js-cookie-message-confirm">Принять</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!localStorage.getItem('cookieAccept')) {
+                const cookieMessage = document.querySelector('.js-cookie-message');
+                cookieMessage.style.display = 'block';
+                document.querySelector('.js-cookie-message-confirm').addEventListener('click', function(e) {
+                    localStorage.setItem('cookieAccept', '1');
+                    cookieMessage.style.opacity = '0';
+                    setTimeout(() => {
+                        cookieMessage.style.display = 'none';
+                    }, 300);
+                });
+            }
+        });
+		function getQueryParam(name) {
+			const urlParams = new URLSearchParams(window.location.search);
+			return urlParams.get(name);
+		}
+		function setCookie(name, value, days) {
+			let expires = "";
+			if (days) {
+				const date = new Date();
+				date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+				expires = "; expires=" + date.toUTCString();
+			}
+			document.cookie = name + "=" + (value || "") + expires + "; path=/";
+		}
+		document.addEventListener('DOMContentLoaded', function() {
+			const ydParam = getQueryParam('yd') || getQueryParam('Yd');
+			if (ydParam)
+				setCookie('yd_param', ydParam, 365);
+			if (ydParam) {
+					$('a[href*="app.integram.io"]').each(function() {
+						var $this = $(this);
+						var href = $this.attr('href');
+						var newHref = href.replace('app.integram.io', 'app.integram.io?yd=' + ydParam);
+						$this.attr('href', newHref);
+					});
+				}
+		});
+    </script>
+	</body>
+
+</html>
