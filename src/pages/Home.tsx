@@ -221,7 +221,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="flex flex-col sm:flex-row items-center justify-center gap-4"
+                className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4"
               >
                 <a
                   href="#cta"
@@ -229,6 +229,15 @@ export default function Home() {
                 >
                   Отправить задачу из очереди задач (бэклога)
                   <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </a>
+                <a
+                  href="https://ideav.ru/excel-to-app.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-2 group"
+                >
+                  <Sparkles size={18} />
+                  Мгновенный старт с ИИ
                 </a>
                 <a
                   href="https://ideav.ru/start.html#reg"
