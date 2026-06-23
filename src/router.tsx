@@ -5,6 +5,7 @@ import Success from './pages/Success'
 import Fail from './pages/Fail'
 import ExcelToApp from './pages/ExcelToApp'
 import AgentPlatforms from './pages/AgentPlatforms'
+import CatalogMatching from './pages/CatalogMatching'
 import Tokens from './pages/Tokens'
 import AdImages from './pages/AdImages'
 import KnowledgeBase from './pages/KnowledgeBase'
@@ -39,6 +40,14 @@ export const router = createBrowserRouter([
       {
         path: 'agent-platforms',
         element: <AgentPlatforms />,
+      },
+      {
+        path: 'catalog-matching.html',
+        element: <CatalogMatching />,
+      },
+      {
+        path: 'catalog-matching',
+        element: <CatalogMatching />,
       },
       {
         path: 'tokens.html',
