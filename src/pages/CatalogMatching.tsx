@@ -310,7 +310,7 @@ export default function CatalogMatching() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             to="/knowledge-base.html"
-            className="inline-flex items-center gap-1.5 text-sm text-slate-400 dark:text-slate-500 hover:text-blue-500 transition-colors mb-6"
+            className="flex w-fit items-center gap-1.5 text-sm text-slate-400 dark:text-slate-500 hover:text-blue-500 transition-colors mb-6"
           >
             <ArrowLeft size={16} /> К базе знаний
           </Link>
