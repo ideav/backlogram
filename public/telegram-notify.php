@@ -69,6 +69,14 @@ $name    = trim($data['name']    ?? '');
 $company = trim($data['company'] ?? '');
 $contact = trim($data['contact'] ?? '');
 $task    = trim($data['task']    ?? '');
+$source  = trim($data['source']  ?? '');
+
+// Человекочитаемые названия источников заявки (по какой странице/форме пришла).
+$SOURCE_LABELS = [
+    'catalog-matching' => 'Сопоставление каталогов',
+    'excel-to-app'     => 'Excel → приложение',
+];
+$source_label = $SOURCE_LABELS[$source] ?? $source;
 
 // ── SmartCaptcha verification ─────────────────────────────────────────────────
 function verifyCaptcha(string $token): bool {
@@ -118,6 +126,7 @@ function esc(string $text): string {
 
 $lines = ["*Новая заявка с сайта*"];
 
+if ($source_label !== '') $lines[] = "🔖 *Источник:* " . esc($source_label);
 if ($name !== '')    $lines[] = "👤 *Имя:* " . esc($name);
 if ($company !== '') $lines[] = "🏢 *Компания:* " . esc($company);
 if ($contact !== '') $lines[] = "📬 *Контакт:* " . esc($contact);

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -19,7 +19,35 @@ import {
   Cpu,
   ListChecks,
   Play,
+  Send,
 } from 'lucide-react'
+
+declare global {
+  interface Window {
+    smartCaptcha?: {
+      getResponse: (widgetId: number) => string
+      reset: (widgetId: number) => void
+      render: (container: HTMLElement | string, params: {
+        sitekey: string
+        callback?: (token: string) => void
+        'error-callback'?: () => void
+        'expired-callback'?: () => void
+      }) => number
+      destroy: (widgetId: number) => void
+    }
+  }
+}
+
+type FormState = 'idle' | 'sending' | 'success' | 'error'
+
+const CAPTCHA_CLIENT_KEY = (import.meta.env.VITE_SMARTCAPTCHA_CLIENT_KEY as string | undefined) ?? ''
+// Тот же бэкенд-обработчик, что и у формы на главной: проверяет same-host + капчу
+// и отправляет заявку в Telegram. Поле source отличает заявку с этой страницы.
+const SUBMIT_ENDPOINT = '/telegram-notify.php'
+
+function hasIdbCookie(): boolean {
+  return document.cookie.split(';').some((c) => c.trimStart().startsWith('idb_'))
+}
 
 const SITE = 'https://ideav.ru'
 const PATH = '/catalog-matching.html'
@@ -179,6 +207,101 @@ export default function CatalogMatching() {
     setMetaTag('meta[name="twitter:image"]', 'name', 'twitter:image', ogImage)
     setCanonical(canonical)
   }, [])
+
+  // ── Форма заявки «Сопоставить ваши каталоги» → Telegram ──────────────────────
+  const [formState, setFormState] = useState<FormState>('idle')
+  const [errorMsg, setErrorMsg] = useState('')
+  const [consentChecked, setConsentChecked] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState('')
+  const [isCaptchaRequested, setIsCaptchaRequested] = useState(false)
+  const [idbCookieFound] = useState(() => hasIdbCookie())
+  const captchaContainerRef = useRef<HTMLDivElement>(null)
+  const captchaWidgetIdRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (!CAPTCHA_CLIENT_KEY || !isCaptchaRequested || idbCookieFound) return
+
+    function initCaptcha() {
+      if (!captchaContainerRef.current || !window.smartCaptcha) return
+      captchaWidgetIdRef.current = window.smartCaptcha.render(captchaContainerRef.current, {
+        sitekey: CAPTCHA_CLIENT_KEY,
+        callback: (token: string) => setCaptchaToken(token),
+        'expired-callback': () => setCaptchaToken(''),
+        'error-callback': () => setCaptchaToken(''),
+      })
+    }
+
+    if (window.smartCaptcha) {
+      initCaptcha()
+      return
+    }
+
+    const script = document.createElement('script')
+    script.src = 'https://smartcaptcha.yandexcloud.net/captcha.js'
+    script.defer = true
+    script.onload = initCaptcha
+    document.head.appendChild(script)
+
+    return () => {
+      if (captchaWidgetIdRef.current !== null && window.smartCaptcha) {
+        window.smartCaptcha.destroy(captchaWidgetIdRef.current)
+        captchaWidgetIdRef.current = null
+      }
+    }
+  }, [isCaptchaRequested, idbCookieFound])
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const form = e.currentTarget
+    const data: Record<string, string> = {
+      source:  'catalog-matching',
+      name:    (form.elements.namedItem('name')    as HTMLInputElement).value,
+      company: (form.elements.namedItem('company') as HTMLInputElement).value,
+      contact: (form.elements.namedItem('contact') as HTMLInputElement).value,
+      task:    (form.elements.namedItem('task')    as HTMLTextAreaElement).value,
+    }
+
+    if (CAPTCHA_CLIENT_KEY && !idbCookieFound) {
+      if (!captchaToken) {
+        setErrorMsg('Пожалуйста, пройдите проверку капчи.')
+        setFormState('error')
+        return
+      }
+      data.captcha_token = captchaToken
+    }
+
+    setFormState('sending')
+    setErrorMsg('')
+
+    try {
+      const res = await fetch(SUBMIT_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      const json = await res.json()
+      if (json.ok) {
+        setFormState('success')
+        form.reset()
+        setConsentChecked(false)
+        setCaptchaToken('')
+        setIsCaptchaRequested(false)
+        if (captchaWidgetIdRef.current !== null && window.smartCaptcha) {
+          window.smartCaptcha.reset(captchaWidgetIdRef.current)
+        }
+      } else {
+        setFormState('error')
+        setErrorMsg(json.error ?? 'Произошла ошибка. Попробуйте позже.')
+        if (captchaWidgetIdRef.current !== null && window.smartCaptcha) {
+          window.smartCaptcha.reset(captchaWidgetIdRef.current)
+          setCaptchaToken('')
+        }
+      }
+    } catch {
+      setFormState('error')
+      setErrorMsg('Не удалось отправить запрос. Проверьте соединение.')
+    }
+  }
 
   return (
     <div className="overflow-hidden">
@@ -424,26 +547,105 @@ export default function CatalogMatching() {
             и так же легко настраивается под вашу номенклатуру.
           </p>
 
-          <div className="rounded-3xl border border-blue-500/30 bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/40 dark:to-slate-950 p-8 text-center">
+          <div
+            id="cta"
+            className="scroll-mt-24 rounded-3xl border border-blue-500/30 bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/40 dark:to-slate-950 p-6 sm:p-8"
+          >
             <div className="flex justify-center mb-4">
               <div className="w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center">
                 <Sparkles size={26} />
               </div>
             </div>
-            <h3 className="text-xl md:text-2xl font-bold mb-3">Сопоставить ваши каталоги</h3>
-            <p className="text-slate-600 dark:text-slate-300 mb-6 max-w-xl mx-auto">
+            <h3 className="text-xl md:text-2xl font-bold mb-3 text-center">Сопоставить ваши каталоги</h3>
+            <p className="text-slate-600 dark:text-slate-300 mb-6 max-w-xl mx-auto text-center">
               Пришлите два каталога — настроим токенизацию и сопоставление под вашу номенклатуру и
-              вернём подобранные пары.
+              вернём подобранные пары. Ответим в течение 24 часов.
             </p>
-            <a
-              href="https://ideav.ru/start.html"
-              target="start"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition-colors"
-            >
-              Начать с Интеграмом
-              <ArrowRight size={18} />
-            </a>
+
+            <form className="max-w-xl mx-auto space-y-4 text-left" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1">Имя</label>
+                  <input
+                    name="name"
+                    type="text"
+                    className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-slate-800 dark:text-slate-100 focus:border-blue-500 outline-none transition-all"
+                    placeholder="Александр"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1">Компания</label>
+                  <input
+                    name="company"
+                    type="text"
+                    className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-slate-800 dark:text-slate-100 focus:border-blue-500 outline-none transition-all"
+                    placeholder="Digital Corp"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1">Email / Telegram</label>
+                <input
+                  name="contact"
+                  type="text"
+                  onInput={() => setIsCaptchaRequested(true)}
+                  className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-slate-800 dark:text-slate-100 focus:border-blue-500 outline-none transition-all"
+                  placeholder="@username или you@company.ru"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1">Про ваши каталоги</label>
+                <textarea
+                  name="task"
+                  rows={3}
+                  className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-slate-800 dark:text-slate-100 focus:border-blue-500 outline-none transition-all resize-none"
+                  placeholder="Сколько позиций в каждом каталоге, в каком формате (Excel/CSV), какая номенклатура..."
+                />
+              </div>
+
+              {formState === 'success' && (
+                <div className="flex items-center gap-2 text-green-500 dark:text-green-400 text-sm font-medium">
+                  <CheckCircle2 size={16} />
+                  Заявка отправлена! Свяжемся с вами в течение 24 часов.
+                </div>
+              )}
+              {formState === 'error' && (
+                <div className="text-red-500 dark:text-red-400 text-sm font-medium">{errorMsg}</div>
+              )}
+
+              {CAPTCHA_CLIENT_KEY && !idbCookieFound && isCaptchaRequested && (
+                <div ref={captchaContainerRef} />
+              )}
+
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={consentChecked}
+                  onChange={(e) => setConsentChecked(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 dark:border-slate-600 accent-blue-600 cursor-pointer"
+                />
+                <span className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                  Я даю согласие на{' '}
+                  <a
+                    href="/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:text-blue-500 transition-colors"
+                  >
+                    обработку персональных данных
+                  </a>
+                </span>
+              </label>
+
+              <button
+                type="submit"
+                disabled={formState === 'sending' || formState === 'success' || !consentChecked}
+                className="w-full py-3 sm:py-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2"
+              >
+                {formState === 'sending' ? 'Отправка...' : 'Отправить заявку'}
+                {formState !== 'sending' && <Send size={18} />}
+              </button>
+            </form>
           </div>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-slate-400 dark:text-slate-500">
