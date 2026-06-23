@@ -95,6 +95,7 @@ const groups = [
       '11-ai-interface-data-safety',
       '12-ai-prototype-rewrite',
       '19-ai-agent-app-build',
+      '21-catalog-matching',
     ],
   },
   {
