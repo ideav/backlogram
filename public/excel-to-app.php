@@ -54,6 +54,16 @@ $contact = trim((string) ($_POST['contact'] ?? ''));
 // The landing labels this field "тематика"; accept a couple of aliases.
 $topic   = trim((string) ($_POST['topic'] ?? $_POST['task'] ?? $_POST['theme'] ?? ''));
 
+// Which landing form the request came from. Drives the issue/notification
+// wording so a "сопоставление каталогов" заявка doesn't read as "Excel → app".
+// Same source vocabulary as telegram-notify.php; defaults to the original form.
+$source = trim((string) ($_POST['source'] ?? 'excel-to-app'));
+$SOURCE_LABELS = [
+    'catalog-matching' => 'Сопоставление каталогов',
+    'excel-to-app'     => 'Excel → приложение',
+];
+$sourceLabel = $SOURCE_LABELS[$source] ?? ($source !== '' ? $source : 'Excel → приложение');
+
 // ── Spam protection: SmartCaptcha (skipped for known logged-in users) ─────────
 $hasIdbCookie = intake_has_idb_cookie($_COOKIE);
 $captchaToken = trim((string) ($_POST['captcha_token'] ?? ''));
@@ -147,8 +157,8 @@ foreach ($uploads as $index => $file) {
 }
 
 // ── Create the issue ──────────────────────────────────────────────────────────
-$issueTitle = 'Заявка Excel→приложение' . ($company !== '' ? ": $company" : ($name !== '' ? ": $name" : ''));
-$issueBody  = intake_build_issue_body($name, $company, $contact, $topic, $attachmentLinks, $requestId);
+$issueTitle = "Заявка: $sourceLabel" . ($company !== '' ? " — $company" : ($name !== '' ? " — $name" : ''));
+$issueBody  = intake_build_issue_body($sourceLabel, $name, $company, $contact, $topic, $attachmentLinks, $requestId);
 
 $issueResult = intake_github_create_issue($issueRepo, $issueTitle, $issueBody, $labels, $githubToken, $apiBase);
 if (!$issueResult['ok']) {
@@ -167,7 +177,7 @@ $botToken = (string) intake_config('TELEGRAM_BOT_TOKEN', '');
 $chatId   = (string) intake_config('TELEGRAM_CHAT_ID', '');
 if ($botToken !== '' && $chatId !== '') {
     $tgBase  = (string) intake_config('TELEGRAM_API_BASE', 'https://api.telegram.org');
-    $message = intake_build_telegram_message($name, $company, $contact, $topic, $attachmentLinks, $issueUrl);
+    $message = intake_build_telegram_message($sourceLabel, $name, $company, $contact, $topic, $attachmentLinks, $issueUrl);
     $tg = intake_telegram_send_message($botToken, $chatId, $message, $tgBase);
     $telegramSent = $tg['ok'];
 }
@@ -225,8 +235,8 @@ function intake_collect_uploads(array $files): array {
 }
 
 /** Compose the GitHub issue body (Markdown). */
-function intake_build_issue_body(string $name, string $company, string $contact, string $topic, array $attachments, string $requestId): string {
-    $lines = ['## Новая заявка «Excel → приложение»', ''];
+function intake_build_issue_body(string $heading, string $name, string $company, string $contact, string $topic, array $attachments, string $requestId): string {
+    $lines = ["## Новая заявка «$heading»", ''];
     if ($name !== '')    $lines[] = "- **Имя:** $name";
     if ($company !== '') $lines[] = "- **Компания:** $company";
     if ($contact !== '') $lines[] = "- **Контакт:** $contact";
@@ -252,9 +262,9 @@ function intake_build_issue_body(string $name, string $company, string $contact,
 }
 
 /** Compose the Telegram notification (MarkdownV2). */
-function intake_build_telegram_message(string $name, string $company, string $contact, string $topic, array $attachments, string $issueUrl): string {
+function intake_build_telegram_message(string $heading, string $name, string $company, string $contact, string $topic, array $attachments, string $issueUrl): string {
     $e = 'intake_escape_markdown';
-    $lines = ['*Новая заявка «Excel → приложение»*'];
+    $lines = ['*Новая заявка «' . $heading . '»*'];
     if ($name !== '')    $lines[] = '👤 *Имя:* ' . $e($name);
     if ($company !== '') $lines[] = '🏢 *Компания:* ' . $e($company);
     if ($contact !== '') $lines[] = '📬 *Контакт:* ' . $e($contact);
