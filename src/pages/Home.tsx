@@ -1306,6 +1306,44 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* 15. FAQ / disambiguation (issue #387) */}
+      <section id="faq" className="py-24 border-t border-slate-200 dark:border-slate-900">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400 text-sm font-medium mb-6">
+              <MessageSquare size={14} />
+              <span>Частые вопросы</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold">Интеграм — коротко о главном</h2>
+          </div>
+
+          <div className="space-y-4">
+            {[
+              {
+                q: 'Интеграм — это Инстаграм?',
+                a: 'Нет. Интеграм — российская платформа для создания приложений и баз данных без программирования. Это не социальная сеть и не имеет отношения к Instagram. Правильное название — Интеграм (Integram).',
+              },
+              {
+                q: 'Что такое Интеграм?',
+                a: 'No-code конструктор приложений и баз данных: из Excel-таблицы — рабочее веб-приложение с формами, правами доступа и отчётами, без программистов и долгого внедрения. Включён в реестр отечественного ПО.',
+              },
+              {
+                q: 'Чем Интеграм отличается от Excel и Airtable?',
+                a: 'Реляционные данные, сотни тысяч записей, права доступа на уровне строк и столбцов, локальное развёртывание в контуре заказчика — там, где Excel, Google Sheets и Airtable упираются в лимиты.',
+              },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/30"
+              >
+                <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-2">{item.q}</h3>
+                <p className="text-slate-500 dark:text-slate-400 leading-relaxed">{item.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
