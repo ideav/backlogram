@@ -83,6 +83,39 @@ const sectionsHtml = sections
   )
   .join('')
 
+// ───────────────────────────────────────────────────────────────────────────
+//  FAQ-дизамбигуация (issue #387). Первый вопрос явно разводит «Интеграм» и
+//  «Инстаграм», чтобы поисковик и пользователи не путали бренд с соцсетью.
+//  Эти же пары идут в разметку FAQPage ниже и зеркалят секцию в src/pages/Home.tsx.
+// ───────────────────────────────────────────────────────────────────────────
+const faq = [
+  {
+    q: 'Интеграм — это Инстаграм?',
+    a: 'Нет. Интеграм — российская платформа для создания приложений и баз данных без программирования. Это не социальная сеть и не имеет отношения к Instagram. Правильное название — Интеграм (Integram).',
+  },
+  {
+    q: 'Что такое Интеграм?',
+    a: 'No-code конструктор приложений и баз данных: из Excel-таблицы — рабочее веб-приложение с формами, правами доступа и отчётами, без программистов и долгого внедрения. Включён в реестр отечественного ПО.',
+  },
+  {
+    q: 'Чем Интеграм отличается от Excel и Airtable?',
+    a: 'Реляционные данные, сотни тысяч записей, права доступа на уровне строк и столбцов, локальное развёртывание в контуре заказчика — там, где Excel, Google Sheets и Airtable упираются в лимиты.',
+  },
+]
+
+const faqHtml = `
+      <section class="lp-prerender__group" aria-labelledby="lp-faq-title">
+        <h2 id="lp-faq-title">Частые вопросы</h2>
+        ${faq
+          .map(
+            (item) => `<div class="lp-prerender__faq-item">
+          <h3>${escape(item.q)}</h3>
+          <p>${escape(item.a)}</p>
+        </div>`
+          )
+          .join('\n        ')}
+      </section>`
+
 const bodyHtml = `
 <article id="lp-prerender" itemscope itemtype="https://schema.org/SoftwareApplication">
   <header>
@@ -97,6 +130,7 @@ const bodyHtml = `
     </p>
   </header>
   ${sectionsHtml}
+  ${faqHtml}
   <footer class="lp-prerender__footer">
     <p class="lp-prerender__registry">
       <span>В реестре отечественного ПО</span>
@@ -117,6 +151,8 @@ const bodyHtml = `
   #lp-prerender .lp-prerender__eyebrow { text-transform: uppercase; letter-spacing: 0.1em;
     font-size: 0.72rem; color: #3b82f6; font-weight: 700; margin: 0; }
   #lp-prerender .lp-prerender__lead { font-size: 1.1rem; color: #475569; max-width: 50rem; }
+  #lp-prerender .lp-prerender__faq-item { margin: 1rem 0; }
+  #lp-prerender .lp-prerender__faq-item h3 { font-size: 1.05rem; margin: 0 0 0.25rem; }
   #lp-prerender .lp-prerender__footer { margin-top: 3rem; padding-top: 1.5rem;
     border-top: 1px solid #e2e8f0; font-size: 0.92rem; color: #475569; }
   #lp-prerender .lp-prerender__registry span,
@@ -152,8 +188,23 @@ const jsonLd = {
       '@type': 'Organization',
       '@id': `${SITE}/#organization`,
       name: PUBLISHER,
+      legalName: 'АО «Интеграм»',
+      // alternateName + description помогают поисковику распознать «Интеграм»
+      // как самостоятельный бренд и не «исправлять» запрос на «инстаграм» (issue #387).
+      alternateName: ['Конструктор Интеграм', 'Integram'],
+      description:
+        'Интеграм — российский no-code конструктор приложений и баз данных (не социальная сеть). Из Excel — рабочее веб-приложение с формами, правами доступа и отчётами.',
       url: `${SITE}/`,
       logo: { '@type': 'ImageObject', url: `${SITE}/logos/integram-og.png` },
+      // sameAs — авторитетные профили бренда: они «замыкают контур» сущности для
+      // Knowledge Graph. После создания элемента Wikidata добавить его URL сюда
+      // (см. docs/issue-387-konstruktor-integram-rf.md, раздел D2).
+      sameAs: [
+        'https://integram.io',
+        'https://reestr.digital.gov.ru/reestr/4638631/',
+        'https://rutube.ru/channel/41204904/videos/',
+        'https://blog.ideav.ru/',
+      ],
     },
     {
       '@type': 'SoftwareApplication',
@@ -166,6 +217,16 @@ const jsonLd = {
       description:
         'Российский no-code конструктор для создания внутренних приложений, баз данных, форм и отчётов без программирования. Аналог Airtable, замена Excel и Google Sheets.',
       publisher: { '@id': `${SITE}/#organization` },
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${SITE}/#faq`,
+      inLanguage: 'ru',
+      mainEntity: faq.map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: { '@type': 'Answer', text: item.a },
+      })),
     },
   ],
 }
