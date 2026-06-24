@@ -139,6 +139,73 @@ test('end-to-end: form upload creates issue, attaches file, notifies Telegram', 
   }
 })
 
+test('end-to-end: catalog-matching source uses its own wording and accepts two files', async () => {
+  // Issue #389: the catalog-matching form reuses this A2 handler but must read
+  // as «Сопоставление каталогов», not «Excel → приложение», and accept the two
+  // optional catalogs (our SKU + the counterparty's RFP).
+  const mockPort = await getFreePort()
+  const appPort = await getFreePort()
+  const workdir = mkdtempSync(join(tmpdir(), 'catalog-matching-e2e-'))
+  const mockLog = join(workdir, 'mock.log')
+
+  const mockProc = spawn('php', ['-S', `127.0.0.1:${mockPort}`, join(root, 'tests/fixtures/intake-mock-api.php')], {
+    env: { ...process.env, MOCK_LOG: mockLog },
+    stdio: 'ignore',
+  })
+
+  const appProc = spawn('php', ['-S', `127.0.0.1:${appPort}`, '-t', join(root, 'public')], {
+    env: {
+      ...process.env,
+      INTAKE_SKIP_HOST_CHECK: '1',
+      SMARTCAPTCHA_SERVER_KEY: '',
+      GITHUB_TOKEN: 'test-token',
+      GITHUB_ISSUE_REPO: 'mock/repo',
+      GITHUB_UPLOAD_REPO: 'mock/repo',
+      GITHUB_API_BASE: `http://127.0.0.1:${mockPort}`,
+      TELEGRAM_BOT_TOKEN: 'bot:test',
+      TELEGRAM_CHAT_ID: '123',
+      TELEGRAM_API_BASE: `http://127.0.0.1:${mockPort}`,
+      INTAKE_RATE_LIMIT_DIR: join(workdir, 'rl'),
+    },
+    stdio: 'ignore',
+  })
+
+  try {
+    await waitForPort(mockPort)
+    await waitForPort(appPort)
+
+    const form = new FormData()
+    form.set('source', 'catalog-matching')
+    form.set('contact', 'buyer@example.com')
+    form.set('task', 'Подобрать наши аналоги к 22 000 позиций контрагента')
+    form.append('files[]', new Blob(['a;b\n1;2\n'], { type: 'text/csv' }), 'SKU-our.csv')
+    form.append('files[]', new Blob(['c;d\n3;4\n'], { type: 'text/csv' }), 'RFP-their.csv')
+
+    const res = await fetch(`http://127.0.0.1:${appPort}/excel-to-app.php`, { method: 'POST', body: form })
+    const json = await res.json()
+
+    assert.equal(res.status, 200, `expected 200, got ${res.status}: ${JSON.stringify(json)}`)
+    assert.equal(json.ok, true, JSON.stringify(json))
+    assert.equal(json.attachments, 2, 'both catalogs should be uploaded')
+
+    const log = existsSync(mockLog) ? readFileSync(mockLog, 'utf8').trim().split('\n').filter(Boolean).map(l => JSON.parse(l)) : []
+    const puts = log.filter(e => e.method === 'PUT' && e.path.includes('/contents/'))
+    const postIssue = log.find(e => e.method === 'POST' && e.path.endsWith('/issues'))
+
+    assert.equal(puts.length, 2, 'both catalogs should be committed via the Contents API')
+    assert.ok(puts.every(p => /orders\//.test(p.path)), 'attachments should land under orders/')
+    assert.ok(postIssue, 'an issue should be created')
+    // The issue payload JSON escapes Cyrillic as \uXXXX — decode before matching.
+    const issuePayload = JSON.parse(postIssue.body)
+    assert.match(`${issuePayload.title}\n${issuePayload.body}`, /Сопоставление каталогов/, 'issue should use the catalog-matching wording')
+    assert.doesNotMatch(`${issuePayload.title}\n${issuePayload.body}`, /Excel → приложение/, 'issue should not read as an Excel→app order')
+  } finally {
+    mockProc.kill()
+    appProc.kill()
+    rmSync(workdir, { recursive: true, force: true })
+  }
+})
+
 test('end-to-end: missing contact is rejected with 400', async () => {
   const appPort = await getFreePort()
   const appProc = spawn('php', ['-S', `127.0.0.1:${appPort}`, '-t', join(root, 'public')], {

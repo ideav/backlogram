@@ -20,6 +20,8 @@ import {
   ListChecks,
   Play,
   Send,
+  Paperclip,
+  Trash2,
 } from 'lucide-react'
 
 declare global {
@@ -41,12 +43,31 @@ declare global {
 type FormState = 'idle' | 'sending' | 'success' | 'error'
 
 const CAPTCHA_CLIENT_KEY = (import.meta.env.VITE_SMARTCAPTCHA_CLIENT_KEY as string | undefined) ?? ''
-// Тот же бэкенд-обработчик, что и у формы на главной: проверяет same-host + капчу
-// и отправляет заявку в Telegram. Поле source отличает заявку с этой страницы.
-const SUBMIT_ENDPOINT = '/telegram-notify.php'
+// Общий обработчик приёма заявок (A2): принимает multipart-форму, коммитит
+// вложения в каталог orders/ репозитория на GitHub, заводит issue со ссылками
+// на файлы и шлёт уведомление в Telegram. Поле source = 'catalog-matching'
+// отличает заявку с этой страницы (см. public/excel-to-app.php).
+const SUBMIT_ENDPOINT = '/excel-to-app.php'
+
+// Два каталога — необязательные вложения (#389): свой каталог (SKU) и каталог
+// контрагента (RFP). Те же форматы и лимиты, что и на /excel-to-app.html.
+const ACCEPTED_EXTENSIONS = ['.xlsx', '.xls', '.csv', '.ods']
+const ACCEPT_ATTR = ACCEPTED_EXTENSIONS.join(',')
+const MAX_FILE_BYTES = 25 * 1024 * 1024
 
 function hasIdbCookie(): boolean {
   return document.cookie.split(';').some((c) => c.trimStart().startsWith('idb_'))
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} Б`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} КБ`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} МБ`
+}
+
+function hasAcceptedExtension(name: string): boolean {
+  const lower = name.toLowerCase()
+  return ACCEPTED_EXTENSIONS.some((ext) => lower.endsWith(ext))
 }
 
 const SITE = 'https://ideav.ru'
@@ -185,6 +206,69 @@ const pillars = [
   },
 ]
 
+// Один необязательный файл-каталог: пустое состояние — кликабельная зона
+// «Прикрепить файл», заполненное — имя файла, размер и кнопка «убрать».
+function CatalogFileInput({
+  id,
+  label,
+  hint,
+  file,
+  onPick,
+  onClear,
+}: {
+  id: string
+  label: string
+  hint: string
+  file: File | null
+  onPick: (file: File | undefined) => void
+  onClear: () => void
+}) {
+  return (
+    <div>
+      <label
+        htmlFor={id}
+        className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1"
+      >
+        {label}
+      </label>
+      {file ? (
+        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+          <FileSpreadsheet size={18} className="text-green-600 dark:text-green-400 shrink-0" />
+          <span className="flex-1 truncate text-sm text-slate-700 dark:text-slate-200">{file.name}</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500 shrink-0">{formatBytes(file.size)}</span>
+          <button
+            type="button"
+            onClick={onClear}
+            aria-label={`Убрать файл ${file.name}`}
+            className="text-slate-400 hover:text-red-500 transition-colors shrink-0"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
+      ) : (
+        <label
+          htmlFor={id}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-600 bg-white dark:bg-slate-950 cursor-pointer transition-colors"
+        >
+          <Paperclip size={16} className="text-blue-500 shrink-0" />
+          <span className="text-sm text-slate-600 dark:text-slate-300">Прикрепить файл</span>
+          <span className="ml-auto text-xs text-slate-400 dark:text-slate-500">{hint}</span>
+        </label>
+      )}
+      <input
+        id={id}
+        type="file"
+        accept={ACCEPT_ATTR}
+        className="sr-only"
+        onChange={(e) => {
+          onPick(e.target.files?.[0])
+          e.target.value = ''
+        }}
+      />
+    </div>
+  )
+}
+
 export default function CatalogMatching() {
   useEffect(() => {
     document.title = PAGE_TITLE
@@ -214,6 +298,8 @@ export default function CatalogMatching() {
   const [consentChecked, setConsentChecked] = useState(false)
   const [captchaToken, setCaptchaToken] = useState('')
   const [isCaptchaRequested, setIsCaptchaRequested] = useState(false)
+  const [ourCatalog, setOurCatalog] = useState<File | null>(null)
+  const [theirCatalog, setTheirCatalog] = useState<File | null>(null)
   const [idbCookieFound] = useState(() => hasIdbCookie())
   const captchaContainerRef = useRef<HTMLDivElement>(null)
   const captchaWidgetIdRef = useRef<number | null>(null)
@@ -250,39 +336,76 @@ export default function CatalogMatching() {
     }
   }, [isCaptchaRequested, idbCookieFound])
 
+  // Проверка и приём одного прикреплённого каталога (оба поля необязательные).
+  function pickCatalogFile(file: File | undefined, setFile: (f: File | null) => void) {
+    if (!file) return
+    setIsCaptchaRequested(true)
+    if (!hasAcceptedExtension(file.name)) {
+      setErrorMsg(`Поддерживаются только таблицы: ${ACCEPTED_EXTENSIONS.join(', ')}.`)
+      setFormState('error')
+      return
+    }
+    if (file.size > MAX_FILE_BYTES) {
+      setErrorMsg(`Файл должен быть не больше ${formatBytes(MAX_FILE_BYTES)}.`)
+      setFormState('error')
+      return
+    }
+    if (formState === 'error') {
+      setFormState('idle')
+      setErrorMsg('')
+    }
+    setFile(file)
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const form = e.currentTarget
-    const data: Record<string, string> = {
-      source:  'catalog-matching',
-      name:    (form.elements.namedItem('name')    as HTMLInputElement).value,
-      company: (form.elements.namedItem('company') as HTMLInputElement).value,
-      contact: (form.elements.namedItem('contact') as HTMLInputElement).value,
-      task:    (form.elements.namedItem('task')    as HTMLTextAreaElement).value,
+    const name    = (form.elements.namedItem('name')    as HTMLInputElement).value.trim()
+    const company = (form.elements.namedItem('company') as HTMLInputElement).value.trim()
+    const contact = (form.elements.namedItem('contact') as HTMLInputElement).value.trim()
+    const task    = (form.elements.namedItem('task')    as HTMLTextAreaElement).value.trim()
+
+    if (!contact) {
+      setErrorMsg('Укажите контакт — email или Telegram, куда прислать результат.')
+      setFormState('error')
+      return
     }
 
-    if (CAPTCHA_CLIENT_KEY && !idbCookieFound) {
-      if (!captchaToken) {
-        setErrorMsg('Пожалуйста, пройдите проверку капчи.')
-        setFormState('error')
-        return
-      }
-      data.captcha_token = captchaToken
+    const captchaActive = Boolean(CAPTCHA_CLIENT_KEY) && !idbCookieFound
+    if (captchaActive && !captchaToken) {
+      setErrorMsg('Пожалуйста, пройдите проверку капчи.')
+      setFormState('error')
+      return
     }
 
     setFormState('sending')
     setErrorMsg('')
 
+    const payload = new FormData()
+    payload.append('source', 'catalog-matching')
+    payload.append('name', name)
+    payload.append('company', company)
+    payload.append('contact', contact)
+    payload.append('task', task)
+    if (captchaActive) {
+      payload.append('captcha_token', captchaToken)
+    }
+    // Имя файла кодирует роль каталога, чтобы её было видно в orders/ и в issue:
+    // SKU — наш каталог, RFP — каталог контрагента. Оба вложения необязательны.
+    if (ourCatalog)   payload.append('files[]', ourCatalog,   `SKU-${ourCatalog.name}`)
+    if (theirCatalog) payload.append('files[]', theirCatalog, `RFP-${theirCatalog.name}`)
+
     try {
       const res = await fetch(SUBMIT_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: payload,
       })
-      const json = await res.json()
-      if (json.ok) {
+      const json = await res.json().catch(() => ({ ok: false }))
+      if (res.ok && json.ok) {
         setFormState('success')
         form.reset()
+        setOurCatalog(null)
+        setTheirCatalog(null)
         setConsentChecked(false)
         setCaptchaToken('')
         setIsCaptchaRequested(false)
@@ -600,6 +723,37 @@ export default function CatalogMatching() {
                   rows={3}
                   className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-slate-800 dark:text-slate-100 focus:border-blue-500 outline-none transition-all resize-none"
                   placeholder="Сколько позиций в каждом каталоге, в каком формате (Excel/CSV), какая номенклатура..."
+                />
+              </div>
+
+              {/* Необязательные вложения: два каталога (#389) */}
+              <div className="space-y-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/30 p-4">
+                <div className="flex items-center gap-2">
+                  <Paperclip size={14} className="text-blue-600 dark:text-blue-400" />
+                  <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                    Каталоги{' '}
+                    <span className="font-normal text-slate-400 dark:text-slate-500">— необязательно</span>
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Можно сразу приложить оба файла — посмотрим объём и формат заранее.{' '}
+                  {ACCEPTED_EXTENSIONS.join(', ')} · до {formatBytes(MAX_FILE_BYTES)} каждый.
+                </p>
+                <CatalogFileInput
+                  id="cm-our-catalog"
+                  label="Ваш каталог (SKU)"
+                  hint="ваши артикулы"
+                  file={ourCatalog}
+                  onPick={(f) => pickCatalogFile(f, setOurCatalog)}
+                  onClear={() => setOurCatalog(null)}
+                />
+                <CatalogFileInput
+                  id="cm-their-catalog"
+                  label="Каталог контрагента (RFP)"
+                  hint="куда ищем соответствия"
+                  file={theirCatalog}
+                  onPick={(f) => pickCatalogFile(f, setTheirCatalog)}
+                  onClear={() => setTheirCatalog(null)}
                 />
               </div>
 
