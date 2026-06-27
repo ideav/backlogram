@@ -9,16 +9,28 @@ export async function getStaticPaths() {
   const ascending = [...all].sort(
     (a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf()
   )
-  return ascending.map((post, i) => ({
-    params: { slug: post.id },
-    props: {
-      post,
-      issueNumber: String(i + 1).padStart(3, '0'),
-    },
-  }))
+  return ascending.map((post, i) => {
+    const nextPost = ascending[i + 1]
+    return {
+      params: { slug: post.id },
+      props: {
+        post,
+        issueNumber: String(i + 1).padStart(3, '0'),
+        // Next issue in reading order (chronological), so posts can be read in
+        // sequence. Null for the latest post, which has nothing after it.
+        next: nextPost
+          ? {
+              slug: nextPost.id,
+              title: nextPost.data.title,
+              issueNumber: String(i + 2).padStart(3, '0'),
+            }
+          : null,
+      },
+    }
+  })
 }
 
-const { post, issueNumber } = Astro.props
+const { post, issueNumber, next } = Astro.props
 const { Content } = await render(post)
 
 const formattedDate = post.data.pubDate
@@ -164,18 +176,46 @@ const initial = post.data.author.charAt(0)
           <Content />
         </div>
 
-        <!-- End marker + return link -->
+        <!-- End marker -->
         <div class="mt-16 pt-8 border-t border-[var(--color-hairline-strong)]">
-          <div class="text-center mb-8">
+          <div class="text-center">
             <span class="text-[var(--color-vermilion)] text-2xl" style="font-family: var(--font-serif);">❡</span>
           </div>
-          <div class="flex items-center justify-between">
-            <a href="/" class="eyebrow link-swipe text-[var(--color-ink)]">
-              ← Все выпуски
-            </a>
-            <div class="eyebrow text-[var(--color-ink-faint)]">
-              Выпуск №&nbsp;{issueNumber}
+        </div>
+
+        <!-- Next issue — keep reading in sequence -->
+        {next && (
+          <a
+            href={`/posts/${next.slug}/`}
+            rel="next"
+            class="group block mt-10 pt-8 border-t border-[var(--color-hairline)] no-underline"
+          >
+            <div class="flex items-baseline justify-between gap-4 mb-3">
+              <span class="eyebrow text-[var(--color-ink-faint)]">Следующий выпуск</span>
+              <span class="eyebrow text-[var(--color-vermilion)]">№&nbsp;{next.issueNumber}</span>
             </div>
+            <div class="flex items-start justify-between gap-6">
+              <h2
+                class="font-[family-name:var(--font-serif)] text-2xl sm:text-[2rem] leading-[1.1] tracking-[-0.02em] text-[var(--color-ink)] transition-colors group-hover:text-[var(--color-vermilion)]"
+                style="font-variation-settings: 'opsz' 80, 'SOFT' 30; font-weight: 500;"
+              >
+                {next.title}
+              </h2>
+              <span
+                class="text-[var(--color-vermilion)] text-3xl leading-none shrink-0 transition-transform group-hover:translate-x-1"
+                aria-hidden="true"
+              >→</span>
+            </div>
+          </a>
+        )}
+
+        <!-- Return link -->
+        <div class="mt-12 pt-8 border-t border-[var(--color-hairline)] flex items-center justify-between">
+          <a href="/" class="eyebrow link-swipe text-[var(--color-ink)]">
+            ← Все выпуски
+          </a>
+          <div class="eyebrow text-[var(--color-ink-faint)]">
+            Выпуск №&nbsp;{issueNumber}
           </div>
         </div>
 
