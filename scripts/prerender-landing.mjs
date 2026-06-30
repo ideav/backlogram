@@ -181,6 +181,11 @@ const jsonLd = {
       '@id': `${SITE}/#website`,
       url: `${SITE}/`,
       name: PUBLISHER,
+      // alternateName зеркалит Organization: связывает имя сайта с «Integram» и
+      // «Конструктор Интеграм», помогая Google не путать домен с «Инстаграм» при
+      // автодополнении (issue #395). SearchAction не добавляем — у сайта нет
+      // URL-адресуемого поиска (?q=…), а Google требует рабочий target.
+      alternateName: ['Integram', 'Конструктор Интеграм'],
       inLanguage: 'ru',
       publisher: { '@id': `${SITE}/#organization` },
     },
@@ -216,6 +221,16 @@ const jsonLd = {
       inLanguage: 'ru',
       description:
         'Российский no-code конструктор для создания внутренних приложений, баз данных, форм и отчётов без программирования. Аналог Airtable, замена Excel и Google Sheets.',
+      // offers — бесплатный тариф «Знакомство» (см. секцию «Тарифы» выше). Закрывает
+      // non-critical замечание Google «Missing field offers» и даёт цену в rich snippet
+      // (issue #395). aggregateRating сознательно НЕ добавляем — нет реальных отзывов,
+      // фиктивный рейтинг нарушает правила Google по разметке отзывов.
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'RUB',
+        description: 'Пробный тариф «Знакомство»',
+      },
       publisher: { '@id': `${SITE}/#organization` },
     },
     {

@@ -45,6 +45,19 @@ test('prerender-landing fills #root and injects SEO head tags into dist/index.ht
   assert.match(out, /<meta property="og:title"/)
   assert.match(out, /application\/ld\+json/)
   assert.match(out, /"@type":"SoftwareApplication"/)
+
+  // issue #395: SoftwareApplication carries a free-tier Offer, and the WebSite
+  // node mirrors Organization's alternateName for brand disambiguation. No
+  // aggregateRating (no real reviews) and no SearchAction (no search endpoint).
+  const ld = JSON.parse(
+    out.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1].replace(/\\u003c/g, '<'),
+  )
+  const node = (t) => ld['@graph'].find((n) => n['@type'] === t)
+  assert.deepEqual(node('WebSite').alternateName, ['Integram', 'Конструктор Интеграм'])
+  assert.equal(node('SoftwareApplication').offers.price, '0')
+  assert.equal(node('SoftwareApplication').offers.priceCurrency, 'RUB')
+  assert.ok(!('aggregateRating' in node('SoftwareApplication')), 'must not invent aggregateRating')
+  assert.ok(!JSON.stringify(ld).includes('SearchAction'), 'no SearchAction without a search endpoint')
 })
 
 test('prerender-landing is idempotent (safe to run twice)', () => {
