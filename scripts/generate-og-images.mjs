@@ -256,4 +256,31 @@ for (const article of knowledgeBaseArticles) {
   console.log(`✓ public/og/${article.slug}.png`)
 }
 
-console.log(`\nDone: ${knowledgeBaseArticles.length + 1} OG cards generated`)
+// 3. Homepage social banner — distinct from the knowledge-base cover so the
+//    landing page no longer borrows the KB image as its og:image.
+await render(
+  cardJSX({
+    eyebrow: 'Интеграм · no-code конструктор',
+    title: 'Из Excel — рабочее приложение за час',
+    subtitle:
+      'Пришлите таблицу — получите веб-приложение с формами, правами доступа и отчётами. Без программистов, 1С и долгого внедрения.',
+  }),
+  resolve(outDir, 'home.png')
+)
+console.log(`✓ public/og/home.png`)
+
+// 4. Organization logo referenced from JSON-LD (Organization.logo). The file
+//    was missing, so structured data pointed at a 404; generate it here.
+const logosDir = resolve(root, 'public/logos')
+mkdirSync(logosDir, { recursive: true })
+await render(
+  cardJSX({
+    eyebrow: 'reestr.digital.gov.ru',
+    title: 'Интеграм',
+    subtitle: 'Российский no-code конструктор приложений и баз данных.',
+  }),
+  resolve(logosDir, 'integram-og.png')
+)
+console.log(`✓ public/logos/integram-og.png`)
+
+console.log(`\nDone: ${knowledgeBaseArticles.length + 3} OG cards generated`)
