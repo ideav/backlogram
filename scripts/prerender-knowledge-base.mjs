@@ -345,30 +345,44 @@ for (const article of knowledgeBaseArticles) {
   const articleImage = `/og/${article.slug}.png`
   const articleImageAlt = `Обложка статьи: ${article.shortTitle || article.title}`
 
+  const breadcrumbName = article.shortTitle || article.title
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'TechArticle',
-    '@id': `${url}#article`,
-    headline: title,
-    name: article.title,
-    description,
-    image: `${SITE}${articleImage}`,
-    url,
-    inLanguage: 'ru',
-    dateModified: todayISO,
-    author: { '@type': 'Organization', name: PUBLISHER, url: SITE },
-    publisher: {
-      '@type': 'Organization',
-      name: PUBLISHER,
-      url: SITE,
-      logo: { '@type': 'ImageObject', url: `${SITE}/logos/integram-og.png` },
-    },
-    isPartOf: {
-      '@type': 'CollectionPage',
-      name: 'База знаний',
-      url: `${SITE}/knowledge-base.html`,
-    },
-    mainEntityOfPage: url,
+    '@graph': [
+      {
+        '@type': 'TechArticle',
+        '@id': `${url}#article`,
+        headline: title,
+        name: article.title,
+        description,
+        image: `${SITE}${articleImage}`,
+        url,
+        inLanguage: 'ru',
+        dateModified: todayISO,
+        author: { '@type': 'Organization', name: PUBLISHER, url: SITE },
+        publisher: {
+          '@type': 'Organization',
+          name: PUBLISHER,
+          url: SITE,
+          logo: { '@type': 'ImageObject', url: `${SITE}/logos/integram-og.png` },
+        },
+        isPartOf: {
+          '@type': 'CollectionPage',
+          name: 'База знаний',
+          url: `${SITE}/knowledge-base.html`,
+        },
+        mainEntityOfPage: url,
+      },
+      {
+        '@type': 'BreadcrumbList',
+        '@id': `${url}#breadcrumb`,
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: PUBLISHER, item: `${SITE}/` },
+          { '@type': 'ListItem', position: 2, name: 'База знаний', item: `${SITE}/knowledge-base.html` },
+          { '@type': 'ListItem', position: 3, name: breadcrumbName, item: url },
+        ],
+      },
+    ],
   }
 
   const contextHtml = article.context
@@ -391,9 +405,36 @@ for (const article of knowledgeBaseArticles) {
       </section>`
     : ''
 
+  // Lateral interlinking: surface the editorially-curated related articles so
+  // crawlers (and no-JS readers) get the same in-cluster links the SPA renders.
+  const relatedArticles = (article.relatedSlugs ?? [])
+    .map((s) => articlesBySlug.get(s))
+    .filter(Boolean)
+    .slice(0, 5)
+  const relatedHtml = relatedArticles.length
+    ? `<nav class="kb-article__related" aria-label="Похожие статьи">
+        <h2>Похожие статьи</h2>
+        <ul>${relatedArticles
+          .map(
+            (r) => `
+          <li><a href="/knowledge-base/${escape(r.slug)}.html">${escape(r.shortTitle || r.title)}</a></li>`
+          )
+          .join('')}</ul>
+      </nav>`
+    : ''
+
+  // Conversion path: every article ends with a route to the main funnel.
+  const ctaHtml = `<aside class="kb-article__cta">
+    <h2>Из вашего Excel — рабочее приложение</h2>
+    <p>Пришлите таблицу — получите веб-приложение с формами, правами доступа и отчётами примерно за 45 минут. Без программистов, 1С и долгого внедрения.</p>
+    <a class="kb-article__cta-btn" href="/excel-to-app.html">Загрузите Excel — получите приложение →</a>
+  </aside>`
+
   const articleBody = `
 <article id="kb-prerender" itemscope itemtype="https://schema.org/TechArticle">
-  <nav class="kb-article__nav"><a href="/knowledge-base.html">← База знаний</a></nav>
+  <nav class="kb-article__nav" aria-label="Хлебные крошки">
+    <a href="/">Интеграм</a> › <a href="/knowledge-base.html">База знаний</a> › <span>${escape(article.shortTitle || article.title)}</span>
+  </nav>
   <header>
     <p class="kb-prerender__eyebrow">${escape(article.compare ? `Сравнение с ${article.compare}` : 'База знаний')}</p>
     <h1 itemprop="headline">${escape(article.title)}</h1>
@@ -406,6 +447,8 @@ for (const article of knowledgeBaseArticles) {
   ${contextHtml}
   ${scenarioHtml}
   ${integramHtml}
+  ${ctaHtml}
+  ${relatedHtml}
   <footer class="kb-prerender__footer">
     <a href="/knowledge-base.html">← Все статьи базы знаний</a>
   </footer>
@@ -416,8 +459,20 @@ for (const article of knowledgeBaseArticles) {
   #kb-prerender h1 { font-size: 2rem; line-height: 1.15; margin: 0.4rem 0 1rem; }
   #kb-prerender h2 { font-size: 1.25rem; margin: 2rem 0 0.5rem; }
   #kb-prerender p  { margin: 0.6rem 0; }
-  #kb-prerender .kb-article__nav { margin-bottom: 1.5rem; font-size: 0.92rem; }
+  #kb-prerender .kb-article__nav { margin-bottom: 1.5rem; font-size: 0.92rem; color: #64748b; }
   #kb-prerender .kb-article__nav a { color: #3b82f6; text-decoration: none; }
+  #kb-prerender .kb-article__cta { margin: 2.5rem 0 0; padding: 1.5rem; border: 1px solid #bfdbfe;
+    border-radius: 0.75rem; background: #eff6ff; }
+  #kb-prerender .kb-article__cta h2 { margin: 0 0 0.5rem; font-size: 1.2rem; }
+  #kb-prerender .kb-article__cta p { margin: 0 0 1rem; color: #475569; }
+  #kb-prerender .kb-article__cta-btn { display: inline-block; padding: 0.7rem 1.25rem;
+    background: #2563eb; color: #fff; border-radius: 0.5rem; text-decoration: none; font-weight: 600; }
+  #kb-prerender .kb-article__related { margin: 2.5rem 0 0; }
+  #kb-prerender .kb-article__related h2 { font-size: 1.2rem; margin: 0 0 0.75rem; }
+  #kb-prerender .kb-article__related ul { list-style: none; padding: 0; margin: 0;
+    display: grid; gap: 0.4rem; }
+  #kb-prerender .kb-article__related a { color: #2563eb; text-decoration: none; }
+  #kb-prerender .kb-article__related a:hover { text-decoration: underline; }
   #kb-prerender .kb-prerender__eyebrow { text-transform: uppercase; letter-spacing: 0.1em;
     font-size: 0.72rem; color: #3b82f6; font-weight: 700; margin: 0; }
   #kb-prerender .kb-prerender__lead { font-size: 1.15rem; color: #334155; margin: 0.8rem 0 1.5rem; }
@@ -439,6 +494,10 @@ for (const article of knowledgeBaseArticles) {
   .dark #kb-prerender .kb-prerender__lead { color: #cbd5e1; }
   .dark #kb-prerender .kb-prerender__cover { border-color: #1e293b; }
   .dark #kb-prerender .kb-prerender__footer { border-color: #1e293b; }
+  .dark #kb-prerender .kb-article__nav { color: #94a3b8; }
+  .dark #kb-prerender .kb-article__cta { background: #0f1e3a; border-color: #1e3a8a; }
+  .dark #kb-prerender .kb-article__cta p { color: #cbd5e1; }
+  .dark #kb-prerender .kb-article__related a { color: #60a5fa; }
 </style>`
 
   const html = patchHtml({

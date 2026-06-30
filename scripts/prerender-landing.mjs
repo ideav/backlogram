@@ -250,7 +250,7 @@ const canonical = `${SITE}/`
 const ogTitle = 'Из Excel — приложение за час | Интеграм'
 const ogDescription =
   'Пришлите Excel — получите рабочее веб-приложение с формами, доступами и отчётами. Понятно бухгалтеру, логисту, начальнику цеха — без программистов, 1С и долгого внедрения.'
-const ogImage = `${SITE}/og/knowledge-base.png`
+const ogImage = `${SITE}/og/home.png`
 
 const headTags = [
   `<link rel="canonical" href="${escape(canonical)}" />`,
