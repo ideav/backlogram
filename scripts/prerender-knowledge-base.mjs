@@ -163,14 +163,15 @@ const distIndex = readFileSync(resolve(dist, 'index.html'), 'utf8')
  * Patch the SPA template with per-page <title>, description, canonical,
  * Open Graph / Twitter / JSON-LD, and the prerendered #root body.
  */
-function patchHtml({ title, description, canonical, ogType, ogImage, jsonLd, bodyHtml, keywords }) {
-  const ogDesc = trim(description, 300)
+function patchHtml({ title, description, ogTitle, ogDescription, canonical, ogType, ogImage, jsonLd, bodyHtml, keywords }) {
+  const ogHeadline = ogTitle || title
+  const ogDesc = trim(ogDescription || description, 300)
   const image = ogImage || `${SITE}/og/knowledge-base.png`
   const tags = [
     `<link rel="canonical" href="${escape(canonical)}" />`,
     `<meta property="og:type" content="${escape(ogType)}" />`,
     `<meta property="og:url" content="${escape(canonical)}" />`,
-    `<meta property="og:title" content="${escape(title)}" />`,
+    `<meta property="og:title" content="${escape(ogHeadline)}" />`,
     `<meta property="og:description" content="${escape(ogDesc)}" />`,
     `<meta property="og:image" content="${escape(image)}" />`,
     `<meta property="og:image:width" content="1200" />`,
@@ -178,7 +179,7 @@ function patchHtml({ title, description, canonical, ogType, ogImage, jsonLd, bod
     `<meta property="og:locale" content="ru_RU" />`,
     `<meta property="og:site_name" content="${PUBLISHER}" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
-    `<meta name="twitter:title" content="${escape(title)}" />`,
+    `<meta name="twitter:title" content="${escape(ogHeadline)}" />`,
     `<meta name="twitter:description" content="${escape(ogDesc)}" />`,
     `<meta name="twitter:image" content="${escape(image)}" />`,
     `<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`,
@@ -503,6 +504,8 @@ for (const article of knowledgeBaseArticles) {
   const html = patchHtml({
     title,
     description: trim(description, 300),
+    ogTitle,
+    ogDescription,
     canonical: url,
     ogType: 'article',
     ogImage: `${SITE}${articleImage}`,
