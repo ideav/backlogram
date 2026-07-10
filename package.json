@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "vite",
     "test": "node --test tests/*.test.mjs",
-    "build": "node scripts/generate-og-images.mjs && vite build && node scripts/prerender-knowledge-base.mjs && node scripts/prerender-excel-to-app.mjs && node scripts/prerender-agent-platforms.mjs && node scripts/prerender-catalog-matching.mjs && node scripts/prerender-landing.mjs",
+    "build": "node scripts/generate-og-images.mjs && vite build && node scripts/prerender-knowledge-base.mjs && node scripts/prerender-excel-to-app.mjs && node scripts/prerender-agent-platforms.mjs && node scripts/prerender-catalog-matching.mjs && node scripts/prerender-information-system.mjs && node scripts/prerender-landing.mjs",
     "og-images": "node scripts/generate-og-images.mjs",
     "preview": "vite preview"
   },
