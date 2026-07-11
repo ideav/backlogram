@@ -21,6 +21,7 @@ export function Header() {
 
   // «Ещё...» — раскрывающийся список: сюда складываем новое и интересное
   const moreLinks = [
+    { name: 'Информационная система', href: '/informatsionnaya-sistema.html' },
     { name: 'Excel → приложение', href: '/excel-to-app.html' },
     { name: 'Сопоставление каталогов', href: '/catalog-matching.html' },
     {
