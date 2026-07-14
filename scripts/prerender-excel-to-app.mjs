@@ -165,6 +165,9 @@ const canonical = `${SITE}${PATH}`
 const ogTitle = 'Загрузите Excel — получите приложение за ~45 минут | Интеграм'
 const ogDescription =
   'Пришлите Excel-файлы и тематику — вернём ссылку на готовое веб-приложение на платформе Интеграм. Замена Excel на приложение без программирования примерно за 45 минут.'
+// SEO: <meta description> ≤ 158 симв. (OG-описание ниже берёт полный ogDescription)
+const metaDescription =
+  'Пришлите Excel-файлы и тематику — вернём ссылку на готовое веб-приложение на платформе Интеграм. Замена Excel на приложение без кода примерно за 45 минут.'
 const ogImage = `${SITE}/og/knowledge-base.png`
 
 const jsonLd = {
@@ -241,7 +244,7 @@ const html = source
   .replace(/<title>[\s\S]*?<\/title>/, `<title>${escape(ogTitle)}</title>`)
   .replace(
     /<meta name="description"[^>]*>/,
-    `<meta name="description" content="${escape(ogDescription)}" />`,
+    `<meta name="description" content="${escape(metaDescription)}" />`,
   )
   .replace('</head>', `    ${headTags}\n  </head>`)
   .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`)

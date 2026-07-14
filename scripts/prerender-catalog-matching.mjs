@@ -153,6 +153,10 @@ const ogTitle =
   'Массовое сопоставление каталогов: сотни тысяч позиций без Elasticsearch и кода — Интеграм'
 const ogDescription =
   'Инструмент массового сопоставления позиций двух каталогов в конструкторе Интеграм: токенизация наименований, пересечение токенов, автоматический подбор в несколько потоков (~120 пар/мин), оценка точности, кандидаты-альтернативы, выгрузка в Excel и доуточнение шорт-листа языковой моделью — без программирования.'
+// SEO: <title> ≤ 60 симв. и <meta description> ≤ 158 (OG-теги ниже берут полные ogTitle/ogDescription)
+const seoTitle = 'Сопоставление каталогов без Elasticsearch | Интеграм'
+const metaDescription =
+  'Массовое сопоставление позиций двух каталогов в Интеграме: токенизация, подбор ~120 пар/мин, оценка точности, кандидаты, выгрузка в Excel — без кода.'
 const ogImage = `${SITE}/og/knowledge-base.png`
 
 const jsonLd = {
@@ -218,10 +222,10 @@ if (!source.includes('<div id="root"></div>')) {
 }
 
 const html = source
-  .replace(/<title>[\s\S]*?<\/title>/, `<title>${escape(ogTitle)}</title>`)
+  .replace(/<title>[\s\S]*?<\/title>/, `<title>${escape(seoTitle)}</title>`)
   .replace(
     /<meta name="description"[^>]*>/,
-    `<meta name="description" content="${escape(ogDescription)}" />`,
+    `<meta name="description" content="${escape(metaDescription)}" />`,
   )
   .replace('</head>', `    ${headTags}\n  </head>`)
   .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`)
