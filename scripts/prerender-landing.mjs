@@ -136,13 +136,10 @@ const bodyHtml = `
       <span>В реестре отечественного ПО</span>
       <strong>Реестровая запись №30872</strong>
     </p>
-    <nav class="lp-prerender__links" aria-label="Разделы сайта">
+    <p>
       <a href="/excel-to-app.html">Загрузить Excel — получить приложение</a> ·
-      <a href="/informatsionnaya-sistema.html">Что такое информационная система</a> ·
-      <a href="/agent-platforms.html">Интеграм против low-code и ИИ-агентов</a> ·
-      <a href="/catalog-matching.html">Сопоставление каталогов и прайсов</a> ·
       <a href="/knowledge-base">База знаний</a>
-    </nav>
+    </p>
   </footer>
 </article>
 <style>
@@ -162,7 +159,6 @@ const bodyHtml = `
   #lp-prerender .lp-prerender__registry strong { display: block; }
   #lp-prerender .lp-prerender__registry span { font-weight: 600; color: #1e293b; }
   #lp-prerender .lp-prerender__registry strong { margin-top: 0.15rem; font-weight: 600; }
-  #lp-prerender .lp-prerender__links { line-height: 1.9; margin: 0.75rem 0 0; }
   /* Dark colours follow the app theme (.dark on <html>, set synchronously by the
      inline <head> script from localStorage) — NOT prefers-color-scheme. The body
      background comes from the bundled CSS keyed on the same .dark class, so the

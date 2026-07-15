@@ -2,27 +2,11 @@
 #
 # This file is copied verbatim by Vite into dist/ and deployed to the web root,
 # so caching ships with a normal build — no server SSH required (assumes the
-# vhost allows AllowOverride FileInfo — confirmed live: the deployed responses
-# already carry the compression + Cache-Control headers set below).
+# vhost allows AllowOverride FileInfo). It only sets response headers and never
+# touches rewrites/routing, so it is additive and safe.
 #
 # NOTE: HTTP/2 cannot be enabled here — it is a server-/vhost-level directive
 # (`Protocols h2 http/1.1`). See docs/server-performance.md.
-
-# ── Canonical host + charset ────────────────────────────────────────────────
-# Advertise the document charset in the HTTP Content-Type header (not just the
-# <meta> tag) for text responses.
-AddDefaultCharset UTF-8
-
-# Redirect the www. host to the bare canonical host with a 301 so search
-# engines index a single origin. RewriteEngine/RewriteRule are FileInfo-class
-# directives, same override level as the headers above, so this ships in the
-# build the same way. Guarded by mod_rewrite so it is a no-op if the module is
-# unavailable.
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-  RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
-</IfModule>
 
 # ── Compression ─────────────────────────────────────────────────────────────
 <IfModule mod_deflate.c>
