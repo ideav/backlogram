@@ -129,8 +129,9 @@ test('prerender-agent-platforms writes a crawlable dist/agent-platforms.html', (
 
   // SEO head tags: canonical, Open Graph, Article JSON-LD, tightened title.
   assert.match(out, /<link rel="canonical" href="https:\/\/ideav\.ru\/agent-platforms\.html" \/>/)
-  assert.match(out, /<title>Агент создаёт приложение[^<]*<\/title>/)
-  assert.match(out, /<meta property="og:title"/)
+  // <title> is the tightened SEO title (≤ 60 chars); the descriptive headline lives in og:title.
+  assert.match(out, /<title>Интеграм против low-code платформ и ИИ-агентов<\/title>/)
+  assert.match(out, /<meta property="og:title" content="Агент создаёт приложение/)
   assert.match(out, /application\/ld\+json/)
   assert.match(out, /"@type":"Article"/)
 })

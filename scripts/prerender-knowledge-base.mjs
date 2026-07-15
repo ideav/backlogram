@@ -292,8 +292,8 @@ const indexBody = `
   .dark #kb-prerender .kb-prerender__count, .dark #kb-prerender .kb-prerender__updated { color: #94a3b8; }
 </style>`
 
-const indexTitle = `База знаний — ${totalCount} разборов сравнений Интеграма с Excel, Airtable, Notion и заказной разработкой`
-const indexDescription = `${totalCount} статей о том, в каких сценариях Интеграм заменяет Excel, Google Sheets, Airtable, Notion и заказную разработку. Группировка по темам, описание контекста каждой статьи, дата последнего обновления.`
+const indexTitle = `База знаний Интеграма: сравнения с Excel, Airtable, Notion`
+const indexDescription = `${totalCount} разборов, где Интеграм заменяет Excel, Google Sheets, Airtable, Notion и заказную разработку — сгруппированы по темам, с контекстом каждой статьи.`
 
 const collectionJsonLd = {
   '@context': 'https://schema.org',
@@ -344,10 +344,20 @@ console.log(`✓ /knowledge-base{,.html}/index.html  (${indexHtml.length} bytes,
 // ───────────────────────────────────────────────────────────────────────────
 for (const article of knowledgeBaseArticles) {
   const url = `${SITE}/knowledge-base/${article.slug}.html`
-  const title = article.seoTitle || article.title
-  const description = article.metaDescription || article.seoDescription || trim(article.summary, 260)
-  const ogTitle = article.ogTitle || title
-  const ogDescription = article.ogDescription || description
+  // <title> ≤ 60 симв.: короткий seoTitle как есть, иначе краткий shortTitle с брендом
+  // (полное описательное название остаётся в <h1> = article.title).
+  const shortT = article.shortTitle || article.title
+  const title =
+    article.seoTitle && article.seoTitle.length <= 60
+      ? article.seoTitle
+      : /интеграм/i.test(shortT)
+        ? shortT
+        : `${shortT} — Интеграм`
+  // <meta description> ≤ 158 симв. (обрезка по границе слова); OG-описание берёт полный текст.
+  const fullDescription = article.metaDescription || article.seoDescription || article.summary
+  const description = trim(fullDescription, 158)
+  const ogTitle = article.ogTitle || article.seoTitle || article.title
+  const ogDescription = article.ogDescription || fullDescription
   const keywords = article.metaKeywords || ''
   const articleImage = `/og/${article.slug}.png`
   const articleImageAlt = `Обложка статьи: ${article.shortTitle || article.title}`

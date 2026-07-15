@@ -230,6 +230,10 @@ const ogTitle =
   'Что такое информационная система (ИС): виды, классификация, свойства'
 const ogDescription =
   'Информационная система (ИС) — это совокупность информации в базах данных и технологий её обработки. Определение по 149-ФЗ и ГОСТ, состав, классификация, виды (ERP, CRM, СЭД, АСУ ТП, ГИС) и свойства информационных систем — и как собрать ИС на low-code платформе с ИИ без программистов.'
+// SEO: <title> ≤ 60 симв. и <meta description> ≤ 158 (OG-теги ниже берут полные ogTitle/ogDescription)
+const seoTitle = 'Что такое информационная система (ИС): виды и свойства'
+const metaDescription =
+  'Информационная система (ИС): определение по 149-ФЗ и ГОСТ, состав, классификация, виды (ERP, CRM, СЭД, АСУ ТП, ГИС) и свойства — и как собрать ИС без кода.'
 const ogImage = `${SITE}/og/knowledge-base.png`
 
 const jsonLd = {
@@ -308,10 +312,10 @@ if (!source.includes('<div id="root"></div>')) {
 }
 
 const html = source
-  .replace(/<title>[\s\S]*?<\/title>/, `<title>${escape(ogTitle)}</title>`)
+  .replace(/<title>[\s\S]*?<\/title>/, `<title>${escape(seoTitle)}</title>`)
   .replace(
     /<meta name="description"[^>]*>/,
-    `<meta name="description" content="${escape(ogDescription)}" />`,
+    `<meta name="description" content="${escape(metaDescription)}" />`,
   )
   .replace('</head>', `    ${headTags}\n  </head>`)
   .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`)

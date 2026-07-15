@@ -209,6 +209,10 @@ const ogTitle =
   'Агент создаёт приложение: Интеграм против зарубежных и российских low-code платформ'
 const ogDescription =
   'Подробное сравнение Интеграма с low-code платформами и агентами-программистами по модели «ИИ-агент создаёт и администрирует сервис под ключ»: за рубежом — Retool AI, Power Platform Copilot, NocoDB, Appsmith; в России — Bpium, ELMA365, BPMSoft, AppMaster, 1С:Элемент; агенты-кодеры — Claude Code, Codex.'
+// SEO: <title> ≤ 60 симв. и <meta description> ≤ 158 (OG-теги ниже берут полные ogTitle/ogDescription)
+const seoTitle = 'Интеграм против low-code платформ и ИИ-агентов'
+const metaDescription =
+  'Сравнение Интеграма с low-code платформами и ИИ-агентами-кодерами: Retool AI, Power Platform, NocoDB, Appsmith, Bpium, ELMA365, Claude Code, Codex.'
 const ogImage = `${SITE}/og/knowledge-base.png`
 
 const jsonLd = {
@@ -274,10 +278,10 @@ if (!source.includes('<div id="root"></div>')) {
 }
 
 const html = source
-  .replace(/<title>[\s\S]*?<\/title>/, `<title>${escape(ogTitle)}</title>`)
+  .replace(/<title>[\s\S]*?<\/title>/, `<title>${escape(seoTitle)}</title>`)
   .replace(
     /<meta name="description"[^>]*>/,
-    `<meta name="description" content="${escape(ogDescription)}" />`,
+    `<meta name="description" content="${escape(metaDescription)}" />`,
   )
   .replace('</head>', `    ${headTags}\n  </head>`)
   .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`)
