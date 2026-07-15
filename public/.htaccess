@@ -1,21 +1,40 @@
-# Static caching + compression for ideav.ru (Apache).
+# ideav.ru web root — routing + caching (Apache).
 #
-# This file is copied verbatim by Vite into dist/ and deployed to the web root,
-# so caching ships with a normal build — no server SSH required (assumes the
-# vhost allows AllowOverride FileInfo). It only sets response headers and never
-# touches rewrites/routing, so it is additive and safe.
+# ⚠️  THE FRONT CONTROLLER BELOW MUST STAY — DO NOT REDUCE THIS TO A
+#     HEADERS-ONLY FILE (issue #422).
 #
-# NOTE: HTTP/2 cannot be enabled here — it is a server-/vhost-level directive
-# (`Protocols h2 http/1.1`). See docs/server-performance.md.
-DirectoryIndex index.html
+# ideav.ru is served by ONE web root that hosts BOTH:
+#   • the marketing landing (this repo — static index.html + assets), and
+#   • the Интеграм platform (PHP engine index.php, deployed from ideav/crm).
+#
+# This file is copied verbatim by Vite into dist/ and overwrites the web-root
+# .htaccess on every marketing deploy. index.php is NOT in the build, so if this
+# file drops the `RewriteRule ^ index.php` line, every /<db>/... database URL
+# (e.g. /asmoseo/table/42) stops reaching the engine and the whole platform goes
+# offline. That is exactly what happened when a headers-only version shipped.
+#
+# NOTE: HTTP/2 is a server-/vhost-level directive, not settable here. See
+# docs/server-performance.md.
 
-  <IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^ index.php [L]
-  </IfModule>
-  
+# ── Routing ─────────────────────────────────────────────────────────────────
+# `/` → marketing landing (index.html); every non-file path → platform engine.
+DirectoryIndex index.html
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # www. → bare canonical host (SEO #416). Runs before the front controller.
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
+
+  # Front controller: real files/dirs served as-is; everything else → index.php.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ index.php [L,QSA]
+</IfModule>
+
+# Advertise UTF-8 in the HTTP Content-Type header for text responses (SEO #416).
+AddDefaultCharset UTF-8
+
 # ── Compression ─────────────────────────────────────────────────────────────
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml \
