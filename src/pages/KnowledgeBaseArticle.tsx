@@ -470,19 +470,6 @@ export default function KnowledgeBaseArticle() {
               </ul>
             </section>
           )}
-
-          <div className="text-xs text-slate-400 dark:text-slate-500 italic">
-            Исходный материал статьи и фактчек —{' '}
-            <a
-              href={article.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 underline hover:text-blue-500 dark:hover:text-blue-400 not-italic"
-            >
-              в репозитории ideav/crm <ExternalLink size={11} />
-            </a>
-            .
-          </div>
         </div>
       </article>
 
