@@ -123,6 +123,10 @@ const bodyHtml = `
       записей, стройте отчёты и управляйте данными без программистов. Настоящая база данных вместо
       разъезжающихся таблиц — с ролями доступа, дашбордами и настройкой под ваш бизнес за 1 день.
     </p>
+    <figure class="kp-prerender__figure">
+      <img src="/case-sovereignty-audit.png" alt="Пример приложения на платформе Интеграм: аналитика, финансы и дашборды" width="2042" height="1252" loading="lazy" itemprop="image" />
+      <figcaption>Пример приложения на платформе Интеграм</figcaption>
+    </figure>
   </header>
   <h2>Excel перестал справляться — что дальше</h2>
   ${painsHtml}
@@ -167,6 +171,12 @@ const bodyHtml = `
   #kp-prerender .kp-prerender__lead { font-size: 1.1rem; color: #475569; max-width: 50rem; }
   #kp-prerender .kp-prerender__footer { margin-top: 3rem; padding-top: 1.5rem;
     border-top: 1px solid #e2e8f0; font-size: 0.92rem; color: #475569; }
+  #kp-prerender .kp-prerender__figure { margin: 2rem 0 0; }
+  #kp-prerender .kp-prerender__figure img { width: 100%; height: auto; display: block;
+    border-radius: 1rem; border: 1px solid #e2e8f0; }
+  #kp-prerender .kp-prerender__figure figcaption { margin-top: 0.6rem; text-align: center;
+    font-size: 0.85rem; color: #94a3b8; }
+  .dark #kp-prerender .kp-prerender__figure img { border-color: #1e293b; }
   /* Dark colours follow the app theme (.dark on <html>, set synchronously by the
      inline <head> script from localStorage) — NOT prefers-color-scheme (issue #325). */
   .dark #kp-prerender { color: #e2e8f0; }
@@ -184,7 +194,9 @@ const ogDescription =
 const seoTitle = 'Конструктор приложений вместо Excel — без кода | Интеграм'
 const metaDescription =
   'Замените Excel конструктором приложений Интеграм: миллионы записей, отчёты и роли доступа без программистов. Настройка под ваш бизнес за 1 день.'
-const ogImage = `${SITE}/og/knowledge-base.png`
+const ogImage = `${SITE}/case-sovereignty-audit.png`
+const ogImageW = 2042
+const ogImageH = 1252
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -227,8 +239,8 @@ const headTags = [
   `<meta property="og:title" content="${escape(ogTitle)}" />`,
   `<meta property="og:description" content="${escape(ogDescription)}" />`,
   `<meta property="og:image" content="${escape(ogImage)}" />`,
-  `<meta property="og:image:width" content="1200" />`,
-  `<meta property="og:image:height" content="630" />`,
+  `<meta property="og:image:width" content="${ogImageW}" />`,
+  `<meta property="og:image:height" content="${ogImageH}" />`,
   `<meta property="og:locale" content="ru_RU" />`,
   `<meta property="og:site_name" content="${PUBLISHER}" />`,
   `<meta name="twitter:card" content="summary_large_image" />`,

@@ -464,6 +464,24 @@ export default function ExcelConstructor() {
               Загрузить Excel — получить приложение за ~45 мин
             </a>
           </div>
+
+          <motion.figure
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }}
+            className="mt-12">
+            <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 ring-1 ring-slate-900/5 shadow-2xl shadow-slate-900/10">
+              <img
+                src="/case-sovereignty-audit.png"
+                alt="Пример приложения на платформе Интеграм: аналитика, финансы и дашборды"
+                width={2042}
+                height={1252}
+                loading="lazy"
+                className="w-full h-auto block"
+              />
+            </div>
+            <figcaption className="mt-3 text-center text-sm text-slate-400 dark:text-slate-500">
+              Пример приложения на платформе Интеграм
+            </figcaption>
+          </motion.figure>
         </div>
       </section>
 

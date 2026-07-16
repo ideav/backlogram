@@ -26,6 +26,15 @@ const dist = resolve(root, 'dist')
 const PUBLISHER = 'Интеграм'
 const OG_IMAGE = `${SITE}/og/knowledge-base.png`
 
+// Натуральные размеры скриншотов (для og:image:width/height и атрибутов img).
+const IMG_SIZE = {
+  '/uc-zayavki.jpg': { w: 1600, h: 900 },
+  '/uc-proekty.jpg': { w: 1536, h: 1024 },
+  '/case-pdn.png': { w: 1126, h: 752 },
+  '/case-orbita-planner.png': { w: 2006, h: 1077 },
+  '/case-sovereignty-audit.png': { w: 2042, h: 1252 },
+}
+
 function escape(s) {
   return String(s ?? '').replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
@@ -47,27 +56,33 @@ const PRERENDER_STYLE = `
   #uc-prerender .uc-lead { font-size: 1.1rem; color: #475569; max-width: 50rem; }
   #uc-prerender .uc-footer { margin-top: 3rem; padding-top: 1.5rem;
     border-top: 1px solid #e2e8f0; font-size: 0.92rem; color: #475569; }
+  #uc-prerender .uc-figure { margin: 2rem 0 0; }
+  #uc-prerender .uc-figure img { width: 100%; height: auto; display: block;
+    border-radius: 1rem; border: 1px solid #e2e8f0; }
+  #uc-prerender .uc-figure figcaption { margin-top: 0.6rem; text-align: center;
+    font-size: 0.85rem; color: #94a3b8; }
+  .dark #uc-prerender .uc-figure img { border-color: #1e293b; }
   /* Dark colours follow the app theme (.dark on <html>) — NOT prefers-color-scheme (issue #325). */
   .dark #uc-prerender { color: #e2e8f0; }
   .dark #uc-prerender .uc-lead, .dark #uc-prerender .uc-footer { color: #94a3b8; }
 </style>`
 
-function headTagsFor({ canonical, seoTitle, metaDescription, ogTitle, ogDescription, jsonLd }) {
+function headTagsFor({ canonical, seoTitle, metaDescription, ogTitle, ogDescription, jsonLd, ogImage = OG_IMAGE, ogImageW = 1200, ogImageH = 630 }) {
   const tags = [
     `<link rel="canonical" href="${escape(canonical)}" />`,
     `<meta property="og:type" content="website" />`,
     `<meta property="og:url" content="${escape(canonical)}" />`,
     `<meta property="og:title" content="${escape(ogTitle)}" />`,
     `<meta property="og:description" content="${escape(ogDescription)}" />`,
-    `<meta property="og:image" content="${escape(OG_IMAGE)}" />`,
-    `<meta property="og:image:width" content="1200" />`,
-    `<meta property="og:image:height" content="630" />`,
+    `<meta property="og:image" content="${escape(ogImage)}" />`,
+    `<meta property="og:image:width" content="${ogImageW}" />`,
+    `<meta property="og:image:height" content="${ogImageH}" />`,
     `<meta property="og:locale" content="ru_RU" />`,
     `<meta property="og:site_name" content="${PUBLISHER}" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${escape(ogTitle)}" />`,
     `<meta name="twitter:description" content="${escape(ogDescription)}" />`,
-    `<meta name="twitter:image" content="${escape(OG_IMAGE)}" />`,
+    `<meta name="twitter:image" content="${escape(ogImage)}" />`,
     `<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`,
   ].join('\n    ')
   return { tags, seoTitle, metaDescription }
@@ -112,6 +127,10 @@ for (const uc of USE_CASES) {
     <p class="uc-eyebrow">${escape(uc.badge)}</p>
     <h1 itemprop="name">${escape(`${uc.h1} ${uc.h1accent}`)}</h1>
     <p class="uc-lead" itemprop="description">${escape(uc.lead)}</p>
+    <figure class="uc-figure">
+      <img src="${escape(uc.image)}" alt="${escape(uc.imageAlt)}" width="${IMG_SIZE[uc.image]?.w ?? ''}" height="${IMG_SIZE[uc.image]?.h ?? ''}" loading="lazy" itemprop="image" />
+      <figcaption>Пример приложения на платформе Интеграм</figcaption>
+    </figure>
   </header>
   <h2>Excel перестал справляться — что меняется</h2>
   <ul>${painsHtml}</ul>
@@ -137,9 +156,11 @@ for (const uc of USE_CASES) {
       { '@type': 'FAQPage', '@id': `${canonical}#faq`, mainEntity: uc.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
     ],
   }
+  const sz = IMG_SIZE[uc.image] ?? { w: 1200, h: 630 }
   const { tags, seoTitle, metaDescription } = headTagsFor({
     canonical, seoTitle: uc.seoTitle, metaDescription: uc.metaDescription,
     ogTitle: uc.ogTitle, ogDescription: uc.ogDescription, jsonLd,
+    ogImage: `${SITE}${uc.image}`, ogImageW: sz.w, ogImageH: sz.h,
   })
   write(uc.slug, seoTitle, metaDescription, tags, bodyHtml)
 }

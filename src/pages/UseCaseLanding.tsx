@@ -55,6 +55,15 @@ const ICONS: Record<string, typeof Database> = {
   BarChart3, Database, GitCompare, Wallet, ShieldCheck, TrendingUp, Clock,
   Archive, Boxes, FileSpreadsheet, Server,
 }
+
+// Натуральные размеры скриншотов — чтобы браузер зарезервировал место (без CLS).
+const IMG_SIZE: Record<string, { w: number; h: number }> = {
+  '/uc-zayavki.jpg': { w: 1600, h: 900 },
+  '/uc-proekty.jpg': { w: 1536, h: 1024 },
+  '/case-pdn.png': { w: 1126, h: 752 },
+  '/case-orbita-planner.png': { w: 2006, h: 1077 },
+  '/case-sovereignty-audit.png': { w: 2042, h: 1252 },
+}
 function Icon({ name, size = 24 }: { name: string; size?: number }) {
   const Cmp = ICONS[name] ?? Boxes
   return <Cmp size={size} />
@@ -302,6 +311,23 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
           <a href="#zayavka" className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all">
             Заказать демо <ArrowRight size={18} />
           </a>
+          <motion.figure
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }}
+            className="mt-12">
+            <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 ring-1 ring-slate-900/5 shadow-2xl shadow-slate-900/10">
+              <img
+                src={uc.image}
+                alt={uc.imageAlt}
+                width={IMG_SIZE[uc.image]?.w}
+                height={IMG_SIZE[uc.image]?.h}
+                loading="lazy"
+                className="w-full h-auto block"
+              />
+            </div>
+            <figcaption className="mt-3 text-center text-sm text-slate-400 dark:text-slate-500">
+              Пример приложения на платформе Интеграм
+            </figcaption>
+          </motion.figure>
         </div>
       </section>
 
