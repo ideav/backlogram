@@ -28,11 +28,16 @@ const OG_IMAGE = `${SITE}/og/knowledge-base.png`
 
 // Натуральные размеры скриншотов (для og:image:width/height и атрибутов img).
 const IMG_SIZE = {
-  '/uc-zayavki.jpg': { w: 1600, h: 900 },
-  '/uc-proekty.jpg': { w: 1536, h: 1024 },
-  '/case-pdn.png': { w: 1126, h: 752 },
-  '/case-orbita-planner.png': { w: 2006, h: 1077 },
-  '/case-sovereignty-audit.png': { w: 2042, h: 1252 },
+  '/uc-zayavki.png': { w: 1672, h: 941 },
+  '/uc-proekty.png': { w: 1536, h: 1024 },
+  '/uc-proizvodstvo.png': { w: 1536, h: 1024 },
+  '/uc-sklad.png': { w: 1536, h: 1024 },
+  '/uc-zakupki.jpg': { w: 1536, h: 1024 },
+  '/uc-finansy.png': { w: 1536, h: 1024 },
+  '/uc-kadry.png': { w: 1536, h: 1024 },
+  '/uc-crm.png': { w: 1536, h: 1024 },
+  '/uc-dogovory.png': { w: 1536, h: 1024 },
+  '/uc-otchetnost.png': { w: 1536, h: 1024 },
 }
 
 function escape(s) {
