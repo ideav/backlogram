@@ -62,6 +62,16 @@ $SOURCE_LABELS = [
     'catalog-matching'  => 'Сопоставление каталогов',
     'excel-to-app'      => 'Excel → приложение',
     'excel-constructor' => 'Конструктор приложений вместо Excel',
+    'uc-zayavki'        => 'Заявки / обращения',
+    'uc-proekty'        => 'Проекты и задачи',
+    'uc-proizvodstvo'   => 'Производственное планирование',
+    'uc-sklad'          => 'Складской учёт',
+    'uc-zakupki'        => 'Закупки и поставщики',
+    'uc-finansy'        => 'Финансовый учёт',
+    'uc-kadry'          => 'Кадровый учёт',
+    'uc-crm'            => 'CRM / клиенты',
+    'uc-dokumenty'      => 'Документооборот / договоры',
+    'uc-otchetnost'     => 'Управленческий учёт',
 ];
 $sourceLabel = $SOURCE_LABELS[$source] ?? ($source !== '' ? $source : 'Excel → приложение');
 
