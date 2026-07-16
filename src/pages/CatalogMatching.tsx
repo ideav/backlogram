@@ -465,28 +465,24 @@ export default function CatalogMatching() {
         </div>
       </section>
 
-      {/* Video */}
+      {/* Инфографика: токенизация */}
       <section className="py-12 border-b border-slate-200 dark:border-slate-900">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 mb-4">
-            <Play size={18} className="text-blue-600 dark:text-blue-400" />
-            <h2 className="text-xl md:text-2xl font-bold">Как это работает — за 5 минут</h2>
-          </div>
-          <div className="rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-black shadow-sm dark:shadow-none">
-            <video
-              controls
-              preload="metadata"
-              className="w-full aspect-video"
-              src={VIDEO_URL}
-            >
-              Ваш браузер не поддерживает встроенное видео.{' '}
-              <a href={VIDEO_URL}>Скачать ролик</a>.
-            </video>
-          </div>
-          <p className="text-xs text-slate-400 dark:text-slate-500 mt-3">
-            Демонстрация на реальных данных: каталог картриджей, 22 000 позиций контрагента против
-            десятков тысяч наших артикулов.
-          </p>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <figure>
+            <div className="rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none">
+              <img
+                src="/catalog-tokenization.jpg"
+                alt="Токенизация наименований: каталоги поставщика (SKU) и контрагента (RFP) разбиваются на слова-токены и сопоставляются через общий справочник токенов"
+                width={1672}
+                height={941}
+                loading="lazy"
+                className="w-full h-auto block"
+              />
+            </div>
+            <figcaption className="text-xs text-slate-400 dark:text-slate-500 mt-3 text-center">
+              Наименования из обоих каталогов разбиваются на токены и сводятся к общему справочнику — по пересечениям токенов находятся совпадения.
+            </figcaption>
+          </figure>
         </div>
       </section>
 
@@ -655,6 +651,31 @@ export default function CatalogMatching() {
               </span>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Video */}
+      <section className="py-12 border-b border-slate-200 dark:border-slate-900">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Play size={18} className="text-blue-600 dark:text-blue-400" />
+            <h2 className="text-xl md:text-2xl font-bold">Как это работает — за 5 минут</h2>
+          </div>
+          <div className="rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-black shadow-sm dark:shadow-none">
+            <video
+              controls
+              preload="metadata"
+              className="w-full aspect-video"
+              src={VIDEO_URL}
+            >
+              Ваш браузер не поддерживает встроенное видео.{' '}
+              <a href={VIDEO_URL}>Скачать ролик</a>.
+            </video>
+          </div>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-3">
+            Демонстрация на реальных данных: каталог картриджей, 22 000 позиций контрагента против
+            десятков тысяч наших артикулов.
+          </p>
         </div>
       </section>
 
