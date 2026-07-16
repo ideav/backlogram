@@ -26,6 +26,15 @@ DirectoryIndex index.html
   RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
   RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
 
+  # Plain HTTP → HTTPS on the canonical (non-www) host. The www rule above
+  # already targets https://, so this only catches bare-host HTTP — every
+  # scheme+host combination lands on https://<bare> in a single 301 hop (no
+  # redirect chain). The X-Forwarded-Proto check prevents a redirect loop when
+  # TLS is terminated by an upstream proxy/CDN that reaches Apache over HTTP.
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
   # Front controller: real files/dirs served as-is; everything else → index.php.
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
