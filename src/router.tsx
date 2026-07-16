@@ -6,6 +6,7 @@ import Fail from './pages/Fail'
 import ExcelToApp from './pages/ExcelToApp'
 import AgentPlatforms from './pages/AgentPlatforms'
 import CatalogMatching from './pages/CatalogMatching'
+import ExcelConstructor from './pages/ExcelConstructor'
 import InformationSystem from './pages/InformationSystem'
 import Tokens from './pages/Tokens'
 import AdImages from './pages/AdImages'
@@ -49,6 +50,14 @@ export const router = createBrowserRouter([
       {
         path: 'catalog-matching',
         element: <CatalogMatching />,
+      },
+      {
+        path: 'konstruktor-prilozhenij.html',
+        element: <ExcelConstructor />,
+      },
+      {
+        path: 'konstruktor-prilozhenij',
+        element: <ExcelConstructor />,
       },
       {
         path: 'informatsionnaya-sistema.html',

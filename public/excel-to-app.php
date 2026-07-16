@@ -59,8 +59,9 @@ $topic   = trim((string) ($_POST['topic'] ?? $_POST['task'] ?? $_POST['theme'] ?
 // Same source vocabulary as telegram-notify.php; defaults to the original form.
 $source = trim((string) ($_POST['source'] ?? 'excel-to-app'));
 $SOURCE_LABELS = [
-    'catalog-matching' => 'Сопоставление каталогов',
-    'excel-to-app'     => 'Excel → приложение',
+    'catalog-matching'  => 'Сопоставление каталогов',
+    'excel-to-app'      => 'Excel → приложение',
+    'excel-constructor' => 'Конструктор приложений вместо Excel',
 ];
 $sourceLabel = $SOURCE_LABELS[$source] ?? ($source !== '' ? $source : 'Excel → приложение');
 

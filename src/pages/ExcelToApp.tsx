@@ -1,5 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
+import { reachGoal } from '../lib/metrika'
 import {
   FileSpreadsheet,
   UploadCloud,
@@ -256,6 +257,7 @@ export default function ExcelToApp() {
       const json = await res.json().catch(() => ({ ok: false }))
       if (res.ok && json.ok) {
         setFormState('success')
+        reachGoal('lead', { source: 'excel-to-app' })
         setFiles([])
         setTopic('')
         setContact('')
