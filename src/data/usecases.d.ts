@@ -24,6 +24,10 @@ export interface UseCase {
   source: string
   badge: string
   badgeIcon: string
+  /** Скриншот приложения на Интеграме для героя и og:image (путь от корня). */
+  image: string
+  /** alt/подпись к скриншоту. */
+  imageAlt: string
   h1: string
   h1accent: string
   lead: string

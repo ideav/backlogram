@@ -33,6 +33,8 @@ export const USE_CASES = [
   {
     slug: "baza-zayavok",
     source: "uc-zayavki",
+    image: "/uc-zayavki.jpg",
+    imageAlt: "База заявок на платформе Интеграм: статусы, приоритеты, SLA и канбан",
     badge: "Учёт заявок на Интеграме",
     badgeIcon: "ListChecks",
     h1: "Заявки теряются в Excel?",
@@ -69,6 +71,8 @@ export const USE_CASES = [
   {
     slug: "upravlenie-proektami",
     source: "uc-proekty",
+    image: "/uc-proekty.jpg",
+    imageAlt: "Управление проектами на Интеграме: диаграмма Ганта, задачи, загрузка команды",
     badge: "Проекты и задачи на Интеграме",
     badgeIcon: "Layers",
     h1: "Задачи забываются в Excel?",
@@ -105,6 +109,8 @@ export const USE_CASES = [
   {
     slug: "planirovanie-proizvodstva",
     source: "uc-proizvodstvo",
+    image: "/case-orbita-planner.png",
+    imageAlt: "Планирование производства и загрузки оборудования на Интеграме",
     badge: "Производственный учёт на Интеграме",
     badgeIcon: "Settings2",
     h1: "Excel слетает при планировании?",
@@ -141,6 +147,8 @@ export const USE_CASES = [
   {
     slug: "skladskoy-uchet",
     source: "uc-sklad",
+    image: "/case-pdn.png",
+    imageAlt: "Складской учёт и реестр номенклатуры на платформе Интеграм",
     badge: "Складской учёт на Интеграме",
     badgeIcon: "Boxes",
     h1: "Остатки в Excel не сходятся?",
@@ -177,6 +185,8 @@ export const USE_CASES = [
   {
     slug: "upravlenie-zakupkami",
     source: "uc-zakupki",
+    image: "/case-sovereignty-audit.png",
+    imageAlt: "Аналитика закупок и поставщиков на платформе Интеграм",
     badge: "Закупки на Интеграме",
     badgeIcon: "GitCompare",
     h1: "Прайсы поставщиков не сравнить?",
@@ -213,6 +223,8 @@ export const USE_CASES = [
   {
     slug: "finansovyy-uchet",
     source: "uc-finansy",
+    image: "/case-sovereignty-audit.png",
+    imageAlt: "Финансовая аналитика и дашборды на платформе Интеграм",
     badge: "Финансовый учёт на Интеграме",
     badgeIcon: "Wallet",
     h1: "Бюджет живёт в десятках Excel?",
@@ -249,6 +261,8 @@ export const USE_CASES = [
   {
     slug: "kadrovyy-uchet",
     source: "uc-kadry",
+    image: "/case-pdn.png",
+    imageAlt: "Кадровый учёт и HR-процессы на платформе Интеграм",
     badge: "Кадровый учёт на Интеграме",
     badgeIcon: "Users",
     h1: "Табели собираете вручную?",
@@ -285,6 +299,8 @@ export const USE_CASES = [
   {
     slug: "crm-uchet-klientov",
     source: "uc-crm",
+    image: "/case-sovereignty-audit.png",
+    imageAlt: "CRM: поток сделок и аналитика клиентов на Интеграме",
     badge: "CRM на Интеграме",
     badgeIcon: "TrendingUp",
     h1: "Клиенты живут в Excel?",
@@ -321,6 +337,8 @@ export const USE_CASES = [
   {
     slug: "uchet-dogovorov",
     source: "uc-dokumenty",
+    image: "/case-pdn.png",
+    imageAlt: "Реестр договоров и документов на платформе Интеграм",
     badge: "Документооборот на Интеграме",
     badgeIcon: "Archive",
     h1: "Договоры лежат в папках?",
@@ -357,6 +375,8 @@ export const USE_CASES = [
   {
     slug: "upravlencheskiy-uchet",
     source: "uc-otchetnost",
+    image: "/case-orbita-planner.png",
+    imageAlt: "Управленческие дашборды и KPI на платформе Интеграм",
     badge: "Управленческий учёт на Интеграме",
     badgeIcon: "BarChart3",
     h1: "Сводите отчёты неделю?",
