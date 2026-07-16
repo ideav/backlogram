@@ -719,6 +719,8 @@ export default function Home() {
                   <img
                     src={`${import.meta.env.BASE_URL}case-orbita-planner.png`}
                     alt="Орбита Planner — система управления строительным персоналом"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full block"
                   />
                 </div>
@@ -744,6 +746,8 @@ export default function Home() {
                   <img
                     src={`${import.meta.env.BASE_URL}case-sovereignty-audit.png`}
                     alt="Аудит суверенности 9D — оценка технологической независимости портфельных компаний"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full block"
                   />
                 </div>
@@ -858,6 +862,8 @@ export default function Home() {
                   </div>
                   <img
                     src={`${import.meta.env.BASE_URL}case-pdn.png`}
+                    loading="lazy"
+                    decoding="async"
                     alt="Процессы обработки персональных данных (ПДн) — реестр процессов в банке"
                     className="w-full block"
                   />
