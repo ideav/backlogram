@@ -14,7 +14,21 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  
+
+  // Разбиваем сборку: тяжёлые вендоры — в отдельные кэшируемые чанки, а код
+  // страниц уходит в свои чанки через lazy() в router.tsx. Так первый экран
+  // не тянет весь код сайта одним ~1 МБ файлом (issue #451).
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'motion': ['framer-motion'],
+        },
+      },
+    },
+  },
+
   // Кэш и временные файлы Vite хранятся в проекте, а не в node_modules
   // потому что node_modules может быть symlink на readonly папку
   cacheDir: '.vite',

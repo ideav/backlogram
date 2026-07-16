@@ -1,21 +1,26 @@
+import { lazy } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import Home from './pages/Home'
-import NotFound from './pages/NotFound'
-import Success from './pages/Success'
-import Fail from './pages/Fail'
-import ExcelToApp from './pages/ExcelToApp'
-import AgentPlatforms from './pages/AgentPlatforms'
-import CatalogMatching from './pages/CatalogMatching'
-import ExcelConstructor from './pages/ExcelConstructor'
-import InformationSystem from './pages/InformationSystem'
-import Tokens from './pages/Tokens'
-import AdImages from './pages/AdImages'
-import KnowledgeBase from './pages/KnowledgeBase'
-import KnowledgeBaseArticle from './pages/KnowledgeBaseArticle'
-import UseCaseLanding from './pages/UseCaseLanding'
-import UseCaseHub from './pages/UseCaseHub'
 import { USE_CASES } from './data/usecases'
 import App from './App'
+
+// Главная и layout грузятся сразу (самый частый вход). Остальные страницы —
+// по требованию (code-splitting), чтобы начальный бандл не тянул код всех
+// разделов и первый экран открывался быстрее (issue #451).
+const NotFound = lazy(() => import('./pages/NotFound'))
+const Success = lazy(() => import('./pages/Success'))
+const Fail = lazy(() => import('./pages/Fail'))
+const ExcelToApp = lazy(() => import('./pages/ExcelToApp'))
+const AgentPlatforms = lazy(() => import('./pages/AgentPlatforms'))
+const CatalogMatching = lazy(() => import('./pages/CatalogMatching'))
+const ExcelConstructor = lazy(() => import('./pages/ExcelConstructor'))
+const InformationSystem = lazy(() => import('./pages/InformationSystem'))
+const Tokens = lazy(() => import('./pages/Tokens'))
+const AdImages = lazy(() => import('./pages/AdImages'))
+const KnowledgeBase = lazy(() => import('./pages/KnowledgeBase'))
+const KnowledgeBaseArticle = lazy(() => import('./pages/KnowledgeBaseArticle'))
+const UseCaseLanding = lazy(() => import('./pages/UseCaseLanding'))
+const UseCaseHub = lazy(() => import('./pages/UseCaseHub'))
 
 export const router = createBrowserRouter([
   {

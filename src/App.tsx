@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
@@ -29,6 +29,16 @@ function ScrollToRouteTarget() {
   return null
 }
 
+// Фолбэк на время подгрузки чанка ленивой страницы. min-h держит подвал внизу,
+// чтобы не было скачка вёрстки.
+function RouteFallback() {
+  return (
+    <div className="min-h-[70vh] flex items-center justify-center" role="status" aria-label="Загрузка">
+      <div className="h-8 w-8 rounded-full border-2 border-slate-200 dark:border-slate-700 border-t-blue-600 animate-spin" />
+    </div>
+  )
+}
+
 export default function App() {
   return (
     <ThemeProvider>
@@ -36,7 +46,9 @@ export default function App() {
         <ScrollToRouteTarget />
         <Header />
         <main>
-          <Outlet />
+          <Suspense fallback={<RouteFallback />}>
+            <Outlet />
+          </Suspense>
         </main>
         <Footer />
         <CookieConsent />
