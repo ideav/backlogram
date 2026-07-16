@@ -7,8 +7,6 @@ import {
   CheckCircle2,
   AlertTriangle,
   Send,
-  Paperclip,
-  Trash2,
   Sparkles,
   ShieldCheck,
   Server,
@@ -76,10 +74,6 @@ const CAPTCHA_CLIENT_KEY = (import.meta.env.VITE_SMARTCAPTCHA_CLIENT_KEY as stri
 // (см. public/excel-to-app.php, $SOURCE_LABELS).
 const SUBMIT_ENDPOINT = '/excel-to-app.php'
 
-const ACCEPTED_EXTENSIONS = ['.xlsx', '.xls', '.csv', '.ods']
-const ACCEPT_ATTR = ACCEPTED_EXTENSIONS.join(',')
-const MAX_FILE_BYTES = 25 * 1024 * 1024
-
 const SITE = 'https://ideav.ru'
 
 // Общие для всех ниш блоки — намеренно вынесены из data, но уникальный контент
@@ -98,15 +92,6 @@ const FACTS = [
 
 function hasIdbCookie(): boolean {
   return document.cookie.split(';').some((c) => c.trimStart().startsWith('idb_'))
-}
-function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${bytes} Б`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} КБ`
-  return `${(bytes / (1024 * 1024)).toFixed(1)} МБ`
-}
-function hasAcceptedExtension(name: string): boolean {
-  const lower = name.toLowerCase()
-  return ACCEPTED_EXTENSIONS.some((ext) => lower.endsWith(ext))
 }
 function setMetaTag(selector: string, attr: 'name' | 'property', key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(selector)
@@ -127,37 +112,6 @@ function setCanonical(href: string) {
   el.setAttribute('href', href)
 }
 
-function FileInput({ id, label, hint, file, onPick, onClear }: {
-  id: string; label: string; hint: string; file: File | null
-  onPick: (file: File | undefined) => void; onClear: () => void
-}) {
-  return (
-    <div>
-      <label htmlFor={id} className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1">
-        {label}
-      </label>
-      {file ? (
-        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
-          <FileSpreadsheet size={18} className="text-green-600 dark:text-green-400 shrink-0" />
-          <span className="flex-1 truncate text-sm text-slate-700 dark:text-slate-200">{file.name}</span>
-          <span className="text-xs text-slate-400 dark:text-slate-500 shrink-0">{formatBytes(file.size)}</span>
-          <button type="button" onClick={onClear} aria-label={`Убрать файл ${file.name}`} className="text-slate-400 hover:text-red-500 transition-colors shrink-0">
-            <Trash2 size={16} />
-          </button>
-        </div>
-      ) : (
-        <label htmlFor={id} className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-600 bg-white dark:bg-slate-950 cursor-pointer transition-colors">
-          <Paperclip size={16} className="text-blue-500 shrink-0" />
-          <span className="text-sm text-slate-600 dark:text-slate-300">Прикрепить файл</span>
-          <span className="ml-auto text-xs text-slate-400 dark:text-slate-500">{hint}</span>
-        </label>
-      )}
-      <input id={id} type="file" accept={ACCEPT_ATTR} className="sr-only"
-        onChange={(e) => { onPick(e.target.files?.[0]); e.target.value = '' }} />
-    </div>
-  )
-}
-
 export default function UseCaseLanding({ slug }: { slug: string }) {
   const uc = USE_CASES.find((u) => u.slug === slug) as UseCase | undefined
 
@@ -166,8 +120,6 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
   const [consentChecked, setConsentChecked] = useState(false)
   const [captchaToken, setCaptchaToken] = useState('')
   const [isCaptchaRequested, setIsCaptchaRequested] = useState(false)
-  const [fileA, setFileA] = useState<File | null>(null)
-  const [fileB, setFileB] = useState<File | null>(null)
   const [idbCookieFound] = useState(() => hasIdbCookie())
   const captchaContainerRef = useRef<HTMLDivElement>(null)
   const captchaWidgetIdRef = useRef<number | null>(null)
@@ -220,21 +172,6 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
 
   if (!uc) return null
 
-  function pickFile(file: File | undefined, setFile: (f: File | null) => void) {
-    if (!file) return
-    setIsCaptchaRequested(true)
-    if (!hasAcceptedExtension(file.name)) {
-      setErrorMsg(`Поддерживаются только таблицы: ${ACCEPTED_EXTENSIONS.join(', ')}.`)
-      setFormState('error'); return
-    }
-    if (file.size > MAX_FILE_BYTES) {
-      setErrorMsg(`Файл должен быть не больше ${formatBytes(MAX_FILE_BYTES)}.`)
-      setFormState('error'); return
-    }
-    if (formState === 'error') { setFormState('idle'); setErrorMsg('') }
-    setFile(file)
-  }
-
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!uc) return
@@ -262,8 +199,6 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
     payload.append('contact', contact)
     payload.append('task', task)
     if (captchaActive) payload.append('captcha_token', captchaToken)
-    if (fileA) payload.append('files[]', fileA, fileA.name)
-    if (fileB) payload.append('files[]', fileB, fileB.name)
 
     try {
       const res = await fetch(SUBMIT_ENDPOINT, { method: 'POST', body: payload })
@@ -272,7 +207,7 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
         setFormState('success')
         reachGoal('lead', { source: uc.source })
         form.reset()
-        setFileA(null); setFileB(null); setConsentChecked(false)
+        setConsentChecked(false)
         setCaptchaToken(''); setIsCaptchaRequested(false)
         if (captchaWidgetIdRef.current !== null && window.smartCaptcha) {
           window.smartCaptcha.reset(captchaWidgetIdRef.current)
@@ -466,16 +401,6 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
                 <textarea name="task" rows={3} placeholder="Что автоматизируете, сколько записей, в каком формате данные..."
                   className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-slate-800 dark:text-slate-100 focus:border-blue-500 outline-none transition-all resize-none" />
               </div>
-              <div className="space-y-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/30 p-4">
-                <div className="flex items-center gap-2">
-                  <Paperclip size={14} className="text-blue-600 dark:text-blue-400" />
-                  <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">Ваши таблицы <span className="font-normal text-slate-400 dark:text-slate-500">— необязательно</span></span>
-                </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400">{ACCEPTED_EXTENSIONS.join(', ')} · до {formatBytes(MAX_FILE_BYTES)} каждый.</p>
-                <FileInput id="uc-file-a" label="Таблица Excel" hint="как есть" file={fileA} onPick={(f) => pickFile(f, setFileA)} onClear={() => setFileA(null)} />
-                <FileInput id="uc-file-b" label="Ещё файл" hint="если нужно" file={fileB} onPick={(f) => pickFile(f, setFileB)} onClear={() => setFileB(null)} />
-              </div>
-
               {formState === 'success' && (
                 <div className="flex items-center gap-2 text-green-500 dark:text-green-400 text-sm font-medium">
                   <CheckCircle2 size={16} /> Заявка отправлена! Свяжемся с вами в течение 24 часов.
