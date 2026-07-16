@@ -19,6 +19,7 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { USE_CASES } from '../src/data/usecases.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -116,6 +117,12 @@ const faqHtml = `
           .join('\n        ')}
       </section>`
 
+// Ссылки на все страницы-решения — чтобы краулеры видели их в статичном
+// снапшоте главной, а не только после загрузки SPA (issue #436).
+const useCaseLinksHtml = USE_CASES
+  .map((u) => `<a href="/${u.slug}.html">${escape(u.badge.replace(/ на Интеграме$/, ''))}</a>`)
+  .join(' ·\n      ')
+
 const bodyHtml = `
 <article id="lp-prerender" itemscope itemtype="https://schema.org/SoftwareApplication">
   <header>
@@ -142,6 +149,12 @@ const bodyHtml = `
       <a href="/agent-platforms.html">Интеграм против low-code и ИИ-агентов</a> ·
       <a href="/catalog-matching.html">Сопоставление каталогов и прайсов</a> ·
       <a href="/knowledge-base">База знаний</a>
+    </nav>
+    <nav class="lp-prerender__links" aria-label="Решения вместо Excel">
+      <a href="/konstruktor-prilozhenij.html">Конструктор вместо Excel</a> ·
+      <a href="/resheniya.html">Все решения вместо Excel</a> ·
+      ${useCaseLinksHtml} ·
+      <a href="/tokens.html">Токены — как считается стоимость</a>
     </nav>
   </footer>
 </article>

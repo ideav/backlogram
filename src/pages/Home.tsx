@@ -38,6 +38,7 @@ import {
   FileSpreadsheet
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { USE_CASES } from '../data/usecases'
 import ClientLogos from '@/components/ClientLogos'
 
 declare global {
@@ -903,6 +904,64 @@ export default function Home() {
                 </div>
                 <span className="text-slate-600 dark:text-slate-300 font-medium">{task}</span>
               </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 9c. Все решения и инструменты (issue #436) — ссылки на все страницы */}
+      <section id="solutions" className="py-24 bg-slate-50 dark:bg-slate-900/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Все решения и инструменты</h2>
+            <p className="text-slate-500 dark:text-slate-400">Отдельная страница под каждую задачу — от инструментов платформы до готовых решений вместо Excel</p>
+          </div>
+
+          {/* Инструменты платформы */}
+          <h3 className="text-lg font-bold mb-5 text-slate-800 dark:text-slate-100">Инструменты платформы</h3>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-14">
+            {[
+              { title: 'Конструктор приложений вместо Excel', href: '/konstruktor-prilozhenij.html' },
+              { title: 'Excel → приложение за ~45 минут', href: '/excel-to-app.html' },
+              { title: 'Массовое сопоставление каталогов', href: '/catalog-matching.html' },
+              { title: 'Информационная система', href: '/informatsionnaya-sistema.html' },
+              { title: 'ИИ и агентские платформы', href: '/agent-platforms.html' },
+              { title: 'Токены: как считается стоимость', href: '/tokens.html' },
+            ].map((p, i) => (
+              <Link
+                key={i}
+                to={p.href}
+                className="group p-5 flex items-center gap-4 bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl hover:border-blue-500/40 hover:shadow-sm transition-all"
+              >
+                <div className="w-8 h-8 rounded-lg bg-blue-600/10 text-blue-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <CheckCircle2 size={16} />
+                </div>
+                <span className="text-slate-700 dark:text-slate-200 font-medium flex-1">{p.title}</span>
+                <ArrowRight size={16} className="text-slate-300 dark:text-slate-600 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+              </Link>
+            ))}
+          </div>
+
+          {/* Решения по задачам — вместо Excel */}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Решения по задачам — вместо Excel</h3>
+            <Link to="/resheniya.html" className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:gap-2 transition-all">
+              Все решения <ArrowRight size={15} />
+            </Link>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {USE_CASES.map((u) => (
+              <Link
+                key={u.slug}
+                to={`/${u.slug}.html`}
+                className="group p-5 flex items-center gap-4 bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl hover:border-blue-500/40 hover:shadow-sm transition-all"
+              >
+                <div className="w-8 h-8 rounded-lg bg-blue-600/10 text-blue-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <CheckCircle2 size={16} />
+                </div>
+                <span className="text-slate-700 dark:text-slate-200 font-medium flex-1">{u.badge.replace(/ на Интеграме$/, '')}</span>
+                <ArrowRight size={16} className="text-slate-300 dark:text-slate-600 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+              </Link>
             ))}
           </div>
         </div>
