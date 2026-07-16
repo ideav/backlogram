@@ -98,6 +98,10 @@ const bodyHtml = `
       Elasticsearch и нанимали программистов; здесь всё собрано на конструкторе Интеграм.
     </p>
   </header>
+  <figure class="cm-prerender__figure">
+    <img src="/catalog-tokenization.jpg" alt="Токенизация наименований: каталоги поставщика (SKU) и контрагента (RFP) разбиваются на слова-токены и сопоставляются через общий справочник токенов" width="1672" height="941" loading="lazy" itemprop="image" />
+    <figcaption>Наименования из обоих каталогов разбиваются на токены и сводятся к общему справочнику — по пересечениям токенов находятся совпадения.</figcaption>
+  </figure>
   <h2>Полный цикл сопоставления</h2>
   ${stepsHtml}
   <section class="cm-prerender__group">
@@ -137,6 +141,12 @@ const bodyHtml = `
   #cm-prerender .cm-prerender__eyebrow { text-transform: uppercase; letter-spacing: 0.1em;
     font-size: 0.72rem; color: #3b82f6; font-weight: 700; margin: 0; }
   #cm-prerender .cm-prerender__lead { font-size: 1.1rem; color: #475569; max-width: 50rem; }
+  #cm-prerender .cm-prerender__figure { margin: 2rem 0 0; }
+  #cm-prerender .cm-prerender__figure img { width: 100%; height: auto; display: block;
+    border-radius: 1rem; border: 1px solid #e2e8f0; }
+  #cm-prerender .cm-prerender__figure figcaption { margin-top: 0.6rem; text-align: center;
+    font-size: 0.85rem; color: #94a3b8; }
+  .dark #cm-prerender .cm-prerender__figure img { border-color: #1e293b; }
   #cm-prerender .cm-prerender__footer { margin-top: 3rem; padding-top: 1.5rem;
     border-top: 1px solid #e2e8f0; font-size: 0.92rem; color: #475569; }
   /* Dark colours follow the app theme (.dark on <html>, set synchronously by the
@@ -157,7 +167,9 @@ const ogDescription =
 const seoTitle = 'Сопоставление каталогов без Elasticsearch | Интеграм'
 const metaDescription =
   'Массовое сопоставление позиций двух каталогов в Интеграме: токенизация, подбор ~120 пар/мин, оценка точности, кандидаты, выгрузка в Excel — без кода.'
-const ogImage = `${SITE}/og/knowledge-base.png`
+const ogImage = `${SITE}/catalog-tokenization.jpg`
+const ogImageW = 1672
+const ogImageH = 941
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -193,8 +205,8 @@ const headTags = [
   `<meta property="og:title" content="${escape(ogTitle)}" />`,
   `<meta property="og:description" content="${escape(ogDescription)}" />`,
   `<meta property="og:image" content="${escape(ogImage)}" />`,
-  `<meta property="og:image:width" content="1200" />`,
-  `<meta property="og:image:height" content="630" />`,
+  `<meta property="og:image:width" content="${ogImageW}" />`,
+  `<meta property="og:image:height" content="${ogImageH}" />`,
   `<meta property="og:locale" content="ru_RU" />`,
   `<meta property="og:site_name" content="${PUBLISHER}" />`,
   `<meta name="twitter:card" content="summary_large_image" />`,
