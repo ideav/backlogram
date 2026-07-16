@@ -22,6 +22,7 @@ import {
   Paperclip,
   Trash2,
 } from 'lucide-react'
+import { reachGoal } from '../lib/metrika'
 
 declare global {
   interface Window {
@@ -391,6 +392,7 @@ export default function ExcelConstructor() {
       const json = await res.json().catch(() => ({ ok: false }))
       if (res.ok && json.ok) {
         setFormState('success')
+        reachGoal('lead', { source: 'excel-constructor' })
         form.reset()
         setFileA(null)
         setFileB(null)

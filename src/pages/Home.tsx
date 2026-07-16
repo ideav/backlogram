@@ -1,5 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
+import { reachGoal } from '../lib/metrika'
 import {
   Zap,
   Code2,
@@ -137,6 +138,7 @@ export default function Home() {
       const json = await res.json()
       if (json.ok) {
         setFormState('success')
+        reachGoal('lead', { source: 'home' })
         form.reset()
         setCaptchaToken('')
         setIsCaptchaRequested(false)
