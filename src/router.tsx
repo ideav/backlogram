@@ -12,6 +12,9 @@ import Tokens from './pages/Tokens'
 import AdImages from './pages/AdImages'
 import KnowledgeBase from './pages/KnowledgeBase'
 import KnowledgeBaseArticle from './pages/KnowledgeBaseArticle'
+import UseCaseLanding from './pages/UseCaseLanding'
+import UseCaseHub from './pages/UseCaseHub'
+import { USE_CASES } from './data/usecases'
 import App from './App'
 
 export const router = createBrowserRouter([
@@ -87,6 +90,21 @@ export const router = createBrowserRouter([
         path: 'knowledge-base/:slug',
         element: <KnowledgeBaseArticle />,
       },
+      // Хаб тематических решений (issue #431)
+      {
+        path: 'resheniya.html',
+        element: <UseCaseHub />,
+      },
+      {
+        path: 'resheniya',
+        element: <UseCaseHub />,
+      },
+      // 10 тематических лендингов «замена Excel по задаче» — генерируются из
+      // src/data/usecases.mjs (тот же источник, что у пререндера).
+      ...USE_CASES.flatMap((u) => [
+        { path: `${u.slug}.html`, element: <UseCaseLanding slug={u.slug} /> },
+        { path: u.slug, element: <UseCaseLanding slug={u.slug} /> },
+      ]),
       {
         path: '*',
         element: <NotFound />,
