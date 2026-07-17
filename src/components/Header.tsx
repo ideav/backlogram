@@ -26,6 +26,7 @@ export function Header() {
     { name: 'Конструктор вместо Excel', href: '/konstruktor-prilozhenij.html' },
     { name: 'Excel → приложение', href: '/excel-to-app.html' },
     { name: 'Сопоставление каталогов', href: '/catalog-matching.html' },
+    { name: 'Интеграм vs Битрикс24 / AmoCRM', href: '/sravnenie-s-bitrix-amocrm.html' },
     {
       name: 'Предпосылки no-code конструктора',
       href: 'https://blog.ideav.ru/posts/predposylki-no-code-konstruktora-integram/',
