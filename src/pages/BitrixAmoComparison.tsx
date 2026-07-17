@@ -5,6 +5,7 @@ import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
+  XCircle,
   AlertTriangle,
   GitCompare,
   Lock,
@@ -13,10 +14,13 @@ import {
   Server,
   ShieldCheck,
   Boxes,
-  Users,
-  TrendingUp,
+  Clock,
+  Infinity as InfinityIcon,
+  Star,
+  User,
   Wallet,
 } from 'lucide-react'
+import { Logo } from '../components/Logo'
 
 const SITE = 'https://ideav.ru'
 const PATH = '/sravnenie-s-bitrix-amocrm.html'
@@ -70,79 +74,66 @@ const locked = [
   },
 ]
 
-type CompareRow = {
-  criterion: string
-  bitrix: string
-  amo: string
-  us: string
+// Наглядное сравнение колонками «что нельзя поменять в коробке» (issue #4264):
+// у Битрикс24 и AmoCRM — ограничения (красный ✗), у Интеграма — гибкость (зелёный ✓).
+type CompareColumn = {
+  key: string
+  positive: boolean
+  items: string[]
 }
 
-const compareRows: CompareRow[] = [
-  {
-    criterion: 'Модель данных и сущности',
-    bitrix: 'Фиксированные: лид, сделка, контакт, компания',
-    amo: 'Фиксированные: лид, сделка, контакт, компания',
-    us: 'Любые сущности, поля и связи — под ваш процесс',
-  },
-  {
-    criterion: 'Воронки и перенос лида',
-    bitrix: 'Несколько воронок, перенос лида между ними ограничен',
-    amo: 'Воронки есть, перенос лида между воронками — с потерями',
-    us: 'Воронки, статусы и правила переходов настраиваются запросом',
-  },
-  {
-    criterion: 'Изменить логику ядра',
-    bitrix: 'Нет — это ядро продукта, даже за деньги',
-    amo: 'Нет — только надстройки через API и виджеты',
-    us: 'Да, это конструктор — бизнес-логика ваша',
-  },
-  {
-    criterion: 'За рамки CRM (склад, производство, договоры)',
-    bitrix: 'Отдельные модули и маркетплейс',
-    amo: 'Почти нет — только внешние интеграции',
-    us: 'Одна платформа под любые смежные процессы',
-  },
-  {
-    criterion: 'Объём данных',
-    bitrix: 'Лимиты тарифа',
-    amo: 'Лимиты тарифа',
-    us: 'Сотни тысяч+ записей, ядро QDM без потолка «как в Excel»',
-  },
-  {
-    criterion: 'Модель оплаты',
-    bitrix: 'За каждого пользователя, помесячно',
-    amo: 'За каждого пользователя, помесячно',
-    us: 'Подписка или лицензия — не за каждого пользователя',
-  },
-  {
-    criterion: 'Локальная установка (on-prem)',
-    bitrix: 'Только в коробочной редакции',
-    amo: 'Нет — только облако',
-    us: 'Возможна, на вашем сервере',
-  },
-  {
-    criterion: 'Данные и реестр РФ',
-    bitrix: 'В реестре РФ',
-    amo: 'В реестре РФ',
-    us: 'Реестр РФ №30872, данные на сервере в РФ',
-  },
-]
+const bitrixLimits: CompareColumn = {
+  key: 'bitrix',
+  positive: false,
+  items: [
+    'Воронки ограничены',
+    'Сущности фиксированы',
+    'Доработки не меняют ядро',
+    'Оплата за пользователя',
+    'On-prem только коробка',
+  ],
+}
 
-const pillars = [
+const amoLimits: CompareColumn = {
+  key: 'amo',
+  positive: false,
+  items: [
+    'Перенос между воронками с потерями',
+    'Сущности фиксированы',
+    'Только API и виджеты',
+    'Оплата за пользователя',
+    'Только облако',
+  ],
+}
+
+const integramWins: CompareColumn = {
+  key: 'integram',
+  positive: true,
+  items: [
+    'Любые сущности и связи',
+    'Гибкие воронки и переходы',
+    'Бизнес-логика ваша',
+    'Подписка или лицензия',
+    'Облако РФ или on-prem',
+  ],
+}
+
+// «Почему выбирают Интеграм» — три коротких аргумента с яркими иконками.
+const whyChoose = [
   {
-    icon: <Users size={24} />,
-    title: 'База клиентов под ваш процесс',
-    body: 'Карточка клиента с нужными именно вам полями, история общения, связи со сделками, договорами и задачами — модель задаёте вы, а не вендор.',
+    icon: <User size={22} />,
+    title: 'Под ваш процесс',
+    body: 'Настраивайте под свою модель работы.',
   },
   {
-    icon: <TrendingUp size={24} />,
-    title: 'Воронки, которые слушаются',
-    body: 'Любое число воронок, свои этапы и правила переходов; перенос лида между воронками — обычная операция, а не костыль.',
+    icon: <InfinityIcon size={22} />,
+    title: 'Без ограничений коробки',
+    body: 'Никаких лимитов на логику и доработки.',
   },
   {
-    icon: <ShieldCheck size={24} />,
-    title: 'Роли, объём и размещение',
-    body: 'Доступ по ролям на уровне строк, сотни тысяч записей без деградации, размещение в облаке РФ или on-prem — на вашем сервере.',
+    icon: <Star size={22} />,
+    title: 'Подходит для нестандартных CRM',
+    body: 'Сложные сценарии — легко.',
   },
 ]
 
@@ -286,44 +277,85 @@ export default function BitrixAmoComparison() {
         </div>
       </section>
 
-      {/* Таблица сравнения */}
+      {/* Сравнение колонками — «что нельзя поменять в коробке», красочно (issue #4264) */}
       <section className="py-16 border-b border-slate-200 dark:border-slate-900">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-3xl font-bold mb-2">Интеграм, Битрикс24 и AmoCRM — по пунктам</h2>
-          <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-2xl">
-            Коробочные CRM быстро стартуют на стандартном процессе. Разница проявляется там, где процесс
-            выходит за рамки заложенной модели.
-          </p>
-
-          <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
-            <table className="w-full border-collapse text-sm">
-              <thead>
-                <tr className="bg-slate-50 dark:bg-slate-900/50">
-                  <th className="text-left py-3 px-4 font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest text-xs">Критерий</th>
-                  <th className="text-left py-3 px-4 font-bold text-slate-500 dark:text-slate-400">Битрикс24</th>
-                  <th className="text-left py-3 px-4 font-bold text-slate-500 dark:text-slate-400">AmoCRM</th>
-                  <th className="text-left py-3 px-4 font-bold text-blue-600 dark:text-blue-400">Интеграм</th>
-                </tr>
-              </thead>
-              <tbody>
-                {compareRows.map((r, i) => (
-                  <tr key={i} className="border-t border-slate-100 dark:border-slate-800/60 align-top">
-                    <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">{r.criterion}</td>
-                    <td className="py-3 px-4 text-slate-500 dark:text-slate-400">{r.bitrix}</td>
-                    <td className="py-3 px-4 text-slate-500 dark:text-slate-400">{r.amo}</td>
-                    <td className="py-3 px-4 text-slate-700 dark:text-slate-200">
-                      <span className="inline-flex items-start gap-1.5">
-                        <CheckCircle2 size={14} className="text-blue-500 shrink-0 mt-0.5" />
-                        {r.us}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">Что нельзя поменять в коробке</h2>
+            <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+              В коробочных CRM часть логики зашита в ядро. На Интеграме процессы настраиваются под вас.
+            </p>
           </div>
 
-          <div className="mt-6 p-5 rounded-2xl border border-amber-300/50 dark:border-amber-900/40 bg-amber-50/50 dark:bg-amber-950/20">
+          <div className="grid gap-5 md:grid-cols-3 items-start">
+            {/* Битрикс24 — ограничения */}
+            <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-6 sm:p-7">
+              <div className="flex items-center gap-1.5 h-9 mb-6">
+                <span className="text-2xl font-extrabold tracking-tight text-[#2ba6e0]">Битрикс24</span>
+                <Clock size={15} className="text-[#2ba6e0]" />
+              </div>
+              <ul className="space-y-4">
+                {bitrixLimits.items.map((t) => (
+                  <li key={t} className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+                    <XCircle size={20} className="shrink-0 text-red-500" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* AmoCRM — ограничения */}
+            <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-6 sm:p-7">
+              <div className="flex items-baseline h-9 mb-6">
+                <span className="text-2xl font-extrabold tracking-tight lowercase text-slate-400 dark:text-slate-500">amo</span>
+                <span className="text-2xl font-extrabold tracking-tight text-sky-500">CRM</span>
+                <span className="text-2xl font-extrabold text-sky-500">.</span>
+              </div>
+              <ul className="space-y-4">
+                {amoLimits.items.map((t) => (
+                  <li key={t} className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+                    <XCircle size={20} className="shrink-0 text-red-500" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Интеграм — выделен зелёным */}
+            <div className="rounded-3xl border-2 border-green-400/70 dark:border-green-500/40 bg-white dark:bg-slate-950 p-6 sm:p-7 shadow-xl shadow-green-500/10">
+              <div className="flex items-center h-9 mb-6">
+                <Logo className="h-6 w-auto text-slate-900 dark:text-white" />
+              </div>
+              <ul className="space-y-4">
+                {integramWins.items.map((t) => (
+                  <li key={t} className="flex items-center gap-3 text-sm font-medium text-slate-800 dark:text-slate-100">
+                    <CheckCircle2 size={20} className="shrink-0 text-green-500" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Почему выбирают Интеграм */}
+          <div className="mt-6 rounded-3xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/40 p-6 sm:p-8">
+            <h3 className="text-center text-lg md:text-xl font-bold mb-6">Почему выбирают Интеграм</h3>
+            <div className="grid gap-6 sm:grid-cols-3">
+              {whyChoose.map((w) => (
+                <div key={w.title} className="flex items-start gap-4">
+                  <span className="w-11 h-11 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-blue-600/20">
+                    {w.icon}
+                  </span>
+                  <div>
+                    <div className="font-bold text-slate-900 dark:text-white leading-snug">{w.title}</div>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{w.body}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 p-5 rounded-2xl border border-amber-300/50 dark:border-amber-900/40 bg-amber-50/50 dark:bg-amber-950/20 max-w-3xl mx-auto">
             <div className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-300">
               <AlertTriangle size={16} className="text-amber-500 shrink-0 mt-0.5" />
               <span>
@@ -334,25 +366,8 @@ export default function BitrixAmoComparison() {
               </span>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Что вы получаете на Интеграме */}
-      <section className="py-16 border-b border-slate-200 dark:border-slate-900">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-3xl font-bold mb-8">Что вы получаете на Интеграме</h2>
-          <div className="grid gap-4 md:grid-cols-3">
-            {pillars.map((p, i) => (
-              <div key={i} className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
-                <span className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-4">
-                  {p.icon}
-                </span>
-                <h3 className="font-bold text-slate-900 dark:text-white mb-2">{p.title}</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{p.body}</p>
-              </div>
-            ))}
-          </div>
-          <p className="mt-8 text-sm">
+          <p className="mt-8 text-center text-sm">
             <Link to="/crm-uchet-klientov.html" className="inline-flex items-center gap-1.5 font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 transition-colors">
               Подробнее: CRM-учёт клиентов на Интеграме <ArrowRight size={16} />
             </Link>
