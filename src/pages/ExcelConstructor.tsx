@@ -671,9 +671,18 @@ export default function ExcelConstructor() {
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1">Email / Telegram</label>
+                {/*
+                  Пустой контакт гасим НАТИВНОЙ проверкой required (issue #467): без
+                  неё отправка, отменённая через preventDefault, всё равно порождает
+                  submit-событие, и автоцель Метрики «Отправка формы» засчитывает его
+                  как конверсию. required не даёт submit-событию возникнуть; свой текст
+                  показываем вместо системного «пузыря».
+                */}
                 <input
                   name="contact"
                   type="text"
+                  required
+                  onInvalid={e => { e.preventDefault(); setFormState('error'); setErrorMsg('Укажите контакт — email или Telegram, куда прислать демо-доступ.') }}
                   onInput={() => setIsCaptchaRequested(true)}
                   className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-slate-800 dark:text-slate-100 focus:border-blue-500 outline-none transition-all"
                   placeholder="@username или you@company.ru"

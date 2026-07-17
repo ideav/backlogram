@@ -765,7 +765,7 @@ export default function ExcelToApp() {
                 </button>
               </div>
             ) : (
-              <form className="space-y-6" onSubmit={handleSubmit} noValidate>
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 <div>
                   <h2 className="text-2xl md:text-3xl font-bold mb-2">Загрузите свои таблицы</h2>
                   <p className="text-slate-500 dark:text-slate-400">
@@ -859,11 +859,16 @@ export default function ExcelToApp() {
                   <label htmlFor="excel-contact" className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1">
                     Контакт — email или Telegram
                   </label>
+                  {/* required гасит submit-событие для пустого контакта, чтобы автоцель
+                      Метрики «Отправка формы» не засчитала пустую заявку (issue #467).
+                      Ради этого с <form> снят noValidate. */}
                   <input
                     id="excel-contact"
                     name="contact"
                     type="text"
+                    required
                     value={contact}
+                    onInvalid={e => { e.preventDefault(); setFormState('error'); setErrorMsg('Укажите контакт — email или Telegram, куда пришлем ссылку.') }}
                     onInput={() => setIsCaptchaRequested(true)}
                     onChange={e => setContact(e.target.value)}
                     className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:border-blue-500 outline-none transition-all"

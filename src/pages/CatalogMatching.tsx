@@ -731,9 +731,13 @@ export default function CatalogMatching() {
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1">Email / Telegram</label>
+                {/* required гасит submit-событие для пустого контакта, чтобы автоцель
+                    Метрики «Отправка формы» не засчитала пустую заявку (issue #467). */}
                 <input
                   name="contact"
                   type="text"
+                  required
+                  onInvalid={e => { e.preventDefault(); setFormState('error'); setErrorMsg('Укажите контакт — email или Telegram, куда прислать результат.') }}
                   onInput={() => setIsCaptchaRequested(true)}
                   className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-slate-800 dark:text-slate-100 focus:border-blue-500 outline-none transition-all"
                   placeholder="@username или you@company.ru"
