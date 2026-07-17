@@ -185,7 +185,7 @@ const ogDescription =
 const seoTitle = 'Интеграм vs Битрикс24 и AmoCRM — сравнение CRM'
 const metaDescription =
   'Сравнение Интеграма с Битрикс24 и AmoCRM: что в коробочных CRM нельзя изменить даже за деньги (перенос лида между воронками) и когда нужен CRM-конструктор.'
-const ogImage = `${SITE}/og/knowledge-base.png`
+const ogImage = `${SITE}/og/sravnenie-bitrix-amocrm.png`
 const ogImageW = 1200
 const ogImageH = 630
 

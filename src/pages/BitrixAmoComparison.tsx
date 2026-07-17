@@ -169,7 +169,7 @@ export default function BitrixAmoComparison() {
   useEffect(() => {
     document.title = PAGE_TITLE
     const canonical = `${SITE}${PATH}`
-    const ogImage = `${SITE}/og/knowledge-base.png`
+    const ogImage = `${SITE}/og/sravnenie-bitrix-amocrm.png`
 
     setMetaTag('meta[name="description"]', 'name', 'description', PAGE_DESCRIPTION)
     setMetaTag('meta[name="keywords"]', 'name', 'keywords',

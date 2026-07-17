@@ -269,7 +269,19 @@ await render(
 )
 console.log(`✓ public/og/home.png`)
 
-// 4. Organization logo referenced from JSON-LD (Organization.logo). The file
+// 4. Comparison page: Интеграм vs Битрикс24 / AmoCRM (issue crm#4259).
+await render(
+  cardJSX({
+    eyebrow: 'Сравнение CRM',
+    title: 'Интеграм vs Битрикс24 и AmoCRM',
+    subtitle:
+      'Что в коробочных CRM нельзя изменить даже за деньги — например, перенос лида между воронками. Интеграм настраивается под ваш процесс.',
+  }),
+  resolve(outDir, 'sravnenie-bitrix-amocrm.png')
+)
+console.log(`✓ public/og/sravnenie-bitrix-amocrm.png`)
+
+// 5. Organization logo referenced from JSON-LD (Organization.logo). The file
 //    was missing, so structured data pointed at a 404; generate it here.
 const logosDir = resolve(root, 'public/logos')
 mkdirSync(logosDir, { recursive: true })
@@ -283,4 +295,4 @@ await render(
 )
 console.log(`✓ public/logos/integram-og.png`)
 
-console.log(`\nDone: ${knowledgeBaseArticles.length + 3} OG cards generated`)
+console.log(`\nDone: ${knowledgeBaseArticles.length + 4} OG cards generated`)
