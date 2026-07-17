@@ -125,6 +125,10 @@ for (const uc of USE_CASES) {
   const others = USE_CASES.filter((o) => o.slug !== uc.slug).slice(0, 3)
   const otherLinks = others
     .map((o) => `<a href="/${o.slug}.html">${escape(o.badge)}</a>`).join(' · ')
+  // Перекрёстная ссылка на сравнительную страницу — только со страницы CRM (issue #4259)
+  const relatedExtra = uc.slug === 'crm-uchet-klientov'
+    ? '<a href="/sravnenie-s-bitrix-amocrm.html">Сравнение с Битрикс24 и AmoCRM</a> · '
+    : ''
 
   const bodyHtml = `
 <article id="uc-prerender" itemscope itemtype="https://schema.org/Service">
@@ -146,7 +150,7 @@ for (const uc of USE_CASES) {
   ${faqHtml}
   <footer class="uc-footer">
     <p>
-      <a href="/${uc.slug}.html#zayavka">Заказать демо</a> ·
+      ${relatedExtra}<a href="/${uc.slug}.html#zayavka">Заказать демо</a> ·
       <a href="/resheniya.html">Все решения вместо Excel</a> ·
       <a href="/">На главную</a> · ${otherLinks}
     </p>

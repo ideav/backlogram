@@ -438,6 +438,15 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
+      {uc.slug === 'crm-uchet-klientov' && (
+        <section className="py-8 border-b border-slate-200 dark:border-slate-900">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <Link to="/sravnenie-s-bitrix-amocrm.html" className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 transition-colors">
+              Сравнение: Интеграм vs Битрикс24 и AmoCRM <ArrowRight size={16} />
+            </Link>
+          </div>
+        </section>
+      )}
       {/* Другие решения (перелинковка кластера) */}
       <section className="py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -15,6 +15,7 @@ const AgentPlatforms = lazy(() => import('./pages/AgentPlatforms'))
 const CatalogMatching = lazy(() => import('./pages/CatalogMatching'))
 const ExcelConstructor = lazy(() => import('./pages/ExcelConstructor'))
 const InformationSystem = lazy(() => import('./pages/InformationSystem'))
+const BitrixAmoComparison = lazy(() => import('./pages/BitrixAmoComparison'))
 const Tokens = lazy(() => import('./pages/Tokens'))
 const AdImages = lazy(() => import('./pages/AdImages'))
 const KnowledgeBase = lazy(() => import('./pages/KnowledgeBase'))
@@ -74,6 +75,14 @@ export const router = createBrowserRouter([
       {
         path: 'informatsionnaya-sistema',
         element: <InformationSystem />,
+      },
+      {
+        path: 'sravnenie-s-bitrix-amocrm.html',
+        element: <BitrixAmoComparison />,
+      },
+      {
+        path: 'sravnenie-s-bitrix-amocrm',
+        element: <BitrixAmoComparison />,
       },
       {
         path: 'tokens.html',
