@@ -215,68 +215,6 @@ export default function BitrixAmoComparison() {
         </div>
       </section>
 
-      {/* Реальный случай: воронки */}
-      <section className="py-14 border-b border-slate-200 dark:border-slate-900">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-3xl font-bold mb-2">Реальный случай: перенос лида между воронками</h2>
-          <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-2xl">
-            У нашего клиента процесс продаж шёл через несколько воронок, и лид должен был переходить из
-            одной в другую по ходу сделки.
-          </p>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
-              <div className="flex items-center gap-2 mb-3 text-slate-900 dark:text-white font-bold">
-                <Lock size={18} className="text-slate-400" /> В коробочной CRM
-              </div>
-              <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                Переключение воронок и перенос лида между ними ограничены логикой продукта: теряются
-                поля, история и связи, а часть переходов невозможна вовсе. Доработка за деньги не
-                помогает — это поведение ядра, к которому у заказчика нет доступа.
-              </p>
-            </div>
-            <div className="p-6 rounded-2xl border border-blue-200 dark:border-blue-900/40 bg-blue-50/60 dark:bg-blue-950/30">
-              <div className="flex items-center gap-2 mb-3 text-slate-900 dark:text-white font-bold">
-                <Repeat size={18} className="text-blue-500" /> На Интеграме
-              </div>
-              <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                Воронка — это ваши поля и правила. Перенос лида между воронками, свои этапы и условия
-                переходов настраиваются запросом без релиза; история и связи сохраняются, потому что
-                модель данных ваша.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Что нельзя поменять даже за деньги */}
-      <section className="py-14 border-b border-slate-200 dark:border-slate-900">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-3xl font-bold mb-2">Что в коробочных CRM нельзя поменять даже за деньги</h2>
-          <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-2xl">
-            Готовая CRM — это фиксированная модель. Настройками и доработками вы двигаетесь только в тех
-            рамках, что заложил вендор. Вот что упирается в ядро продукта.
-          </p>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            {locked.map((item, i) => (
-              <div
-                key={i}
-                className="flex gap-4 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950"
-              >
-                <span className="w-11 h-11 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                  {item.icon}
-                </span>
-                <div>
-                  <h3 className="font-bold text-slate-900 dark:text-white mb-1">{item.title}</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{item.body}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Сравнение колонками — «что нельзя поменять в коробке», красочно (issue #4264) */}
       <section className="py-16 border-b border-slate-200 dark:border-slate-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -375,6 +313,67 @@ export default function BitrixAmoComparison() {
         </div>
       </section>
 
+      {/* Реальный случай: воронки */}
+      <section className="py-14 border-b border-slate-200 dark:border-slate-900">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl md:text-3xl font-bold mb-2">Реальный случай: перенос лида между воронками</h2>
+          <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-2xl">
+            У нашего клиента процесс продаж шёл через несколько воронок, и лид должен был переходить из
+            одной в другую по ходу сделки.
+          </p>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+              <div className="flex items-center gap-2 mb-3 text-slate-900 dark:text-white font-bold">
+                <Lock size={18} className="text-slate-400" /> В коробочной CRM
+              </div>
+              <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                Переключение воронок и перенос лида между ними ограничены логикой продукта: теряются
+                поля, история и связи, а часть переходов невозможна вовсе. Доработка за деньги не
+                помогает — это поведение ядра, к которому у заказчика нет доступа.
+              </p>
+            </div>
+            <div className="p-6 rounded-2xl border border-blue-200 dark:border-blue-900/40 bg-blue-50/60 dark:bg-blue-950/30">
+              <div className="flex items-center gap-2 mb-3 text-slate-900 dark:text-white font-bold">
+                <Repeat size={18} className="text-blue-500" /> На Интеграме
+              </div>
+              <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                Воронка — это ваши поля и правила. Перенос лида между воронками, свои этапы и условия
+                переходов настраиваются запросом без релиза; история и связи сохраняются, потому что
+                модель данных ваша.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Что нельзя поменять даже за деньги */}
+      <section className="py-14 border-b border-slate-200 dark:border-slate-900">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl md:text-3xl font-bold mb-2">Что в коробочных CRM нельзя поменять даже за деньги</h2>
+          <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-2xl">
+            Готовая CRM — это фиксированная модель. Настройками и доработками вы двигаетесь только в тех
+            рамках, что заложил вендор. Вот что упирается в ядро продукта.
+          </p>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            {locked.map((item, i) => (
+              <div
+                key={i}
+                className="flex gap-4 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950"
+              >
+                <span className="w-11 h-11 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                  {item.icon}
+                </span>
+                <div>
+                  <h3 className="font-bold text-slate-900 dark:text-white mb-1">{item.title}</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{item.body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
       {/* FAQ */}
       <section className="py-16 border-b border-slate-200 dark:border-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
