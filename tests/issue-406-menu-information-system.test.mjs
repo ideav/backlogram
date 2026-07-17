@@ -24,8 +24,10 @@ test('«Ещё» menu links to the Информационная система p
   )
 })
 
-test('«Ещё» menu holds exactly 4 items', () => {
+test('«Ещё» menu holds exactly 6 items', () => {
+  // Сравнение с Битрикс24/AmoCRM вынесено в верхнее меню как «Больше CRM»
+  // (issue #4264), поэтому в «Ещё» осталось 6 пунктов.
   const block = moreLinksBlock()
   const count = (block.match(/href:/g) || []).length
-  assert.equal(count, 4, 'the «Ещё» dropdown must always have 4 entries')
+  assert.equal(count, 6, 'the «Ещё» dropdown must have 6 entries')
 })

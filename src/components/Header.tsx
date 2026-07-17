@@ -15,6 +15,7 @@ export function Header() {
     { name: 'Как работаем', href: '/#process' },
     { name: 'Примеры', href: '/#cases' },
     { name: 'Цены', href: '/#pricing' },
+    { name: 'Больше CRM', href: '/sravnenie-s-bitrix-amocrm.html' },
     { name: 'База знаний', href: '/knowledge-base.html' },
     { name: 'Блог', href: 'https://blog.ideav.ru/', external: true },
   ]
@@ -26,7 +27,6 @@ export function Header() {
     { name: 'Конструктор вместо Excel', href: '/konstruktor-prilozhenij.html' },
     { name: 'Excel → приложение', href: '/excel-to-app.html' },
     { name: 'Сопоставление каталогов', href: '/catalog-matching.html' },
-    { name: 'Интеграм vs Битрикс24 / AmoCRM', href: '/sravnenie-s-bitrix-amocrm.html' },
     {
       name: 'Предпосылки no-code конструктора',
       href: 'https://blog.ideav.ru/posts/predposylki-no-code-konstruktora-integram/',
