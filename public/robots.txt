@@ -94,5 +94,10 @@ Allow: /
 User-agent: DuckDuckBot
 Allow: /
 
-# === Sitemap ===
-Sitemap: https://ideav.ru/sitemap.xml
+# === Sitemaps ===
+# Мастер-индекс включает и основной сайт (ideav.ru/sitemap.xml), и блог на
+# поддомене (blog.ideav.ru). Блог продублирован отдельной строкой — для
+# краулеров, читающих robots напрямую и не разворачивающих вложенный индекс
+# (issue #480). Оба домена подтверждены в Вебмастере / Search Console.
+Sitemap: https://ideav.ru/sitemap-index.xml
+Sitemap: https://blog.ideav.ru/sitemap-index.xml
