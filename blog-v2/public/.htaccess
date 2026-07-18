@@ -1,0 +1,9 @@
+# @astrojs/sitemap отдаёт sitemap-index.xml (+ sitemap-0.xml), а НЕ sitemap.xml.
+# Часто угадываемый URL /sitemap.xml без этого правила отдаёт 404 и путает
+# аудиторов (issue #480). Отправляем его 301-редиректом на настоящий индекс.
+#
+# Требуется AllowOverride FileInfo на vhost blog.ideav.ru — так же, как на
+# ideav.ru (см. docs/server-performance.md). При AllowOverride None этот
+# .htaccess просто игнорируется (не ошибка) — блог продолжает работать, а
+# /sitemap.xml остаётся 404; тогда правило нужно перенести в конфиг vhost.
+RedirectMatch 301 ^/sitemap\.xml$ https://blog.ideav.ru/sitemap-index.xml
