@@ -113,7 +113,7 @@ export const router = createBrowserRouter([
         path: 'resheniya',
         element: <UseCaseHub />,
       },
-      // 10 тематических лендингов «замена Excel по задаче» — генерируются из
+      // 11 тематических лендингов «замена Excel по задаче» — генерируются из
       // src/data/usecases.mjs (тот же источник, что у пререндера).
       ...USE_CASES.flatMap((u) => [
         { path: `${u.slug}.html`, element: <UseCaseLanding slug={u.slug} /> },

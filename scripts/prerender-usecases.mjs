@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Post-build prerender for the 10 use-case landings (issue #431) and the hub
+ * Post-build prerender for the 11 use-case landings (issue #431) and the hub
  * page /resheniya.html. Content comes from src/data/usecases.mjs — the SAME
  * source the React pages use, so snapshot and live page never drift.
  *
@@ -38,6 +38,7 @@ const IMG_SIZE = {
   '/uc-crm.png': { w: 1536, h: 1024 },
   '/uc-dogovory.png': { w: 1536, h: 1024 },
   '/uc-otchetnost.png': { w: 1536, h: 1024 },
+  '/uc-dvizhenie-tmc.png': { w: 1520, h: 916 },
 }
 
 function escape(s) {
@@ -113,7 +114,7 @@ function write(slug, seoTitle, metaDescription, headTags, bodyHtml) {
   console.log(`✓ usecase prerendered → dist/${slug}.html (${html.length} bytes)`)
 }
 
-// ── 10 тематических лендингов ────────────────────────────────────────────────
+// ── 11 тематических лендингов ────────────────────────────────────────────────
 for (const uc of USE_CASES) {
   const canonical = `${SITE}/${uc.slug}.html`
   const painsHtml = uc.pains
