@@ -2,10 +2,11 @@ import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
-  ArrowLeft, ArrowRight, Boxes, Database, ListChecks, Layers, Settings2,
+  ArrowRight, Boxes, Database, ListChecks, Layers, Settings2,
   GitCompare, Wallet, Users, TrendingUp, Archive, BarChart3,
 } from 'lucide-react'
 import { HUB, USE_CASES } from '../data/usecases'
+import Breadcrumbs from '../components/Breadcrumbs'
 
 const SITE = 'https://ideav.ru'
 
@@ -53,9 +54,12 @@ export default function UseCaseHub() {
     <div className="overflow-hidden">
       <section className="pt-28 pb-12 lg:pt-36 lg:pb-16 border-b border-slate-200 dark:border-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link to="/" className="flex w-fit items-center gap-1.5 text-sm text-slate-400 dark:text-slate-500 hover:text-blue-500 transition-colors mb-6">
-            <ArrowLeft size={16} /> На главную
-          </Link>
+          <Breadcrumbs
+            items={[
+              { name: 'Интеграм', to: '/' },
+              { name: 'Решения', to: '/resheniya.html' },
+            ]}
+          />
           <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5">
             {HUB.h1} <span className="text-blue-500">{HUB.h1accent}</span>

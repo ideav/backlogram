@@ -25,6 +25,7 @@ import {
   AlertTriangle,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
+import Breadcrumbs from '../components/Breadcrumbs'
 
 declare global {
   interface Window {
@@ -495,6 +496,13 @@ export default function ExcelToApp() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <Breadcrumbs
+            className="flex justify-center"
+            items={[
+              { name: 'Интеграм', to: '/' },
+              { name: 'Из Excel — приложение', to: '/excel-to-app.html' },
+            ]}
+          />
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}

@@ -136,13 +136,25 @@ const ogImage = `${SITE}/og/home.png`
 
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'WebPage',
-  '@id': `${canonical}#webpage`,
-  url: canonical,
-  name: ogTitle,
-  description: ogDescription,
-  inLanguage: 'ru',
-  isPartOf: { '@id': `${SITE}/#website` },
+  '@graph': [
+    {
+      '@type': 'WebPage',
+      '@id': `${canonical}#webpage`,
+      url: canonical,
+      name: ogTitle,
+      description: ogDescription,
+      inLanguage: 'ru',
+      isPartOf: { '@id': `${SITE}/#website` },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${canonical}#breadcrumb`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Интеграм', item: `${SITE}/` },
+        { '@type': 'ListItem', position: 2, name: 'Токены и стоимость', item: canonical },
+      ],
+    },
+  ],
 }
 
 const headTags = [

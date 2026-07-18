@@ -195,6 +195,14 @@ const jsonLd = {
       author: { '@id': `${SITE}/#organization` },
       publisher: { '@id': `${SITE}/#organization` },
     },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${canonical}#breadcrumb`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Интеграм', item: `${SITE}/` },
+        { '@type': 'ListItem', position: 2, name: 'Сопоставление каталогов', item: canonical },
+      ],
+    },
   ],
 }
 

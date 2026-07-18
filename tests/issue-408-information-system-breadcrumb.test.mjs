@@ -8,26 +8,21 @@ const read = (p) => readFileSync(resolve(repo, p), 'utf8')
 
 const pageSource = read('src/pages/InformationSystem.tsx')
 
-// Вырезаем блок ссылки «← На главную» из хедера пиллар-страницы.
-function backLinkClass() {
-  const match = pageSource.match(
-    /<Link\s+to="\/"\s+className="([^"]*)"[\s\S]*?На главную/,
+// #477: у пиллар-страницы «Информационная система» ссылку «← На главную» заменили
+// на общие хлебные крошки (Интеграм / Информационная система). Крошки покрывают и
+// роль «наверх» (первое звено Интеграм → /), и снимают регрессию #408/#385, где
+// back-link слипался с бейджем «Основы…» — теперь это отдельный блочный <nav>.
+test('the page uses the shared Breadcrumbs trail instead of an ad-hoc back-link', () => {
+  assert.match(pageSource, /import Breadcrumbs from '\.\.\/components\/Breadcrumbs'/)
+  assert.match(
+    pageSource,
+    /<Breadcrumbs[\s\S]*?name: 'Информационная система', to: '\/informatsionnaya-sistema\.html'/,
+    'InformationSystem must render a breadcrumb ending on the current page',
   )
-  assert.ok(match, 'InformationSystem should have a "На главную" back-link')
-  return match[1]
-}
-
-// Регрессия #408 / #385: ссылка «На главную» и бейдж «Основы…» слипались,
-// потому что оба были inline-flex и садились в одну строку без отступа.
-// Ссылка должна быть блочной (flex w-fit) — тогда бейдж уходит на строку ниже.
-test('«На главную» back-link is block-level so it cannot glue to the badge', () => {
-  const cls = backLinkClass()
-  assert.match(cls, /\bflex\b/, 'back-link must be a flex (block-level) element')
-  assert.match(cls, /\bw-fit\b/, 'back-link must hug its content with w-fit')
   assert.doesNotMatch(
-    cls,
-    /\binline-flex\b/,
-    'back-link must NOT be inline-flex — that glues it to the «Основы…» badge',
+    pageSource,
+    /<ArrowLeft size=\{16\} \/> На главную/,
+    'the ad-hoc «На главную» back-link must be gone (replaced by the breadcrumb)',
   )
 })
 
