@@ -72,6 +72,7 @@ $SOURCE_LABELS = [
     'uc-crm'            => 'CRM / клиенты',
     'uc-dokumenty'      => 'Документооборот / договоры',
     'uc-otchetnost'     => 'Управленческий учёт',
+    'uc-tmc-ds'         => 'Движение ТМЦ и денег',
 ];
 $sourceLabel = $SOURCE_LABELS[$source] ?? ($source !== '' ? $source : 'Excel → приложение');
 

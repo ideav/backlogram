@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
+  ArrowLeftRight,
   CheckCircle2,
   AlertTriangle,
   Send,
@@ -51,7 +52,7 @@ declare global {
 const ICONS: Record<string, typeof Database> = {
   ListChecks, MessageSquare, KeyRound, Layers, Users, Gauge, Settings2,
   BarChart3, Database, GitCompare, Wallet, ShieldCheck, TrendingUp, Clock,
-  Archive, Boxes, FileSpreadsheet, Server,
+  Archive, Boxes, FileSpreadsheet, Server, ArrowLeftRight,
 }
 
 // Натуральные размеры скриншотов — чтобы браузер зарезервировал место (без CLS).
@@ -66,6 +67,7 @@ const IMG_SIZE: Record<string, { w: number; h: number }> = {
   '/uc-crm.png': { w: 1536, h: 1024 },
   '/uc-dogovory.png': { w: 1536, h: 1024 },
   '/uc-otchetnost.png': { w: 1536, h: 1024 },
+  '/uc-dvizhenie-tmc.png': { w: 1520, h: 916 },
 }
 function Icon({ name, size = 24 }: { name: string; size?: number }) {
   const Cmp = ICONS[name] ?? Boxes
