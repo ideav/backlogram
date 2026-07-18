@@ -222,6 +222,15 @@ const jsonLd = {
         acceptedAnswer: { '@type': 'Answer', text: f.a },
       })),
     },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${canonical}#breadcrumb`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Интеграм', item: `${SITE}/` },
+        { '@type': 'ListItem', position: 2, name: 'CRM-учёт клиентов', item: `${SITE}/crm-uchet-klientov.html` },
+        { '@type': 'ListItem', position: 3, name: 'Сравнение с Битрикс24 и amoCRM', item: canonical },
+      ],
+    },
   ],
 }
 

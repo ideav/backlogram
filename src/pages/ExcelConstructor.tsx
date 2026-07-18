@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
-  ArrowLeft,
   ArrowRight,
   CheckCircle2,
   AlertTriangle,
@@ -22,6 +21,7 @@ import {
   Paperclip,
   Trash2,
 } from 'lucide-react'
+import Breadcrumbs from '../components/Breadcrumbs'
 import { reachGoal } from '../lib/metrika'
 
 declare global {
@@ -421,12 +421,12 @@ export default function ExcelConstructor() {
       {/* Hero */}
       <section className="pt-28 pb-12 lg:pt-36 lg:pb-16 border-b border-slate-200 dark:border-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link
-            to="/"
-            className="flex w-fit items-center gap-1.5 text-sm text-slate-400 dark:text-slate-500 hover:text-blue-500 transition-colors mb-6"
-          >
-            <ArrowLeft size={16} /> На главную
-          </Link>
+          <Breadcrumbs
+            items={[
+              { name: 'Интеграм', to: '/' },
+              { name: 'Конструктор приложений', to: '/konstruktor-prilozhenij.html' },
+            ]}
+          />
 
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 text-blue-600 dark:text-blue-400 text-sm font-medium mb-5">
             <Zap size={14} />

@@ -164,6 +164,14 @@ for (const uc of USE_CASES) {
       { '@type': 'WebPage', '@id': `${canonical}#webpage`, url: canonical, name: uc.ogTitle, description: uc.ogDescription, inLanguage: 'ru', isPartOf: { '@id': `${SITE}/#website` } },
       { '@type': 'Service', '@id': `${canonical}#service`, name: uc.badge, serviceType: uc.seoTitle, provider: { '@id': `${SITE}/#organization` }, areaServed: 'RU', url: canonical, description: uc.ogDescription },
       { '@type': 'FAQPage', '@id': `${canonical}#faq`, mainEntity: uc.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
+      {
+        '@type': 'BreadcrumbList', '@id': `${canonical}#breadcrumb`,
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Интеграм', item: `${SITE}/` },
+          { '@type': 'ListItem', position: 2, name: 'Решения', item: `${SITE}/resheniya.html` },
+          { '@type': 'ListItem', position: 3, name: uc.badge.replace(/\s+на Интеграме$/, ''), item: canonical },
+        ],
+      },
     ],
   }
   const sz = IMG_SIZE[uc.image] ?? { w: 1200, h: 630 }
@@ -203,6 +211,13 @@ for (const uc of USE_CASES) {
         itemListElement: USE_CASES.map((u, i) => ({
           '@type': 'ListItem', position: i + 1, name: u.badge, url: `${SITE}/${u.slug}.html`,
         })),
+      },
+      {
+        '@type': 'BreadcrumbList', '@id': `${canonical}#breadcrumb`,
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Интеграм', item: `${SITE}/` },
+          { '@type': 'ListItem', position: 2, name: 'Решения', item: canonical },
+        ],
       },
     ],
   }

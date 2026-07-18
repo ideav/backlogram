@@ -229,6 +229,14 @@ const jsonLd = {
         acceptedAnswer: { '@type': 'Answer', text: f.a },
       })),
     },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${canonical}#breadcrumb`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Интеграм', item: `${SITE}/` },
+        { '@type': 'ListItem', position: 2, name: 'Конструктор приложений', item: canonical },
+      ],
+    },
   ],
 }
 
