@@ -129,6 +129,11 @@ const bodyHtml = `
       <a href="/">На главную</a> ·
       <a href="/knowledge-base/21-catalog-matching.html">База знаний: сопоставление каталогов</a>
     </p>
+    <p style="margin-top:0.6rem">
+      Читайте в блоге:
+      <a href="https://blog.ideav.ru/posts/massovoe-sopostavlenie-katalogov/">Массовое сопоставление каталогов: автоподбор пар</a> ·
+      <a href="https://blog.ideav.ru/posts/sopostavlenie-katalogov-produkcii-v-integram/">Сопоставление каталогов продукции в Интеграме</a>
+    </p>
   </footer>
 </article>
 <style>

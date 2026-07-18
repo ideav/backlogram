@@ -1,4 +1,5 @@
 import React from 'react'
+import BlogLinks from '../components/BlogLinks'
 import { motion } from 'framer-motion'
 import { reachGoal } from '../lib/metrika'
 import {
@@ -1030,6 +1031,14 @@ export default function ExcelToApp() {
           </div>
         </div>
       </section>
+
+      <BlogLinks
+        posts={[
+          { title: 'Excel в приложение за 45 минут: чем отличается подход Интеграма', slug: 'excel-v-prilozhenie-za-45-minut-kak-rabotaet-ii-agent-integrama' },
+          { title: 'Пекарня заменила 5 Excel-файлов на одну систему учёта заказов', slug: 'keis-pekarnya-zamenila-5-excel-na-sistemu-ucheta-zakazov' },
+          { title: 'Как логистическая компания за день сделала диспетчера отгрузок из Excel', slug: 'keis-logistika-dispetcher-otgruzok-iz-excel-za-den' },
+        ]}
+      />
     </div>
   )
 }

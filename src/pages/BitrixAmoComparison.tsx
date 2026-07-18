@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import BlogLinks from '../components/BlogLinks'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -426,6 +427,13 @@ export default function BitrixAmoComparison() {
           </p>
         </div>
       </section>
+
+      <BlogLinks
+        posts={[
+          { title: 'Битрикс24 прикручивает AI к сложности. Почему Интеграм идёт другим путём', slug: 'bitrix24-ai-vibecode-i-sistemnaya-prostota' },
+          { title: 'CRM-система для среднего бизнеса: разбор кейса', slug: 'crm-sistema-dlya-srednego-biznesa' },
+        ]}
+      />
     </div>
   )
 }

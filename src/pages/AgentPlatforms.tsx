@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import BlogLinks from '../components/BlogLinks'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -604,6 +605,14 @@ export default function AgentPlatforms() {
           </p>
         </div>
       </section>
+
+      <BlogLinks
+        posts={[
+          { title: 'Что умеет ИИ-агент Интеграма, когда собирает приложение', slug: 'chto-umeet-ii-agent-pri-sborke-prilozheniya' },
+          { title: 'ИИ-чат внутри приложения: агент дорабатывает базу изнутри', slug: 'ii-chat-vnutri-bazy-agent-dorabatyvaet-prilozhenie' },
+          { title: 'Программисты, коробка или ИИ-агент: кто проектирует ваше приложение', slug: 'programmisty-korobka-ili-ii-agent-kto-proektiruet-prilozhenie' },
+        ]}
+      />
     </div>
   )
 }
