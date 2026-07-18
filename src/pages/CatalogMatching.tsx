@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import BlogLinks from '../components/BlogLinks'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -836,22 +837,19 @@ export default function CatalogMatching() {
           </div>
 
           <p className="mt-10 text-center text-sm">
-            <a
-              href="https://blog.ideav.ru/posts/massovoe-sopostavlenie-katalogov/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-slate-400 dark:text-slate-500 hover:text-blue-500 transition-colors"
-            >
-              Подробный разбор в блоге: массовый автоподбор пар →
-            </a>
-          </p>
-          <p className="mt-2 text-center text-sm">
             <Link to="/knowledge-base/21-catalog-matching.html" className="text-slate-400 dark:text-slate-500 hover:text-blue-500 transition-colors">
               В базе знаний: Интеграм вместо Elasticsearch →
             </Link>
           </p>
         </div>
       </section>
+
+      <BlogLinks
+        posts={[
+          { title: 'Массовое сопоставление каталогов в Интеграме: автоматический подбор пар', slug: 'massovoe-sopostavlenie-katalogov' },
+          { title: 'Сопоставление каталогов продукции в конструкторе Интеграм', slug: 'sopostavlenie-katalogov-produkcii-v-integram' },
+        ]}
+      />
     </div>
   )
 }

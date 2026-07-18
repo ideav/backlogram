@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import BlogLinks from '../components/BlogLinks'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -639,6 +640,14 @@ export default function InformationSystem() {
           </p>
         </div>
       </section>
+
+      <BlogLinks
+        posts={[
+          { title: 'Единая база данных для филиалов', slug: 'edinaya-baza-dannyh-dlya-filialov' },
+          { title: 'Безопасность и отказоустойчивость Интеграма для крупного бизнеса', slug: 'bezopasnost-i-otkazoustoichivost-dlya-krupnogo-biznesa' },
+          { title: 'Интеграм on-premise: установка в контуре заказчика', slug: 'integram-on-premise-lokalno' },
+        ]}
+      />
     </div>
   )
 }

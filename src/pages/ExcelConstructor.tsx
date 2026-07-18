@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import BlogLinks from '../components/BlogLinks'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -787,6 +788,14 @@ export default function ExcelConstructor() {
           </p>
         </div>
       </section>
+
+      <BlogLinks
+        posts={[
+          { title: 'Первый российский аналог Airtable', slug: 'pervyi-rossiiskii-analog-airtable' },
+          { title: 'Предпосылки no-code конструктора Интеграм', slug: 'predposylki-no-code-konstruktora-integram' },
+          { title: 'Что умеет ИИ-агент Интеграма, когда собирает приложение', slug: 'chto-umeet-ii-agent-pri-sborke-prilozheniya' },
+        ]}
+      />
     </div>
   )
 }

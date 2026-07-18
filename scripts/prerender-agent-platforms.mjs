@@ -179,6 +179,12 @@ const bodyHtml = `
       <a href="/">На главную</a> ·
       <a href="/knowledge-base">База знаний</a>
     </p>
+    <p style="margin-top:0.6rem">
+      Читайте в блоге:
+      <a href="https://blog.ideav.ru/posts/chto-umeet-ii-agent-pri-sborke-prilozheniya/">Что умеет ИИ-агент при сборке приложения</a> ·
+      <a href="https://blog.ideav.ru/posts/ii-chat-vnutri-bazy-agent-dorabatyvaet-prilozhenie/">ИИ-чат внутри приложения: доработки изнутри</a> ·
+      <a href="https://blog.ideav.ru/posts/programmisty-korobka-ili-ii-agent-kto-proektiruet-prilozhenie/">Программисты, коробка или ИИ-агент</a>
+    </p>
   </footer>
 </article>
 <style>

@@ -153,6 +153,11 @@ const bodyHtml = `
       <a href="/resheniya.html">Все решения вместо Excel</a> ·
       <a href="/">На главную</a>
     </p>
+    <p style="margin-top:0.6rem">
+      Читайте в блоге:
+      <a href="https://blog.ideav.ru/posts/bitrix24-ai-vibecode-i-sistemnaya-prostota/">Битрикс24 прикручивает AI к сложности</a> ·
+      <a href="https://blog.ideav.ru/posts/crm-sistema-dlya-srednego-biznesa/">CRM-система для среднего бизнеса</a>
+    </p>
   </footer>
 </article>
 <style>
