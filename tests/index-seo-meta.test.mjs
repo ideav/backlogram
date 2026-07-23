@@ -7,11 +7,11 @@ const indexSource = readFileSync(new URL('../index.html', import.meta.url), 'utf
 test('index.html exposes SEO title, description and keywords', () => {
   assert.match(
     indexSource,
-    /<title>Из Excel — приложение за час \| Интеграм<\/title>/,
+    /<title>Интеграм — no-code конструктор приложений из Excel за час \| Airtable<\/title>/,
   )
   assert.match(
     indexSource,
-    /<meta name="description" content="Из Excel — рабочее приложение за час\. Пришлите таблицу: получите веб-приложение с формами, доступами и отчётами\. Понятно бухгалтеру, логисту, начальнику цеха — без программистов, 1С и долгого внедрения\." \/>/,
+    /<meta name="description" content="Из Excel — рабочее приложение за час: формы, доступы, отчёты\. No-code конструктор баз данных, замена Excel и Google Sheets, аналог Airtable\. В реестре ПО\." \/>/,
   )
   assert.match(
     indexSource,

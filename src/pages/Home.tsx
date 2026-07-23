@@ -207,7 +207,7 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.1 }}
                 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8"
               >
-                Инструмент для <span className="text-blue-500 italic">ускорения</span> внутренней разработки
+<span className="text-blue-500 italic">Интеграм</span> — no-code конструктор приложений и баз данных для ускорения внутренней разработки
               </motion.h1>
 
               <motion.p
@@ -216,8 +216,8 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="max-w-3xl mx-auto text-lg md:text-xl text-slate-900 dark:text-slate-100 leading-relaxed mb-10"
               >
-                Разгрузите программистов, не жертвуя контролем.<br />
-                Платформа, которая встраивается в вашу ИТ-среду и реализует проекты быстрее, чем вы успеете написать ТЗ на обычную разработку.
+                Разгрузите программистов, не жертвуя контролем. Из Excel-таблицы — рабочее веб-приложение за 45 минут.<br />
+                Реляционные данные, сотни тысяч записей, права доступа на уровне строк, локальное размещение в контуре заказчика. Замена Excel и аналог Airtable, автоматизация бизнес-процессов без программистов. В реестре отечественного ПО (запись №30872).
               </motion.p>
 
               <motion.div
@@ -274,7 +274,16 @@ export default function Home() {
                 Загрузите Excel — получите приложение
               </h2>
               <p className="text-slate-500 dark:text-slate-400">
-                Пришлите свои таблицы и тематику — вернём ссылку на готовую базу Интеграм с вашими данными.
+                Конвертация Excel в приложение без потерь данных. Пришлите свои таблицы — вернём ссылку на готовую базу Интеграм с вашими данными: формы ввода, права доступа, отчёты и дашборды.
+              </p>
+              <ul className="mt-3 grid sm:grid-cols-2 gap-x-6 gap-y-1.5 text-sm text-slate-500 dark:text-slate-400">
+                <li><span className="font-semibold text-slate-700 dark:text-slate-200">Создание формы из Excel-таблицы</span> — каждый столбец становится полем с валидацией</li>
+                <li><span className="font-semibold text-slate-700 dark:text-slate-200">Автоматическое обновление данных из Excel</span> — загрузили новый файл, данные обновились</li>
+                <li><span className="font-semibold text-slate-700 dark:text-slate-200">Парсинг Excel-файлов</span> — распознавание структуры, типов данных и связей</li>
+                <li><span className="font-semibold text-slate-700 dark:text-slate-200">Многопользовательский доступ вместо Excel</span> — права на уровне строк и столбцов</li>
+              </ul>
+              <p className="mt-3 text-slate-500 dark:text-slate-400">
+                Превратите таблицу Excel в CRM-систему, каталог товаров, трекер задач или реестр договоров. Миграция данных из Excel в базу данных — без потерь, без программистов.
               </p>
             </div>
             <span className="hidden lg:inline-flex items-center gap-2 px-6 py-3 bg-blue-600 group-hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-colors shrink-0">
@@ -308,6 +317,10 @@ export default function Home() {
                   {
                     title: 'Скрытая нагрузка на бюджет',
                     desc: 'Внутренние разработки требуют дорогостоящего "переключения фокуса" для сопровождения'
+                  },
+                  {
+                    title: 'Excel и Google Sheets упираются в лимиты',
+                    desc: 'Максимальный размер таблицы в Excel — 1 048 576 строк. Хранение больших данных в таблицах упирается в ограничения типов данных, памяти и формул: тормозит при фильтрации, ошибки при совместном доступе, нет прав на уровне строк. Когда Excel, Google Sheets и Airtable упираются в лимиты — пора переходить на промышленную платформу.'
                   }
                 ].map((item, i) => (
                   <motion.div
@@ -364,7 +377,7 @@ export default function Home() {
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Для кого</h2>
             <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-              Интеграм создан для тех, кто устал от хаоса в бизнес-процессах. Платформа позволяет навести порядок в учёте, заменить громоздкое ПО в планово-экономических отделах, прогнозировать доходы и снижать расходы — без долгих внедрений.
+              Интеграм создан для компаний, которым нужны внутренние приложения, учёт и автоматизация процессов без долгого цикла заказной разработки. CRM для B2B-продаж, система учёта данных, управление взаимодействием с клиентами, автоматизация документооборота — вместо разрозненных Excel-файлов на общем диске.
             </p>
           </div>
 
@@ -395,6 +408,20 @@ export default function Home() {
             ))}
           </div>
 
+          <div className="grid sm:grid-cols-2 gap-4 mb-10">
+            {[
+              { label: 'Строительные компании', desc: 'Управление проектами, учёт персонала, производственный учёт. Замена Excel-таблиц с прорабами на мобильное приложение.' },
+              { label: 'Финансовые компании', desc: 'Учёт персональных данных, автоматизация отчётности, автоматизированная система учёта ПДн. Соответствие 152-ФЗ.' },
+              { label: 'Логистика', desc: 'Складской учёт, управление ТМЦ, движение товаров. Автоматическое обновление данных из Excel-прайсов поставщиков.' },
+              { label: 'ИТ-компании', desc: 'Service Desk, управление заявками и инцидентами, Help Desk для ИТ-отдела. Автоматизация рутинных задач в офисе.' },
+            ].map(({ label, desc }) => (
+              <div key={label} className="p-5 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-1">{label}</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+
           <p className="text-center text-sm text-slate-400 dark:text-slate-500">
             Оптимальное решение для компаний со штатом до 700 сотрудников — с собственным ИТ-отделом или специалистами на аутсорсинге
           </p>
@@ -419,22 +446,27 @@ export default function Home() {
             <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto italic">Это не просто «конструктор для менеджеров». Это промышленная платформа.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
                 icon: Database,
                 title: 'Не тормозит на объемах',
-                desc: 'Протестировано на сотнях миллионов записей. Ваши корпоративные объемы — это штатный режим для Интеграма.'
+                desc: 'Протестировано на сотнях миллионов записей. Максимальный размер таблицы в Excel — 1 млн строк; в Интеграме — без ограничений. Производительность таблиц с миллионами строк — штатный режим, оптимизация больших таблиц не требуется.'
               },
               {
                 icon: Layers,
                 title: 'Любая сложность данных',
-                desc: 'Связи, рекурсия и вложенные запросы без ручного кодирования. Реальная замена традиционной БД.'
+                desc: 'Связи, рекурсия и вложенные запросы без ручного кодирования. Реальная замена традиционной БД. В отличие от Airtable, где ограничения таблиц блокируют сложные связи, Интеграм полностью поддерживает реляционную модель данных.'
               },
               {
                 icon: ShieldCheck,
                 title: 'Безопасность на уровне ядра',
-                desc: 'Ролевая модель к таблицам, колонкам и записям. Журналы событий и контрольные точки — из коробки.'
+                desc: 'Ролевая модель к таблицам, колонкам и записям. Журналы событий и контрольные точки — из коробки. Локальное размещение (on-premise) в контуре заказчика: данные не покидают вашу инфраструктуру.'
+              },
+              {
+                icon: Zap,
+                title: 'Автоматизация вместо рутины',
+                desc: 'Автоматическая генерация отчётов, рассылка по расписанию, формирование счетов и актов. Автоматизация Excel-таблиц без макросов и VBA, автоматическое распределение задач между сотрудниками — устранение человеческого фактора и ошибок в отчётах.'
               }
             ].map((item, i) => (
               <motion.div
@@ -471,17 +503,17 @@ export default function Home() {
               {
                 step: '01',
                 title: 'Выбор задачи',
-                desc: 'Вы выбираете любой проект из очереди: учет, согласование, отчетность, справочники или админки'
+                desc: 'Вы выбираете любой проект из очереди: учёт, согласование, отчётность, справочники или админки. Или присылаете Excel-файл — мы покажем, как он будет выглядеть в приложении.'
               },
               {
                 step: '02',
                 title: 'Проектирование',
-                desc: 'Мы анализируем требования и разворачиваем решение на платформе «Интеграм» под ваши требования'
+                desc: 'Мы анализируем требования и разворачиваем решение на платформе «Интеграм». Конвертация Excel в приложение: структура данных, формы, права доступа, отчёты. Без программирования — изменения вносятся бизнес-аналитиками.'
               },
               {
                 step: '03',
                 title: 'Готовый инструмент',
-                desc: 'Вы получаете приложение с SSO (единый вход), API (программный интерфейс), аудитом и внешним видом в корпоративном стиле'
+                desc: 'Вы получаете приложение с SSO (единый вход), API, аудитом и корпоративным стилем. Импорт/экспорт: Excel, JSON, API. Автоматическое обновление данных из Excel по расписанию.'
               }
             ].map((item, i) => (
               <motion.div
@@ -536,7 +568,7 @@ export default function Home() {
             <div className="order-1 lg:order-2">
               <h2 className="text-3xl md:text-4xl font-bold mb-6">Изменения вносятся бизнес-аналитиками, а не программистами</h2>
               <p className="text-slate-500 dark:text-slate-400 text-lg mb-8 leading-relaxed">
-                Ваши ИТ-ресурсы перестают тратить время на правки отчетов и интерфейсов. Этим занимаются аналитики или бизнес-пользователи в рамках их полномочий.
+                Ваши ИТ-ресурсы перестают тратить время на правки отчётов и интерфейсов. Поля, формы, отчёты и дашборды настраиваются без релизов. Это no-code платформа: автоматизация бизнес-процессов без программирования. Создание веб-приложений для аналитиков — без кода, без ожидания очереди к разработчикам.
               </p>
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-3 text-slate-600 dark:text-slate-300">
@@ -550,6 +582,12 @@ export default function Home() {
                     <CheckCircle2 size={14} />
                   </div>
                   <span>Полный аудит всех изменений логики</span>
+                </div>
+                <div className="flex items-center gap-3 text-slate-600 dark:text-slate-300">
+                  <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle2 size={14} />
+                  </div>
+                  <span>Автоматизация рутинных задач в офисе: отчёты, согласования, уведомления</span>
                 </div>
               </div>
             </div>
@@ -571,7 +609,7 @@ export default function Home() {
               Мы строим продукты, интегрированные с <span className="text-blue-500 dark:text-blue-400">искусственным интеллектом</span>
             </h2>
             <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-lg">
-              Языковые модели и агенты берут на себя большую часть работы по программированию и интеграции — мы используем их полную мощь, чтобы доставлять решения быстрее.
+              Языковые модели и агенты берут на себя большую часть работы по программированию и интеграции — мы используем их полную мощь, чтобы доставлять решения быстрее. Загрузите Excel — ИИ распознаёт структуру, предложит типы данных и создаст приложение. Автоматизация Excel-процессов через ИИ: от парсинга файлов до генерации отчётов.
             </p>
           </div>
 
@@ -629,10 +667,10 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: Activity, title: 'Интеграции', desc: 'Настройка интеграционных модулей без программирования' },
-              { icon: Users, title: 'Аутентификация', sub: 'Интеграция с корпоративными методами аутентификации' },
-              { icon: BarChart3, title: 'Мониторинг и Аудит', sub: 'Выгрузка данных в ваши системы (ELK, Zabbix и др.)' },
-              { icon: Settings2, title: 'Локальная установка', sub: 'Работа на вашем контуре для полной безопасности' }
+              { icon: Activity, title: 'Интеграции', desc: 'Настройка интеграционных модулей без программирования. Импорт/экспорт: Excel, JSON, API. Парсинг Excel-файлов для автоматического обновления данных.' },
+              { icon: Users, title: 'Аутентификация', sub: 'Интеграция с корпоративными методами: SSO, LDAP, Active Directory.' },
+              { icon: BarChart3, title: 'Мониторинг и Аудит', sub: 'Выгрузка данных в ваши системы (ELK, Zabbix). Автоматическая рассылка отчётов по расписанию.' },
+              { icon: Settings2, title: 'Локальная установка', sub: 'Работа в контуре предприятия. On-premise размещение для полной безопасности данных.' }
             ].map((item, i) => (
               <div key={i} className="p-8 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:border-slate-300 dark:hover:border-slate-700 transition-all text-center shadow-sm dark:shadow-none">
                 <div className="mx-auto w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 mb-6">
@@ -665,6 +703,10 @@ export default function Home() {
                 <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
                   Заказчик хотел глобальную платформу типа WeChat — покрыть все задачи прораба и интегрироваться в жизнь заказчиков и исполнителей проектов.
                 </p>
+                <div className="mb-6 grid gap-2 text-sm leading-relaxed">
+                  <p className="text-slate-500 dark:text-slate-400"><span className="font-semibold text-red-500/90">Было:</span> 15 Excel-файлов у прорабов, ручное сведение данных.</p>
+                  <p className="text-slate-600 dark:text-slate-300"><span className="font-semibold text-emerald-500">Стало:</span> единое приложение, автоматическое обновление данных, дашборды в реальном времени.</p>
+                </div>
                 <div className="space-y-4">
                   <div className="flex gap-4">
                     <div className="flex-shrink-0 w-6 h-6 rounded bg-red-500/10 text-red-500 flex items-center justify-center">
@@ -763,6 +805,10 @@ export default function Home() {
                 <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
                   Фонд, инвестирующий в технологические компании (БПЛА, дроны, глубокие технологии). Портфель из десятков стартапов с разной степенью зависимости от иностранных технологий.
                 </p>
+                <div className="mb-6 grid gap-2 text-sm leading-relaxed">
+                  <p className="text-slate-500 dark:text-slate-400"><span className="font-semibold text-red-500/90">Было:</span> оценка суверенности в Google Таблицах, лимиты и ошибки формул.</p>
+                  <p className="text-slate-600 dark:text-slate-300"><span className="font-semibold text-emerald-500">Стало:</span> 9D-аудит, 50+ метрик, 11 ИИ-агентов. Замена Google Таблиц на промышленную платформу.</p>
+                </div>
                 <div className="space-y-4">
                   <div className="flex gap-4">
                     <div className="flex-shrink-0 w-6 h-6 rounded bg-red-500/10 text-red-500 flex items-center justify-center">
@@ -813,6 +859,10 @@ export default function Home() {
                 <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
                   Крупный банк с тысячами сотрудников и десятками разрозненных ИТ-систем.
                 </p>
+                <div className="mb-6 grid gap-2 text-sm leading-relaxed">
+                  <p className="text-slate-500 dark:text-slate-400"><span className="font-semibold text-red-500/90">Было:</span> учёт ПДн в Excel, разрозненные файлы, нет прав доступа.</p>
+                  <p className="text-slate-600 dark:text-slate-300"><span className="font-semibold text-emerald-500">Стало:</span> реестр процессов, автоматическая отчётность, ролевая модель. Миграция данных из Excel в базу данных.</p>
+                </div>
                 <div className="space-y-4">
                   <div className="flex gap-4">
                     <div className="flex-shrink-0 w-6 h-6 rounded bg-red-500/10 text-red-500 flex items-center justify-center">
@@ -887,28 +937,31 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              'Системы учета договоров и платежей',
-              'Управление заявками и инцидентами',
-              'Реестры и справочники с версионностью',
-              'Админки для смежных систем',
-              'Отчетность и информационные панели',
-              'Инвентаризация и учет оборудования',
-              'Бюджетирование и согласование',
-              'Центры управления НСИ',
-              'Анкеты и опросы сотрудников'
-            ].map((task, i) => (
+              { title: 'CRM и системы учёта клиентов', desc: 'Договоры и платежи. Замена Excel-таблиц с клиентами на систему с правами доступа.' },
+              { title: 'Service Desk и управление заявками', desc: 'Help Desk для ИТ-отдела. Автоматизация рутинных задач.' },
+              { title: 'Реестры и справочники с версионностью', desc: 'Замена Excel-реестров на систему с историей изменений.' },
+              { title: 'Админки и панели управления', desc: 'Веб-интерфейс для Excel-данных смежных систем.' },
+              { title: 'Дашборды и отчётность в реальном времени', desc: 'Сводные таблицы Excel в дашборд с автоматическим обновлением.' },
+              { title: 'Инвентаризация и учёт оборудования', desc: 'Автоматический сбор данных из разных источников.' },
+              { title: 'Бюджетирование и маршрутизация согласования', desc: 'Автоматизация маршрутов согласования документов.' },
+              { title: 'Центры управления НСИ', desc: 'Система учёта данных с валидацией и очисткой дубликатов.' },
+              { title: 'Анкеты, опросы и портал самообслуживания', desc: 'Для сотрудников. Автоматизация онбординга.' }
+            ].map((item, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
-                className="p-5 flex items-center gap-4 bg-slate-50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-800 rounded-2xl hover:border-blue-500/30 hover:bg-white dark:hover:bg-slate-900/50 transition-all cursor-default group shadow-sm dark:shadow-none"
+                className="p-5 flex items-start gap-4 bg-slate-50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-800 rounded-2xl hover:border-blue-500/30 hover:bg-white dark:hover:bg-slate-900/50 transition-all cursor-default group shadow-sm dark:shadow-none"
               >
                 <div className="w-8 h-8 rounded-lg bg-blue-600/10 text-blue-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                   <CheckCircle2 size={16} />
                 </div>
-                <span className="text-slate-600 dark:text-slate-300 font-medium">{task}</span>
+                <div className="flex-1">
+                  <span className="block text-slate-700 dark:text-slate-200 font-semibold">{item.title}</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-400">{item.desc}</span>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -1254,7 +1307,7 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold mb-1">Знакомство</h3>
-                  <p className="text-slate-400 dark:text-slate-500 text-sm">Личная песочница</p>
+                  <p className="text-slate-400 dark:text-slate-500 text-sm">Личная песочница. Попробуйте конвертацию Excel в приложение бесплатно.</p>
                 </div>
               </div>
               <div className="mb-6 flex items-baseline gap-2">
@@ -1295,7 +1348,7 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold mb-1">Стартап</h3>
-                  <p className="text-slate-400 dark:text-slate-500 text-sm">Подходит для 80% клиентов</p>
+                  <p className="text-slate-400 dark:text-slate-500 text-sm">Подходит для 80% клиентов. Автоматизация Excel-таблиц, дашборды, формы, права доступа.</p>
                 </div>
               </div>
               <div className="mb-2 flex items-baseline gap-2">
@@ -1333,7 +1386,7 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold mb-1">Масштабируемый</h3>
-                  <p className="text-slate-400 dark:text-slate-500 text-sm">Регрессивная цена пакетов</p>
+                  <p className="text-slate-400 dark:text-slate-500 text-sm">Регрессивная цена пакетов. Хранение больших данных в таблицах без ограничений.</p>
                 </div>
               </div>
               <div className="mb-6 flex items-baseline gap-2">
@@ -1401,6 +1454,22 @@ export default function Home() {
                 q: 'Чем Интеграм отличается от Excel и Airtable?',
                 a: 'Реляционные данные, сотни тысяч записей, права доступа на уровне строк и столбцов, локальное развёртывание в контуре заказчика — там, где Excel, Google Sheets и Airtable упираются в лимиты.',
               },
+              {
+                q: 'Можно ли перенести данные из Excel в Интеграм?',
+                a: 'Да. Загрузите Excel-файл — платформа автоматически распознаёт структуру, типы данных и связи. Конвертация Excel в приложение занимает ~45 минут, миграция данных из Excel в базу данных происходит без потерь. Создание формы из Excel-таблицы, парсинг Excel-файлов, автоматическое обновление данных из Excel — всё из коробки.',
+              },
+              {
+                q: 'Какие лимиты у Интеграма?',
+                a: 'Протестировано на сотнях миллионов записей. Нет ограничений на количество строк, колонок или таблиц. Максимальный размер таблицы в Excel — 1 048 576 строк, в Airtable — лимиты на записи и связи, в Интеграме — без ограничений. Производительность таблиц с миллионами строк — штатный режим.',
+              },
+              {
+                q: 'Нужны ли программисты для работы с Интеграмом?',
+                a: 'Нет. Изменения вносятся бизнес-аналитиками: поля, формы, отчёты и дашборды настраиваются без кодирования. Это no-code платформа — автоматизация бизнес-процессов без программирования, создание веб-приложений для аналитиков без кода.',
+              },
+              {
+                q: 'Интеграм — это российский продукт?',
+                a: 'Да. Интеграм включён в реестр отечественного ПО (запись №30872). Это российский аналог Airtable, замена Excel и Google Sheets для корпоративных задач. Локальное размещение (on-premise) в контуре заказчика.',
+              },
             ].map((item, i) => (
               <div
                 key={i}
@@ -1411,6 +1480,16 @@ export default function Home() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* 16. SEO-текст в подвал (issue #488) */}
+      <section className="py-16 border-t border-slate-200 dark:border-slate-900 bg-slate-50 dark:bg-slate-900/50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+            <span className="font-semibold text-slate-700 dark:text-slate-200">Интеграм — российская no-code платформа для создания внутренних бизнес-приложений и баз данных без программирования.</span>{' '}
+            Конвертация Excel в приложение за 45 минут: формы, отчёты, дашборды, права доступа на уровне строк. Замена Excel, Google Sheets и Airtable для корпоративных объёмов данных — сотни тысяч записей, реляционные связи, локальное размещение (on-premise). Автоматизация бизнес-процессов, CRM для B2B-продаж, система учёта данных, управление заявками и инцидентами, документооборот и маршрутизация согласования. Автоматическая генерация отчётов, парсинг Excel-файлов, интеграция данных из разрозненных источников. Включён в реестр отечественного ПО (запись №30872). Аналог Airtable, аналог Trello, замена Excel для бизнеса. Пилотный проект за 2 недели. Облако от 0 ₽/мес, локальная лицензия 590 000 ₽/год.
+          </p>
         </div>
       </section>
     </div>
