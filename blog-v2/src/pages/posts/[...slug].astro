@@ -1,8 +1,22 @@
 ---
+import { existsSync } from 'node:fs'
 import { getCollection, render } from 'astro:content'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import { tagSlug } from '../../lib/tags'
 import { categorySlug } from '../../lib/categories'
+
+// og:image must be exactly 1200×630 — BaseLayout hardcodes og:image:width/height.
+// Covers that aren't already that size get a generated 1200×630 variant at
+// /uploads/og/<name>.jpg (scripts/generate-og-covers.mjs, issue #487). Prefer it
+// for social meta when present; the original stays the full-res in-page hero.
+function ogImage(image) {
+  if (!image?.startsWith('/uploads/')) return image
+  const stem = image.slice(image.lastIndexOf('/') + 1).replace(/\.[^.]+$/, '')
+  const variant = `/uploads/og/${stem}.jpg`
+  return existsSync(new URL(`../../../public${variant}`, import.meta.url))
+    ? variant
+    : image
+}
 
 export async function getStaticPaths() {
   const all = await getCollection('posts', ({ data }) => !data.draft)
@@ -45,7 +59,7 @@ const initial = post.data.author.charAt(0)
 <BaseLayout
   title={`${post.data.title} — Блог Интеграм`}
   description={post.data.description}
-  image={post.data.image}
+  image={ogImage(post.data.image)}
   imageAlt={post.data.title}
   canonical={post.data.canonical}
   type="article"

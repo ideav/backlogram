@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev --host 0.0.0.0 --port 4321",
-    "build": "astro build && pagefind --site dist --output-subdir pagefind",
+    "og-covers": "node scripts/generate-og-covers.mjs",
+    "build": "node scripts/generate-og-covers.mjs && astro build && pagefind --site dist --output-subdir pagefind",
     "preview": "astro preview --host 0.0.0.0 --port 4321",
     "astro": "astro"
   },
@@ -17,6 +18,7 @@
     "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
-    "pagefind": "^1.4.0"
+    "pagefind": "^1.4.0",
+    "sharp": "^0.34.0"
   }
 }
