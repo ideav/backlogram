@@ -20,6 +20,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { USE_CASES } from '../src/data/usecases.mjs'
+import { HOME_FAQ } from '../src/data/home-faq.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -85,33 +86,30 @@ const sectionsHtml = sections
   .join('')
 
 // ───────────────────────────────────────────────────────────────────────────
-//  FAQ-дизамбигуация (issue #387). Первый вопрос явно разводит «Интеграм» и
-//  «Инстаграм», чтобы поисковик и пользователи не путали бренд с соцсетью.
-//  Эти же пары идут в разметку FAQPage ниже и зеркалят секцию в src/pages/Home.tsx.
+//  FAQ — из общего с React источника src/data/home-faq.mjs (issue #495). Раньше
+//  вопросы были продублированы здесь руками и разъехались с секцией «Интеграм —
+//  коротко о главном»: на странице 7 вопросов (af.md, блок 13), а в снапшоте и
+//  в разметке FAQPage оставались 3 старых. Вопрос-дизамбигуация «Интеграм — это
+//  Инстаграм?» из снапшота убран: с главной его сняли по issue #433 (замена на
+//  AI-native позиционирование), а разведение бренда с соцсетью держат
+//  alternateName + description узлов Organization и WebSite ниже.
+//
+//  В FAQPage уходит только текст ответа — Google требует, чтобы размеченный
+//  ответ совпадал с видимым на странице, поэтому ссылка перелинковки идёт
+//  отдельным абзацем.
 // ───────────────────────────────────────────────────────────────────────────
-const faq = [
-  {
-    q: 'Интеграм — это Инстаграм?',
-    a: 'Нет. Интеграм — российская платформа для создания приложений и баз данных без программирования. Это не социальная сеть и не имеет отношения к Instagram. Правильное название — Интеграм (Integram).',
-  },
-  {
-    q: 'Что такое Интеграм?',
-    a: 'No-code конструктор приложений и баз данных: из Excel-таблицы — рабочее веб-приложение с формами, правами доступа и отчётами, без программистов и долгого внедрения. Включён в реестр отечественного ПО.',
-  },
-  {
-    q: 'Чем Интеграм отличается от Excel и Airtable?',
-    a: 'Реляционные данные, сотни тысяч записей, права доступа на уровне строк и столбцов, локальное развёртывание в контуре заказчика — там, где Excel, Google Sheets и Airtable упираются в лимиты.',
-  },
-]
-
 const faqHtml = `
       <section class="lp-prerender__group" aria-labelledby="lp-faq-title">
         <h2 id="lp-faq-title">Частые вопросы</h2>
-        ${faq
+        ${HOME_FAQ
           .map(
             (item) => `<div class="lp-prerender__faq-item">
           <h3>${escape(item.q)}</h3>
-          <p>${escape(item.a)}</p>
+          <p>${escape(item.a)}</p>${
+            item.link
+              ? `\n          <p class="lp-prerender__faq-link"><a href="${escape(item.link.href)}">${escape(item.link.text)}</a></p>`
+              : ''
+          }
         </div>`
           )
           .join('\n        ')}
@@ -123,22 +121,31 @@ const useCaseLinksHtml = USE_CASES
   .map((u) => `<a href="/${u.slug}.html">${escape(u.badge.replace(/ на Интеграме$/, ''))}</a>`)
   .join(' ·\n      ')
 
+// H1 и подзаголовок — ДОСЛОВНО как в герое src/pages/Home.tsx (af.md, блок 1).
+// Снапшот — то, что видит краулер, поэтому расхождение здесь означает, что для
+// поиска у страницы другой H1, чем для людей (issue #495). Синхронность
+// проверяет tests/issue-495-home-seo.test.mjs.
+const H1 = 'Интеграм — российский no-code конструктор приложений и баз данных: замена Excel и аналог Airtable для бизнеса'
+const LEAD =
+  'Из Excel-таблицы — рабочее веб-приложение за 45 минут. Реляционные данные, сотни тысяч записей, права доступа на уровне строк, локальное размещение в контуре заказчика. Автоматизация бизнес-процессов без программистов. В реестре отечественного ПО (запись №30872).'
+
+// Абзац SEO-подвала — тот же текст, что в секции 16 src/pages/Home.tsx (af.md, блок 14).
+const SEO_FOOTER =
+  'Интеграм — российская no-code платформа для создания внутренних бизнес-приложений и баз данных без программирования. Конвертация Excel в приложение за 45 минут: формы, отчёты, дашборды, права доступа на уровне строк. Замена Excel, Google Sheets и Airtable для корпоративных объёмов данных — сотни тысяч записей, реляционные связи, локальное размещение (on-premise). Автоматизация бизнес-процессов, CRM для B2B-продаж, система учёта данных, управление заявками и инцидентами, документооборот и маршрутизация согласования. Автоматическая генерация отчётов, парсинг Excel файлов, интеграция данных из разрозненных источников. Включён в реестр отечественного ПО (запись №30872). Аналог Airtable, аналог Trello, замена Excel для бизнеса. Пилотный проект за 2 недели. Облако от 0₽/мес, локальная лицензия 590 000₽/год.'
+
 const bodyHtml = `
 <article id="lp-prerender" itemscope itemtype="https://schema.org/SoftwareApplication">
   <header>
     <p class="lp-prerender__eyebrow">Автоматизация без программистов</p>
-    <h1 itemprop="name">Интеграм — конструктор приложений и баз данных</h1>
+    <h1 itemprop="name">${escape(H1)}</h1>
     <p class="lp-prerender__lead" itemprop="description">
-      Из Excel — рабочее приложение за час. Пришлите таблицу и получите веб-приложение
-      с формами, доступами и отчётами: понятно бухгалтеру, логисту, начальнику цеха —
-      без программистов, 1С и долгого внедрения. Российский no-code конструктор приложений
-      и баз данных, аналог Airtable, замена Excel и Google Sheets для реляционных данных
-      и автоматизации бизнеса.
+      ${escape(LEAD)}
     </p>
   </header>
   ${sectionsHtml}
   ${faqHtml}
   <footer class="lp-prerender__footer">
+    <p class="lp-prerender__seo">${escape(SEO_FOOTER)}</p>
     <p class="lp-prerender__registry">
       <span>В реестре отечественного ПО</span>
       <strong>Реестровая запись №30872</strong>
@@ -169,6 +176,8 @@ const bodyHtml = `
   #lp-prerender .lp-prerender__lead { font-size: 1.1rem; color: #475569; max-width: 50rem; }
   #lp-prerender .lp-prerender__faq-item { margin: 1rem 0; }
   #lp-prerender .lp-prerender__faq-item h3 { font-size: 1.05rem; margin: 0 0 0.25rem; }
+  #lp-prerender .lp-prerender__faq-link { font-size: 0.92rem; }
+  #lp-prerender a { color: #2563eb; }
   #lp-prerender .lp-prerender__footer { margin-top: 3rem; padding-top: 1.5rem;
     border-top: 1px solid #e2e8f0; font-size: 0.92rem; color: #475569; }
   #lp-prerender .lp-prerender__registry span,
@@ -185,6 +194,7 @@ const bodyHtml = `
   .dark #lp-prerender { color: #e2e8f0; }
   .dark #lp-prerender .lp-prerender__lead, .dark #lp-prerender .lp-prerender__footer { color: #94a3b8; }
   .dark #lp-prerender .lp-prerender__registry span { color: #e2e8f0; }
+  .dark #lp-prerender a { color: #60a5fa; }
 </style>`
 
 // ───────────────────────────────────────────────────────────────────────────
@@ -232,12 +242,26 @@ const jsonLd = {
       '@type': 'SoftwareApplication',
       '@id': `${SITE}/#app`,
       name: 'Интеграм — конструктор приложений и баз данных',
+      alternateName: ['Integram', 'Конструктор Интеграм'],
       applicationCategory: 'BusinessApplication',
+      applicationSubCategory: 'No-code платформа для внутренних бизнес-приложений',
       operatingSystem: 'Web',
       url: `${SITE}/`,
       inLanguage: 'ru',
       description:
         'Российский no-code конструктор для создания внутренних приложений, баз данных, форм и отчётов без программирования. Аналог Airtable, замена Excel и Google Sheets.',
+      // featureList — возможности, о которых прямо говорят блоки страницы
+      // (af.md, блоки 2/5/9). Ничего сверх того, что заявлено в тексте.
+      featureList: [
+        'Конвертация Excel-таблицы в веб-приложение за ~45 минут',
+        'Реляционные данные: связи, рекурсия и вложенные запросы без кодирования',
+        'Права доступа на уровне строк, столбцов и таблиц',
+        'Формы, отчёты и дашборды без релизов — настраивают бизнес-аналитики',
+        'Импорт и экспорт Excel, JSON, интеграции по API',
+        'Локальное размещение (on-premise) в контуре заказчика',
+      ],
+      screenshot: `${SITE}/case-orbita-planner.png`,
+      softwareHelp: { '@type': 'CreativeWork', url: `${SITE}/knowledge-base` },
       // offers — бесплатный тариф «Знакомство» (см. секцию «Тарифы» выше). Закрывает
       // non-critical замечание Google «Missing field offers» и даёт цену в rich snippet
       // (issue #395). aggregateRating сознательно НЕ добавляем — нет реальных отзывов,
@@ -254,7 +278,7 @@ const jsonLd = {
       '@type': 'FAQPage',
       '@id': `${SITE}/#faq`,
       inLanguage: 'ru',
-      mainEntity: faq.map((item) => ({
+      mainEntity: HOME_FAQ.map((item) => ({
         '@type': 'Question',
         name: item.q,
         acceptedAnswer: { '@type': 'Answer', text: item.a },

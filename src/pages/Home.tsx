@@ -39,6 +39,7 @@ import {
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { USE_CASES } from '../data/usecases'
+import { HOME_FAQ } from '../data/home-faq'
 import ClientLogos from '@/components/ClientLogos'
 
 declare global {
@@ -320,9 +321,11 @@ export default function Home() {
                   },
                   {
                     title: 'Excel и Google Sheets упираются в лимиты',
-                    desc: 'Максимальный размер таблицы в Excel — 1 048 576 строк. Хранение больших данных в таблицах упирается в ограничения типов данных, памяти и формул. Проблемы больших таблиц: тормозит при фильтрации, ошибки при совместном доступе, нет прав на уровне строк. Когда Excel, Google Sheets и Airtable упираются в лимиты — пора переходить на промышленную платформу.'
+                    desc: 'Максимальный размер таблицы в Excel — 1 048 576 строк. Хранение больших данных в таблицах упирается в ограничения типов данных, памяти и формул. Проблемы больших таблиц: тормозит при фильтрации, ошибки при совместном доступе, нет прав на уровне строк. Когда Excel, Google Sheets и Airtable упираются в лимиты — пора переходить на промышленную платформу.',
+                    href: '/konstruktor-prilozhenij.html',
+                    linkText: 'Конструктор приложений вместо Excel'
                   }
-                ].map((item, i) => (
+                ].map((item: { title: string; desc: string; href?: string; linkText?: string }, i) => (
                   <motion.div
                     key={i}
                     initial={{ opacity: 0, x: -20 }}
@@ -337,6 +340,15 @@ export default function Home() {
                     <div>
                       <h3 className="font-semibold text-slate-800 dark:text-slate-100 mb-1">{item.title}</h3>
                       <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{item.desc}</p>
+                      {item.href && item.linkText && (
+                        <Link
+                          to={item.href}
+                          className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:gap-2 transition-all"
+                        >
+                          {item.linkText}
+                          <ArrowRight size={15} />
+                        </Link>
+                      )}
                     </div>
                   </motion.div>
                 ))}
@@ -408,16 +420,24 @@ export default function Home() {
             ))}
           </div>
 
+          {/* Отраслевые карточки ведут на решение под задачу отрасли (issue #495). */}
           <div className="grid sm:grid-cols-2 gap-4 mb-10">
             {[
-              { label: 'Строительные компании', desc: 'управление проектами, учёт персонала, производственный учёт. Замена Excel-таблиц с прорабами на мобильное приложение.' },
-              { label: 'Финансовые компании', desc: 'учёт персональных данных, автоматизация отчётности, автоматизированная система учёта ПДн. Соответствие 152-ФЗ.' },
-              { label: 'Логистика', desc: 'складской учёт, управление ТМЦ, движение товаров. Автоматическое обновление данных из Excel-прайсов поставщиков.' },
-              { label: 'ИТ-компании', desc: 'Service Desk, управление заявками и инцидентами, Help Desk для ИТ-отдела. Автоматизация рутинных задач в офисе.' },
-            ].map(({ label, desc }) => (
+              { label: 'Строительные компании', desc: 'управление проектами, учёт персонала, производственный учёт. Замена Excel-таблиц с прорабами на мобильное приложение.', href: '/upravlenie-proektami.html', linkText: 'Проекты и задачи вместо Excel' },
+              { label: 'Финансовые компании', desc: 'учёт персональных данных, автоматизация отчётности, автоматизированная система учёта ПДн. Соответствие 152-ФЗ.', href: '/finansovyy-uchet.html', linkText: 'Финансовый учёт вместо Excel' },
+              { label: 'Логистика', desc: 'складской учёт, управление ТМЦ, движение товаров. Автоматическое обновление данных из Excel-прайсов поставщиков.', href: '/skladskoy-uchet.html', linkText: 'Складской учёт вместо Excel' },
+              { label: 'ИТ-компании', desc: 'Service Desk, управление заявками и инцидентами, Help Desk для ИТ-отдела. Автоматизация рутинных задач в офисе.', href: '/baza-zayavok.html', linkText: 'Учёт заявок вместо Excel' },
+            ].map(({ label, desc, href, linkText }) => (
               <div key={label} className="p-5 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
                 <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-1">{label}</h3>
                 <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{desc}</p>
+                <Link
+                  to={href}
+                  className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:gap-2 transition-all"
+                >
+                  {linkText}
+                  <ArrowRight size={15} />
+                </Link>
               </div>
             ))}
           </div>
@@ -451,22 +471,30 @@ export default function Home() {
               {
                 icon: Database,
                 title: 'Не тормозит на объёмах',
-                desc: 'Протестировано на сотнях миллионов записей. Максимальный размер таблицы в Excel — 1 млн строк. В Интеграме — без ограничений. Производительность таблиц с миллионами строк — штатный режим. Оптимизация больших таблиц не требуется: архитектура платформы рассчитана на корпоративные объёмы данных.'
+                desc: 'Протестировано на сотнях миллионов записей. Максимальный размер таблицы в Excel — 1 млн строк. В Интеграме — без ограничений. Производительность таблиц с миллионами строк — штатный режим. Оптимизация больших таблиц не требуется: архитектура платформы рассчитана на корпоративные объёмы данных.',
+                href: '/knowledge-base/02-excel-row-limit.html',
+                linkText: 'Уйти от лимита строк Excel'
               },
               {
                 icon: Layers,
                 title: 'Любая сложность данных',
-                desc: 'Связи, рекурсия и вложенные запросы без ручного кодирования. Реальная замена традиционной БД. В отличие от Airtable, где ограничения таблиц блокируют сложные связи, Интеграм поддерживает реляционную модель данных полностью.'
+                desc: 'Связи, рекурсия и вложенные запросы без ручного кодирования. Реальная замена традиционной БД. В отличие от Airtable, где ограничения таблиц блокируют сложные связи, Интеграм поддерживает реляционную модель данных полностью.',
+                href: '/knowledge-base/04-related-tables.html',
+                linkText: 'Связанные таблицы без ВПР'
               },
               {
                 icon: ShieldCheck,
                 title: 'Безопасность на уровне ядра',
-                desc: 'Ролевая модель к таблицам, колонкам и записям. Журналы событий и контрольные точки — из коробки. Локальное размещение (on-premise) в контуре заказчика. Данные не покидают вашу инфраструктуру.'
+                desc: 'Ролевая модель к таблицам, колонкам и записям. Журналы событий и контрольные точки — из коробки. Локальное размещение (on-premise) в контуре заказчика. Данные не покидают вашу инфраструктуру.',
+                href: '/knowledge-base/23-security-fault-tolerance.html',
+                linkText: 'Безопасность и отказоустойчивость'
               },
               {
                 icon: Zap,
                 title: 'Автоматизация вместо рутины',
-                desc: 'Автоматическая генерация отчётов, рассылка по расписанию, формирование счетов и актов. Автоматизация Excel таблиц без макросов и VBA. Замена макросов Excel на автоматизацию в no-code платформе. Устранение человеческого фактора и ошибок в отчётах. Автоматическое распределение задач между сотрудниками.'
+                desc: 'Автоматическая генерация отчётов, рассылка по расписанию, формирование счетов и актов. Автоматизация Excel таблиц без макросов и VBA. Замена макросов Excel на автоматизацию в no-code платформе. Устранение человеческого фактора и ошибок в отчётах. Автоматическое распределение задач между сотрудниками.',
+                href: '/knowledge-base/14a-reports.html',
+                linkText: 'Отчёты на той же базе'
               }
             ].map((item, i) => (
               <motion.div
@@ -482,6 +510,14 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-bold mb-4">{item.title}</h3>
                 <p className="text-slate-500 dark:text-slate-400 leading-relaxed">{item.desc}</p>
+                {/* Перелинковка на разбор в базе знаний (issue #495) */}
+                <Link
+                  to={item.href}
+                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:gap-2 transition-all"
+                >
+                  {item.linkText}
+                  <ArrowRight size={15} />
+                </Link>
               </motion.div>
             ))}
           </div>
@@ -706,6 +742,13 @@ export default function Home() {
                 <div className="mb-6 grid gap-2 text-sm leading-relaxed">
                   <p className="text-slate-500 dark:text-slate-400"><span className="font-semibold text-red-500/90">Было:</span> 15 Excel-файлов у прорабов, ручное сведение данных.</p>
                   <p className="text-slate-600 dark:text-slate-300"><span className="font-semibold text-emerald-500">Стало:</span> единое приложение, автоматическое обновление данных, дашборды в реальном времени.</p>
+                  <Link
+                    to="/upravlenie-proektami.html"
+                    className="mt-1 inline-flex items-center gap-1.5 font-semibold text-blue-600 dark:text-blue-400 hover:gap-2 transition-all"
+                  >
+                    Управление проектами вместо Excel
+                    <ArrowRight size={15} />
+                  </Link>
                 </div>
                 <div className="space-y-4">
                   <div className="flex gap-4">
@@ -760,7 +803,7 @@ export default function Home() {
                   </div>
                   <img
                     src={`${import.meta.env.BASE_URL}case-orbita-planner.png`}
-                    alt="Орбита Planner — система управления строительным персоналом"
+                    alt="Орбита Planner на Интеграме: приложение вместо 15 Excel-файлов у прорабов — управление строительным персоналом, планирование смен и дашборды в реальном времени"
                     loading="lazy"
                     decoding="async"
                     className="w-full block"
@@ -787,7 +830,7 @@ export default function Home() {
                   </div>
                   <img
                     src={`${import.meta.env.BASE_URL}case-sovereignty-audit.png`}
-                    alt="Аудит суверенности 9D — оценка технологической независимости портфельных компаний"
+                    alt="Аудит суверенности 9D на Интеграме: замена Google Таблиц на промышленную платформу — 50+ метрик и дашборды по портфелю инвестиционного фонда"
                     loading="lazy"
                     decoding="async"
                     className="w-full block"
@@ -808,6 +851,13 @@ export default function Home() {
                 <div className="mb-6 grid gap-2 text-sm leading-relaxed">
                   <p className="text-slate-500 dark:text-slate-400"><span className="font-semibold text-red-500/90">Было:</span> оценка суверенности в Google Таблицах, лимиты и ошибки формул.</p>
                   <p className="text-slate-600 dark:text-slate-300"><span className="font-semibold text-emerald-500">Стало:</span> 9D-аудит, 50+ метрик, 11 ИИ-агентов. Замена Google Таблиц на промышленную платформу.</p>
+                  <Link
+                    to="/upravlencheskiy-uchet.html"
+                    className="mt-1 inline-flex items-center gap-1.5 font-semibold text-blue-600 dark:text-blue-400 hover:gap-2 transition-all"
+                  >
+                    Управленческий учёт и отчётность вместо таблиц
+                    <ArrowRight size={15} />
+                  </Link>
                 </div>
                 <div className="space-y-4">
                   <div className="flex gap-4">
@@ -862,6 +912,13 @@ export default function Home() {
                 <div className="mb-6 grid gap-2 text-sm leading-relaxed">
                   <p className="text-slate-500 dark:text-slate-400"><span className="font-semibold text-red-500/90">Было:</span> учёт ПДн в Excel, разрозненные файлы, нет прав доступа.</p>
                   <p className="text-slate-600 dark:text-slate-300"><span className="font-semibold text-emerald-500">Стало:</span> реестр процессов, автоматическая отчётность, ролевая модель. Миграция данных из Excel в базу данных.</p>
+                  <Link
+                    to="/knowledge-base/05-access-rights.html"
+                    className="mt-1 inline-flex items-center gap-1.5 font-semibold text-blue-600 dark:text-blue-400 hover:gap-2 transition-all"
+                  >
+                    Права доступа из коробки
+                    <ArrowRight size={15} />
+                  </Link>
                 </div>
                 <div className="space-y-4">
                   <div className="flex gap-4">
@@ -914,7 +971,7 @@ export default function Home() {
                     src={`${import.meta.env.BASE_URL}case-pdn.png`}
                     loading="lazy"
                     decoding="async"
-                    alt="Процессы обработки персональных данных (ПДн) — реестр процессов в банке"
+                    alt="Реестр процессов обработки персональных данных (ПДн) в банке на Интеграме: миграция данных из Excel в базу данных, ролевая модель и автоматическая отчётность"
                     className="w-full block"
                   />
                 </div>
@@ -935,17 +992,19 @@ export default function Home() {
             <p className="text-slate-500 dark:text-slate-400">Любая из этих задач может быть реализована как полноценное веб-приложение</p>
           </div>
 
+          {/* Каждый тип проекта ведёт на свою посадочную — перелинковка «блок →
+              релевантная страница» (issue #495). */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { title: 'CRM и системы учёта клиентов', desc: 'Договоров и платежей. Замена Excel-таблиц с клиентами на систему с правами доступа.' },
-              { title: 'Service Desk и управление заявками', desc: 'Help Desk для ИТ-отдела. Автоматизация рутинных задач.' },
-              { title: 'Реестры и справочники', desc: 'С версионностью. Замена Excel-реестров на систему с историей изменений.' },
-              { title: 'Админки и панели управления', desc: 'Для смежных систем. Веб-интерфейс для Excel данных.' },
-              { title: 'Дашборды и отчётность', desc: 'В реальном времени. Сводные таблицы Excel в дашборд с автоматическим обновлением.' },
-              { title: 'Инвентаризация и учёт оборудования', desc: 'Автоматический сбор данных из разных источников.' },
-              { title: 'Бюджетирование и маршрутизация согласования', desc: 'Документов. Автоматизация маршрутов согласования.' },
-              { title: 'Центры управления НСИ', desc: 'Система учёта данных с валидацией и очисткой дубликатов.' },
-              { title: 'Анкеты, опросы и портал самообслуживания', desc: 'Сотрудников. Автоматизация онбординга.' }
+              { title: 'CRM и системы учёта клиентов', desc: 'Договоров и платежей. Замена Excel-таблиц с клиентами на систему с правами доступа.', href: '/crm-uchet-klientov.html' },
+              { title: 'Service Desk и управление заявками', desc: 'Help Desk для ИТ-отдела. Автоматизация рутинных задач.', href: '/baza-zayavok.html' },
+              { title: 'Реестры и справочники', desc: 'С версионностью. Замена Excel-реестров на систему с историей изменений.', href: '/uchet-dogovorov.html' },
+              { title: 'Админки и панели управления', desc: 'Для смежных систем. Веб-интерфейс для Excel данных.', href: '/konstruktor-prilozhenij.html' },
+              { title: 'Дашборды и отчётность', desc: 'В реальном времени. Сводные таблицы Excel в дашборд с автоматическим обновлением.', href: '/upravlencheskiy-uchet.html' },
+              { title: 'Инвентаризация и учёт оборудования', desc: 'Автоматический сбор данных из разных источников.', href: '/skladskoy-uchet.html' },
+              { title: 'Бюджетирование и маршрутизация согласования', desc: 'Документов. Автоматизация маршрутов согласования.', href: '/finansovyy-uchet.html' },
+              { title: 'Центры управления НСИ', desc: 'Система учёта данных с валидацией и очисткой дубликатов.', href: '/catalog-matching.html' },
+              { title: 'Анкеты, опросы и портал самообслуживания', desc: 'Сотрудников. Автоматизация онбординга.', href: '/kadrovyy-uchet.html' }
             ].map((item, i) => (
               <motion.div
                 key={i}
@@ -953,15 +1012,20 @@ export default function Home() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
-                className="p-5 flex items-start gap-4 bg-slate-50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-800 rounded-2xl hover:border-blue-500/30 hover:bg-white dark:hover:bg-slate-900/50 transition-all cursor-default group shadow-sm dark:shadow-none"
               >
-                <div className="w-8 h-8 rounded-lg bg-blue-600/10 text-blue-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                  <CheckCircle2 size={16} />
-                </div>
-                <div className="flex-1">
-                  <span className="block text-slate-700 dark:text-slate-200 font-semibold">{item.title}</span>
-                  <span className="text-sm text-slate-500 dark:text-slate-400">{item.desc}</span>
-                </div>
+                <Link
+                  to={item.href}
+                  className="h-full p-5 flex items-start gap-4 bg-slate-50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-800 rounded-2xl hover:border-blue-500/30 hover:bg-white dark:hover:bg-slate-900/50 transition-all group shadow-sm dark:shadow-none"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-blue-600/10 text-blue-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <CheckCircle2 size={16} />
+                  </div>
+                  <div className="flex-1">
+                    <span className="block text-slate-700 dark:text-slate-200 font-semibold">{item.title}</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">{item.desc}</span>
+                  </div>
+                  <ArrowRight size={16} className="text-slate-300 dark:text-slate-600 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+                </Link>
               </motion.div>
             ))}
           </div>
@@ -1443,43 +1507,25 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold">Интеграм — коротко о главном</h2>
           </div>
 
+          {/* Вопросы — из src/data/home-faq.mjs: тот же источник питает статический
+              снапшот и разметку FAQPage в scripts/prerender-landing.mjs (issue #495). */}
           <div className="space-y-4">
-            {[
-              {
-                q: 'Что такое Интеграм?',
-                a: 'No-code конструктор приложений и баз данных: из Excel-таблицы — рабочее веб-приложение с формами, правами доступа и отчётами, без программистов и долгого внедрения. Включён в реестр отечественного ПО.',
-              },
-              {
-                q: 'Интеграм использует искусственный интеллект?',
-                a: 'Да. Интеграм — платформа с искусственным интеллектом в самой основе (AI-native): ИИ заложен в неё изначально, а не добавлен надстройкой поверх старого продукта. Искусственный интеллект помогает превратить обычные таблицы в готовое приложение, подсказывает структуру базы данных и ускоряет настройку — без программистов и долгого внедрения.',
-              },
-              {
-                q: 'Чем Интеграм отличается от Excel и Airtable?',
-                a: 'Реляционные данные, сотни тысяч записей, права доступа на уровне строк и столбцов, локальное развёртывание в контуре заказчика — там, где Excel, Google Sheets и Airtable упираются в лимиты.',
-              },
-              {
-                q: 'Можно ли перенести данные из Excel в Интеграм?',
-                a: 'Да. Загрузите Excel-файл — платформа автоматически распознает структуру, типы данных и связи. Конвертация Excel в приложение занимает ~45 минут. Миграция данных из Excel в базу данных происходит без потерь. Создание формы из Excel таблицы, парсинг Excel файлов, автоматическое обновление данных из Excel — всё из коробки.',
-              },
-              {
-                q: 'Какие лимиты у Интеграм?',
-                a: 'Протестировано на сотнях миллионов записей. Нет ограничений на количество строк, колонок или таблиц. Максимальный размер таблицы в Excel — 1 048 576 строк. В Airtable — лимиты на записи и связи. В Интеграме — без ограничений. Производительность таблиц с миллионами строк — штатный режим.',
-              },
-              {
-                q: 'Нужны ли программисты для работы с Интеграм?',
-                a: 'Нет. Изменения вносятся бизнес-аналитиками: поля, формы, отчёты и дашборды настраиваются без кодирования. Это no-code платформа — автоматизация бизнес-процессов без программирования. Создание веб-приложений для аналитиков без кода.',
-              },
-              {
-                q: 'Интеграм — это российский продукт?',
-                a: 'Да. Интеграм включён в реестр отечественного ПО (запись №30872). Это российский аналог Airtable, замена Excel и Google Sheets для корпоративных задач. Локальное размещение (on-premise) в контуре заказчика.',
-              },
-            ].map((item, i) => (
+            {HOME_FAQ.map((item, i) => (
               <div
                 key={i}
                 className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/30"
               >
                 <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-2">{item.q}</h3>
                 <p className="text-slate-500 dark:text-slate-400 leading-relaxed">{item.a}</p>
+                {item.link && (
+                  <Link
+                    to={item.link.href}
+                    className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:gap-2 transition-all"
+                  >
+                    {item.link.text}
+                    <ArrowRight size={15} />
+                  </Link>
+                )}
               </div>
             ))}
           </div>

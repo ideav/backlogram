@@ -117,7 +117,7 @@ export default function ClientLogos() {
                 >
                   <img
                     src={client.logo}
-                    alt={client.name}
+                    alt={`${client.name} — клиент платформы Интеграм`}
                     className={`object-contain ${client.small ? 'w-3/4 h-3/4' : client.large ? 'w-4/3 h-4/3' : 'w-full h-full'}`}
                     draggable={false}
                   />
