@@ -20,6 +20,9 @@ function makeWorkspace(prefix) {
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
   cpSync(resolve(repo, 'scripts/prerender-agent-platforms.mjs'), resolve(work, 'scripts/prerender-agent-platforms.mjs'))
   cpSync(resolve(repo, 'scripts/prerender-landing.mjs'), resolve(work, 'scripts/prerender-landing.mjs'))
+  // Пререндер главной читает данные из src/data (usecases + FAQ) — без них
+  // песочница падает на ERR_MODULE_NOT_FOUND (issue #495).
+  cpSync(resolve(repo, 'src/data'), resolve(work, 'src/data'), { recursive: true })
   writeFileSync(resolve(work, 'dist/index.html'), indexHtml)
   return work
 }

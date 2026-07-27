@@ -25,6 +25,7 @@ test('prerender-landing fills #root and injects SEO head tags into dist/index.ht
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
   cpSync(resolve(repo, 'scripts/prerender-landing.mjs'), resolve(work, 'scripts/prerender-landing.mjs'))
+  cpSync(resolve(repo, 'src/data'), resolve(work, 'src/data'), { recursive: true })
   writeFileSync(resolve(work, 'dist/index.html'), indexHtml)
 
   // Act
@@ -34,7 +35,10 @@ test('prerender-landing fills #root and injects SEO head tags into dist/index.ht
   // Assert: #root is no longer empty and carries a crawlable H1 with the brand.
   assert.doesNotMatch(out, /<div id="root"><\/div>/, '#root must not be left empty')
   assert.match(out, /<div id="root">\s*<article id="lp-prerender"/)
-  assert.match(out, /<h1[^>]*>Интеграм — конструктор приложений и баз данных<\/h1>/)
+  assert.match(
+    out,
+    /<h1[^>]*>Интеграм — российский no-code конструктор приложений и баз данных: замена Excel и аналог Airtable для бизнеса<\/h1>/,
+  )
 
   // Representative section headings from Home.tsx are present.
   assert.match(out, /Работаем там, где обычные конструкторы/)
@@ -65,6 +69,7 @@ test('prerender-landing is idempotent (safe to run twice)', () => {
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
   cpSync(resolve(repo, 'scripts/prerender-landing.mjs'), resolve(work, 'scripts/prerender-landing.mjs'))
+  cpSync(resolve(repo, 'src/data'), resolve(work, 'src/data'), { recursive: true })
   writeFileSync(resolve(work, 'dist/index.html'), indexHtml)
 
   execFileSync('node', ['scripts/prerender-landing.mjs'], { cwd: work })
