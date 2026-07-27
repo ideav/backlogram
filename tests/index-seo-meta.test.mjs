@@ -4,14 +4,16 @@ import { test } from 'node:test'
 
 const indexSource = readFileSync(new URL('../index.html', import.meta.url), 'utf8')
 
+// issue #488 (af.md, блок 15): мета главной под семантическое ядро — заголовок и
+// описание заданы ДОСЛОВНО из af.md; keywords-строку не трогали.
 test('index.html exposes SEO title, description and keywords', () => {
   assert.match(
     indexSource,
-    /<title>Из Excel — приложение за час \| Интеграм<\/title>/,
+    /<title>Интеграм — no-code конструктор приложений \| Замена Excel, аналог Airtable<\/title>/,
   )
   assert.match(
     indexSource,
-    /<meta name="description" content="Из Excel — рабочее приложение за час\. Пришлите таблицу: получите веб-приложение с формами, доступами и отчётами\. Понятно бухгалтеру, логисту, начальнику цеха — без программистов, 1С и долгого внедрения\." \/>/,
+    /<meta name="description" content="Российская no-code платформа: из Excel-таблицы — веб-приложение за 45 минут\. Реляционные данные, on-premise, права доступа\. В реестре отечественного ПО\. Попробуйте бесплатно\." \/>/,
   )
   assert.match(
     indexSource,
@@ -19,7 +21,7 @@ test('index.html exposes SEO title, description and keywords', () => {
   )
 })
 
-test('index.html SEO leads with the single «Excel → приложение за час» offer', () => {
-  assert.match(indexSource, /<title>[^<]*Excel[^<]*час/)
-  assert.match(indexSource, /<meta name="description" content="[^"]*Excel[^"]*час/)
+test('index.html SEO leads with the brand + Excel/Airtable substitution offer', () => {
+  assert.match(indexSource, /<title>[^<]*Интеграм[^<]*Замена Excel/)
+  assert.match(indexSource, /<meta name="description" content="[^"]*Excel-таблицы[^"]*45 минут/)
 })
