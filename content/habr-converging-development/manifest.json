@@ -1,0 +1,12 @@
+{
+  "pipeline": "habr-converging-development",
+  "sourceCollection": "blog-v2",
+  "sourceArticle": "pravila-kotorye-nelzya-narushit",
+  "sourceUrl": "https://blog.ideav.ru/posts/pravila-kotorye-nelzya-narushit/",
+  "format": "habr_sandbox_article",
+  "targetPlatforms": ["Habr"],
+  "status": "draft",
+  "updatedAt": "2026-07-27",
+  "articlePath": "articles/pochemu-defekty-vozvrashchayutsya.md",
+  "editorialGoal": "Инженерный разбор на числах публичного репозитория ideav/crm: почему дефекты возвращаются, какой ходовой диагноз не подтвердился замером, и что поменяли в архитектуре процесса — реестр инвариантов, страж записи, тест «входы × правила», карантин красных тестов."
+}
