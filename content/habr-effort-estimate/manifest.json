@@ -1,0 +1,50 @@
+{
+  "pipeline": "habr-effort-estimate",
+  "sourceCollection": "blog-v2",
+  "sourceArticle": "promyshlennoe-prilozhenie-shansy-riski-trudoemkost",
+  "sourceUrl": "https://blog.ideav.ru/posts/promyshlennoe-prilozhenie-shansy-riski-trudoemkost/",
+  "sourceIssue": "https://github.com/ideav/backlogram/issues/506",
+  "format": "habr_analytical",
+  "targetPlatforms": ["Habr"],
+  "status": "author_review",
+  "updatedAt": "2026-07-28",
+  "articlePath": "articles/skolko-chasov-stoit-promyshlennoe-prilozhenie.md",
+  "editorialGoal": "Переписать блоговую статью об оценке трудоёмкости под Habr: без единого упоминания продукта и компании, с развёрнутым расчётом и перекрёстной проверкой тремя независимыми методами (снизу вверх по действиям, функциональные точки + отраслевые PDR из ISBSG, COCOMO II).",
+  "promoPolicy": {
+    "productMentions": 0,
+    "outboundProductLinks": 0,
+    "note": "issue #506: убрать всё, что похоже на рекламу. В теле статьи нет названий продукта, компании и ссылок на них; аффилиация раскрыта одной строкой в разделе «Откуда я смотрю на эту тему»."
+  },
+  "verifiedSources": [
+    {
+      "claim": "PDR: медиана Java 8,7 ч/FP, P90 24,2; low-code минимум 1,0, P90 2,4",
+      "url": "https://www.isbsg.org/wp-content/uploads/2022/05/Short-Paper-2021-12-Productivity-Java-Vs-Low-Code-Projects.pdf",
+      "checked": "2026-07-28"
+    },
+    {
+      "claim": "COCOMO II: PM = 2.94 × KSLOC^E, E ≈ 1,0997 при номинальных факторах",
+      "url": "https://athena.ecs.csus.edu/~buckley/CSc231_files/Cocomo_II_Manual.pdf",
+      "checked": "2026-07-28"
+    },
+    {
+      "claim": "Gearing factor JavaScript ≈ 45–63 SLOC на функциональную точку",
+      "url": "https://www.qsm.com/resources/function-point-languages-table",
+      "checked": "2026-07-28"
+    },
+    {
+      "claim": "«Проблема 70%» — Эдди Османи, декабрь 2024",
+      "url": "https://addyo.substack.com/p/the-70-problem-hard-truths-about",
+      "checked": "2026-07-28"
+    },
+    {
+      "claim": "Grey-literature review по вайб-кодингу, 154 источника, «fast but flawed»",
+      "url": "https://arxiv.org/abs/2510.00328",
+      "checked": "2026-07-28"
+    },
+    {
+      "claim": "Anthropic: −17% понимания кода, n=52",
+      "url": "https://arxiv.org/abs/2601.20245",
+      "checked": "2026-07-28"
+    }
+  ]
+}
