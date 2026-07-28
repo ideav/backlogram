@@ -4,6 +4,7 @@ description: Почему одни и те же дефекты возвраща�
 pubDate: '2026-07-27'
 category: Разработка
 author: Команда Интеграм
+image: /uploads/pravila-invarianty-cover.png
 tags:
 - разработка
 - архитектура
