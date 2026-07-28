@@ -1479,7 +1479,8 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="w-full py-4 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 text-slate-800 dark:text-white font-bold rounded-xl transition-all text-center block"
               >
-                Подробнее
+                {/* Уникальный анкор вместо голого «Подробнее» (issue #500). */}
+                Подробнее о тарифе
               </a>
             </div>
           </div>

@@ -81,8 +81,13 @@ export default function UseCaseHub() {
                   <h2 className="text-lg font-bold leading-tight">{u.badge}</h2>
                 </div>
                 <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed flex-1">{u.lead}</p>
+                {/* Анкор контекстный, а не шаблонное «Подробнее» (issue #500):
+                    одинаковые анкоры обесцениваются поиском, а в списке ссылок
+                    скринридера одиннадцать «Подробнее» подряд неразличимы.
+                    Хвост « на Интеграме» срезаем так же, как в снапшоте главной
+                    (scripts/prerender-landing.mjs), — он и так есть в заголовке. */}
                 <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400">
-                  Подробнее <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
+                  Подробнее: {u.badge.replace(/ на Интеграме$/, '')} <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
                 </span>
               </Link>
             ))}
