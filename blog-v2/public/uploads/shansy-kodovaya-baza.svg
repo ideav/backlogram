@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="728" viewBox="0 0 1200 728" role="img" aria-labelledby="t d">
+<title id="t">Что происходит с кодовой базой: дубли растут, переработка падает</title>
+<desc id="d">Три метрики GitClear на 211 млн изменённых строк кода, парные отметки «было → стало»: доля скопированных строк выросла с 8,3% до 12,3%; доля изменений, связанных с рефакторингом, упала с 25% до менее чем 10%; доля кода, переписанного в первые две недели после коммита, выросла с 3,1% до 5,7%. Внизу вывод: дублей больше, переработки меньше — механизм «стены третьего месяца».</desc>
+<rect width="1200" height="728" fill="#ffffff"/>
+<rect x="0.5" y="0.5" width="1199" height="727" fill="none" stroke="#d9e1ec"/>
+<text x="56" y="66" font-family="Inter" font-size="17" font-weight="700" letter-spacing="1.6" fill="#1447e6">ЧТО ПРОИСХОДИТ С КОДОВОЙ БАЗОЙ</text>
+<text x="56" y="122" font-family="Inter" font-size="40" font-weight="700" fill="#172033">Дубли растут, переработка падает</text>
+<text x="56" y="158" font-family="Inter" font-size="20" font-weight="400" fill="#4b5a6c">GitClear, 211 млн изменённых строк кода</text>
+<circle cx="940" cy="146" r="10" fill="#8fb0fa" stroke="#ffffff" stroke-width="2"/><text x="960" y="153" font-family="Inter" font-size="18" font-weight="400" fill="#4b5a6c">было</text>
+<circle cx="1046" cy="146" r="10" fill="#1447e6" stroke="#ffffff" stroke-width="2"/><text x="1066" y="153" font-family="Inter" font-size="18" font-weight="400" fill="#4b5a6c">стало</text>
+<line x1="56" y1="192" x2="1144" y2="192" stroke="#d9e1ec" stroke-width="1"/>
+<line x1="460" y1="232" x2="460" y2="522" stroke="#d9e1ec" stroke-width="1"/>
+<text x="460" y="554" font-family="Inter" font-size="17" font-weight="400" fill="#66758a" text-anchor="middle">0 %</text>
+<line x1="582.1428571428571" y1="232" x2="582.1428571428571" y2="522" stroke="#d9e1ec" stroke-width="1"/>
+<text x="582.1428571428571" y="554" font-family="Inter" font-size="17" font-weight="400" fill="#66758a" text-anchor="middle">5</text>
+<line x1="704.2857142857142" y1="232" x2="704.2857142857142" y2="522" stroke="#d9e1ec" stroke-width="1"/>
+<text x="704.2857142857142" y="554" font-family="Inter" font-size="17" font-weight="400" fill="#66758a" text-anchor="middle">10</text>
+<line x1="826.4285714285714" y1="232" x2="826.4285714285714" y2="522" stroke="#d9e1ec" stroke-width="1"/>
+<text x="826.4285714285714" y="554" font-family="Inter" font-size="17" font-weight="400" fill="#66758a" text-anchor="middle">15</text>
+<line x1="948.5714285714286" y1="232" x2="948.5714285714286" y2="522" stroke="#d9e1ec" stroke-width="1"/>
+<text x="948.5714285714286" y="554" font-family="Inter" font-size="17" font-weight="400" fill="#66758a" text-anchor="middle">20</text>
+<line x1="1070.7142857142858" y1="232" x2="1070.7142857142858" y2="522" stroke="#d9e1ec" stroke-width="1"/>
+<text x="1070.7142857142858" y="554" font-family="Inter" font-size="17" font-weight="400" fill="#66758a" text-anchor="middle">25</text>
+<text x="56" y="289" font-family="Inter" font-size="22" font-weight="400" fill="#172033">Скопированные строки кода</text>
+<line x1="662.7571428571429" y1="282" x2="760.4714285714285" y2="282" stroke="#cdd8e8" stroke-width="5" stroke-linecap="round"/>
+<circle cx="662.7571428571429" cy="282" r="11" fill="#8fb0fa" stroke="#ffffff" stroke-width="2"/>
+<circle cx="760.4714285714285" cy="282" r="11" fill="#1447e6" stroke="#ffffff" stroke-width="2"/>
+<text x="662.7571428571429" y="320" font-family="Inter" font-size="18" font-weight="400" fill="#4b5a6c" text-anchor="middle">8,3 %</text>
+<text x="760.4714285714285" y="258" font-family="Inter" font-size="18" font-weight="700" fill="#172033" text-anchor="middle">12,3 %</text>
+<text x="56" y="385" font-family="Inter" font-size="22" font-weight="400" fill="#172033">Изменения с рефакторингом</text>
+<line x1="1070.7142857142858" y1="378" x2="692.0714285714286" y2="378" stroke="#cdd8e8" stroke-width="5" stroke-linecap="round"/>
+<circle cx="1070.7142857142858" cy="378" r="11" fill="#8fb0fa" stroke="#ffffff" stroke-width="2"/>
+<circle cx="692.0714285714286" cy="378" r="11" fill="#1447e6" stroke="#ffffff" stroke-width="2"/>
+<text x="1070.7142857142858" y="416" font-family="Inter" font-size="18" font-weight="400" fill="#4b5a6c" text-anchor="middle">25 %</text>
+<text x="692.0714285714286" y="354" font-family="Inter" font-size="18" font-weight="700" fill="#172033" text-anchor="middle">&lt; 10 %</text>
+<text x="56" y="481" font-family="Inter" font-size="22" font-weight="400" fill="#172033">Переписано в первые две недели</text>
+<line x1="535.7285714285714" y1="474" x2="599.2428571428571" y2="474" stroke="#cdd8e8" stroke-width="5" stroke-linecap="round"/>
+<circle cx="535.7285714285714" cy="474" r="11" fill="#8fb0fa" stroke="#ffffff" stroke-width="2"/>
+<circle cx="599.2428571428571" cy="474" r="11" fill="#1447e6" stroke="#ffffff" stroke-width="2"/>
+<text x="535.7285714285714" y="512" font-family="Inter" font-size="18" font-weight="400" fill="#4b5a6c" text-anchor="middle">3,1 %</text>
+<text x="599.2428571428571" y="450" font-family="Inter" font-size="18" font-weight="700" fill="#172033" text-anchor="middle">5,7 %</text>
+<rect x="56" y="606" width="1088" height="66" rx="12" fill="#f2f6ff"/><rect x="56" y="606" width="6" height="66" rx="3" fill="#1447e6"/><text x="88" y="647" font-family="Inter" font-size="22" font-weight="700" fill="#172033">Дублей больше, переработки меньше — механизм «стены третьего месяца».</text>
+</svg>
