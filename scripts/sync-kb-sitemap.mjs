@@ -29,6 +29,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { build } from 'esbuild'
+import { detectEol, splitUrlBlocks } from './lib/sitemap-urls.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -60,12 +61,10 @@ const isArticleLoc = (loc) => loc.startsWith(`${SITE}/knowledge-base/`)
 
 // ── Split the sitemap into <url> blocks, everything else stays verbatim ────
 const source = readFileSync(sitemapPath, 'utf8')
-const blocks = [...source.matchAll(/[ \t]*<url>[\s\S]*?<\/url>\n/g)].map((m) => ({
-  text: m[0],
-  start: m.index,
-  end: m.index + m[0].length,
-  loc: (m[0].match(/<loc>([^<]+)<\/loc>/) ?? [])[1] ?? '',
-}))
+// Разбор терпит и LF, и CRLF: на Windows Git кладёт в рабочую копию CRLF, и
+// строгая привязка к `\n` роняла всю сборку до `vite build` (issue #508).
+const eol = detectEol(source)
+const blocks = splitUrlBlocks(source)
 if (blocks.length === 0) {
   console.error('sitemap.xml: не найдено ни одного <url> — файл оставлен как есть')
   process.exit(1)
@@ -76,9 +75,11 @@ const suffix = source.slice(blocks.at(-1).end)
 const existingByLoc = new Map(blocks.map((b) => [b.loc, b.text]))
 
 const today = new Date().toISOString().slice(0, 10)
+// Новые блоки набираются тем же переводом строки, что и файл, иначе на Windows
+// рабочая копия станет смешанной, а `rebuilt !== source` — вечно истинным.
 const freshBlock = (loc) =>
-  `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${today}</lastmod>\n` +
-  `    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`
+  `  <url>${eol}    <loc>${loc}</loc>${eol}    <lastmod>${today}</lastmod>${eol}` +
+  `    <changefreq>monthly</changefreq>${eol}    <priority>0.8</priority>${eol}  </url>${eol}`
 
 const articleBlocks = knowledgeBaseArticles.map(
   (a) => existingByLoc.get(articleLoc(a.slug)) ?? freshBlock(articleLoc(a.slug)),
