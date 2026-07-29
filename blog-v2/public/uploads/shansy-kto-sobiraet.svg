@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1006" viewBox="0 0 1200 1006" role="img" aria-labelledby="t d">
+<title id="t">Кто собирает приложения с ИИ самостоятельно и с чем сталкивается</title>
+<desc id="d">Слева: сетка из ста клеток, 63 закрашены — доля не-разработчиков среди практикующих вайб-кодинг (разбор 1 000 комментариев r/vibecoding, Vercel/Solveo). Справа три числа: понимание собственного кода на 17% хуже у решавших задачу с ИИ (эксперимент Anthropic, n = 52); 10,3% приложений отдавали чужие данные любому — 170 из 1 645 просканированных; срок до первого публичного запуска — от трёх недель до трёх с лишним лет. Внизу вывод: шансы определяются не бэкграундом, а поведением.</desc>
+<rect width="1200" height="1006" fill="#ffffff"/>
+<rect x="0.5" y="0.5" width="1199" height="1005" fill="none" stroke="#d9e1ec"/>
+<text x="56" y="66" font-family="Inter" font-size="17" font-weight="700" letter-spacing="1.6" fill="#1447e6">САМОСТОЯТЕЛЬНАЯ СБОРКА С ИИ</text>
+<text x="56" y="122" font-family="Inter" font-size="40" font-weight="700" fill="#172033">Кто берётся — и с чем сталкивается</text>
+<line x1="56" y1="156" x2="1144" y2="156" stroke="#d9e1ec" stroke-width="1"/>
+<text x="56" y="268" font-family="Inter" font-size="88" font-weight="700" fill="#1447e6">63 %</text>
+<text x="56" y="314" font-family="Inter" font-size="23" font-weight="400" fill="#4b5a6c">из практикующих вайб-кодинг —</text>
+<text x="56" y="348" font-family="Inter" font-size="23" font-weight="700" fill="#172033">не разработчики</text>
+<rect x="56" y="386" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="86" y="386" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="116" y="386" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="146" y="386" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="176" y="386" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="206" y="386" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="236" y="386" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="266" y="386" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="296" y="386" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="326" y="386" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="56" y="416" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="86" y="416" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="116" y="416" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="146" y="416" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="176" y="416" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="206" y="416" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="236" y="416" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="266" y="416" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="296" y="416" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="326" y="416" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="56" y="446" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="86" y="446" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="116" y="446" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="146" y="446" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="176" y="446" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="206" y="446" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="236" y="446" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="266" y="446" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="296" y="446" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="326" y="446" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="56" y="476" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="86" y="476" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="116" y="476" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="146" y="476" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="176" y="476" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="206" y="476" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="236" y="476" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="266" y="476" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="296" y="476" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="326" y="476" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="56" y="506" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="86" y="506" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="116" y="506" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="146" y="506" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="176" y="506" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="206" y="506" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="236" y="506" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="266" y="506" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="296" y="506" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="326" y="506" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="56" y="536" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="86" y="536" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="116" y="536" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="146" y="536" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="176" y="536" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="206" y="536" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="236" y="536" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="266" y="536" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="296" y="536" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="326" y="536" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="56" y="566" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="86" y="566" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="116" y="566" width="21" height="21" rx="5" fill="#1447e6"/>
+<rect x="146" y="566" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="176" y="566" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="206" y="566" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="236" y="566" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="266" y="566" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="296" y="566" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="326" y="566" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="56" y="596" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="86" y="596" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="116" y="596" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="146" y="596" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="176" y="596" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="206" y="596" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="236" y="596" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="266" y="596" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="296" y="596" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="326" y="596" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="56" y="626" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="86" y="626" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="116" y="626" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="146" y="626" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="176" y="626" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="206" y="626" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="236" y="626" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="266" y="626" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="296" y="626" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="326" y="626" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="56" y="656" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="86" y="656" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="116" y="656" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="146" y="656" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="176" y="656" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="206" y="656" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="236" y="656" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="266" y="656" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="296" y="656" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="326" y="656" width="21" height="21" rx="5" fill="#cdd8e8"/>
+<rect x="56" y="706" width="17" height="17" rx="4" fill="#1447e6"/><text x="82" y="721" font-family="Inter" font-size="18" font-weight="400" fill="#4b5a6c">63 — не разработчики</text>
+<rect x="330" y="706" width="17" height="17" rx="4" fill="#cdd8e8"/><text x="356" y="721" font-family="Inter" font-size="18" font-weight="400" fill="#4b5a6c">37 — разработчики</text>
+<text x="56" y="774" font-family="Inter" font-size="17" font-weight="400" fill="#66758a">Разбор 1 000 комментариев сообщества r/vibecoding</text>
+<text x="56" y="800" font-family="Inter" font-size="17" font-weight="400" fill="#66758a">(Vercel/Solveo). Это демография активного сообщества,</text>
+<text x="56" y="826" font-family="Inter" font-size="17" font-weight="400" fill="#66758a">а не выборка всех пользователей.</text>
+<line x1="596" y1="196" x2="596" y2="830" stroke="#d9e1ec" stroke-width="1"/>
+<text x="640" y="258" font-family="Inter" font-size="52" font-weight="700" fill="#b42318">−17 %</text>
+<rect x="1040" y="216" width="104" height="34" rx="17" fill="#fdeceb"/>
+<text x="1092" y="239" font-family="Inter" font-size="16" font-weight="700" letter-spacing="1.4" fill="#b42318" text-anchor="middle">РИСК</text>
+<text x="640" y="304" font-family="Inter" font-size="22" font-weight="400" fill="#4b5a6c">понимание собственного кода у тех,</text>
+<text x="640" y="336" font-family="Inter" font-size="22" font-weight="400" fill="#4b5a6c">кто решал задачу с ИИ</text>
+<text x="640" y="386" font-family="Inter" font-size="17" font-weight="400" fill="#66758a">Anthropic, рандомизированный эксперимент, n = 52</text>
+<line x1="640" y1="410" x2="1144" y2="410" stroke="#d9e1ec" stroke-width="1"/>
+<text x="640" y="478" font-family="Inter" font-size="52" font-weight="700" fill="#b42318">10,3 %</text>
+<rect x="1040" y="436" width="104" height="34" rx="17" fill="#fdeceb"/>
+<text x="1092" y="459" font-family="Inter" font-size="16" font-weight="700" letter-spacing="1.4" fill="#b42318" text-anchor="middle">РИСК</text>
+<text x="640" y="524" font-family="Inter" font-size="22" font-weight="400" fill="#4b5a6c">приложений отдавали чужие данные</text>
+<text x="640" y="556" font-family="Inter" font-size="22" font-weight="400" fill="#4b5a6c">любому — 170 из 1 645</text>
+<text x="640" y="606" font-family="Inter" font-size="17" font-weight="400" fill="#66758a">Скан 1 645 приложений, собранных на Lovable</text>
+<line x1="640" y1="630" x2="1144" y2="630" stroke="#d9e1ec" stroke-width="1"/>
+<text x="640" y="698" font-family="Inter" font-size="52" font-weight="700" fill="#1447e6">3 нед. → 3+ года</text>
+<text x="640" y="744" font-family="Inter" font-size="22" font-weight="400" fill="#4b5a6c">разброс срока до первого</text>
+<text x="640" y="776" font-family="Inter" font-size="22" font-weight="400" fill="#4b5a6c">публичного запуска</text>
+<text x="640" y="826" font-family="Inter" font-size="17" font-weight="400" fill="#66758a">Самообзоры сообщества</text>
+<rect x="56" y="858" width="1088" height="90" rx="12" fill="#f2f6ff"/><rect x="56" y="858" width="6" height="90" rx="3" fill="#1447e6"/><text x="88" y="898" font-family="Inter" font-size="22" font-weight="700" fill="#172033">Шансы определяются не бэкграундом, а поведением —</text><text x="88" y="930" font-family="Inter" font-size="22" font-weight="400" fill="#4b5a6c">понимаете ли вы, что вам вернули, и есть ли у вас способ это проверить.</text>
+</svg>
