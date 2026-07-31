@@ -12,6 +12,7 @@
     "build": "node scripts/generate-blog-posts.mjs && node scripts/generate-og-images.mjs && node scripts/sync-kb-sitemap.mjs && vite build && node scripts/prerender-knowledge-base.mjs && node scripts/prerender-excel-to-app.mjs && node scripts/prerender-agent-platforms.mjs && node scripts/prerender-catalog-matching.mjs && node scripts/prerender-information-system.mjs && node scripts/prerender-sravnenie.mjs && node scripts/prerender-konstruktor-prilozhenij.mjs && node scripts/prerender-usecases.mjs && node scripts/prerender-tokens.mjs && node scripts/prerender-landing.mjs && node scripts/verify-htaccess.mjs",
     "og-images": "node scripts/generate-og-images.mjs",
     "blog-posts": "node scripts/generate-blog-posts.mjs",
+    "seo-widths": "node scripts/audit-serp-widths.mjs",
     "blog-figures": "node scripts/render-blog-figures.mjs",
     "kb-sitemap": "node scripts/sync-kb-sitemap.mjs",
     "preview": "vite preview"
