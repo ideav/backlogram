@@ -1,6 +1,6 @@
 # === 301 redirects: old HTMLy blog -> new Astro blog ============================
 # From: https://blog.ideav.online  (HTMLy v.2.8.6, being decommissioned)
-# To:   https://blog.ideav.ru      (Astro, self-canonical)
+# To:   https://ideav.ru/blog/    (Astro, self-canonical; переехал с поддомена — issue #522)
 # Issue: ideav/backlogram#373 — follow-up to #331/#332. Transfers SEO weight so the
 # duplicate old blog stops competing in the index and links land on the new domain.
 #
@@ -25,23 +25,23 @@
   RewriteRule ^(admin|login|logout|add|edit|api)(/|$) index.php [L,QSA]
 
   # 3. Posts: /YYYY/MM/<slug> -> /posts/<slug>/  (slug preserved 1:1)
-  RewriteRule ^[0-9]{4}/[0-9]{2}/([^/]+)/?$ https://blog.ideav.ru/posts/$1/ [R=301,L,QSD]
+  RewriteRule ^[0-9]{4}/[0-9]{2}/([^/]+)/?$ https://ideav.ru/blog/posts/$1/ [R=301,L,QSD]
   #    HTMLy non-dated post alias.
-  RewriteRule ^post/([^/]+)/?$ https://blog.ideav.ru/posts/$1/ [R=301,L,QSD]
+  RewriteRule ^post/([^/]+)/?$ https://ideav.ru/blog/posts/$1/ [R=301,L,QSD]
 
   # 4. Tag whose slug changed (HTMLy kept the dot, the new blog uses a dash).
-  RewriteRule ^tag/yandeks\.direkt/?$ https://blog.ideav.ru/tag/yandeks-direkt/ [R=301,L,QSD]
+  RewriteRule ^tag/yandeks\.direkt/?$ https://ideav.ru/blog/tag/yandeks-direkt/ [R=301,L,QSD]
 
   # 5. Categories present on the new blog.
-  RewriteRule ^category/(o-platforme|obuchenie|pravila-predprinimatelya-v-it|proekty|razrabotka|tehnologii)/?$ https://blog.ideav.ru/category/$1/ [R=301,L,QSD]
+  RewriteRule ^category/(o-platforme|obuchenie|pravila-predprinimatelya-v-it|proekty|razrabotka|tehnologii)/?$ https://ideav.ru/blog/category/$1/ [R=301,L,QSD]
 
   # 6. Tags present on the new blog.
-  RewriteRule ^tag/(ai|airtable|analitika|arhitektura|avtomatizaciya|bezopasnost|bitriks24|biznes|dorabotki|excel|finmodel|geimifikaciya|ii|ii-agent|ii-chat|integracii|integram|investicii|katalogi|keisy|konstruktor|laifhaki|low-code|marketing|no-code|obuchenie|otchety|proizvodstvo|rabota-s-dannymi|razrabotka|self-hosted|sopostavlenie|spravochniki|sravnenie|ssylki|tehnologii|vozmozhnosti|yandeks-direkt|zaprosy)/?$ https://blog.ideav.ru/tag/$1/ [R=301,L,QSD]
+  RewriteRule ^tag/(ai|airtable|analitika|arhitektura|avtomatizaciya|bezopasnost|bitriks24|biznes|dorabotki|excel|finmodel|geimifikaciya|ii|ii-agent|ii-chat|integracii|integram|investicii|katalogi|keisy|konstruktor|laifhaki|lichnye-finansy|low-code|marketing|no-code|obuchenie|otchety|planirovanie|processy|proizvodstvo|rabota-s-dannymi|razrabotka|self-hosted|sopostavlenie|spravochniki|sravnenie|ssylki|tehnologii|testirovanie|vozmozhnosti|yandeks-direkt|zaprosy)/?$ https://ideav.ru/blog/tag/$1/ [R=301,L,QSD]
 
   # 7. Feeds -> new RSS.
-  RewriteRule ^feed(/(rss|opml))?/?$ https://blog.ideav.ru/rss.xml [R=301,L,QSD]
+  RewriteRule ^feed(/(rss|opml))?/?$ https://ideav.ru/blog/rss.xml [R=301,L,QSD]
 
   # 8. Everything else (home, /archive, /author, /type, /search, uncategorized,
   #    unknown taxonomy, static pages) -> new blog home.
-  RewriteRule ^ https://blog.ideav.ru/ [R=301,L,QSD]
+  RewriteRule ^ https://ideav.ru/blog/ [R=301,L,QSD]
 </IfModule>

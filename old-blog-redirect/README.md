@@ -1,18 +1,18 @@
 # 301-редиректы старого блога → новый
 
 Артефакт для **старого блога `blog.ideav.online`** (движок **HTMLy v.2.8.6**), который
-переадресует все его URL на новый блог **`blog.ideav.ru`** (Astro) и передаёт SEO-вес.
+переадресует все его URL на новый блог **`ideav.ru/blog`** (Astro; переехал с поддомена — issue #522) и передаёт SEO-вес.
 
 Это закрывающий шаг истории #331 → #332 → **#373**:
 
 - **#331/#332** — новый блог сделали самоканоничным (`<link rel="canonical">` на себя),
   но старый блог продолжал отвечать `200` и дублировать тот же контент.
 - **#373** (этот артефакт) — старый блог теперь отдаёт `301` на соответствующие страницы
-  нового домена, и поисковики окончательно переносят индекс на `blog.ideav.ru`.
+  нового адреса, и поисковики окончательно переносят индекс на `ideav.ru/blog`.
 
 ## Что куда ведёт
 
-| Старый URL (`blog.ideav.online`) | Новый URL (`blog.ideav.ru`) |
+| Старый URL (`blog.ideav.online`) | Новый URL (`ideav.ru/blog`) |
 |---|---|
 | `/YYYY/MM/<slug>` (статья) | `/posts/<slug>/` |
 | `/post/<slug>` (альт. пермалинк HTMLy) | `/posts/<slug>/` |
@@ -55,7 +55,7 @@ HTMLy по умолчанию работает на **Apache + mod_rewrite**.
 # статья → /posts/<slug>/
 curl -sI https://blog.ideav.online/2025/09/predposylki-no-code-konstruktora-integram \
   | grep -iE '^(HTTP|location)'
-# ожидается: HTTP/.. 301  +  location: https://blog.ideav.ru/posts/predposylki-no-code-konstruktora-integram/
+# ожидается: HTTP/.. 301  +  location: https://ideav.ru/blog/posts/predposylki-no-code-konstruktora-integram/
 
 # категория
 curl -sI https://blog.ideav.online/category/o-platforme | grep -i location

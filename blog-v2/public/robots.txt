@@ -1,4 +1,4 @@
-# robots.txt for blog.ideav.ru
+# robots.txt for ideav.ru/blog
 # Last updated: 2026-05-16
 
 # Default: allow crawling of published blog content.
@@ -78,4 +78,4 @@ User-agent: DuckDuckBot
 Allow: /
 
 # Sitemap.
-Sitemap: https://blog.ideav.ru/sitemap-index.xml
+Sitemap: https://ideav.ru/blog/sitemap-index.xml

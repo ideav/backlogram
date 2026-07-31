@@ -2,7 +2,7 @@
   "pipeline": "habr-effort-estimate",
   "sourceCollection": "blog-v2",
   "sourceArticle": "promyshlennoe-prilozhenie-shansy-riski-trudoemkost",
-  "sourceUrl": "https://blog.ideav.ru/posts/promyshlennoe-prilozhenie-shansy-riski-trudoemkost/",
+  "sourceUrl": "https://ideav.ru/blog/posts/promyshlennoe-prilozhenie-shansy-riski-trudoemkost/",
   "sourceIssue": "https://github.com/ideav/backlogram/issues/506",
   "format": "habr_analytical",
   "targetPlatforms": ["Habr"],

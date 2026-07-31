@@ -134,9 +134,9 @@ const bodyHtml = `
     </p>
     <p style="margin-top:0.6rem">
       Читайте в блоге:
-      <a href="https://blog.ideav.ru/posts/excel-v-prilozhenie-za-45-minut-kak-rabotaet-ii-agent-integrama/">Excel в приложение за 45 минут</a> ·
-      <a href="https://blog.ideav.ru/posts/keis-pekarnya-zamenila-5-excel-na-sistemu-ucheta-zakazov/">Кейс: пекарня заменила 5 Excel на систему учёта</a> ·
-      <a href="https://blog.ideav.ru/posts/keis-logistika-dispetcher-otgruzok-iz-excel-za-den/">Кейс: диспетчер отгрузок из Excel за день</a>
+      <a href="https://ideav.ru/blog/posts/excel-v-prilozhenie-za-45-minut-kak-rabotaet-ii-agent-integrama/">Excel в приложение за 45 минут</a> ·
+      <a href="https://ideav.ru/blog/posts/keis-pekarnya-zamenila-5-excel-na-sistemu-ucheta-zakazov/">Кейс: пекарня заменила 5 Excel на систему учёта</a> ·
+      <a href="https://ideav.ru/blog/posts/keis-logistika-dispetcher-otgruzok-iz-excel-za-den/">Кейс: диспетчер отгрузок из Excel за день</a>
     </p>
   </footer>
 </article>

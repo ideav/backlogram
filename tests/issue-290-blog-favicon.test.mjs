@@ -13,7 +13,7 @@ const faviconSource = readFileSync(
 )
 
 test('blog exposes a 120x120 svg favicon', () => {
-  assert.match(blogLayoutSource, /<link rel="icon" type="image\/svg\+xml" href="\/favicon\.svg" \/>/)
+  assert.match(blogLayoutSource, /<link rel="icon" type="image\/svg\+xml" href=\{withBase\("\/favicon\.svg"\)\} \/>/)
   assert.match(faviconSource, /<svg[^>]+width="120"[^>]+height="120"/)
   assert.match(faviconSource, /viewBox="0 0 120 120"/)
 })

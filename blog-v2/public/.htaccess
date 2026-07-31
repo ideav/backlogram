@@ -1,43 +1,74 @@
-# @astrojs/sitemap отдаёт sitemap-index.xml (+ sitemap-0.xml), а НЕ sitemap.xml.
-# Часто угадываемый URL /sitemap.xml без этого правила отдаёт 404 и путает
-# аудиторов (issue #480). Отправляем его 301-редиректом на настоящий индекс.
+# Правила блога. Файл едет в сборке (blog-v2/dist/.htaccess) и ложится в
+# КАТАЛОГ БЛОГА основного домена: <веб-корень ideav.ru>/blog/.htaccess (issue #522).
 #
-# Требуется AllowOverride FileInfo на vhost blog.ideav.ru — так же, как на
-# ideav.ru (см. docs/server-performance.md). При AllowOverride None этот
-# .htaccess просто игнорируется (не ошибка) — блог продолжает работать, а
-# /sitemap.xml остаётся 404; тогда правило нужно перенести в конфиг vhost.
-RedirectMatch 301 ^/sitemap\.xml$ https://blog.ideav.ru/sitemap-index.xml
+# ⚠️  Это НЕ .htaccess веб-корня. Корневой файл (backlogram/public/.htaccess) несёт
+#     фронт-контроллер платформы, и подменять его этим нельзя — см. issue #422.
+#
+# Важное следствие переезда в подпапку: mod_rewrite по умолчанию НЕ наследует
+# правила родительского каталога в подкаталог, у которого есть свой
+# `RewriteEngine On`. Значит внутри /blog/ действует ТОЛЬКО этот файл: фронт-
+# контроллер платформы сюда не достаёт, и несуществующий адрес блога отдаёт 404
+# блога, а не страницу движка.
+#
+# Требуется AllowOverride FileInfo (как и в корне ideav.ru, см.
+# docs/server-performance.md). При AllowOverride None файл игнорируется — блог
+# продолжает работать, но /blog/sitemap.xml останется 404, легаси-адреса
+# перестанут редиректиться, а несуществующие адреса уйдут во фронт-контроллер.
 
-# === Легаси-URL старого блога, попавшие в обход уже на blog.ideav.ru =========
+# Своя страница 404 вместо страницы движка платформы.
+ErrorDocument 404 /blog/404.html
+
+# === Легаси-URL старого блога ================================================
 # issue #502. Яндекс.Вебмастер держит в «Исключённых» адреса в формате HTMLy
-# (/YYYY/MM/<slug>, /archive/<...>) — но на ЭТОМ домене, а не на
-# blog.ideav.online: они попали в обход, пока шёл переезд (#373), и отдают 404,
-# так что накопленный ссылочный вес теряется. На стороне старого блога карта
-# уже стоит (old-blog-redirect/), здесь — её зеркало для новых адресов.
+# (/YYYY/MM/<slug>, /archive/<...>): они попали в обход, пока шёл переезд (#373).
+# После переезда на подпапку такие адреса приходят сюда с поддомена:
+# blog.ideav.ru/2026/05/<slug> → 301 → /blog/2026/05/<slug> → правила ниже.
 #
 # Порядок важен: сперва точное попадание в существующий пост, и только если
-# такого поста нет — фолбэк на главную. Ни один 301 не ведёт в 404.
+# такого поста нет — фолбэк на главную блога. Ни один 301 не ведёт в 404.
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  RewriteBase /
+  RewriteBase /blog/
 
-  # 1. Датированный пермалинк HTMLy -> /posts/<slug>/, если такой пост есть.
+  # Правила корневого .htaccess в подпапку НЕ наследуются, поэтому канонизацию
+  # хоста и схемы приходится повторить здесь. Без этого http://ideav.ru/blog/…
+  # и www-вариант отвечали бы 200 — дубль в индексе и потеря веса (issue #416).
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
+
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # @astrojs/sitemap отдаёт sitemap-index.xml (+ sitemap-0.xml), а НЕ sitemap.xml.
+  # Часто угадываемый URL без правила отдаёт 404 и путает аудиторов (issue #480).
+  # Именно RewriteRule, а не RedirectMatch: mod_rewrite в этом файле отрабатывает
+  # раньше mod_alias, и catch-all 404 ниже съел бы редирект.
+  RewriteRule ^sitemap\.xml$ /blog/sitemap-index.xml [R=301,L,QSD]
+
+  # 1. Датированный пермалинк HTMLy -> /blog/posts/<slug>/, если такой пост есть.
   #    Astro собран с build.format: 'directory', поэтому пост на диске — это
-  #    /posts/<slug>/index.html. $1 в RewriteCond — группа из RewriteRule ниже.
-  RewriteCond %{DOCUMENT_ROOT}/posts/$1/index.html -f
-  RewriteRule ^[0-9]{4}/[0-9]{2}/([^/]+)/?$ /posts/$1/ [R=301,L,QSD]
+  #    <корень>/blog/posts/<slug>/index.html. $1 — группа из RewriteRule ниже.
+  RewriteCond %{DOCUMENT_ROOT}/blog/posts/$1/index.html -f
+  RewriteRule ^[0-9]{4}/[0-9]{2}/([^/]+)/?$ /blog/posts/$1/ [R=301,L,QSD]
 
   # 2. Недатированный пермалинк HTMLy (/post/<slug>) — та же логика.
-  RewriteCond %{DOCUMENT_ROOT}/posts/$1/index.html -f
-  RewriteRule ^post/([^/]+)/?$ /posts/$1/ [R=301,L,QSD]
+  RewriteCond %{DOCUMENT_ROOT}/blog/posts/$1/index.html -f
+  RewriteRule ^post/([^/]+)/?$ /blog/posts/$1/ [R=301,L,QSD]
 
-  # 3. Фиды HTMLy -> RSS нового блога.
-  RewriteRule ^feed(/(rss|opml))?/?$ /rss.xml [R=301,L,QSD]
+  # 3. Фиды HTMLy -> RSS блога.
+  RewriteRule ^feed(/(rss|opml))?/?$ /blog/rss.xml [R=301,L,QSD]
 
   # 4. Остальное наследие HTMLy (архивы, авторы, типы, удалённые посты) ->
-  #    главная. Сюда же падают датированные URL, для которых поста уже нет.
-  #    Ничего, кроме этих префиксов, не трогаем: собственные 404 нового блога
-  #    должны оставаться 404, а /search — живая страница blog-v2.
-  RewriteRule ^[0-9]{4}/[0-9]{2}(/|$) / [R=301,L,QSD]
-  RewriteRule ^(archive|author|type|post)(/|$) / [R=301,L,QSD]
+  #    главная блога. Сюда же падают датированные URL, для которых поста уже нет.
+  #    Ничего, кроме этих префиксов, не трогаем: собственные 404 блога должны
+  #    оставаться 404, а /search — живая страница blog-v2.
+  RewriteRule ^[0-9]{4}/[0-9]{2}(/|$) /blog/ [R=301,L,QSD]
+  RewriteRule ^(archive|author|type|post)(/|$) /blog/ [R=301,L,QSD]
+
+  # 5. Ни файла, ни правила выше → 404 блога (ErrorDocument), а не фронт-
+  #    контроллер платформы из корневого .htaccess.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ - [R=404,L]
 </IfModule>

@@ -15,11 +15,11 @@ const POST_PAGE = join(__dirname, '..', 'blog-v2', 'src', 'pages', 'posts', '[..
  * The WordPress import seeded every migrated post with a `canonical`
  * frontmatter field pointing at the OLD domain (blog.ideav.online). That
  * emits `<link rel="canonical" href="https://blog.ideav.online/...">` on the
- * live blog.ideav.ru pages, which tells Yandex/Google that the authoritative
+ * live ideav.ru/blog pages, which tells Yandex/Google that the authoritative
  * copy lives elsewhere. Yandex therefore excluded all of these pages from its
  * index as "Малоценная или маловостребованная страница" (low-value/duplicate).
  *
- * The fix: posts on blog.ideav.ru must be self-canonical. The original
+ * The fix: posts on ideav.ru/blog must be self-canonical. The original
  * publication URL is preserved as display-only attribution under a separate
  * `originalUrl` field that does NOT influence <link rel="canonical">.
  */
@@ -61,12 +61,12 @@ test('no post declares a canonical on the old blog.ideav.online domain (issue #3
   assert.equal(
     offenders.length,
     0,
-    `posts must be self-canonical on blog.ideav.ru, not point at the old domain:\n${offenders.join('\n')}`,
+    `posts must be self-canonical on ideav.ru/blog, not point at the old domain:\n${offenders.join('\n')}`,
   )
 })
 
-test('no post is self-canonical via an explicit blog.ideav.ru override either', () => {
-  // A hard-coded blog.ideav.ru canonical is harmless but redundant — the layout
+test('no post is self-canonical via an explicit ideav.ru/blog override either', () => {
+  // A hard-coded ideav.ru/blog canonical is harmless but redundant — the layout
   // already self-canonicalizes. Flag it so we keep relying on the default and
   // never accidentally hard-code a wrong slug.
   const offenders = []
@@ -102,7 +102,7 @@ test('BaseLayout self-canonicalizes when no canonical is provided', () => {
   // The page URL is the fallback canonical target.
   assert.match(
     src,
-    /const\s+canonicalURL\s*=\s*canonical\s*\?\?\s*new URL\(\s*Astro\.url\.pathname\s*,\s*Astro\.site\s*\)/,
+    /const\s+canonicalURL\s*=\s*canonical\s*\?\?\s*new URL\(\s*canonicalPath\(Astro\.url\.pathname\)\s*,\s*Astro\.site\s*\)/,
   )
   assert.match(src, /<link rel="canonical" href=\{canonicalURL\} \/>/)
 })

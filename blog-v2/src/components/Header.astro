@@ -1,5 +1,9 @@
 ---
-const pathname = Astro.url.pathname
+import { stripBase, withBase } from '../lib/url'
+
+// Путь без базы: на подпапке Astro.url.pathname приходит как «/blog/category/…»,
+// а пункты меню сравниваются с «/category/…» (issue #522).
+const pathname = stripBase(Astro.url.pathname)
 
 function activeFor(paths: string[]): string {
   return paths.some((path) => pathname === path || pathname.startsWith(path))
@@ -10,7 +14,7 @@ function activeFor(paths: string[]): string {
 
 <header class="product-site-header">
   <div class="product-container product-nav-shell">
-    <a href="/" class="product-brand" aria-label="Блог Интеграм — главная">
+    <a href={withBase("/")} class="product-brand" aria-label="Блог Интеграм — главная">
       <svg class="product-mark" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path fill="#307FE2" d="M0 0h100v100H0z"/>
         <path d="M57.013 38.518l-4.038 4.24 6.903 7.24L37.392 73.34 8.858 64.344V35.656l28.534-8.996 5.165 5.486 4.084-4.19L39.101 20 3 31.38v37.24L39.101 80 68 49.998l-10.987-11.48z" fill="#fff"/>
@@ -20,11 +24,11 @@ function activeFor(paths: string[]): string {
     </a>
 
     <nav class="product-nav-links" aria-label="Основная навигация">
-      <a href="/" class={pathname === '/' || pathname === '' ? 'active' : ''}>Все статьи</a>
-      <a href="/category/o-platforme/" class={activeFor(['/category/o-platforme/'])}>О платформе</a>
-      <a href="/category/tehnologii/" class={activeFor(['/category/tehnologii/'])}>Технологии</a>
-      <a href="/category/proekty/" class={activeFor(['/category/proekty/'])}>Кейсы</a>
-      <a href="/rss.xml">RSS</a>
+      <a href={withBase("/")} class={pathname === '/' || pathname === '' ? 'active' : ''}>Все статьи</a>
+      <a href={withBase("/category/o-platforme/")} class={activeFor(['/category/o-platforme/'])}>О платформе</a>
+      <a href={withBase("/category/tehnologii/")} class={activeFor(['/category/tehnologii/'])}>Технологии</a>
+      <a href={withBase("/category/proekty/")} class={activeFor(['/category/proekty/'])}>Кейсы</a>
+      <a href={withBase("/rss.xml")}>RSS</a>
     </nav>
 
     <a class="product-button" href="https://ideav.ru">Открыть Интеграм</a>

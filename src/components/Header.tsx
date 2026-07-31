@@ -17,7 +17,7 @@ export function Header() {
     { name: 'Цены', href: '/#pricing' },
     { name: 'Больше CRM', href: '/sravnenie-s-bitrix-amocrm.html' },
     { name: 'База знаний', href: '/knowledge-base.html' },
-    { name: 'Блог', href: 'https://blog.ideav.ru/', external: true },
+    { name: 'Блог', href: 'https://ideav.ru/blog/', external: true },
   ]
 
   // «Ещё...» — раскрывающийся список: сюда складываем новое и интересное
@@ -29,7 +29,7 @@ export function Header() {
     { name: 'Сопоставление каталогов', href: '/catalog-matching.html' },
     {
       name: 'Предпосылки no-code конструктора',
-      href: 'https://blog.ideav.ru/posts/predposylki-no-code-konstruktora-integram/',
+      href: 'https://ideav.ru/blog/posts/predposylki-no-code-konstruktora-integram/',
       external: true,
     },
   ]

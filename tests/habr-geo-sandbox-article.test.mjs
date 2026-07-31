@@ -21,7 +21,7 @@ test('GEO Habr sandbox publication package tracks the requested source article',
   assert.deepEqual(manifest.targetPlatforms, ['Habr'])
   assert.equal(
     manifest.sourceUrl,
-    'https://blog.ideav.ru/posts/prikladnoe-geo-optimizaciya-dlya-generativnyh-sistem/',
+    'https://ideav.ru/blog/posts/prikladnoe-geo-optimizaciya-dlya-generativnyh-sistem/',
   )
   assert.equal(manifest.status, 'ready')
   assert.equal(manifest.draftPath, undefined)

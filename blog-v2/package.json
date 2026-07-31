@@ -1,7 +1,7 @@
 {
   "name": "blog-ideav-ru",
   "version": "0.1.0",
-  "description": "Корпоративный блог Интеграм на blog.ideav.ru. Astro + Markdown.",
+  "description": "Корпоративный блог Интеграм на ideav.ru/blog. Astro + Markdown.",
   "type": "module",
   "scripts": {
     "dev": "astro dev --host 0.0.0.0 --port 4321",

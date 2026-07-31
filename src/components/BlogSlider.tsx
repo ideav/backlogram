@@ -7,7 +7,7 @@ import { BLOG_URL, BLOG_POSTS } from '../data/blogPosts'
  * Слайдер свежих статей блога на главной (issue #512).
  *
  * Данные — из src/data/blogPosts.mjs: блог живёт отдельной Astro-сборкой на
- * blog.ideav.ru, поэтому список статей запекается на этапе сборки скриптом
+ * ideav.ru/blog, поэтому список статей запекается на этапе сборки скриптом
  * scripts/generate-blog-posts.mjs. Тот же модуль читает пререндер главной
  * (scripts/prerender-landing.mjs) — иначе краулеры карточек не увидят.
  *

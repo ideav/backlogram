@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import { categorySlug, getAllCategories } from '../lib/categories'
+import { withBase } from '../lib/url'
 
 const allPosts = await getCollection('posts', ({ data }) => !data.draft)
 const categories = await getAllCategories()
@@ -105,11 +106,11 @@ const archive = display.slice(10)
     <section class="product-blog-shell" aria-label="Материалы блога">
       <div class="product-blog-topbar">
         <nav class="product-blog-category-pills" aria-label="Рубрики блога">
-          <a class="product-blog-category active" href="/">
+          <a class="product-blog-category active" href={withBase("/")}>
             Все <span>{display.length}</span>
           </a>
           {categories.map((category) => (
-            <a class="product-blog-category" href={`/category/${category.slug}/`}>
+            <a class="product-blog-category" href={withBase(`/category/${category.slug}/`)}>
               {category.name} <span>{category.count}</span>
             </a>
           ))}
@@ -117,9 +118,9 @@ const archive = display.slice(10)
       </div>
 
       {featured && (
-        <a class="product-blog-featured" href={`/posts/${featured.post.id}/`}>
+        <a class="product-blog-featured" href={withBase(`/posts/${featured.post.id}/`)}>
           <div class={`product-featured-media has-image ${featured.isAbstract ? 'is-abstract' : ''}`}>
-            <img src={featured.image} alt="" loading="eager" />
+            <img src={withBase(featured.image)} alt="" loading="eager" />
           </div>
           <div class="product-featured-copy">
             <div class="product-card-meta">
@@ -137,9 +138,9 @@ const archive = display.slice(10)
       {cards.length > 0 && (
         <section class="product-blog-card-grid" aria-label="Подборка статей">
           {cards.map(({ post, image, isAbstract }) => (
-            <a class="product-blog-card" href={`/posts/${post.id}/`}>
+            <a class="product-blog-card" href={withBase(`/posts/${post.id}/`)}>
               <div class={`product-card-media has-image ${isAbstract ? 'is-abstract' : ''}`}>
-                <img src={image} alt="" loading="lazy" />
+                <img src={withBase(image)} alt="" loading="lazy" />
               </div>
               <div class="product-card-body">
                 <div class="product-card-meta">
@@ -171,7 +172,7 @@ const archive = display.slice(10)
                 <div class="eyebrow text-[var(--color-product-blue)]">Архив</div>
                 <h2 id="product-blog-archive-title">Материалы блога</h2>
               </div>
-              <a href="/search/">Открыть поиск</a>
+              <a href={withBase("/search/")}>Открыть поиск</a>
             </div>
 
             <ol>
@@ -179,11 +180,11 @@ const archive = display.slice(10)
                 <li>
                   <div class="issue-number">№ {post.issueNumber}</div>
                   <div>
-                    <a class="product-archive-category" href={`/category/${categorySlug(post.data.category)}/`}>
+                    <a class="product-archive-category" href={withBase(`/category/${categorySlug(post.data.category)}/`)}>
                       {post.data.category}
                     </a>
                     <h3>
-                      <a href={`/posts/${post.id}/`}>{post.data.title}</a>
+                      <a href={withBase(`/posts/${post.id}/`)}>{post.data.title}</a>
                     </h3>
                     <p>{post.data.description}</p>
                   </div>

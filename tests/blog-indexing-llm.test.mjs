@@ -48,7 +48,7 @@ test('blog robots.txt allows search engines and LLM crawlers', () => {
     assert.match(robotsSource, agentAllowPattern(agent))
   }
 
-  assert.match(robotsSource, /Sitemap:\s*https:\/\/blog\.ideav\.ru\/sitemap-index\.xml/)
+  assert.match(robotsSource, /Sitemap:\s*https:\/\/ideav\.ru\/blog\/sitemap-index\.xml/)
 })
 
 test('blog exposes an llms.txt route with the published post index', () => {
@@ -57,7 +57,9 @@ test('blog exposes an llms.txt route with the published post index', () => {
   const routeSource = readFileSync(llmsRoute, 'utf8')
   assert.match(routeSource, /getCollection\('posts'/)
   assert.match(routeSource, /!data\.draft/)
-  assert.match(routeSource, /blog\.ideav\.ru/)
+  // Блог переехал в подпапку основного домена (issue #522).
+  assert.match(routeSource, /https:\/\/ideav\.ru['"]/)
+  assert.match(routeSource, /withBase/)
   assert.match(routeSource, /\/posts\/\$\{post\.id\}\//)
   assert.match(routeSource, /text\/plain;\s*charset=utf-8/)
 })

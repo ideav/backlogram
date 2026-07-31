@@ -1,14 +1,14 @@
 ---
 pipeline: habr-effort-estimate
 sourceArticle: promyshlennoe-prilozhenie-shansy-riski-trudoemkost
-sourceUrl: https://blog.ideav.ru/posts/promyshlennoe-prilozhenie-shansy-riski-trudoemkost/
+sourceUrl: https://ideav.ru/blog/posts/promyshlennoe-prilozhenie-shansy-riski-trudoemkost/
 format: habr_analytical
 status: author_review
 draftOwner: author
 updated: 2026-07-28
 targetPlatforms:
   - Habr
-canonicalUrl: https://blog.ideav.ru/posts/promyshlennoe-prilozhenie-shansy-riski-trudoemkost/
+canonicalUrl: https://ideav.ru/blog/posts/promyshlennoe-prilozhenie-shansy-riski-trudoemkost/
 habrCategories:
   - Управление разработкой
   - Управление проектами

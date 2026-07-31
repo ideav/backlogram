@@ -2,7 +2,7 @@
  * Чтение статей блога (`blog-v2/src/content/posts/*.md`) обычным Node —
  * без Astro и без зависимостей.
  *
- * Зачем: главная (ideav.ru) и блог (blog.ideav.ru) — две независимые сборки.
+ * Зачем: главная (ideav.ru) и блог (ideav.ru/blog) — две независимые сборки.
  * React-приложению неоткуда взять список статей в рантайме, поэтому свежие
  * материалы «запекаются» в `src/data/blogPosts.mjs` на этапе сборки
  * (`scripts/generate-blog-posts.mjs`, issue #512). Разбор вынесен сюда, чтобы
@@ -21,7 +21,7 @@ import { fileURLToPath } from 'node:url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '..', '..')
 
-export const BLOG_URL = 'https://blog.ideav.ru'
+export const BLOG_URL = 'https://ideav.ru/blog'
 export const POSTS_DIR = resolve(repoRoot, 'blog-v2/src/content/posts')
 const BLOG_PUBLIC = resolve(repoRoot, 'blog-v2/public')
 

@@ -2,7 +2,7 @@
   "pipeline": "habr-converging-development",
   "sourceCollection": "blog-v2",
   "sourceArticle": "pravila-kotorye-nelzya-narushit",
-  "sourceUrl": "https://blog.ideav.ru/posts/pravila-kotorye-nelzya-narushit/",
+  "sourceUrl": "https://ideav.ru/blog/posts/pravila-kotorye-nelzya-narushit/",
   "format": "habr_sandbox_article",
   "targetPlatforms": ["Habr"],
   "status": "draft",
