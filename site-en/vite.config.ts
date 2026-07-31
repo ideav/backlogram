@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
@@ -15,13 +15,86 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 // controller `RewriteRule ^ index.php` for the application engine behind the
 // Russian site, and there is no engine here — it would break plain static
 // serving (issue #422).
-// `site-en/public/` is a separate public directory, so that cannot happen by
-// accident.
+//
+// The build target is not fixed to a web root. Two environment variables decide
+// where the result is meant to live, so the same source can be deployed to a
+// domain root or to any language subfolder:
+//
+//   SITE_BASE   path under the host          default `/`
+//               examples: `/en/`, `/cn/`, `/pt/`
+//   SITE_URL    scheme + host, no path       default `https://ideav.pro`
+//
+//   npm run build:en                                    → https://ideav.pro/
+//   SITE_BASE=/en/ npm run build:en                     → https://ideav.pro/en/
+//   SITE_BASE=/pt/ SITE_URL=https://example.com npm run build:en
+//
+// Every absolute path in the output derives from these: asset URLs, the favicon,
+// the canonical link, the form endpoint, robots.txt and sitemap.xml.
+
+/** `en`, `/en`, `en/` → `/en/`; empty → `/`. */
+function normalizeBase(raw: string | undefined): string {
+  const trimmed = (raw ?? '').trim()
+  if (trimmed === '' || trimmed === '/') return '/'
+  return `/${trimmed.replace(/^\/+/, '').replace(/\/+$/, '')}/`
+}
+
+const BASE = normalizeBase(process.env.SITE_BASE)
+const ORIGIN = (process.env.SITE_URL ?? 'https://ideav.pro').trim().replace(/\/+$/, '')
+const CANONICAL = ORIGIN + BASE
+
+/**
+ * Fills the deployment-dependent bits that Vite does not touch: the canonical
+ * and OpenGraph URLs in index.html, plus robots.txt and sitemap.xml, which have
+ * to spell out absolute URLs.
+ */
+function deploymentMeta(): Plugin {
+  return {
+    name: 'en-deployment-meta',
+    transformIndexHtml(html) {
+      return html.replaceAll('{{CANONICAL}}', CANONICAL)
+    },
+    generateBundle() {
+      // A crawler only reads robots.txt from the host root. When the site sits
+      // in a subfolder this file is emitted anyway (harmless, and it is the
+      // right file the moment the site moves to the root), but the sitemap has
+      // to be announced from the host-root robots.txt — see site-en/README.md.
+      this.emitFile({
+        type: 'asset',
+        fileName: 'robots.txt',
+        source: [
+          `# robots.txt for ${CANONICAL}`,
+          '',
+          'User-agent: *',
+          'Allow: /',
+          '',
+          `Sitemap: ${CANONICAL}sitemap.xml`,
+          '',
+        ].join('\n'),
+      })
+      this.emitFile({
+        type: 'asset',
+        fileName: 'sitemap.xml',
+        source: [
+          '<?xml version="1.0" encoding="UTF-8"?>',
+          '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+          '  <url>',
+          `    <loc>${CANONICAL}</loc>`,
+          '    <changefreq>monthly</changefreq>',
+          '    <priority>1.0</priority>',
+          '  </url>',
+          '</urlset>',
+          '',
+        ].join('\n'),
+      })
+    },
+  }
+}
+
 export default defineConfig({
   root: __dirname,
-  base: '/',
+  base: BASE,
 
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), deploymentMeta()],
 
   build: {
     outDir: path.resolve(__dirname, '../dist-en'),

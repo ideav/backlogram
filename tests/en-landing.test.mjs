@@ -43,11 +43,39 @@ test('site-en links to no .ru host and no Yandex service', () => {
   assert.deepEqual(offenders, [], 'the English site must not point at Russian hosts')
 })
 
-test('the English entry page declares English and its own canonical', () => {
+test('the English entry page declares English and no Russian analytics', () => {
   const html = readFileSync(join(siteEn, 'index.html'), 'utf8')
   assert.match(html, /<html lang="en">/)
-  assert.match(html, /<link rel="canonical" href="https:\/\/ideav\.pro\/" \/>/)
   assert.ok(!html.includes('metrika'), 'no Yandex.Metrika counter on the English site')
+})
+
+// The site can be deployed to a web root or to a language subfolder (/en/,
+// /cn/, /pt/ …). Anything that spells out an absolute path or URL must be
+// derived from SITE_BASE/SITE_URL at build time, never hard-coded.
+test('canonical and OpenGraph URLs are filled in at build time', () => {
+  const html = readFileSync(join(siteEn, 'index.html'), 'utf8')
+  assert.match(html, /<link rel="canonical" href="\{\{CANONICAL\}\}" \/>/)
+  assert.match(html, /<meta property="og:url" content="\{\{CANONICAL\}\}" \/>/)
+  assert.ok(
+    !/(canonical|og:url)[^>]*ideav\.pro/.test(html),
+    'the deploy URL must come from SITE_URL/SITE_BASE, not from the markup',
+  )
+})
+
+test('the form posts relative to the deployment base', () => {
+  const form = readFileSync(join(siteEn, 'src/components/ContactForm.tsx'), 'utf8')
+  assert.match(form, /import\.meta\.env\.BASE_URL/)
+  assert.ok(
+    !/fetch\(\s*['"`]\//.test(form),
+    'a root-absolute endpoint breaks the site as soon as it lives in a subfolder',
+  )
+})
+
+test('the build derives base and origin from the environment', () => {
+  const config = readFileSync(join(siteEn, 'vite.config.ts'), 'utf8')
+  assert.match(config, /process\.env\.SITE_BASE/)
+  assert.match(config, /process\.env\.SITE_URL/)
+  assert.match(config, /base:\s*BASE/)
 })
 
 test('the English build does not ship the ideav.ru front controller', () => {

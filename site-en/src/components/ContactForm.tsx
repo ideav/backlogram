@@ -2,10 +2,14 @@ import { useState } from 'react'
 
 type FormState = 'idle' | 'sending' | 'success' | 'error'
 
+// The endpoint sits next to the page, so it follows the deployment base: at the
+// web root that is `/order.php`, under a language subfolder `/en/order.php`.
+const ENDPOINT = `${import.meta.env.BASE_URL}order.php`
+
 /**
  * The only conversion point on the site. There is no sign-up and no login: a
  * visitor can ask us to get in touch, nothing else (issue #524). The form posts
- * to `/order.php`, which lives in `site-en/public/`.
+ * to `order.php`, which lives in `site-en/public/`.
  */
 export function ContactForm() {
   const [state, setState] = useState<FormState>('idle')
@@ -28,7 +32,7 @@ export function ContactForm() {
     setError('')
 
     try {
-      const res = await fetch('/order.php', {
+      const res = await fetch(ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
