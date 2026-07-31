@@ -1,6 +1,15 @@
 import assert from 'node:assert/strict'
-import { test, before } from 'node:test'
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { test, before, after } from 'node:test'
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs'
 import { resolve } from 'node:path'
 import { execFileSync } from 'node:child_process'
 
@@ -24,8 +33,23 @@ import { execFileSync } from 'node:child_process'
  */
 
 const repo = new URL('..', import.meta.url).pathname
-const dist = resolve(repo, 'dist')
 const SITE = 'https://ideav.ru'
+
+/**
+ * Песочница под пререндер (issue #520). Раньше тест писал исходный index.html
+ * прямо в `dist/` репозитория и запускал скрипт там: `npm test` после
+ * `npm run build` затирал собранный `dist/index.html` дев-шеллом со ссылкой на
+ * `/src/main.tsx`, а проверка «все статьи есть в sitemap» читала каталог, куда
+ * подмешивались файлы прошлой сборки.
+ *
+ * Каталог создаётся ВНУТРИ репозитория, а не в /tmp: скрипт пререндера
+ * импортирует `esbuild`, а ESM ищет пакеты вверх по дереву каталогов — из
+ * системной temp-папки до `node_modules` проекта он не дотянется. Пути внутри
+ * скрипта считаются от его собственного расположения, поэтому копия в
+ * `<песочница>/scripts/` пишет результат в `<песочница>/dist/`.
+ */
+const work = mkdtempSync(resolve(repo, '.tmp-kb-prerender-'))
+const dist = resolve(work, 'dist')
 
 function canonicalOf(html) {
   const m = html.match(/<link rel="canonical" href="([^"]+)"\s*\/>/)
@@ -46,12 +70,26 @@ function fileForLoc(loc) {
 }
 
 before(() => {
+  mkdirSync(dist, { recursive: true })
+  mkdirSync(resolve(work, 'scripts'), { recursive: true })
+  cpSync(
+    resolve(repo, 'scripts/prerender-knowledge-base.mjs'),
+    resolve(work, 'scripts/prerender-knowledge-base.mjs'),
+  )
+  // Скрипт собирает статьи из src/data/knowledgeBase.ts через esbuild.
+  cpSync(resolve(repo, 'src/data'), resolve(work, 'src/data'), { recursive: true })
   // The prerender patches dist/index.html (the built SPA shell). For the test
   // we seed it from the source template, which carries the same #root div and
   // meta tags the script rewrites.
-  mkdirSync(dist, { recursive: true })
   writeFileSync(resolve(dist, 'index.html'), readFileSync(resolve(repo, 'index.html'), 'utf8'))
-  execFileSync('node', ['scripts/prerender-knowledge-base.mjs'], { cwd: repo, stdio: 'pipe' })
+  execFileSync(process.execPath, ['scripts/prerender-knowledge-base.mjs'], {
+    cwd: work,
+    stdio: 'pipe',
+  })
+})
+
+after(() => {
+  rmSync(work, { recursive: true, force: true })
 })
 
 test('the KB index is self-canonical on /knowledge-base.html', () => {
