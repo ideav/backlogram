@@ -163,6 +163,11 @@ export default function Home() {
   }
 
   return (
+    // Бюджет заголовков (issue #514): один H1, до 10 H2 — только смысловые
+    // разделы страницы, до 15 H3 — их подпункты (кейсы, тарифы, модели старта).
+    // Подписи карточек, шаги, отрасли, вопросы FAQ и заголовки промо-блоков —
+    // обычный текст с теми же классами: было 83 заголовка на 2800 слов, и
+    // «скелет» страницы для поисковика размывался. Тест — tests/issue-514-headings.
     <div className="overflow-hidden">
       {/* 1. Hero Section */}
       <section className="relative isolate overflow-hidden pt-32 pb-20 lg:pt-48 lg:pb-32">
@@ -271,9 +276,9 @@ export default function Home() {
               <div className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1">
                 Новое · готово за ~45 минут
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold mb-1">
+              <p className="text-2xl md:text-3xl font-bold mb-1">
                 Загрузите Excel — получите приложение
-              </h2>
+              </p>
               <p className="text-slate-500 dark:text-slate-400">
                 Конвертация Excel в приложение без потерь данных. Пришлите свои таблицы — вернём ссылку на готовую базу Интеграм с вашими данными: формы ввода, права доступа, отчёты и дашборды.
               </p>
@@ -339,7 +344,7 @@ export default function Home() {
                       <Code2 size={20} />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-slate-800 dark:text-slate-100 mb-1">{item.title}</h3>
+                      <p className="font-semibold text-slate-800 dark:text-slate-100 mb-1">{item.title}</p>
                       <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{item.desc}</p>
                       {item.href && item.linkText && (
                         <Link
@@ -430,7 +435,7 @@ export default function Home() {
               { label: 'ИТ-компании', desc: 'Service Desk, управление заявками и инцидентами, Help Desk для ИТ-отдела. Автоматизация рутинных задач в офисе.', href: '/baza-zayavok.html', linkText: 'Учёт заявок вместо Excel' },
             ].map(({ label, desc, href, linkText }) => (
               <div key={label} className="p-5 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-1">{label}</h3>
+                <p className="font-bold text-slate-800 dark:text-slate-100 mb-1">{label}</p>
                 <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{desc}</p>
                 <Link
                   to={href}
@@ -509,7 +514,7 @@ export default function Home() {
                 <div className="w-14 h-14 rounded-2xl bg-blue-600/10 flex items-center justify-center text-blue-500 mb-6 group-hover:scale-110 transition-transform">
                   <item.icon size={28} />
                 </div>
-                <h3 className="text-xl font-bold mb-4">{item.title}</h3>
+                <p className="text-xl font-bold mb-4">{item.title}</p>
                 <p className="text-slate-500 dark:text-slate-400 leading-relaxed">{item.desc}</p>
                 {/* Перелинковка на разбор в базе знаний (issue #495) */}
                 <Link
@@ -564,7 +569,7 @@ export default function Home() {
                 <div className="text-4xl font-black text-slate-100 dark:text-slate-900 group-hover:text-blue-500/10 transition-colors absolute top-4 right-6 leading-none">
                   {item.step}
                 </div>
-                <h3 className="text-xl font-bold mb-4 text-slate-800 dark:text-slate-100 group-hover:text-blue-500 transition-colors">{item.title}</h3>
+                <p className="text-xl font-bold mb-4 text-slate-800 dark:text-slate-100 group-hover:text-blue-500 transition-colors">{item.title}</p>
                 <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
@@ -596,14 +601,14 @@ export default function Home() {
                   <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-blue-500 mb-4">
                     <item.icon size={20} />
                   </div>
-                  <h4 className="font-bold text-slate-800 dark:text-slate-100 mb-1">{item.label}</h4>
+                  <p className="font-bold text-slate-800 dark:text-slate-100 mb-1">{item.label}</p>
                   <p className="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider">{item.sub}</p>
                 </div>
               ))}
             </div>
 
             <div className="order-1 lg:order-2">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Изменения вносятся бизнес-аналитиками, а не программистами</h2>
+              <p className="text-3xl md:text-4xl font-bold mb-6">Изменения вносятся бизнес-аналитиками, а не программистами</p>
               <p className="text-slate-500 dark:text-slate-400 text-lg mb-8 leading-relaxed">
                 Ваши ИТ-ресурсы перестают тратить время на правки отчётов и интерфейсов. Поля, формы, отчёты и дашборды настраиваются без релизов. Это no-code платформа: автоматизация бизнес-процессов без программирования. Создание веб-приложений для аналитиков — без кода, без ожидания очереди к разработчикам.
               </p>
@@ -684,7 +689,7 @@ export default function Home() {
                 <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 dark:text-blue-400 mb-5">
                   <item.icon size={22} />
                 </div>
-                <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-2">{item.title}</h3>
+                <p className="font-bold text-slate-800 dark:text-slate-100 mb-2">{item.title}</p>
                 <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
@@ -698,7 +703,7 @@ export default function Home() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Мы не заменяем, мы дополняем</h2>
+            <p className="text-3xl md:text-4xl font-bold mb-4">Мы не заменяем, мы дополняем</p>
             <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">Инструмент, который бесшовно встраивается в ваш существующий ИТ-ландшафт.</p>
           </div>
 
@@ -713,7 +718,7 @@ export default function Home() {
                 <div className="mx-auto w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 mb-6">
                   <item.icon size={24} />
                 </div>
-                <h3 className="font-bold mb-2">{item.title}</h3>
+                <p className="font-bold mb-2">{item.title}</p>
                 <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{item.desc || item.sub}</p>
               </div>
             ))}
@@ -757,7 +762,7 @@ export default function Home() {
                       <ArrowRight size={14} className="rotate-45" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold text-slate-700 dark:text-slate-200">Задача:</h4>
+                      <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Задача:</p>
                       <p className="text-sm text-slate-500 dark:text-slate-400">Регистрация, адаптация, заведение проектов, распределение задач, процесс выполнения проекта.</p>
                     </div>
                   </div>
@@ -766,7 +771,7 @@ export default function Home() {
                       <CheckCircle2 size={14} />
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold text-slate-700 dark:text-slate-200">Реализация:</h4>
+                      <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Реализация:</p>
                       <p className="text-sm text-slate-500 dark:text-slate-400">Структура данных и наполнение, сводная панель метрик, планирование H_min, назначения, мониторинг, экономика и симуляция сценариев.</p>
                     </div>
                   </div>
@@ -866,7 +871,7 @@ export default function Home() {
                       <ArrowRight size={14} className="rotate-45" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold text-slate-700 dark:text-slate-200">Задача:</h4>
+                      <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Задача:</p>
                       <p className="text-sm text-slate-500 dark:text-slate-400">Единая методология оценки суверенности по 9 измерениям, проверка соответствия НПА (ПП-1726, ФЗ-149) и дорожная карта.</p>
                     </div>
                   </div>
@@ -875,7 +880,7 @@ export default function Home() {
                       <CheckCircle2 size={14} />
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold text-slate-700 dark:text-slate-200">Реализация:</h4>
+                      <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Реализация:</p>
                       <p className="text-sm text-slate-500 dark:text-slate-400">9D Аудит, пирамида суверенности, моделировщик, анализатор хранилищ кода (50+ метрик) и автоматические дорожные карты.</p>
                     </div>
                   </div>
@@ -927,7 +932,7 @@ export default function Home() {
                       <ArrowRight size={14} className="rotate-45" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold text-slate-700 dark:text-slate-200">Задача:</h4>
+                      <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Задача:</p>
                       <p className="text-sm text-slate-500 dark:text-slate-400">Централизованный учет ПДн, версионность, согласование и интеграция с аудитом.</p>
                     </div>
                   </div>
@@ -936,7 +941,7 @@ export default function Home() {
                       <CheckCircle2 size={14} />
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold text-slate-700 dark:text-slate-200">Реализация:</h4>
+                      <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Реализация:</p>
                       <p className="text-sm text-slate-500 dark:text-slate-400">Реестр процессов, автоматическая отчетность без программирования, встроенная ролевая модель.</p>
                     </div>
                   </div>
@@ -989,7 +994,7 @@ export default function Home() {
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Готовые типы проектов для вашего бэклога (очереди задач)</h2>
+            <p className="text-3xl md:text-4xl font-bold mb-4">Готовые типы проектов для вашего бэклога (очереди задач)</p>
             <p className="text-slate-500 dark:text-slate-400">Любая из этих задач может быть реализована как полноценное веб-приложение</p>
           </div>
 
@@ -1199,7 +1204,7 @@ export default function Home() {
       <section className="py-24 border-t border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Кто работает над вашей задачей</h2>
+            <p className="text-3xl md:text-4xl font-bold mb-4">Кто работает над вашей задачей</p>
             <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">Мы предоставляем экспертов, которые знают платформу и понимают бизнес-процессы.</p>
           </div>
 
@@ -1209,7 +1214,7 @@ export default function Home() {
                 <Users size={24} />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Системный аналитик</h3>
+                <p className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Системный аналитик</p>
                 <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
                   Сбор требований, проектирование структур данных и логики процессов. Переводит бизнес-язык в архитектуру платформы.
                 </p>
@@ -1221,7 +1226,7 @@ export default function Home() {
                 <Settings2 size={24} />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Разработчик платформы</h3>
+                <p className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Разработчик платформы</p>
                 <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
                   Настройка логики, интеграций и интерфейсов. Обеспечивает бесшовную работу приложения в вашем контуре.
                 </p>
@@ -1242,7 +1247,7 @@ export default function Home() {
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-[100px] rounded-full -z-10" />
 
             <div>
-              <h2 className="text-3xl md:text-5xl font-bold mb-8">Готовы разгрузить свой бэклог (очередь задач)?</h2>
+              <p className="text-3xl md:text-5xl font-bold mb-8">Готовы разгрузить свой бэклог (очередь задач)?</p>
               <p className="text-slate-500 dark:text-slate-400 text-lg mb-8">
                 Пришлите описание задачи или проект из очереди, и мы сделаем предварительную оценку архитектуры и сроков за 24 часа
               </p>
@@ -1513,27 +1518,34 @@ export default function Home() {
           </div>
 
           {/* Вопросы — из src/data/home-faq.mjs: тот же источник питает статический
-              снапшот и разметку FAQPage в scripts/prerender-landing.mjs (issue #495). */}
-          <div className="space-y-4">
+              снапшот и разметку FAQPage в scripts/prerender-landing.mjs (issue #495).
+
+              Вопросы размечены списком определений (dl/dt/dd), а не заголовками:
+              семь H3 подряд размывали структуру страницы, а поисковику вопросы и
+              ответы отдаёт разметка FAQPage из снапшота — она даёт расширенный
+              сниппет, чего теги H3 не дают (issue #514). */}
+          <dl className="space-y-4">
             {HOME_FAQ.map((item, i) => (
               <div
                 key={i}
                 className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/30"
               >
-                <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-2">{item.q}</h3>
-                <p className="text-slate-500 dark:text-slate-400 leading-relaxed">{item.a}</p>
-                {item.link && (
-                  <Link
-                    to={item.link.href}
-                    className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:gap-2 transition-all"
-                  >
-                    {item.link.text}
-                    <ArrowRight size={15} />
-                  </Link>
-                )}
+                <dt className="font-bold text-slate-800 dark:text-slate-100 mb-2">{item.q}</dt>
+                <dd className="text-slate-500 dark:text-slate-400 leading-relaxed">
+                  <p>{item.a}</p>
+                  {item.link && (
+                    <Link
+                      to={item.link.href}
+                      className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:gap-2 transition-all"
+                    >
+                      {item.link.text}
+                      <ArrowRight size={15} />
+                    </Link>
+                  )}
+                </dd>
               </div>
             ))}
-          </div>
+          </dl>
         </div>
       </section>
       {/* 16. SEO-текст в подвал (af.md блок 14) */}

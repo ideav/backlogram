@@ -26,7 +26,7 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-slate-800 dark:text-slate-100 font-semibold mb-6">Продукт</h3>
+            <p className="text-slate-800 dark:text-slate-100 font-semibold mb-6">Продукт</p>
             <ul className="space-y-4">
               <li><a href="/#technology" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Технология</a></li>
               <li><a href="/#process" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Схема работы</a></li>
@@ -37,7 +37,7 @@ export function Footer() {
 
           {/* Documentation / Legal */}
           <div>
-            <h3 className="text-slate-800 dark:text-slate-100 font-semibold mb-6">Ресурсы</h3>
+            <p className="text-slate-800 dark:text-slate-100 font-semibold mb-6">Ресурсы</p>
             <ul className="space-y-4">
               <li><a href="https://help.integram.io/" target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors flex items-center gap-2">Документация <ExternalLink size={12} /></a></li>
               <li><Link to="/knowledge-base.html" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">База знаний</Link></li>
@@ -54,7 +54,7 @@ export function Footer() {
 
           {/* Contacts */}
           <div id="contacts">
-            <h3 className="text-slate-800 dark:text-slate-100 font-semibold mb-6">Контакты</h3>
+            <p className="text-slate-800 dark:text-slate-100 font-semibold mb-6">Контакты</p>
             <ul className="space-y-4">
               <li>
                 <a href="https://t.me/qdmadept" className="flex items-center gap-3 text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">

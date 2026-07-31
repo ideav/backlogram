@@ -51,7 +51,9 @@ export default function BlogSlider() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-end justify-between gap-6 mb-10">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">Свежее в блоге</h2>
+            {/* Заголовок ленты — не <h2>: это виджет-подборка, а не смысловой раздел
+                страницы. Девять карточек с <h3> раздували структуру главной (issue #514). */}
+            <p className="text-3xl md:text-4xl font-bold mb-3">Свежее в блоге</p>
             <p className="text-slate-500 dark:text-slate-400 max-w-2xl">
               Разборы проектов, кейсы заказчиков и то, как устроена платформа изнутри
             </p>
@@ -127,9 +129,9 @@ export default function BlogSlider() {
                       {post.dateLabel}
                     </time>
                   </div>
-                  <h3 className="text-lg font-bold leading-snug line-clamp-2 text-slate-800 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <p className="text-lg font-bold leading-snug line-clamp-2 text-slate-800 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     {post.title}
-                  </h3>
+                  </p>
                   <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-3 flex-1">
                     {post.description}
                   </p>

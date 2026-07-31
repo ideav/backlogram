@@ -120,21 +120,26 @@ const blogHtml = `
         <p><a href="${escape(BLOG_URL)}/">Перейти в блог</a></p>
       </section>`
 
+// Вопросы — списком определений, а не заголовками: семь H3 подряд размывали
+// структуру документа, а поисковику вопросы и ответы отдаёт разметка FAQPage
+// ниже (issue #514). Так же размечен живой блок в src/pages/Home.tsx.
 const faqHtml = `
       <section class="lp-prerender__group" aria-labelledby="lp-faq-title">
         <h2 id="lp-faq-title">Частые вопросы</h2>
+        <dl>
         ${HOME_FAQ
           .map(
             (item) => `<div class="lp-prerender__faq-item">
-          <h3>${escape(item.q)}</h3>
-          <p>${escape(item.a)}</p>${
+          <dt>${escape(item.q)}</dt>
+          <dd>${escape(item.a)}${
             item.link
-              ? `\n          <p class="lp-prerender__faq-link"><a href="${escape(item.link.href)}">${escape(item.link.text)}</a></p>`
+              ? `\n          <span class="lp-prerender__faq-link"><a href="${escape(item.link.href)}">${escape(item.link.text)}</a></span>`
               : ''
-          }
+          }</dd>
         </div>`
           )
           .join('\n        ')}
+        </dl>
       </section>`
 
 // Ссылки на все страницы-решения — чтобы краулеры видели их в статичном
@@ -201,8 +206,9 @@ const bodyHtml = `
   #lp-prerender .lp-prerender__posts li { margin: 0.5rem 0; }
   #lp-prerender .lp-prerender__post-meta { display: block; font-size: 0.85rem; color: #64748b; }
   #lp-prerender .lp-prerender__faq-item { margin: 1rem 0; }
-  #lp-prerender .lp-prerender__faq-item h3 { font-size: 1.05rem; margin: 0 0 0.25rem; }
-  #lp-prerender .lp-prerender__faq-link { font-size: 0.92rem; }
+  #lp-prerender .lp-prerender__faq-item dt { font-size: 1.05rem; font-weight: 700; margin: 0 0 0.25rem; }
+  #lp-prerender .lp-prerender__faq-item dd { margin: 0; line-height: 1.6; }
+  #lp-prerender .lp-prerender__faq-link { display: block; margin-top: 0.35rem; font-size: 0.92rem; }
   #lp-prerender a { color: #2563eb; }
   #lp-prerender .lp-prerender__footer { margin-top: 3rem; padding-top: 1.5rem;
     border-top: 1px solid #e2e8f0; font-size: 0.92rem; color: #475569; }
