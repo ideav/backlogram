@@ -21,9 +21,11 @@ const read = (p) => readFileSync(resolve(repo, p), 'utf8')
 const indexHtml = read('index.html')
 const homeTsx = read('src/pages/Home.tsx')
 
-const TITLE = 'Интеграм — no-code конструктор приложений | Замена Excel, аналог Airtable'
+// Укорочены под пиксельные лимиты выдачи (issue #516): было 721 px и 1168 px
+// при лимитах 580 px и 1000 px. Сам замер — в tests/index-seo-meta.test.mjs.
+const TITLE = 'Интеграм — no-code конструктор приложений | Замена Excel'
 const DESCRIPTION =
-  'Российская no-code платформа: из Excel-таблицы — веб-приложение за 45 минут. Реляционные данные, on-premise, права доступа. В реестре отечественного ПО. Попробуйте бесплатно.'
+  'Из Excel-таблицы — веб-приложение за 45 минут. Реляционные данные, on-premise, права доступа. Российский no-code в реестре отечественного ПО.'
 const H1 =
   'Интеграм — российский no-code конструктор приложений и баз данных: замена Excel и аналог Airtable для бизнеса'
 
