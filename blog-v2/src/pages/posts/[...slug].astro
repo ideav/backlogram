@@ -4,6 +4,7 @@ import { getCollection, render } from 'astro:content'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import { tagSlug } from '../../lib/tags'
 import { categorySlug } from '../../lib/categories'
+import { withBase } from '../../lib/url'
 
 // og:image must be exactly 1200×630 — BaseLayout hardcodes og:image:width/height.
 // Covers that aren't already that size get a generated 1200×630 variant at
@@ -75,11 +76,11 @@ const initial = post.data.author.charAt(0)
       </div>
       <div class="eyebrow text-[var(--color-ink-faint)]">{formattedDate}</div>
       <div class="eyebrow text-[var(--color-vermilion)]">
-        <a href={`/category/${categorySlug(post.data.category)}/`} class="link-swipe">{post.data.category}</a>
+        <a href={withBase(`/category/${categorySlug(post.data.category)}/`)} class="link-swipe">{post.data.category}</a>
       </div>
       <div class="eyebrow text-[var(--color-ink-faint)]">{readingTime}&nbsp;мин чтения</div>
       <div class="ml-auto">
-        <a href="/" class="eyebrow link-swipe text-[var(--color-ink)]">← Архив выпусков</a>
+        <a href={withBase("/")} class="eyebrow link-swipe text-[var(--color-ink)]">← Архив выпусков</a>
       </div>
     </div>
 
@@ -115,7 +116,7 @@ const initial = post.data.author.charAt(0)
                 {post.data.tags!.map((t) => (
                   <li>
                     <a
-                      href={`/tag/${tagSlug(t)}/`}
+                      href={withBase(`/tag/${tagSlug(t)}/`)}
                       class="link-swipe text-sm text-[var(--color-ink)] hover:text-[var(--color-vermilion)]"
                     >
                       {t}
@@ -131,7 +132,7 @@ const initial = post.data.author.charAt(0)
             <ul class="space-y-1.5">
               <li>
                 <a
-                  href={`https://t.me/share/url?url=${encodeURIComponent('https://blog.ideav.ru/posts/' + post.id + '/')}&text=${encodeURIComponent(post.data.title)}`}
+                  href={`https://t.me/share/url?url=${encodeURIComponent('https://ideav.ru/blog/posts/' + post.id + '/')}&text=${encodeURIComponent(post.data.title)}`}
                   class="link-swipe text-[var(--color-ink)] text-sm"
                 >
                   Telegram
@@ -139,7 +140,7 @@ const initial = post.data.author.charAt(0)
               </li>
               <li>
                 <a
-                  href={`https://vk.com/share.php?url=${encodeURIComponent('https://blog.ideav.ru/posts/' + post.id + '/')}`}
+                  href={`https://vk.com/share.php?url=${encodeURIComponent('https://ideav.ru/blog/posts/' + post.id + '/')}`}
                   class="link-swipe text-[var(--color-ink)] text-sm"
                 >
                   ВКонтакте
@@ -147,7 +148,7 @@ const initial = post.data.author.charAt(0)
               </li>
               <li>
                 <a
-                  href={`mailto:?subject=${encodeURIComponent(post.data.title)}&body=${encodeURIComponent('https://blog.ideav.ru/posts/' + post.id + '/')}`}
+                  href={`mailto:?subject=${encodeURIComponent(post.data.title)}&body=${encodeURIComponent('https://ideav.ru/blog/posts/' + post.id + '/')}`}
                   class="link-swipe text-[var(--color-ink)] text-sm"
                 >
                   Почтой
@@ -179,7 +180,7 @@ const initial = post.data.author.charAt(0)
         {post.data.image && (
           <figure class="mb-10 lg:mb-14 -mx-6 lg:mx-0">
             <img
-              src={post.data.image}
+              src={withBase(post.data.image)}
               alt={post.data.title}
               class="w-full"
             />
@@ -226,7 +227,7 @@ const initial = post.data.author.charAt(0)
         <!-- Next issue — keep reading in sequence -->
         {next && (
           <a
-            href={`/posts/${next.slug}/`}
+            href={withBase(`/posts/${next.slug}/`)}
             rel="next"
             class="group block mt-10 pt-8 border-t border-[var(--color-hairline)] no-underline"
           >
@@ -251,7 +252,7 @@ const initial = post.data.author.charAt(0)
 
         <!-- Return link -->
         <div class="mt-12 pt-8 border-t border-[var(--color-hairline)] flex items-center justify-between">
-          <a href="/" class="eyebrow link-swipe text-[var(--color-ink)]">
+          <a href={withBase("/")} class="eyebrow link-swipe text-[var(--color-ink)]">
             ← Все выпуски
           </a>
           <div class="eyebrow text-[var(--color-ink-faint)]">

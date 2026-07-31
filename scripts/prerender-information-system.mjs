@@ -201,9 +201,9 @@ const bodyHtml = `
     </p>
     <p style="margin-top:0.6rem">
       Читайте в блоге:
-      <a href="https://blog.ideav.ru/posts/edinaya-baza-dannyh-dlya-filialov/">Единая база данных для филиалов</a> ·
-      <a href="https://blog.ideav.ru/posts/bezopasnost-i-otkazoustoichivost-dlya-krupnogo-biznesa/">Безопасность и отказоустойчивость для крупного бизнеса</a> ·
-      <a href="https://blog.ideav.ru/posts/integram-on-premise-lokalno/">Интеграм on-premise: установка в контуре заказчика</a>
+      <a href="https://ideav.ru/blog/posts/edinaya-baza-dannyh-dlya-filialov/">Единая база данных для филиалов</a> ·
+      <a href="https://ideav.ru/blog/posts/bezopasnost-i-otkazoustoichivost-dlya-krupnogo-biznesa/">Безопасность и отказоустойчивость для крупного бизнеса</a> ·
+      <a href="https://ideav.ru/blog/posts/integram-on-premise-lokalno/">Интеграм on-premise: установка в контуре заказчика</a>
     </p>
   </footer>
 </article>

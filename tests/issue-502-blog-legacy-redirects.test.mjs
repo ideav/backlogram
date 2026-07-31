@@ -11,11 +11,11 @@ const HTACCESS = join(__dirname, '..', 'blog-v2', 'public', '.htaccess')
 /**
  * Regression coverage for https://github.com/ideav/backlogram/issues/502
  *
- * Яндекс.Вебмастер держит в «Исключённых» страницы blog.ideav.ru, и часть из
+ * Яндекс.Вебмастер держит в «Исключённых» страницы ideav.ru/blog, и часть из
  * них — легаси-адреса старого HTMLy-блога (/YYYY/MM/<slug>, /archive/<...>),
  * попавшие в обход уже на новом домене и отдающие 404. `old-blog-redirect/`
  * закрывает эту карту на стороне blog.ideav.online, а `blog-v2/public/.htaccess`
- * — её зеркало на самом blog.ideav.ru.
+ * — её зеркало на самом ideav.ru/blog.
  *
  * Инварианты, которые сторожит тест:
  *  - легаси-URL поста ведёт на существующий /posts/<slug>/ (никаких 301 -> 404);
@@ -40,54 +40,60 @@ const postSlugs = new Set(
  * Возвращает целевой путь или null, если запрос отдаётся как есть.
  */
 function redirect(url) {
-  const p = url.replace(/^\/+/, '').split('?')[0]
+  // Блог переехал в подпапку основного домена (issue #522): запрос приходит как
+  // /blog/…, а mod_rewrite внутри .htaccess каталога видит путь ОТНОСИТЕЛЬНО
+  // него (RewriteBase /blog/). Симулятор повторяет ровно это.
+  const withoutBase = url.replace(/^\/blog\/?/, '/')
+  const p = withoutBase.replace(/^\/+/, '').split('?')[0]
 
-  if (/^sitemap\.xml$/.test(p)) return '/sitemap-index.xml'
+  if (/^sitemap\.xml$/.test(p)) return '/blog/sitemap-index.xml'
 
   let m
   if ((m = p.match(/^[0-9]{4}\/[0-9]{2}\/([^/]+)\/?$/)) && postSlugs.has(m[1]))
-    return `/posts/${m[1]}/`
+    return `/blog/posts/${m[1]}/`
   if ((m = p.match(/^post\/([^/]+)\/?$/)) && postSlugs.has(m[1]))
-    return `/posts/${m[1]}/`
-  if (/^feed(\/(rss|opml))?\/?$/.test(p)) return '/rss.xml'
-  if (/^[0-9]{4}\/[0-9]{2}(\/|$)/.test(p)) return '/'
-  if (/^(archive|author|type|post)(\/|$)/.test(p)) return '/'
+    return `/blog/posts/${m[1]}/`
+  if (/^feed(\/(rss|opml))?\/?$/.test(p)) return '/blog/rss.xml'
+  if (/^[0-9]{4}\/[0-9]{2}(\/|$)/.test(p)) return '/blog/'
+  if (/^(archive|author|type|post)(\/|$)/.test(p)) return '/blog/'
 
-  return null // ничего не совпало — отдаём как есть (или честный 404 Astro)
+  return null // ничего не совпало — отдаём файл с диска (или 404 блога)
 }
 
 test('.htaccess существует и содержит оба блока правил', () => {
   assert.ok(existsSync(HTACCESS), 'blog-v2/public/.htaccess must exist')
   // #480 — не потерять при правках.
+  // Именно RewriteRule: mod_rewrite в этом файле отрабатывает раньше mod_alias,
+  // и catch-all 404 съедал RedirectMatch (проверено докером, issue #522).
   assert.match(
     htaccess,
-    /RedirectMatch 301 \^\/sitemap\\\.xml\$ https:\/\/blog\.ideav\.ru\/sitemap-index\.xml/,
+    /RewriteRule \^sitemap\\\.xml\$ \/blog\/sitemap-index\.xml \[R=301/,
   )
   // #502 — датированный пермалинк проверяется на существование поста.
   assert.match(
     htaccess,
-    /RewriteCond %\{DOCUMENT_ROOT\}\/posts\/\$1\/index\.html -f/,
+    /RewriteCond %\{DOCUMENT_ROOT\}\/blog\/posts\/\$1\/index\.html -f/,
   )
   assert.match(
     htaccess,
-    /RewriteRule \^\[0-9\]\{4\}\/\[0-9\]\{2\}\/\(\[\^\/\]\+\)\/\?\$ \/posts\/\$1\/ \[R=301/,
+    /RewriteRule \^\[0-9\]\{4\}\/\[0-9\]\{2\}\/\(\[\^\/\]\+\)\/\?\$ \/blog\/posts\/\$1\/ \[R=301/,
   )
   // Фолбэк на главную для легаси без поста.
   assert.match(
     htaccess,
-    /RewriteRule \^\(archive\|author\|type\|post\)\(\/\|\$\) \/ \[R=301/,
+    /RewriteRule \^\(archive\|author\|type\|post\)\(\/\|\$\) \/blog\/ \[R=301/,
   )
 })
 
 test('404-адреса из выгрузки Вебмастера (#502) больше не 404', () => {
   const cases = [
-    ['/2024/03/crm-sistema-dlya-srednego-biznesa', '/posts/crm-sistema-dlya-srednego-biznesa/'],
-    ['/2024/04/pravilo-6-tehnicheskoe-zadanie', '/posts/pravilo-6-tehnicheskoe-zadanie/'],
+    ['/blog/2024/03/crm-sistema-dlya-srednego-biznesa', '/blog/posts/crm-sistema-dlya-srednego-biznesa/'],
+    ['/blog/2024/04/pravilo-6-tehnicheskoe-zadanie', '/blog/posts/pravilo-6-tehnicheskoe-zadanie/'],
     [
-      '/2023/12/keis-sistema-dlya-obzvona-spyashih-klientov-za-1-chas',
-      '/posts/keis-sistema-dlya-obzvona-spyashih-klientov-za-1-chas/',
+      '/blog/2023/12/keis-sistema-dlya-obzvona-spyashih-klientov-za-1-chas',
+      '/blog/posts/keis-sistema-dlya-obzvona-spyashih-klientov-za-1-chas/',
     ],
-    ['/archive/2024-07', '/'],
+    ['/blog/archive/2024-07', '/blog/'],
   ]
   for (const [url, expected] of cases) {
     assert.equal(redirect(url), expected, `${url} should -> ${expected}`)
@@ -97,43 +103,43 @@ test('404-адреса из выгрузки Вебмастера (#502) бол�
 test('ни один 301 не ведёт в 404: цель поста всегда существует', () => {
   const offenders = []
   for (const slug of postSlugs) {
-    const target = redirect(`/2024/03/${slug}`)
-    if (target !== `/posts/${slug}/`) offenders.push(`${slug} -> ${target}`)
+    const target = redirect(`/blog/2024/03/${slug}`)
+    if (target !== `/blog/posts/${slug}/`) offenders.push(`${slug} -> ${target}`)
   }
   assert.equal(offenders.length, 0, offenders.join('\n'))
 
   // Удалённый/переименованный пост не превращается в 301 -> 404.
-  assert.equal(redirect('/2024/03/etogo-posta-bolshe-net'), '/')
-  assert.equal(redirect('/post/etogo-posta-bolshe-net'), '/')
+  assert.equal(redirect('/blog/2024/03/etogo-posta-bolshe-net'), '/blog/')
+  assert.equal(redirect('/blog/post/etogo-posta-bolshe-net'), '/blog/')
 })
 
 test('легаси-пермалинки HTMLy и фиды перекрыты', () => {
   const [anySlug] = postSlugs
-  assert.equal(redirect(`/post/${anySlug}`), `/posts/${anySlug}/`)
-  assert.equal(redirect(`/post/${anySlug}/`), `/posts/${anySlug}/`)
-  assert.equal(redirect('/feed'), '/rss.xml')
-  assert.equal(redirect('/feed/rss'), '/rss.xml')
-  assert.equal(redirect('/feed/opml'), '/rss.xml')
-  assert.equal(redirect('/2024/07'), '/')
-  assert.equal(redirect('/archive'), '/')
+  assert.equal(redirect(`/blog/post/${anySlug}`), `/blog/posts/${anySlug}/`)
+  assert.equal(redirect(`/blog/post/${anySlug}/`), `/blog/posts/${anySlug}/`)
+  assert.equal(redirect('/blog/feed'), '/blog/rss.xml')
+  assert.equal(redirect('/blog/feed/rss'), '/blog/rss.xml')
+  assert.equal(redirect('/blog/feed/opml'), '/blog/rss.xml')
+  assert.equal(redirect('/blog/2024/07'), '/blog/')
+  assert.equal(redirect('/blog/archive'), '/blog/')
 })
 
 test('живые маршруты нового блога правилами не задеты', () => {
   const [anySlug] = postSlugs
   for (const url of [
-    '/',
-    `/posts/${anySlug}/`,
-    '/tag/integram/',
-    '/category/razrabotka/',
-    '/search',
-    '/rss.xml',
-    '/llms.txt',
-    '/robots.txt',
-    '/sitemap-index.xml',
-    '/sitemap-0.xml',
-    '/uploads/2024/03/pic.jpg',
-    '/_astro/index.css',
-    '/pagefind/pagefind.js',
+    '/blog/',
+    `/blog/posts/${anySlug}/`,
+    '/blog/tag/integram/',
+    '/blog/category/razrabotka/',
+    '/blog/search',
+    '/blog/rss.xml',
+    '/blog/llms.txt',
+    '/blog/robots.txt',
+    '/blog/sitemap-index.xml',
+    '/blog/sitemap-0.xml',
+    '/blog/uploads/2024/03/pic.jpg',
+    '/blog/_astro/index.css',
+    '/blog/pagefind/pagefind.js',
   ]) {
     assert.equal(redirect(url), null, `${url} must be served, not redirected`)
   }
@@ -141,8 +147,8 @@ test('живые маршруты нового блога правилами н�
 
 test('query-строка не мешает совпадению правил', () => {
   assert.equal(
-    redirect('/2024/03/crm-sistema-dlya-srednego-biznesa?utm_source=yandex'),
-    '/posts/crm-sistema-dlya-srednego-biznesa/',
+    redirect('/blog/2024/03/crm-sistema-dlya-srednego-biznesa?utm_source=yandex'),
+    '/blog/posts/crm-sistema-dlya-srednego-biznesa/',
   )
   // QSD в правилах отбрасывает старую query — цель без хвоста.
   assert.match(htaccess, /\[R=301,L,QSD\]/)

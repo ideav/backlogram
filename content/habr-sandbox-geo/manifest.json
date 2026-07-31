@@ -2,7 +2,7 @@
   "pipeline": "habr-sandbox-geo",
   "sourceCollection": "blog-v2",
   "sourceArticle": "prikladnoe-geo-optimizaciya-dlya-generativnyh-sistem",
-  "sourceUrl": "https://blog.ideav.ru/posts/prikladnoe-geo-optimizaciya-dlya-generativnyh-sistem/",
+  "sourceUrl": "https://ideav.ru/blog/posts/prikladnoe-geo-optimizaciya-dlya-generativnyh-sistem/",
   "format": "habr_sandbox_article",
   "targetPlatforms": ["Habr"],
   "status": "ready",

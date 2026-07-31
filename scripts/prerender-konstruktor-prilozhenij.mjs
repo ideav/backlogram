@@ -159,9 +159,9 @@ const bodyHtml = `
     </p>
     <p style="margin-top:0.6rem">
       Читайте в блоге:
-      <a href="https://blog.ideav.ru/posts/pervyi-rossiiskii-analog-airtable/">Первый российский аналог Airtable</a> ·
-      <a href="https://blog.ideav.ru/posts/predposylki-no-code-konstruktora-integram/">Предпосылки no-code конструктора Интеграм</a> ·
-      <a href="https://blog.ideav.ru/posts/chto-umeet-ii-agent-pri-sborke-prilozheniya/">Что умеет ИИ-агент при сборке приложения</a>
+      <a href="https://ideav.ru/blog/posts/pervyi-rossiiskii-analog-airtable/">Первый российский аналог Airtable</a> ·
+      <a href="https://ideav.ru/blog/posts/predposylki-no-code-konstruktora-integram/">Предпосылки no-code конструктора Интеграм</a> ·
+      <a href="https://ideav.ru/blog/posts/chto-umeet-ii-agent-pri-sborke-prilozheniya/">Что умеет ИИ-агент при сборке приложения</a>
     </p>
   </footer>
 </article>

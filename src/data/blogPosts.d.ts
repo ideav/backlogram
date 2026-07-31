@@ -4,7 +4,7 @@
 export interface BlogPost {
   /** Слаг статьи в блоге — имя md-файла без расширения. */
   slug: string
-  /** Абсолютный адрес статьи на blog.ideav.ru. */
+  /** Абсолютный адрес статьи на ideav.ru/blog. */
   url: string
   title: string
   description: string
@@ -13,7 +13,7 @@ export interface BlogPost {
   /** Та же дата по-русски: «17 июля 2026». */
   dateLabel: string
   category: string
-  /** Абсолютный адрес обложки (или абстрактной заглушки) на blog.ideav.ru. */
+  /** Абсолютный адрес обложки (или абстрактной заглушки) на ideav.ru/blog. */
   image: string
 }
 

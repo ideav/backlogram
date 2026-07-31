@@ -12,7 +12,7 @@ const HTACCESS = join(__dirname, '..', 'old-blog-redirect', '.htaccess')
  * Regression coverage for https://github.com/ideav/backlogram/issues/373
  *
  * The old blog (blog.ideav.online, HTMLy) is decommissioned in favour of
- * blog.ideav.ru (Astro). `old-blog-redirect/.htaccess` 301s every old URL to
+ * ideav.ru/blog (Astro). `old-blog-redirect/.htaccess` 301s every old URL to
  * the new domain to transfer SEO weight. This test guards the invariants that
  * keep the map correct as content changes:
  *
@@ -96,23 +96,23 @@ function redirect(path) {
   if (/^(admin|login|logout|add|edit|api)(\/|$)/.test(p)) return null
   let m
   if ((m = p.match(/^[0-9]{4}\/[0-9]{2}\/([^/]+)\/?$/)))
-    return `https://blog.ideav.ru/posts/${m[1]}/`
+    return `https://ideav.ru/blog/posts/${m[1]}/`
   if ((m = p.match(/^post\/([^/]+)\/?$/)))
-    return `https://blog.ideav.ru/posts/${m[1]}/`
+    return `https://ideav.ru/blog/posts/${m[1]}/`
   if (/^tag\/yandeks\.direkt\/?$/.test(p))
-    return 'https://blog.ideav.ru/tag/yandeks-direkt/'
+    return 'https://ideav.ru/blog/tag/yandeks-direkt/'
   if ((m = p.match(/^category\/([^/]+)\/?$/)) && htCats.has(m[1]))
-    return `https://blog.ideav.ru/category/${m[1]}/`
+    return `https://ideav.ru/blog/category/${m[1]}/`
   if ((m = p.match(/^tag\/([^/]+)\/?$/)) && htTags.has(m[1]))
-    return `https://blog.ideav.ru/tag/${m[1]}/`
-  if (/^feed(\/(rss|opml))?\/?$/.test(p)) return 'https://blog.ideav.ru/rss.xml'
-  return 'https://blog.ideav.ru/' // catch-all
+    return `https://ideav.ru/blog/tag/${m[1]}/`
+  if (/^feed(\/(rss|opml))?\/?$/.test(p)) return 'https://ideav.ru/blog/rss.xml'
+  return 'https://ideav.ru/blog/' // catch-all
 }
 
 test('.htaccess exists with the core post + catch-all rules', () => {
   assert.ok(existsSync(HTACCESS), 'old-blog-redirect/.htaccess must exist')
-  assert.match(htaccess, /\^\[0-9\]\{4\}\/\[0-9\]\{2\}\/\(\[\^\/\]\+\)\/\?\$ https:\/\/blog\.ideav\.ru\/posts\/\$1\//)
-  assert.match(htaccess, /RewriteRule \^ https:\/\/blog\.ideav\.ru\/ \[R=301/)
+  assert.match(htaccess, /\^\[0-9\]\{4\}\/\[0-9\]\{2\}\/\(\[\^\/\]\+\)\/\?\$ https:\/\/ideav\.ru\/blog\/posts\/\$1\//)
+  assert.match(htaccess, /RewriteRule \^ https:\/\/ideav\.ru\/blog\/ \[R=301/)
 })
 
 test('every migrated post old URL 301s to an existing /posts/<slug>/ (no 301 -> 404)', () => {
@@ -129,7 +129,7 @@ test('every migrated post old URL 301s to an existing /posts/<slug>/ (no 301 -> 
       continue
     }
     const target = redirect(path)
-    const targetSlug = target?.replace('https://blog.ideav.ru/posts/', '').replace(/\/$/, '')
+    const targetSlug = target?.replace('https://ideav.ru/blog/posts/', '').replace(/\/$/, '')
     if (!target || !postSlugs.has(targetSlug)) {
       offenders.push(`${slug}: ${path} -> ${target} (target post missing)`)
     }
@@ -154,22 +154,22 @@ test('every tag the new blog serves is covered by a redirect rule', () => {
 })
 
 test('the renamed-slug tag points at a tag the new blog actually serves', () => {
-  assert.match(htaccess, /\^tag\/yandeks\\\.direkt\/\?\$ https:\/\/blog\.ideav\.ru\/tag\/yandeks-direkt\//)
+  assert.match(htaccess, /\^tag\/yandeks\\\.direkt\/\?\$ https:\/\/ideav\.ru\/blog\/tag\/yandeks-direkt\//)
   assert.ok(htTags.has('yandeks-direkt'), 'yandeks-direkt must be a real new-blog tag')
 })
 
 test('representative URLs route as intended', () => {
   const cases = [
-    ['/2025/09/predposylki-no-code-konstruktora-integram', 'https://blog.ideav.ru/posts/predposylki-no-code-konstruktora-integram/'],
-    ['/post/predposylki-no-code-konstruktora-integram', 'https://blog.ideav.ru/posts/predposylki-no-code-konstruktora-integram/'],
-    ['/category/o-platforme', 'https://blog.ideav.ru/category/o-platforme/'],
-    ['/tag/yandeks.direkt', 'https://blog.ideav.ru/tag/yandeks-direkt/'],
-    ['/tag/integram', 'https://blog.ideav.ru/tag/integram/'],
-    ['/feed/rss', 'https://blog.ideav.ru/rss.xml'],
-    ['/', 'https://blog.ideav.ru/'],
-    ['/category/uncategorized', 'https://blog.ideav.ru/'],
-    ['/archive/2024', 'https://blog.ideav.ru/'],
-    ['/category/proekty?page=2', 'https://blog.ideav.ru/category/proekty/'],
+    ['/2025/09/predposylki-no-code-konstruktora-integram', 'https://ideav.ru/blog/posts/predposylki-no-code-konstruktora-integram/'],
+    ['/post/predposylki-no-code-konstruktora-integram', 'https://ideav.ru/blog/posts/predposylki-no-code-konstruktora-integram/'],
+    ['/category/o-platforme', 'https://ideav.ru/blog/category/o-platforme/'],
+    ['/tag/yandeks.direkt', 'https://ideav.ru/blog/tag/yandeks-direkt/'],
+    ['/tag/integram', 'https://ideav.ru/blog/tag/integram/'],
+    ['/feed/rss', 'https://ideav.ru/blog/rss.xml'],
+    ['/', 'https://ideav.ru/blog/'],
+    ['/category/uncategorized', 'https://ideav.ru/blog/'],
+    ['/archive/2024', 'https://ideav.ru/blog/'],
+    ['/category/proekty?page=2', 'https://ideav.ru/blog/category/proekty/'],
   ]
   for (const [url, expected] of cases) {
     assert.equal(redirect(url), expected, `${url} should -> ${expected}`)

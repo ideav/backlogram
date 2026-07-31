@@ -131,8 +131,8 @@ const bodyHtml = `
     </p>
     <p style="margin-top:0.6rem">
       Читайте в блоге:
-      <a href="https://blog.ideav.ru/posts/massovoe-sopostavlenie-katalogov/">Массовое сопоставление каталогов: автоподбор пар</a> ·
-      <a href="https://blog.ideav.ru/posts/sopostavlenie-katalogov-produkcii-v-integram/">Сопоставление каталогов продукции в Интеграме</a>
+      <a href="https://ideav.ru/blog/posts/massovoe-sopostavlenie-katalogov/">Массовое сопоставление каталогов: автоподбор пар</a> ·
+      <a href="https://ideav.ru/blog/posts/sopostavlenie-katalogov-produkcii-v-integram/">Сопоставление каталогов продукции в Интеграме</a>
     </p>
   </footer>
 </article>

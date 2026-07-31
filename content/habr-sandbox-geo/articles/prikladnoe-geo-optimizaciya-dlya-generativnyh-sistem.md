@@ -1,13 +1,13 @@
 ---
 pipeline: habr-sandbox-geo
 sourceArticle: prikladnoe-geo-optimizaciya-dlya-generativnyh-sistem
-sourceUrl: https://blog.ideav.ru/posts/prikladnoe-geo-optimizaciya-dlya-generativnyh-sistem/
+sourceUrl: https://ideav.ru/blog/posts/prikladnoe-geo-optimizaciya-dlya-generativnyh-sistem/
 format: habr_sandbox_article
 status: ready
 updated: 2026-05-18
 targetPlatforms:
   - Habr
-canonicalUrl: https://blog.ideav.ru/posts/prikladnoe-geo-optimizaciya-dlya-generativnyh-sistem/
+canonicalUrl: https://ideav.ru/blog/posts/prikladnoe-geo-optimizaciya-dlya-generativnyh-sistem/
 habrHubs:
   - Поисковая оптимизация
   - Искусственный интеллект

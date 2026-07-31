@@ -11,7 +11,7 @@ const posts = defineCollection({
     author: z.string().default('Команда Интеграм'),
     image: z.string().optional(),
     draft: z.boolean().default(false),
-    // SEO canonical override. Leave unset for posts that live on blog.ideav.ru
+    // SEO canonical override. Leave unset for posts that live on ideav.ru/blog
     // so the page is self-canonical and search engines index it. Only set this
     // when another site is genuinely the authoritative copy of the content.
     canonical: z.string().url().optional(),

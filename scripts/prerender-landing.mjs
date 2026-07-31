@@ -103,7 +103,7 @@ const sectionsHtml = sections
 //  Свежие статьи блога (issue #512). Зеркалит слайдер из src/components/
 //  BlogSlider.tsx: в SPA карточки рисует React, а в статичном снапшоте это
 //  единственный способ показать краулерам и клиентам без JS, что у сайта есть
-//  живой блог, и передать на blog.ideav.ru ссылочный вес с главной.
+//  живой блог, и передать на ideav.ru/blog ссылочный вес с главной.
 // ───────────────────────────────────────────────────────────────────────────
 const blogHtml = `
       <section class="lp-prerender__group" aria-labelledby="lp-blog-title">
@@ -267,7 +267,7 @@ const jsonLd = {
         'https://integram.io',
         'https://reestr.digital.gov.ru/reestr/4638631/',
         'https://rutube.ru/channel/41204904/videos/',
-        'https://blog.ideav.ru/',
+        'https://ideav.ru/blog/',
       ],
     },
     {

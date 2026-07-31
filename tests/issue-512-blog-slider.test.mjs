@@ -1,7 +1,7 @@
 /**
  * issue #512 — на главной есть слайдер статей блога с кнопкой «Перейти в блог».
  *
- * Блог собирается отдельно (Astro → blog.ideav.ru), поэтому список статей
+ * Блог собирается отдельно (Astro → ideav.ru/blog), поэтому список статей
  * запекается в src/data/blogPosts.mjs скриптом scripts/generate-blog-posts.mjs.
  * Тест сторожит три вещи: данные совпадают с исходным контентом блога, слайдер
  * действительно подключён к главной, и статичный снапшот (пререндер) показывает
@@ -34,8 +34,8 @@ test('src/data/blogPosts.mjs совпадает с контентом блога
   )
 })
 
-test('в слайдере — свежие статьи с рабочими ссылками на blog.ideav.ru', () => {
-  assert.equal(BLOG_URL, 'https://blog.ideav.ru')
+test('в слайдере — свежие статьи с рабочими ссылками на ideav.ru/blog', () => {
+  assert.equal(BLOG_URL, 'https://ideav.ru/blog')
   assert.ok(BLOG_POSTS.length >= 3, 'слайдеру нужно хотя бы несколько статей')
 
   const dates = BLOG_POSTS.map((p) => p.date)

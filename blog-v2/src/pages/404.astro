@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { withBase } from '../lib/url'
+
+// Своя 404 понадобилась после переезда блога в подпапку основного домена
+// (issue #522): без неё несуществующий адрес под /blog/ показывал бы страницу
+// движка платформы. Файл отдаётся через ErrorDocument из blog-v2/public/.htaccess.
+---
+
+<BaseLayout
+  title="Страница не найдена — Блог Интеграм"
+  description="Такой страницы в блоге Интеграм нет. Загляните в архив выпусков или воспользуйтесь поиском."
+>
+  <section class="max-w-[78rem] mx-auto px-6 lg:px-12 pt-20 pb-24">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-x-10">
+      <div class="lg:col-span-2 mb-6 lg:mb-0">
+        <div class="issue-number text-[var(--color-vermilion)] text-xl font-medium">404</div>
+      </div>
+      <div class="lg:col-span-10 max-w-3xl">
+        <h1
+          class="font-[family-name:var(--font-serif)] text-4xl lg:text-5xl tracking-[-0.02em] text-[var(--color-ink)] mb-5"
+          style="font-variation-settings: 'opsz' 60; font-weight: 600;"
+        >
+          Такой страницы в блоге нет
+        </h1>
+        <p class="text-[var(--color-ink-soft)] text-lg leading-relaxed mb-8">
+          Возможно, адрес устарел или в нём опечатка. Все выпуски собраны в архиве, а по текстам
+          статей работает полнотекстовый поиск.
+        </p>
+        <div class="flex flex-wrap gap-x-8 gap-y-3">
+          <a href={withBase('/')} class="eyebrow link-swipe text-[var(--color-vermilion)]">
+            Архив выпусков
+          </a>
+          <a href={withBase('/search/')} class="eyebrow link-swipe text-[var(--color-vermilion)]">
+            Поиск по блогу
+          </a>
+          <a href="https://ideav.ru/" class="eyebrow link-swipe text-[var(--color-vermilion)]">
+            Главная Интеграма
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

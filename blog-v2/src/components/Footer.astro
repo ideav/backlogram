@@ -1,4 +1,6 @@
 ---
+import { withBase } from '../lib/url'
+
 const year = new Date().getFullYear()
 ---
 
@@ -23,18 +25,18 @@ const year = new Date().getFullYear()
     <section>
       <h3 class="text-base">Навигация</h3>
       <ul>
-        <li><a class="link-swipe" href="/">Все статьи</a></li>
-        <li><a class="link-swipe" href="/search/">Поиск</a></li>
-        <li><a class="link-swipe" href="/rss.xml">RSS</a></li>
+        <li><a class="link-swipe" href={withBase("/")}>Все статьи</a></li>
+        <li><a class="link-swipe" href={withBase("/search/")}>Поиск</a></li>
+        <li><a class="link-swipe" href={withBase("/rss.xml")}>RSS</a></li>
       </ul>
     </section>
 
     <section>
       <h3 class="text-base">Разделы</h3>
       <ul>
-        <li><a class="link-swipe" href="/category/o-platforme/">О платформе</a></li>
-        <li><a class="link-swipe" href="/category/tehnologii/">Технологии</a></li>
-        <li><a class="link-swipe" href="/category/proekty/">Кейсы</a></li>
+        <li><a class="link-swipe" href={withBase("/category/o-platforme/")}>О платформе</a></li>
+        <li><a class="link-swipe" href={withBase("/category/tehnologii/")}>Технологии</a></li>
+        <li><a class="link-swipe" href={withBase("/category/proekty/")}>Кейсы</a></li>
       </ul>
     </section>
 

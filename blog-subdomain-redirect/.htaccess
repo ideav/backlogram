@@ -1,0 +1,30 @@
+# === 301: blog.ideav.ru -> ideav.ru/blog/ ====================================
+# Блог переехал с поддомена в подпапку основного домена (issue #522): ссылочный
+# вес, бренд и внутренняя перелинковка теперь на одном хосте.
+#
+# Файл кладётся в ВЕБ-КОРЕНЬ поддомена blog.ideav.ru — вместо содержимого блога
+# (сам блог теперь собирается в <веб-корень ideav.ru>/blog/). Каталог поддомена
+# можно оставить пустым: правило ниже не требует файлов на диске.
+#
+# Требуется Apache + mod_rewrite и AllowOverride FileInfo на vhost поддомена.
+# При AllowOverride None файл игнорируется, и поддомен продолжит отдавать старую
+# копию блога — это дубликат основного домена, поэтому проверьте после выкладки:
+#   curl -sI https://blog.ideav.ru/posts/integram-on-premise-lokalno/ | head -3
+# Ожидание: 301 и Location на https://ideav.ru/blog/posts/… .
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Всё — одним 301 на тот же путь внутри /blog/, query-string сохраняется.
+  # Легаси-адреса HTMLy (/YYYY/MM/<slug>, /post/<slug>, /feed) тоже уезжают сюда
+  # как есть: их разбирает .htaccess каталога блога (blog-v2/public/.htaccess).
+  # Это второй хоп для legacy-адресов и первый — для всех живых адресов блога.
+  RewriteRule ^(.*)$ https://ideav.ru/blog/$1 [R=301,L]
+</IfModule>
+
+# Если mod_rewrite на поддомене выключен — грубый, но рабочий фолбэк на главную
+# блога. Redirect сохраняет остаток пути: /posts/x/ -> /blog/posts/x/.
+<IfModule !mod_rewrite.c>
+  Redirect 301 / https://ideav.ru/blog/
+</IfModule>

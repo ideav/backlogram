@@ -1,7 +1,8 @@
 import { getCollection } from 'astro:content'
 import type { APIContext } from 'astro'
+import { withBase } from '../lib/url'
 
-const SITE_URL = 'https://blog.ideav.ru'
+const SITE_URL = 'https://ideav.ru'
 
 const KEY_TOPICS = [
   'no-code',
@@ -24,8 +25,10 @@ function oneLine(value: string): string {
   return value.replace(/\s+/g, ' ').trim()
 }
 
+// Блог живёт в подпапке основного домена, поэтому путь идёт через withBase
+// (issue #522).
 function absoluteURL(path: string, site: URL): string {
-  return new URL(path, site).toString()
+  return new URL(withBase(path), site).toString()
 }
 
 export async function GET(context: APIContext) {

@@ -3,7 +3,7 @@
  * Генерация `src/data/blogPosts.mjs` — свежих статей блога для слайдера на
  * главной (issue #512).
  *
- * Блог (blog.ideav.ru) собирается Astro отдельно от сайта (ideav.ru, React+Vite)
+ * Блог (ideav.ru/blog) собирается Astro отдельно от сайта (ideav.ru, React+Vite)
  * и живёт на другом домене, поэтому список статей нужно «запечь» в данные до
  * сборки SPA. Скрипт запускается первым шагом `npm run build` и вручную —
  * `npm run blog-posts` — когда в блог добавили статью.
@@ -49,7 +49,7 @@ const file = `// Сгенерировано скриптом scripts/generate-bl
 // Источник: blog-v2/src/content/posts/*.md. Обновить: npm run blog-posts.
 //
 // Свежие статьи блога для слайдера на главной (issue #512). Блог — отдельная
-// Astro-сборка на blog.ideav.ru, поэтому список «запекается» в данные на этапе
+// Astro-сборка на ideav.ru/blog, поэтому список «запекается» в данные на этапе
 // сборки: файл импортируют и React (src/components/BlogSlider.tsx), и Node-скрипт
 // пререндера главной (scripts/prerender-landing.mjs). Типы — src/data/blogPosts.d.ts.
 

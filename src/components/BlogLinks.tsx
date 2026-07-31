@@ -1,7 +1,7 @@
 import { BookOpen, ArrowUpRight } from 'lucide-react'
 
 // Перелинковка продуктовых страниц ideav.ru на релевантные статьи блога
-// blog.ideav.ru (issue #483) — передаёт ссылочный вес на поддомен блога.
+// ideav.ru/blog (issue #483) — передаёт ссылочный вес на поддомен блога.
 export interface BlogPostLink {
   /** Заголовок статьи (человекочитаемый). */
   title: string
@@ -9,7 +9,7 @@ export interface BlogPostLink {
   slug: string
 }
 
-const BLOG_BASE = 'https://blog.ideav.ru/posts/'
+const BLOG_BASE = 'https://ideav.ru/blog/posts/'
 
 export default function BlogLinks({
   posts,
@@ -33,7 +33,7 @@ export default function BlogLinks({
             <p className="text-slate-500 dark:text-slate-400 mt-2">{subtitle}</p>
           </div>
           <a
-            href="https://blog.ideav.ru/"
+            href="https://ideav.ru/blog/"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:gap-2 transition-all"

@@ -1,5 +1,6 @@
 ---
 import { getAllTags } from '../lib/tags'
+import { withBase } from '../lib/url'
 
 interface Props {
   activeSlug?: string
@@ -28,7 +29,7 @@ if (tags.length === 0) return null
             const isActive = activeSlug === t.slug
             return (
               <a
-                href={`/tag/${t.slug}/`}
+                href={withBase(`/tag/${t.slug}/`)}
                 class={`product-pill ${isActive ? 'text-[var(--color-product-blue)] border-[var(--color-product-blue)]' : ''}`}
               >
                 {t.tag}
@@ -46,7 +47,7 @@ if (tags.length === 0) return null
       const isActive = activeSlug === t.slug
       return (
         <a
-          href={`/tag/${t.slug}/`}
+          href={withBase(`/tag/${t.slug}/`)}
           class={`product-pill ${isActive ? 'text-[var(--color-product-blue)] border-[var(--color-product-blue)]' : ''}`}
         >
           {t.tag}

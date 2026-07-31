@@ -2068,12 +2068,12 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
     sources: [
       {
         title: 'Сопоставление каталогов продукции в Интеграме — пошаговый разбор (блог)',
-        url: 'https://blog.ideav.ru/posts/sopostavlenie-katalogov-produkcii-v-integram/',
+        url: 'https://ideav.ru/blog/posts/sopostavlenie-katalogov-produkcii-v-integram/',
         note: 'Как за 15 минут загрузить два каталога, токенизировать и получить первое сопоставление.',
       },
       {
         title: 'Массовое сопоставление каталогов: автоматический подбор (блог)',
-        url: 'https://blog.ideav.ru/posts/massovoe-sopostavlenie-katalogov/',
+        url: 'https://ideav.ru/blog/posts/massovoe-sopostavlenie-katalogov/',
         note: 'Массовый автоподбор, оценка точности, кандидаты-альтернативы, выгрузка и доуточнение языковой моделью.',
       },
       {

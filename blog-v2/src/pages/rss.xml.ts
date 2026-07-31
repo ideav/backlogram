@@ -1,6 +1,7 @@
 import rss from '@astrojs/rss'
 import { getCollection } from 'astro:content'
 import type { APIContext } from 'astro'
+import { withBase } from '../lib/url'
 
 export async function GET(context: APIContext) {
   const posts = await getCollection('posts', ({ data }) => !data.draft)
@@ -12,14 +13,15 @@ export async function GET(context: APIContext) {
     title: 'Блог Интеграм',
     description:
       'No-code конструктор баз данных и веб-приложений. Истории внедрений, технические заметки и практика.',
-    site: context.site!.toString(),
+    // Ссылка канала — главная блога в подпапке, а не корень сайта (issue #522).
+    site: new URL(withBase('/'), context.site!).toString(),
     items: sorted.map((post) => ({
       title: post.data.title,
       pubDate: post.data.pubDate,
       description: post.data.description,
       categories: [post.data.category],
       author: post.data.author,
-      link: `/posts/${post.id}/`,
+      link: withBase(`/posts/${post.id}/`),
     })),
     customData: '<language>ru-RU</language>',
   })
