@@ -310,7 +310,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Своя разработка — это хорошо, но...</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">Автоматизация бизнес-процессов: своя разработка и Excel упираются в лимиты</h2>
               <div className="space-y-6">
                 {[
                   {
@@ -393,7 +393,7 @@ export default function Home() {
       <section id="for-whom" className="py-24 bg-slate-50 dark:bg-slate-900/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Для кого</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Для кого: информационные системы и управление бизнес-процессами</h2>
             <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
               Интеграм создан для компаний, которым нужны внутренние приложения, учёт и автоматизация процессов без долгого цикла заказной разработки. CRM для B2B-продаж, система учёта данных, управление взаимодействием с клиентами, автоматизация документооборота — вместо разрозненных Excel-файлов на общем диске.
             </p>
@@ -468,7 +468,7 @@ export default function Home() {
       <section id="technology" className="py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Работаем там, где обычные конструкторы «падают»</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Масштабируемые информационные системы без кода — там, где обычные конструкторы «падают»</h2>
             <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto italic">Это не просто «конструктор для менеджеров». Это промышленная платформа.</p>
           </div>
 
@@ -497,7 +497,7 @@ export default function Home() {
               },
               {
                 icon: Zap,
-                title: 'Автоматизация вместо рутины',
+                title: 'Автоматизация рутинных задач',
                 desc: 'Автоматическая генерация отчётов, рассылка по расписанию, формирование счетов и актов. Автоматизация Excel таблиц без макросов и VBA. Замена макросов Excel на автоматизацию в no-code платформе. Устранение человеческого фактора и ошибок в отчётах. Автоматическое распределение задач между сотрудниками.',
                 href: '/knowledge-base/14a-reports.html',
                 linkText: 'Отчёты на той же базе'
@@ -550,7 +550,7 @@ export default function Home() {
               {
                 step: '02',
                 title: 'Проектирование',
-                desc: 'Мы анализируем требования и разворачиваем решение на платформе «Интеграм». Конвертация Excel в приложение: структура данных, формы, права доступа, отчёты. Без программирования — изменения вносятся бизнес-аналитиками.'
+                desc: 'Мы анализируем требования, описываем бизнес-процессы и разворачиваем решение на платформе «Интеграм». Конвертация Excel в приложение: структура данных, формы, права доступа, отчёты. Без программирования — изменения вносятся бизнес-аналитиками.'
               },
               {
                 step: '03',
@@ -994,8 +994,8 @@ export default function Home() {
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <p className="text-3xl md:text-4xl font-bold mb-4">Готовые типы проектов для вашего бэклога (очереди задач)</p>
-            <p className="text-slate-500 dark:text-slate-400">Любая из этих задач может быть реализована как полноценное веб-приложение</p>
+            <p className="text-3xl md:text-4xl font-bold mb-4">Готовые типы проектов: описание и анализ бизнес-процессов</p>
+            <p className="text-slate-500 dark:text-slate-400">Любая задача из вашего бэклога (очереди задач) — от описания бизнес-процесса до работающего веб-приложения</p>
           </div>
 
           {/* Каждый тип проекта ведёт на свою посадочную — перелинковка «блок →
@@ -1548,11 +1548,42 @@ export default function Home() {
           </dl>
         </div>
       </section>
-      {/* 16. SEO-текст в подвал (af.md блок 14) */}
+      {/* 16. SEO-текст в подвал (af.md блок 14).
+
+          Был одним абзацем-перечислением на 100 слов — со стороны выглядело
+          переспамом (issue #518). Тот же смысл разложен списком: лид-абзац +
+          пять пунктов по темам. Заголовком блок не делаем — бюджет заголовков
+          главной закрыт (issue #514, ровно 10 H2), а ключевые фразы
+          «информационная система» и «управление бизнес-процессами» уже стоят
+          в H2 разделов «Для кого» и «Масштабируемые информационные системы». */}
       <section className="py-16 border-t border-slate-200 dark:border-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed text-center">
-            <span className="font-semibold text-slate-700 dark:text-slate-200">Интеграм — российская no-code платформа для создания внутренних бизнес-приложений и баз данных без программирования.</span> Конвертация Excel в приложение за 45 минут: формы, отчёты, дашборды, права доступа на уровне строк. Замена Excel, Google Sheets и Airtable для корпоративных объёмов данных — сотни тысяч записей, реляционные связи, локальное размещение (on-premise). Автоматизация бизнес-процессов, CRM для B2B-продаж, система учёта данных, управление заявками и инцидентами, документооборот и маршрутизация согласования. Автоматическая генерация отчётов, парсинг Excel файлов, интеграция данных из разрозненных источников. Включён в реестр отечественного ПО (запись №30872). Аналог Airtable, аналог Trello, замена Excel для бизнеса. Пилотный проект за 2 недели. Облако от 0₽/мес, локальная лицензия 590 000₽/год.
+          <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            <span className="font-semibold text-slate-700 dark:text-slate-200">Интеграм — российская no-code платформа для создания информационных систем, внутренних бизнес-приложений и баз данных без программирования.</span> Что на ней собирают:
+          </p>
+          <ul className="mt-4 grid sm:grid-cols-2 gap-x-8 gap-y-2.5 text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+            <li>
+              <span className="font-semibold text-slate-700 dark:text-slate-200">Приложение из Excel за 45 минут</span> — формы, отчёты, дашборды, права доступа на уровне строк.
+            </li>
+            <li>
+              <span className="font-semibold text-slate-700 dark:text-slate-200">Замена Excel, Google Sheets и Airtable</span> — сотни тысяч записей, реляционные связи, локальное размещение (on-premise).
+            </li>
+            <li>
+              <span className="font-semibold text-slate-700 dark:text-slate-200">Управление бизнес-процессами</span> — маршрутизация согласования, документооборот, управление заявками и инцидентами.
+            </li>
+            <li>
+              <span className="font-semibold text-slate-700 dark:text-slate-200">Учёт и CRM</span> — система учёта данных, CRM для B2B-продаж, договоры и платежи.
+            </li>
+            <li>
+              <span className="font-semibold text-slate-700 dark:text-slate-200">Автоматизация рутинных задач</span> — генерация отчётов по расписанию, парсинг Excel-файлов, интеграция данных из разрозненных источников.
+            </li>
+            <li>
+              <span className="font-semibold text-slate-700 dark:text-slate-200">Российское ПО</span> — реестр отечественного ПО, запись №30872. Пилот за 2 недели, облако от 0 ₽/мес, локальная лицензия 590 000 ₽/год.
+            </li>
+          </ul>
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
+            Подробнее — <Link to="/informatsionnaya-sistema.html" className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">что такое информационная система</Link> и{' '}
+            <Link to="/resheniya.html" className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">готовые решения вместо Excel</Link>.
           </p>
         </div>
       </section>
