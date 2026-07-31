@@ -41,6 +41,7 @@ import { Link } from 'react-router-dom'
 import { USE_CASES } from '../data/usecases'
 import { HOME_FAQ } from '../data/home-faq'
 import ClientLogos from '@/components/ClientLogos'
+import BlogSlider from '@/components/BlogSlider'
 
 declare global {
   interface Window {
@@ -1089,6 +1090,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* 9d. Свежие статьи блога (issue #512) — данные из src/data/blogPosts.mjs */}
+      <BlogSlider />
 
       {/* 10. Pricing Section */}
       <section id="pricing" className="py-24 bg-slate-50 dark:bg-slate-900/50">

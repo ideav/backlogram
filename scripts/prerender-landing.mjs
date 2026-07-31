@@ -20,6 +20,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { USE_CASES } from '../src/data/usecases.mjs'
+import { BLOG_URL, BLOG_POSTS } from '../src/data/blogPosts.mjs'
 import { HOME_FAQ } from '../src/data/home-faq.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -98,6 +99,27 @@ const sectionsHtml = sections
 //  ответ совпадал с видимым на странице, поэтому ссылка перелинковки идёт
 //  отдельным абзацем.
 // ───────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────
+//  Свежие статьи блога (issue #512). Зеркалит слайдер из src/components/
+//  BlogSlider.tsx: в SPA карточки рисует React, а в статичном снапшоте это
+//  единственный способ показать краулерам и клиентам без JS, что у сайта есть
+//  живой блог, и передать на blog.ideav.ru ссылочный вес с главной.
+// ───────────────────────────────────────────────────────────────────────────
+const blogHtml = `
+      <section class="lp-prerender__group" aria-labelledby="lp-blog-title">
+        <h2 id="lp-blog-title">Свежее в блоге</h2>
+        <p>Разборы проектов, кейсы заказчиков и то, как устроена платформа изнутри.</p>
+        <ul class="lp-prerender__posts">
+          ${BLOG_POSTS.map(
+            (post) => `<li>
+            <a href="${escape(post.url)}">${escape(post.title)}</a>
+            <span class="lp-prerender__post-meta">${escape(post.category)} · <time datetime="${escape(post.date)}">${escape(post.dateLabel)}</time></span>
+          </li>`
+          ).join('\n          ')}
+        </ul>
+        <p><a href="${escape(BLOG_URL)}/">Перейти в блог</a></p>
+      </section>`
+
 const faqHtml = `
       <section class="lp-prerender__group" aria-labelledby="lp-faq-title">
         <h2 id="lp-faq-title">Частые вопросы</h2>
@@ -143,6 +165,7 @@ const bodyHtml = `
     </p>
   </header>
   ${sectionsHtml}
+  ${blogHtml}
   ${faqHtml}
   <footer class="lp-prerender__footer">
     <p class="lp-prerender__seo">${escape(SEO_FOOTER)}</p>
@@ -174,6 +197,9 @@ const bodyHtml = `
   #lp-prerender .lp-prerender__eyebrow { text-transform: uppercase; letter-spacing: 0.1em;
     font-size: 0.72rem; color: #3b82f6; font-weight: 700; margin: 0; }
   #lp-prerender .lp-prerender__lead { font-size: 1.1rem; color: #475569; max-width: 50rem; }
+  #lp-prerender .lp-prerender__posts { margin: 0.75rem 0 0; padding: 0; list-style: none; }
+  #lp-prerender .lp-prerender__posts li { margin: 0.5rem 0; }
+  #lp-prerender .lp-prerender__post-meta { display: block; font-size: 0.85rem; color: #64748b; }
   #lp-prerender .lp-prerender__faq-item { margin: 1rem 0; }
   #lp-prerender .lp-prerender__faq-item h3 { font-size: 1.05rem; margin: 0 0 0.25rem; }
   #lp-prerender .lp-prerender__faq-link { font-size: 0.92rem; }
