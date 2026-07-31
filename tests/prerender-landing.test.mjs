@@ -40,9 +40,10 @@ test('prerender-landing fills #root and injects SEO head tags into dist/index.ht
     /<h1[^>]*>Интеграм — российский no-code конструктор приложений и баз данных: замена Excel и аналог Airtable для бизнеса<\/h1>/,
   )
 
-  // Representative section headings from Home.tsx are present.
-  assert.match(out, /Работаем там, где обычные конструкторы/)
-  assert.match(out, /Готовые типы проектов для вашего бэклога/)
+  // Representative section headings from Home.tsx are present (wording follows
+  // the keyword rewrite from issue #518).
+  assert.match(out, /Масштабируемые информационные системы без кода/)
+  assert.match(out, /Готовые типы проектов: описание и анализ бизнес-процессов/)
 
   // SEO head tags: canonical, Open Graph, and SoftwareApplication JSON-LD.
   assert.match(out, /<link rel="canonical" href="https:\/\/ideav\.ru\/" \/>/)

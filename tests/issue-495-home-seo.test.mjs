@@ -1,5 +1,5 @@
 // issue #495 — технические SEO-шаги по главной (хвост af.md из #488):
-// Title/Description, совпадение H1, FAQPage на 7 вопросов, SoftwareApplication,
+// Title/Description, совпадение H1, FAQPage из общего источника, SoftwareApplication,
 // alt-тексты, внутренняя перелинковка.
 //
 // Тесты держат ровно те инварианты, которые легко разъезжаются: главная —
@@ -75,15 +75,17 @@ test('H1 в статическом снапшоте совпадает с H1 г�
   assert.equal(snapshotH1, H1, 'H1 в снапшоте разошёлся с H1 на странице')
 })
 
-// ── 3. FAQPage на 7 вопросов из общего источника ──────────────────────────
-test('FAQ главной — один источник на React и пререндер, 7 вопросов', () => {
-  assert.equal(HOME_FAQ.length, 7, 'в af.md (блок 13) — ровно 7 вопросов')
+// ── 3. FAQPage из общего источника ────────────────────────────────────────
+test('FAQ главной — один источник на React и пререндер', () => {
+  // 7 вопросов из af.md (блок 13) + 2 добавлены под ключевые кластеры
+  // «информационная система» и «автоматизация рутинных задач» (issue #518).
+  assert.equal(HOME_FAQ.length, 9)
 
   // React рендерит вопросы из общего модуля, а не из захардкоженного массива.
   assert.match(homeTsx, /import \{ HOME_FAQ \} from '\.\.\/data\/home-faq'/)
   assert.match(homeTsx, /HOME_FAQ\.map\(/)
 
-  // Все 7 пар видны в статическом снапшоте…
+  // Все пары видны в статическом снапшоте…
   for (const { q, a } of HOME_FAQ) {
     assert.ok(out.includes(q), `вопрос отсутствует в снапшоте: ${q}`)
     assert.ok(out.includes(a.slice(0, 60)), `ответ отсутствует в снапшоте: ${q}`)
@@ -92,7 +94,7 @@ test('FAQ главной — один источник на React и прере�
   // …и ровно они же — в разметке FAQPage.
   const faqPage = node('FAQPage')
   assert.ok(faqPage, 'нет узла FAQPage')
-  assert.equal(faqPage.mainEntity.length, 7)
+  assert.equal(faqPage.mainEntity.length, HOME_FAQ.length)
   assert.deepEqual(
     faqPage.mainEntity.map((q) => q.name),
     HOME_FAQ.map((item) => item.q),
