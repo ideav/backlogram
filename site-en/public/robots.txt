@@ -1,0 +1,6 @@
+# robots.txt for ideav.pro
+
+User-agent: *
+Allow: /
+
+Sitemap: https://ideav.pro/sitemap.xml
