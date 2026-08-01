@@ -174,17 +174,12 @@ ROWS.forEach((row, i) => {
   )
 
   if (row.from === row.to) {
-    // Одно значение — точка, а не марка нулевой длины
+    // Точка означает ровно одно: единственное значение вместо диапазона
     parts.push(`<circle cx="${x(row.from).toFixed(1)}" cy="${yc + 2}" r="9" fill="${color}"/>`)
   } else {
     parts.push(
       `<rect x="${x(row.from).toFixed(1)}" y="${barY}" ` +
         `width="${(x(row.to) - x(row.from)).toFixed(1)}" height="${BAR}" rx="4" fill="${color}"/>`,
-    )
-    // Кольцо в цвет поверхности: концы марки читаются поверх сетки
-    parts.push(
-      `<circle cx="${x(row.from).toFixed(1)}" cy="${yc + 2}" r="9" fill="${color}" ` +
-        `stroke="${SURFACE}" stroke-width="2"/>`,
     )
   }
 })

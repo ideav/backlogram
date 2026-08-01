@@ -28,23 +28,18 @@
 <text x="660" y="297" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="400" fill="#b7c6e0" text-anchor="end">Снизу вверх: 90 действий на готовой платформе</text>
 <text x="660" y="327" font-family="DejaVu Sans, sans-serif" font-size="27" font-weight="700" fill="#f2f6ff" text-anchor="end">306–370 ч</text>
 <rect x="738.3" y="297" width="36.0" height="20" rx="4" fill="#c98500"/>
-<circle cx="738.3" cy="307" r="9" fill="#c98500" stroke="#0a1630" stroke-width="2"/>
 <text x="660" y="367" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="400" fill="#b7c6e0" text-anchor="end">Функциональные точки × PDR ISBSG, low-code</text>
 <text x="660" y="397" font-family="DejaVu Sans, sans-serif" font-size="27" font-weight="700" fill="#f2f6ff" text-anchor="end">410–990 ч</text>
 <rect x="793.8" y="367" width="167.1" height="20" rx="4" fill="#3987e5"/>
-<circle cx="793.8" cy="377" r="9" fill="#3987e5" stroke="#0a1630" stroke-width="2"/>
 <text x="660" y="437" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="400" fill="#b7c6e0" text-anchor="end">Снизу вверх + свой бэкенд и инфраструктура</text>
 <text x="660" y="467" font-family="DejaVu Sans, sans-serif" font-size="27" font-weight="700" fill="#f2f6ff" text-anchor="end">800–1 150 ч</text>
 <rect x="920.5" y="437" width="68.8" height="20" rx="4" fill="#3987e5"/>
-<circle cx="920.5" cy="447" r="9" fill="#3987e5" stroke="#0a1630" stroke-width="2"/>
 <text x="660" y="507" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="400" fill="#b7c6e0" text-anchor="end">Функциональные точки × PDR ISBSG, Java</text>
 <text x="660" y="537" font-family="DejaVu Sans, sans-serif" font-size="27" font-weight="700" fill="#f2f6ff" text-anchor="end">3 600–10 000 ч</text>
 <rect x="1205.5" y="507" width="193.6" height="20" rx="4" fill="#3987e5"/>
-<circle cx="1205.5" cy="517" r="9" fill="#3987e5" stroke="#0a1630" stroke-width="2"/>
 <text x="660" y="577" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="400" fill="#b7c6e0" text-anchor="end">COCOMO II, оптимистичные множители</text>
 <text x="660" y="607" font-family="DejaVu Sans, sans-serif" font-size="27" font-weight="700" fill="#f2f6ff" text-anchor="end">5 000–7 500 ч</text>
 <rect x="1267.8" y="577" width="76.8" height="20" rx="4" fill="#3987e5"/>
-<circle cx="1267.8" cy="587" r="9" fill="#3987e5" stroke="#0a1630" stroke-width="2"/>
 <text x="660" y="647" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="400" fill="#b7c6e0" text-anchor="end">COCOMO II, номинальные множители</text>
 <text x="660" y="677" font-family="DejaVu Sans, sans-serif" font-size="27" font-weight="700" fill="#f2f6ff" text-anchor="end">12 400 ч</text>
 <circle cx="1439.9" cy="657" r="9" fill="#3987e5"/>
