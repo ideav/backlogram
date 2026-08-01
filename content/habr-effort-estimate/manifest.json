@@ -9,6 +9,15 @@
   "status": "author_review",
   "updatedAt": "2026-08-01",
   "articlePath": "articles/skolko-chasov-stoit-promyshlennoe-prilozhenie.md",
+  "leadImage": {
+    "path": "assets/kdpv-tri-metoda.png",
+    "retinaPath": "assets/kdpv-tri-metoda@2x.png",
+    "sourcePath": "assets/kdpv-tri-metoda.svg",
+    "size": "780x440",
+    "retinaSize": "1560x880",
+    "generator": "scripts/generate-kdpv-habr-effort.mjs",
+    "note": "КДПВ: три метода оценки на одной логарифмической шкале часов. 780×440 — под обложку Хабра; при публикации ссылка в тексте меняется на habrastorage."
+  },
   "editorialGoal": "Переписать блоговую статью об оценке трудоёмкости под Habr: без единого упоминания продукта и компании, с развёрнутым расчётом и перекрёстной проверкой тремя независимыми методами (снизу вверх по действиям, функциональные точки + отраслевые PDR из ISBSG, COCOMO II).",
   "promoPolicy": {
     "productMentions": 0,
