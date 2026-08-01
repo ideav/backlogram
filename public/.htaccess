@@ -35,6 +35,13 @@ DirectoryIndex index.html
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+  # /privacy → /privacy.html (issue #542). Ссылка «обработку персональных
+  # данных» в галочке согласия под формами исторически вела на безрасширенный
+  # /privacy. Такого файла в вебруте нет, поэтому front controller ниже отдавал
+  # путь движку Интеграма, а тот читал «privacy» как имя базы и отвечал ошибкой
+  # вместо документа. Правило обязано стоять ВЫШЕ front controller.
+  RewriteRule ^privacy/?$ /privacy.html [R=301,L]
+
   # Front controller: real files/dirs served as-is; everything else → index.php.
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
