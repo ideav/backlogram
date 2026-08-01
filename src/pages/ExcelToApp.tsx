@@ -903,7 +903,7 @@ export default function ExcelToApp() {
                   <span className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                     Я даю согласие на{' '}
                     <a
-                      href="/privacy"
+                      href="/privacy.html"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="underline hover:text-blue-500 transition-colors"

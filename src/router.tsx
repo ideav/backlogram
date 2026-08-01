@@ -22,6 +22,7 @@ const KnowledgeBase = lazy(() => import('./pages/KnowledgeBase'))
 const KnowledgeBaseArticle = lazy(() => import('./pages/KnowledgeBaseArticle'))
 const UseCaseLanding = lazy(() => import('./pages/UseCaseLanding'))
 const UseCaseHub = lazy(() => import('./pages/UseCaseHub'))
+const Privacy = lazy(() => import('./pages/Privacy'))
 
 export const router = createBrowserRouter([
   {
@@ -103,6 +104,18 @@ export const router = createBrowserRouter([
       {
         path: 'knowledge-base/:slug',
         element: <KnowledgeBaseArticle />,
+      },
+      // Политика обработки персональных данных (issue #542). Ссылка из галочки
+      // согласия под формами ведёт на /privacy.html; безрасширенный /privacy
+      // 301-редиректится на него правилом в public/.htaccess — маршрут здесь
+      // оставлен, чтобы переход внутри SPA работал в обоих написаниях.
+      {
+        path: 'privacy.html',
+        element: <Privacy />,
+      },
+      {
+        path: 'privacy',
+        element: <Privacy />,
       },
       // Хаб тематических решений (issue #431)
       {

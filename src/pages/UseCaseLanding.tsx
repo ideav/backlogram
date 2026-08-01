@@ -427,7 +427,7 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
                 <input type="checkbox" checked={consentChecked} onChange={(e) => setConsentChecked(e.target.checked)}
                   className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 dark:border-slate-600 accent-blue-600 cursor-pointer" />
                 <span className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Я даю согласие на <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-500 transition-colors">обработку персональных данных</a>
+                  Я даю согласие на <a href="/privacy.html" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-500 transition-colors">обработку персональных данных</a>
                 </span>
               </label>
 
