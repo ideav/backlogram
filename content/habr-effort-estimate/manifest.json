@@ -7,7 +7,7 @@
   "format": "habr_analytical",
   "targetPlatforms": ["Habr"],
   "status": "author_review",
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-08-01",
   "articlePath": "articles/skolko-chasov-stoit-promyshlennoe-prilozhenie.md",
   "editorialGoal": "Переписать блоговую статью об оценке трудоёмкости под Habr: без единого упоминания продукта и компании, с развёрнутым расчётом и перекрёстной проверкой тремя независимыми методами (снизу вверх по действиям, функциональные точки + отраслевые PDR из ISBSG, COCOMO II).",
   "promoPolicy": {
