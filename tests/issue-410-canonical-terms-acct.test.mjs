@@ -9,8 +9,12 @@ const read = (p) => readFileSync(resolve(repo, p), 'utf8')
 // Регрессия #410: Яндекс.Вебмастер жаловался «Канонический адрес не указан»
 // на legacy-страницах /terms.html и /acct.html. Они лежат в public/ и
 // копируются в dist/ как есть, поэтому self-canonical должен быть прямо в них.
+//
+// /terms.html из этого списка ушёл: страница больше не статика из public/, её
+// собирает сайт (src/pages/Terms.tsx + scripts/prerender-terms.mjs). Тот же
+// self-canonical теперь проверяет tests/terms-page.test.mjs — на сгенерированном
+// dist/terms.html.
 const pages = [
-  { file: 'public/terms.html', url: 'https://ideav.ru/terms.html' },
   { file: 'public/acct.html', url: 'https://ideav.ru/acct.html' },
 ]
 

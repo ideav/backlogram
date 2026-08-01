@@ -23,6 +23,7 @@ const KnowledgeBaseArticle = lazy(() => import('./pages/KnowledgeBaseArticle'))
 const UseCaseLanding = lazy(() => import('./pages/UseCaseLanding'))
 const UseCaseHub = lazy(() => import('./pages/UseCaseHub'))
 const Privacy = lazy(() => import('./pages/Privacy'))
+const Terms = lazy(() => import('./pages/Terms'))
 
 export const router = createBrowserRouter([
   {
@@ -116,6 +117,17 @@ export const router = createBrowserRouter([
       {
         path: 'privacy',
         element: <Privacy />,
+      },
+      // Соглашение об использовании сервиса. Раньше страница лежала статикой в
+      // public/ (копия integram.io/terms.html в вёрстке старого сайта) — теперь
+      // её собирает сам сайт; URL /terms.html сохранён, он в индексе.
+      {
+        path: 'terms.html',
+        element: <Terms />,
+      },
+      {
+        path: 'terms',
+        element: <Terms />,
       },
       // Хаб тематических решений (issue #431)
       {
