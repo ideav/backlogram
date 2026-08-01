@@ -135,9 +135,9 @@ parts.push(
     spacing: 3.2,
   }),
 )
-parts.push(text('300 часов или 12 400?', { x: 84, y: 168, size: 62, fill: INK, weight: 700 }))
+parts.push(text('«ЛЛМ сделает за вечер» или 12 400 часов?', { x: 84, y: 168, size: 52, fill: INK, weight: 700 }))
 parts.push(
-  text('Одна и та же система, посчитанная тремя независимыми методами', {
+  text('Одна и та же система, три независимых метода: факт — от 990 до 12 400 ч', {
     x: 84,
     y: 214,
     size: 28,
@@ -174,17 +174,12 @@ ROWS.forEach((row, i) => {
   )
 
   if (row.from === row.to) {
-    // Одно значение — точка, а не марка нулевой длины
+    // Точка означает ровно одно: единственное значение вместо диапазона
     parts.push(`<circle cx="${x(row.from).toFixed(1)}" cy="${yc + 2}" r="9" fill="${color}"/>`)
   } else {
     parts.push(
       `<rect x="${x(row.from).toFixed(1)}" y="${barY}" ` +
         `width="${(x(row.to) - x(row.from)).toFixed(1)}" height="${BAR}" rx="4" fill="${color}"/>`,
-    )
-    // Кольцо в цвет поверхности: концы марки читаются поверх сетки
-    parts.push(
-      `<circle cx="${x(row.from).toFixed(1)}" cy="${yc + 2}" r="9" fill="${color}" ` +
-        `stroke="${SURFACE}" stroke-width="2"/>`,
     )
   }
 })
