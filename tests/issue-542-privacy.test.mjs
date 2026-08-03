@@ -68,7 +68,13 @@ test('SPA знает маршрут политики в обоих написа�
 })
 
 test('.htaccess редиректит /privacy на /privacy.html ДО front controller (#542)', () => {
-  const redirect = htaccess.search(/^\s*RewriteRule\s+\^privacy\/\?\$\s+\/privacy\.html\s+\[R=301,L\]/m)
+  // С #551 правило собрано в одну альтернацию на все страницы сайта
+  // (`^(privacy|terms|…)/?$ → /$1.html`); полноту списка стережёт
+  // tests/issue-551-extensionless-urls.test.mjs. Здесь важно одно: /privacy
+  // канонизируется 301-м и делает это ВЫШЕ front controller.
+  const redirect = htaccess.search(
+    /^\s*RewriteRule\s+\^\((?:[^)]*\|)?privacy(?:\|[^)]*)?\)\/\?\$\s+\/\$1\.html\s+\[R=301,L\]/m,
+  )
   const frontController = htaccess.search(/^\s*RewriteRule\s+\^\s+index\.php/m)
 
   assert.notEqual(redirect, -1, 'правило редиректа /privacy → /privacy.html отсутствует')

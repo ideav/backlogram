@@ -35,12 +35,30 @@ DirectoryIndex index.html
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-  # /privacy → /privacy.html (issue #542). Ссылка «обработку персональных
-  # данных» в галочке согласия под формами исторически вела на безрасширенный
-  # /privacy. Такого файла в вебруте нет, поэтому front controller ниже отдавал
-  # путь движку Интеграма, а тот читал «privacy» как имя базы и отвечал ошибкой
-  # вместо документа. Правило обязано стоять ВЫШЕ front controller.
-  RewriteRule ^privacy/?$ /privacy.html [R=301,L]
+  # Безрасширенные адреса страниц → канонический /<slug>.html (issues #542, #551).
+  #
+  # Билд кладёт в dist/ только `<slug>.html`. Маршруты в src/router.tsx объявлены
+  # в двух написаниях, но безрасширенный вариант живёт лишь при клиентской
+  # навигации внутри SPA: прямой заход или ссылка извне — это не файл и не
+  # директория, поэтому front controller ниже отдавал путь движку Интеграма, а
+  # тот читал первый сегмент как имя базы и отвечал «Invalid database» вместо
+  # страницы. Так были сломаны /privacy, /terms, /resheniya, /excel-to-app и все
+  # лендинги (#551); #542 закрыл этим приёмом только /privacy.
+  #
+  # Список ЯВНЫЙ и закрытый — универсальное правило «нет файла → отдать
+  # <path>.html» ставить нельзя: оно перехватит URL реальной базы с совпадающим
+  # именем и уронит её. Каждое имя ниже проверено на живом сервере — базы с
+  # таким именем нет. Директории (/knowledge-base/, /ad-images/) сюда не входят:
+  # они реально существуют в вебруте и работают сами.
+  #
+  # Полноту списка стережёт tests/issue-551-extensionless-urls.test.mjs: новая
+  # страница без правила здесь валит тест.
+  #
+  # Правило обязано стоять ВЫШЕ front controller, иначе путь снова уедет в
+  # index.php. `!-d` — страховка на случай, если такая директория когда-нибудь
+  # появится в вебруте: тогда выигрывает она, а не редирект.
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(privacy|terms|resheniya|excel-to-app|agent-platforms|catalog-matching|konstruktor-prilozhenij|informatsionnaya-sistema|sravnenie-s-bitrix-amocrm|tokens|baza-zayavok|upravlenie-proektami|planirovanie-proizvodstva|skladskoy-uchet|upravlenie-zakupkami|finansovyy-uchet|kadrovyy-uchet|crm-uchet-klientov|uchet-dogovorov|upravlencheskiy-uchet|dvizhenie-tmc-i-ds)/?$ /$1.html [R=301,L]
 
   # Front controller: real files/dirs served as-is; everything else → index.php.
   RewriteCond %{REQUEST_FILENAME} !-f
