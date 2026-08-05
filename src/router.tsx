@@ -17,6 +17,8 @@ const ExcelConstructor = lazy(() => import('./pages/ExcelConstructor'))
 const InformationSystem = lazy(() => import('./pages/InformationSystem'))
 const BitrixAmoComparison = lazy(() => import('./pages/BitrixAmoComparison'))
 const Tokens = lazy(() => import('./pages/Tokens'))
+// #553: персональная страница с контактами (требование поддержки Хабра к профилю).
+const AlexeySemenov = lazy(() => import('./pages/AlexeySemenov'))
 const AdImages = lazy(() => import('./pages/AdImages'))
 const KnowledgeBase = lazy(() => import('./pages/KnowledgeBase'))
 const KnowledgeBaseArticle = lazy(() => import('./pages/KnowledgeBaseArticle'))
@@ -89,6 +91,10 @@ export const router = createBrowserRouter([
       {
         path: 'tokens.html',
         element: <Tokens />,
+      },
+      {
+        path: 'alexey-semenov.html',
+        element: <AlexeySemenov />,
       },
       {
         path: 'ad-images.html',
