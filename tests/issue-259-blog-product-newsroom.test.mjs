@@ -19,7 +19,10 @@ test('blog home keeps product-blog basics after the issue 265 visual restyle', (
 
   assert.match(index, /product-blog-page/)
   assert.match(index, /product-blog-hero/)
-  assert.match(index, /action="\/search\/"/)
+  // Форма ведёт на страницу поиска блога. Адрес проверяем по смыслу, а не
+  // буквой: блог живёт в подпапке /blog/, и базу приклеивает withBase —
+  // буквальный «/search/» отправлял форму в корень ideav.ru (issue #555).
+  assert.match(index, /action=\{withBase\("\/search\/"\)\}/)
   assert.match(index, /name="q"/)
   assert.match(index, /product-blog-category-pills/)
   assert.match(index, /product-blog-featured/)
