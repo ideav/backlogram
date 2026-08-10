@@ -57,6 +57,47 @@ test('case screenshots come from the shared source with real dimensions', () => 
   }
 })
 
+test('screenshot files exist in public/ and match the declared dimensions', () => {
+  // Размеры в home-cases.mjs уходят в атрибуты width/height и в ImageObject.
+  // Если они разойдутся с файлом, вёрстка поедет ровно на ту величину, ради
+  // которой атрибуты и добавлены, а разметка соврёт поисковику.
+  for (const shot of SHOTS) {
+    const bytes = readFileSync(resolve(repo, 'public', shot.file))
+    assert.match(shot.file, /\.webp$/, `${shot.file}: скриншоты отдаём в WebP (issue #557)`)
+    // RIFF….WEBPVP8 — заголовок WebP; размеры лежат по-разному в VP8/VP8L/VP8X,
+    // поэтому читаем их через минимальный разбор трёх вариантов.
+    assert.equal(bytes.subarray(0, 4).toString('latin1'), 'RIFF', `${shot.file}: не WebP-контейнер`)
+    assert.equal(bytes.subarray(8, 12).toString('latin1'), 'WEBP', `${shot.file}: не WebP-контейнер`)
+    const kind = bytes.subarray(12, 16).toString('latin1')
+    let width, height
+    if (kind === 'VP8 ') {
+      width = bytes.readUInt16LE(26) & 0x3fff
+      height = bytes.readUInt16LE(28) & 0x3fff
+    } else if (kind === 'VP8L') {
+      const bits = bytes.readUInt32LE(21)
+      width = (bits & 0x3fff) + 1
+      height = ((bits >> 14) & 0x3fff) + 1
+    } else if (kind === 'VP8X') {
+      width = (bytes.readUIntLE(24, 3) & 0xffffff) + 1
+      height = (bytes.readUIntLE(27, 3) & 0xffffff) + 1
+    } else {
+      assert.fail(`${shot.file}: неизвестный тип чанка WebP: ${kind}`)
+    }
+    assert.equal(width, shot.width, `${shot.file}: ширина в данных не совпала с файлом`)
+    assert.equal(height, shot.height, `${shot.file}: высота в данных не совпала с файлом`)
+  }
+})
+
+test('the /konstruktor-prilozhenij.html og:image stays a PNG social networks can render', () => {
+  // Картинку на самой странице перевели в WebP, но og:image — нет: VK и часть
+  // мессенджеров webp-превью не показывают, карточка ссылки станет пустой.
+  const source = readFileSync(resolve(repo, 'scripts/prerender-konstruktor-prilozhenij.mjs'), 'utf8')
+  const ogImage = source.match(/const ogImage = `\$\{SITE\}(\/[^`]+)`/)
+  assert.ok(ogImage, 'не нашёл ogImage в пререндере /konstruktor-prilozhenij.html')
+  assert.match(ogImage[1], /\.(png|jpg|jpeg)$/, 'og:image должен остаться растровым PNG/JPEG')
+  readFileSync(resolve(repo, 'public', ogImage[1].replace(/^\//, '')))
+})
+
 test('duplicated logo copies in the infinite strip are not announced twice', () => {
   // Лента показывает три копии списка ради бесшовной прокрутки. Подпись несёт
   // только первая — иначе 14 клиентов превращаются в 42 повтора.

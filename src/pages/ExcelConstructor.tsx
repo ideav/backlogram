@@ -471,7 +471,7 @@ export default function ExcelConstructor() {
             className="mt-12">
             <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 ring-1 ring-slate-900/5 shadow-2xl shadow-slate-900/10">
               <img
-                src="/case-sovereignty-audit.png"
+                src="/case-sovereignty-audit.webp"
                 alt="Пример приложения на платформе Интеграм: аналитика, финансы и дашборды"
                 width={2042}
                 height={1252}

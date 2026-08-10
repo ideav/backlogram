@@ -124,7 +124,7 @@ const bodyHtml = `
       разъезжающихся таблиц — с ролями доступа, дашбордами и настройкой под ваш бизнес за 1 день.
     </p>
     <figure class="kp-prerender__figure">
-      <img src="/case-sovereignty-audit.png" alt="Пример приложения на платформе Интеграм: аналитика, финансы и дашборды" width="2042" height="1252" loading="lazy" itemprop="image" />
+      <img src="/case-sovereignty-audit.webp" alt="Пример приложения на платформе Интеграм: аналитика, финансы и дашборды" width="2042" height="1252" loading="lazy" itemprop="image" />
       <figcaption>Пример приложения на платформе Интеграм</figcaption>
     </figure>
   </header>
@@ -200,6 +200,10 @@ const ogDescription =
 const seoTitle = 'Конструктор приложений вместо Excel — без кода | Интеграм'
 const metaDescription =
   'Замените Excel конструктором приложений Интеграм: миллионы записей, отчёты и роли доступа без программистов. Настройка под ваш бизнес за 1 день.'
+// og:image намеренно остаётся PNG: сама картинка на странице отдаётся в WebP
+// (issue #557), но соцсети и мессенджеры webp-превью показывают не все — VK и
+// часть клиентов покажут пустую карточку. Поэтому public/case-sovereignty-audit.png
+// остаётся в репозитории ровно ради этого тега.
 const ogImage = `${SITE}/case-sovereignty-audit.png`
 const ogImageW = 2042
 const ogImageH = 1252

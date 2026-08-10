@@ -16,27 +16,35 @@
 // aspect-ratio до загрузки картинки (Tailwind preflight держит height:auto),
 // то есть убирают скачок вёрстки при подгрузке — Core Web Vitals (CLS).
 //
+// Формат — WebP: скриншоты весили 218 + 268 + 119 КБ в PNG, стало 58 + 98 + 36.
+// Кодировано из исходных PNG через Pillow, `method=6`; для двух скриншотов
+// выгоднее lossy `quality=85` (текст на кропе 1:1 неотличим), для «Аудита
+// суверенности» — `lossless=True`: у него lossless меньше, чем lossy q90.
+// Исходный PNG остался в public/ только у case-sovereignty-audit — он служит
+// og:image странице /konstruktor-prilozhenij.html, а webp-превью показывают не
+// все соцсети (см. комментарий в scripts/prerender-konstruktor-prilozhenij.mjs).
+//
 // `alt` — дословно тот же текст, что был проставлен в Home.tsx по issue #495:
 // подписи для поиска и для скринридера должны совпадать с тем, что видит
 // человек. Синхронность проверяет tests/issue-557-image-seo.test.mjs.
 
 export const HOME_CASE_SCREENSHOTS = {
   orbita: {
-    file: 'case-orbita-planner.png',
+    file: 'case-orbita-planner.webp',
     width: 2006,
     height: 1077,
     alt: 'Орбита Planner на Интеграме: приложение вместо 15 Excel-файлов у прорабов — управление строительным персоналом, планирование смен и дашборды в реальном времени',
     caption: 'Орбита Planner: управление строительным персоналом вместо 15 Excel-файлов',
   },
   sovereignty: {
-    file: 'case-sovereignty-audit.png',
+    file: 'case-sovereignty-audit.webp',
     width: 2042,
     height: 1252,
     alt: 'Аудит суверенности 9D на Интеграме: замена Google Таблиц на промышленную платформу — 50+ метрик и дашборды по портфелю инвестиционного фонда',
     caption: 'Аудит суверенности 9D: 50+ метрик по портфелю инвестиционного фонда',
   },
   pdn: {
-    file: 'case-pdn.png',
+    file: 'case-pdn.webp',
     width: 1126,
     height: 752,
     alt: 'Реестр процессов обработки персональных данных (ПДн) в банке на Интеграме: миграция данных из Excel в базу данных, ролевая модель и автоматическая отчётность',
