@@ -109,20 +109,30 @@ export default function ClientLogos() {
             onMouseLeave={stopDrag}
           >
             <div className="flex gap-8" style={{ width: 'max-content' }}>
-              {ITEMS.map((client, i) => (
-                <div
-                  key={`${client.name}-${i}`}
-                  title={client.name}
-                  className="w-28 h-16 flex-shrink-0 flex items-center justify-center"
-                >
-                  <img
-                    src={client.logo}
-                    alt={`${client.name} — клиент платформы Интеграм`}
-                    className={`object-contain ${client.small ? 'w-3/4 h-3/4' : client.large ? 'w-4/3 h-4/3' : 'w-full h-full'}`}
-                    draggable={false}
-                  />
-                </div>
-              ))}
+              {ITEMS.map((client, i) => {
+                // Лента бесконечная за счёт трёх копий списка, поэтому каждый
+                // логотип лежит в DOM трижды. Подпись несёт только первая копия:
+                // иначе скринридер зачитывает 42 карточки вместо 14, а поиск
+                // видит один и тот же alt в тройном повторе (issue #557).
+                const isDuplicate = i >= CLIENTS.length
+                return (
+                  <div
+                    key={`${client.name}-${i}`}
+                    title={client.name}
+                    className="w-28 h-16 flex-shrink-0 flex items-center justify-center"
+                    aria-hidden={isDuplicate || undefined}
+                  >
+                    <img
+                      src={client.logo}
+                      alt={isDuplicate ? '' : `${client.name} — клиент платформы Интеграм`}
+                      loading="lazy"
+                      decoding="async"
+                      className={`object-contain ${client.small ? 'w-3/4 h-3/4' : client.large ? 'w-4/3 h-4/3' : 'w-full h-full'}`}
+                      draggable={false}
+                    />
+                  </div>
+                )
+              })}
             </div>
           </div>
 

@@ -22,6 +22,7 @@ import { fileURLToPath } from 'node:url'
 import { USE_CASES } from '../src/data/usecases.mjs'
 import { BLOG_URL, BLOG_POSTS } from '../src/data/blogPosts.mjs'
 import { HOME_FAQ } from '../src/data/home-faq.mjs'
+import { HOME_CASE_SCREENSHOTS } from '../src/data/home-cases.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -85,6 +86,33 @@ const sectionsHtml = sections
       </section>`
   )
   .join('')
+
+// ───────────────────────────────────────────────────────────────────────────
+//  Примеры из практики со скриншотами (issue #557). До этого в снапшоте не было
+//  ни одной картинки: скриншоты кейсов рисует React, а поиск по изображениям
+//  (в первую очередь Яндекс.Картинки, который JS почти не исполняет) видит
+//  только этот HTML — то есть alt-тексты, проставленные в Home.tsx по #495, для
+//  него не существовали. Источник подписей общий с React — src/data/
+//  home-cases.mjs, чтобы у людей и у краулера не разъехались alt.
+//
+//  loading="lazy" здесь принципиально: снапшот живёт в #root до загрузки React
+//  и заменяется им, поэтому без lazy браузер каждого живого посетителя тянул бы
+//  ~0,6 МБ PNG, конкурируя с LCP главной. width/height дают aspect-ratio и
+//  убирают скачок вёрстки у клиентов без JS.
+// ───────────────────────────────────────────────────────────────────────────
+const casesHtml = `
+      <section class="lp-prerender__group" aria-labelledby="lp-cases-title">
+        <h2 id="lp-cases-title">Примеры из практики</h2>
+        <p>Рабочие системы, собранные на Интеграме вместо Excel-файлов и таблиц Google.</p>
+        ${Object.values(HOME_CASE_SCREENSHOTS)
+          .map(
+            (shot) => `<figure class="lp-prerender__case">
+          <img src="/${escape(shot.file)}" alt="${escape(shot.alt)}" width="${shot.width}" height="${shot.height}" loading="lazy" decoding="async" />
+          <figcaption>${escape(shot.caption)}</figcaption>
+        </figure>`
+          )
+          .join('\n        ')}
+      </section>`
 
 // ───────────────────────────────────────────────────────────────────────────
 //  FAQ — из общего с React источника src/data/home-faq.mjs (issue #495). Раньше
@@ -170,6 +198,7 @@ const bodyHtml = `
     </p>
   </header>
   ${sectionsHtml}
+  ${casesHtml}
   ${blogHtml}
   ${faqHtml}
   <footer class="lp-prerender__footer">
@@ -202,6 +231,10 @@ const bodyHtml = `
   #lp-prerender .lp-prerender__eyebrow { text-transform: uppercase; letter-spacing: 0.1em;
     font-size: 0.72rem; color: #3b82f6; font-weight: 700; margin: 0; }
   #lp-prerender .lp-prerender__lead { font-size: 1.1rem; color: #475569; max-width: 50rem; }
+  #lp-prerender .lp-prerender__case { margin: 1.25rem 0 0; padding: 0; max-width: 42rem; }
+  #lp-prerender .lp-prerender__case img { display: block; width: 100%; height: auto;
+    border: 1px solid #e2e8f0; border-radius: 0.75rem; }
+  #lp-prerender .lp-prerender__case figcaption { margin-top: 0.4rem; font-size: 0.9rem; color: #64748b; }
   #lp-prerender .lp-prerender__posts { margin: 0.75rem 0 0; padding: 0; list-style: none; }
   #lp-prerender .lp-prerender__posts li { margin: 0.5rem 0; }
   #lp-prerender .lp-prerender__post-meta { display: block; font-size: 0.85rem; color: #64748b; }
@@ -227,6 +260,7 @@ const bodyHtml = `
   .dark #lp-prerender .lp-prerender__lead, .dark #lp-prerender .lp-prerender__footer { color: #94a3b8; }
   .dark #lp-prerender .lp-prerender__registry span { color: #e2e8f0; }
   .dark #lp-prerender a { color: #60a5fa; }
+  .dark #lp-prerender .lp-prerender__case img { border-color: #1e293b; }
 </style>`
 
 // ───────────────────────────────────────────────────────────────────────────
@@ -292,7 +326,18 @@ const jsonLd = {
         'Импорт и экспорт Excel, JSON, интеграции по API',
         'Локальное размещение (on-premise) в контуре заказчика',
       ],
-      screenshot: `${SITE}/case-orbita-planner.png`,
+      // screenshot — все три скриншота кейсов как ImageObject с подписями и
+      // размерами (issue #557). Раньше здесь был один голый URL: поиск получал
+      // картинку без описания, а две остальные не были размечены вовсе.
+      screenshot: Object.values(HOME_CASE_SCREENSHOTS).map((shot) => ({
+        '@type': 'ImageObject',
+        contentUrl: `${SITE}/${shot.file}`,
+        url: `${SITE}/${shot.file}`,
+        width: shot.width,
+        height: shot.height,
+        caption: shot.caption,
+        description: shot.alt,
+      })),
       softwareHelp: { '@type': 'CreativeWork', url: `${SITE}/knowledge-base` },
       // offers — бесплатный тариф «Знакомство» (см. секцию «Тарифы» выше). Закрывает
       // non-critical замечание Google «Missing field offers» и даёт цену в rich snippet

@@ -40,6 +40,9 @@ import {
 import { Link } from 'react-router-dom'
 import { USE_CASES } from '../data/usecases'
 import { HOME_FAQ } from '../data/home-faq'
+// Скриншоты кейсов — общий с пререндером источник: alt и размеры должны
+// совпадать с тем, что уходит краулерам в статический снапшот (issue #557).
+import { HOME_CASE_SCREENSHOTS } from '../data/home-cases'
 import ClientLogos from '@/components/ClientLogos'
 import BlogSlider from '@/components/BlogSlider'
 
@@ -808,8 +811,10 @@ export default function Home() {
                     </div>
                   </div>
                   <img
-                    src={`${import.meta.env.BASE_URL}case-orbita-planner.png`}
-                    alt="Орбита Planner на Интеграме: приложение вместо 15 Excel-файлов у прорабов — управление строительным персоналом, планирование смен и дашборды в реальном времени"
+                    src={`${import.meta.env.BASE_URL}${HOME_CASE_SCREENSHOTS.orbita.file}`}
+                    alt={HOME_CASE_SCREENSHOTS.orbita.alt}
+                    width={HOME_CASE_SCREENSHOTS.orbita.width}
+                    height={HOME_CASE_SCREENSHOTS.orbita.height}
                     loading="lazy"
                     decoding="async"
                     className="w-full block"
@@ -835,8 +840,10 @@ export default function Home() {
                     </div>
                   </div>
                   <img
-                    src={`${import.meta.env.BASE_URL}case-sovereignty-audit.png`}
-                    alt="Аудит суверенности 9D на Интеграме: замена Google Таблиц на промышленную платформу — 50+ метрик и дашборды по портфелю инвестиционного фонда"
+                    src={`${import.meta.env.BASE_URL}${HOME_CASE_SCREENSHOTS.sovereignty.file}`}
+                    alt={HOME_CASE_SCREENSHOTS.sovereignty.alt}
+                    width={HOME_CASE_SCREENSHOTS.sovereignty.width}
+                    height={HOME_CASE_SCREENSHOTS.sovereignty.height}
                     loading="lazy"
                     decoding="async"
                     className="w-full block"
@@ -974,10 +981,12 @@ export default function Home() {
                     </div>
                   </div>
                   <img
-                    src={`${import.meta.env.BASE_URL}case-pdn.png`}
+                    src={`${import.meta.env.BASE_URL}${HOME_CASE_SCREENSHOTS.pdn.file}`}
+                    alt={HOME_CASE_SCREENSHOTS.pdn.alt}
+                    width={HOME_CASE_SCREENSHOTS.pdn.width}
+                    height={HOME_CASE_SCREENSHOTS.pdn.height}
                     loading="lazy"
                     decoding="async"
-                    alt="Реестр процессов обработки персональных данных (ПДн) в банке на Интеграме: миграция данных из Excel в базу данных, ролевая модель и автоматическая отчётность"
                     className="w-full block"
                   />
                 </div>
