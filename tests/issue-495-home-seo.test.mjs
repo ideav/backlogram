@@ -14,6 +14,7 @@ import { resolve } from 'node:path'
 import { execFileSync } from 'node:child_process'
 import { HOME_FAQ } from '../src/data/home-faq.mjs'
 import { USE_CASES } from '../src/data/usecases.mjs'
+import { HOME_CASE_SCREENSHOTS } from '../src/data/home-cases.mjs'
 
 const repo = new URL('..', import.meta.url).pathname
 const read = (p) => readFileSync(resolve(repo, p), 'utf8')
@@ -124,8 +125,14 @@ test('у картинок главной есть содержательный a
   assert.ok(images.length >= 4, 'ожидались фон героя и три скриншота кейсов')
 
   for (const img of images) {
-    const alt = img.match(/alt="([^"]*)"/)
-    assert.ok(alt, `у <img> нет атрибута alt: ${img.slice(0, 80)}`)
+    // Скриншоты кейсов берут alt из общего с пререндером src/data/home-cases.mjs
+    // (issue #557): в JSX стоит ссылка на поле, а не строка, поэтому значение
+    // подтягиваем из модуля — проверяем сам текст, а не способ его записи.
+    const shared = img.match(/alt=\{HOME_CASE_SCREENSHOTS\.(\w+)\.alt\}/)
+    const alt = shared
+      ? [null, HOME_CASE_SCREENSHOTS[shared[1]]?.alt]
+      : img.match(/alt="([^"]*)"/)
+    assert.ok(alt && typeof alt[1] === 'string', `у <img> нет атрибута alt: ${img.slice(0, 80)}`)
     if (alt[1] === '') {
       // Пустой alt допустим только для декоративного изображения, спрятанного
       // от скринридера — иначе картинка молча выпадает из индекса и из озвучки.
