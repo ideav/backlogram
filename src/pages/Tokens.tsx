@@ -44,7 +44,12 @@ export default function Tokens() {
             ]}
           />
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Почему стоимость в токенах</h2>
+            {/* H1 дословно повторяет заголовок из scripts/prerender-tokens.mjs:
+                сырой HTML и отрендеренный DOM должны совпадать (issue #559, п. 1–2). */}
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
+              Токены Интеграма — оплата за реальные действия
+            </h1>
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">Почему стоимость в токенах</h2>
             <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
               Обычно в облачных сервисах платят за количество пользователей и гигабайты места. Здесь вы платите за реальную работу. Большинство ваших действий в системе тратят по 1 токену. Тяжёлые действия — дороже.
             </p>

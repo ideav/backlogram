@@ -431,18 +431,26 @@ export default function ExcelConstructor() {
 
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 text-blue-600 dark:text-blue-400 text-sm font-medium mb-5">
             <Zap size={14} />
-            Конструктор приложений Интеграм
+            Платформа Интеграм
           </div>
 
+          {/* H1 дословно повторяет заголовок из
+              scripts/prerender-konstruktor-prilozhenij.mjs: сырой HTML и
+              отрендеренный DOM должны совпадать (issue #559, п. 2). Прежний
+              заголовок-крючок остался подзаголовком строкой ниже. */}
           <motion.h1
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-3"
           >
-            Ваш Excel тормозит{' '}
-            <span className="text-blue-500">и врёт?</span>
+            Конструктор приложений{' '}
+            <span className="text-blue-500">вместо Excel</span>
           </motion.h1>
+
+          <p className="text-xl md:text-2xl font-bold text-slate-700 dark:text-slate-200 mb-5">
+            Ваш Excel тормозит и врёт?
+          </p>
 
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-8">
             Замените Excel конструктором приложений Интеграм: храните миллионы записей, стройте
