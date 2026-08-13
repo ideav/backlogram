@@ -24,10 +24,23 @@ test('«Ещё» menu links to the Информационная система p
   )
 })
 
-test('«Ещё» menu holds exactly 6 items', () => {
+test('«Ещё» menu links to the Платформы с ИИ-агентами page', () => {
+  // Страница выпадала из общего меню: входящие ссылки были только с главной и
+  // с excel-to-app, остальные пять страниц раздела на неё не ссылались
+  // (issue #559, п. 8).
+  const block = moreLinksBlock()
+  assert.match(
+    block,
+    /name:\s*'Платформы с ИИ-агентами',\s*href:\s*'\/agent-platforms\.html'/,
+    'moreLinks should contain the Платформы с ИИ-агентами entry pointing at /agent-platforms.html',
+  )
+})
+
+test('«Ещё» menu holds exactly 7 items', () => {
   // Сравнение с Битрикс24/AmoCRM вынесено в верхнее меню как «Больше CRM»
-  // (issue #4264), поэтому в «Ещё» осталось 6 пунктов.
+  // (issue #4264); в «Ещё» осталось 6 пунктов, седьмым добавлены платформы с
+  // ИИ-агентами (issue #559, п. 8).
   const block = moreLinksBlock()
   const count = (block.match(/href:/g) || []).length
-  assert.equal(count, 6, 'the «Ещё» dropdown must have 6 entries')
+  assert.equal(count, 7, 'the «Ещё» dropdown must have 7 entries')
 })

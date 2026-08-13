@@ -337,7 +337,7 @@ const ogDescription =
 // SEO: <meta description> ≤ 158 симв. (OG-описание ниже берёт полный ogDescription)
 const metaDescription =
   'Пришлите Excel-файлы и тематику — вернём ссылку на готовое веб-приложение на платформе Интеграм. Замена Excel на приложение без кода примерно за 45 минут.'
-const ogImage = `${SITE}/og/knowledge-base.png`
+const ogImage = `${SITE}/og/excel-to-app.png`
 
 const jsonLd = {
   '@context': 'https://schema.org',

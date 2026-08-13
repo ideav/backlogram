@@ -23,6 +23,7 @@ export function Header() {
   // «Ещё...» — раскрывающийся список: сюда складываем новое и интересное
   const moreLinks = [
     { name: 'Информационная система', href: '/informatsionnaya-sistema.html' },
+    { name: 'Платформы с ИИ-агентами', href: '/agent-platforms.html' },
     { name: 'Решения вместо Excel', href: '/resheniya.html' },
     { name: 'Конструктор вместо Excel', href: '/konstruktor-prilozhenij.html' },
     { name: 'Excel → приложение', href: '/excel-to-app.html' },
@@ -37,15 +38,20 @@ export function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        {/* gap-6 держит зазор между логотипом и меню: на 1024 px они сходились
+            вплотную и «ИНТЕГРАМ» слипался с первым пунктом (issue #559, п. 5). */}
+        <div className="flex justify-between items-center gap-6 h-16">
           <div className="flex items-center">
             <Link to="/" aria-label="Интеграм — на главную" className="flex items-center">
               <Logo className="h-8 w-auto text-slate-900 dark:text-white" />
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          {/* Desktop Navigation.
+              Брейкпоинт lg, а не md: на 768 px десктопное меню не помещалось —
+              header.scrollWidth 1079 против clientWidth 768 (issue #559, п. 5).
+              Планшетная ширина теперь получает то же бургер-меню, что и телефон. */}
+          <nav className="hidden lg:flex items-center space-x-4 xl:space-x-8">
             {navLinks.map((link) => (
               <a
                 key={link.name}
@@ -104,7 +110,7 @@ export function Header() {
           </nav>
 
           {/* Mobile menu button */}
-          <div className="md:hidden flex items-center gap-2">
+          <div className="lg:hidden flex items-center gap-2">
             <button
               onClick={toggleTheme}
               aria-label={theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
@@ -112,8 +118,14 @@ export function Header() {
             >
               {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
+            {/* Кнопка нарисована одной иконкой, поэтому доступное имя задаётся
+                aria-label — без него скринридер читал пустую кнопку на всех
+                страницах сайта (issue #559, п. 4). */}
             <button
               onClick={() => setIsOpen(!isOpen)}
+              aria-label={isOpen ? 'Закрыть меню' : 'Открыть меню'}
+              aria-expanded={isOpen}
+              aria-controls="mobile-nav"
               className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -125,9 +137,10 @@ export function Header() {
       {/* Mobile Navigation */}
       {isOpen && (
         <motion.div
+          id="mobile-nav"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="md:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800"
+          className="lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800"
         >
           <div className="px-4 pt-2 pb-6 space-y-1">
             {navLinks.map((link) => (

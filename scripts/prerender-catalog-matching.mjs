@@ -127,7 +127,8 @@ const bodyHtml = `
     <p>
       <a href="https://ideav.ru/start.html">Начать с Интеграмом</a> ·
       <a href="/">На главную</a> ·
-      <a href="/knowledge-base/21-catalog-matching.html">База знаний: сопоставление каталогов</a>
+      <a href="/knowledge-base/21-catalog-matching.html">База знаний: сопоставление каталогов</a> ·
+      <a href="/agent-platforms.html">Платформы с ИИ-агентами</a>
     </p>
     <p style="margin-top:0.6rem">
       Читайте в блоге:
@@ -163,6 +164,11 @@ const bodyHtml = `
 // ───────────────────────────────────────────────────────────────────────────
 //  Structured data: WebPage + Article
 // ───────────────────────────────────────────────────────────────────────────
+// Даты для разметки Article (issue #559, п. 6): datePublished — дата первого
+// коммита страницы, dateModified — дата сборки, как в prerender-knowledge-base.mjs.
+const datePublished = '2026-06-23'
+const dateModified = new Date().toISOString().slice(0, 10)
+
 const canonical = `${SITE}${PATH}`
 const ogTitle =
   'Массовое сопоставление каталогов: сотни тысяч позиций без Elasticsearch и кода — Интеграм'
@@ -194,6 +200,8 @@ const jsonLd = {
       headline: ogTitle,
       description: ogDescription,
       inLanguage: 'ru',
+      datePublished,
+      dateModified,
       mainEntityOfPage: canonical,
       url: canonical,
       image: ogImage,

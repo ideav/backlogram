@@ -151,6 +151,7 @@ const bodyHtml = `
       <a href="/crm-uchet-klientov.html">CRM-учёт клиентов на Интеграме</a> ·
       <a href="https://ideav.ru/start.html">Начать с Интеграмом</a> ·
       <a href="/resheniya.html">Все решения вместо Excel</a> ·
+      <a href="/agent-platforms.html">Платформы с ИИ-агентами</a> ·
       <a href="/">На главную</a>
     </p>
     <p style="margin-top:0.6rem">
@@ -182,6 +183,11 @@ const bodyHtml = `
 // ───────────────────────────────────────────────────────────────────────────
 //  Structured data: WebPage + Article + FAQPage
 // ───────────────────────────────────────────────────────────────────────────
+// Даты для разметки Article (issue #559, п. 6): datePublished — дата первого
+// коммита страницы, dateModified — дата сборки, как в prerender-knowledge-base.mjs.
+const datePublished = '2026-07-17'
+const dateModified = new Date().toISOString().slice(0, 10)
+
 const canonical = `${SITE}${PATH}`
 const ogTitle = 'Интеграм vs Битрикс24 и AmoCRM: сравнение и альтернатива CRM-конструктор'
 const ogDescription =
@@ -190,7 +196,7 @@ const ogDescription =
 const seoTitle = 'Интеграм vs Битрикс24 и AmoCRM — сравнение CRM'
 const metaDescription =
   'Сравнение Интеграма с Битрикс24 и AmoCRM: что в коробочных CRM нельзя изменить даже за деньги (перенос лида между воронками) и когда нужен CRM-конструктор.'
-const ogImage = `${SITE}/og/knowledge-base.png`
+const ogImage = `${SITE}/og/sravnenie-s-bitrix-amocrm.png`
 const ogImageW = 1200
 const ogImageH = 630
 
@@ -212,6 +218,8 @@ const jsonLd = {
       headline: ogTitle,
       description: ogDescription,
       inLanguage: 'ru',
+      datePublished,
+      dateModified,
       mainEntityOfPage: canonical,
       url: canonical,
       image: ogImage,

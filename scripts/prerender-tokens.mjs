@@ -99,7 +99,8 @@ const bodyHtml = `
     <p>
       <a href="https://ideav.ru/start.html">Начать с Интеграмом</a> ·
       <a href="/">На главную</a> ·
-      <a href="/knowledge-base/16-pricing-policy.html">База знаний: тарифы в токенах</a>
+      <a href="/knowledge-base/16-pricing-policy.html">База знаний: тарифы в токенах</a> ·
+      <a href="/agent-platforms.html">Платформы с ИИ-агентами</a>
     </p>
   </footer>
 </article>
@@ -132,7 +133,7 @@ const ogDescription =
   'Как устроена оплата в Интеграме: тариф в токенах. Большинство действий стоит 1 токен, тяжёлые операции дороже. Вы платите за реальную работу, а не за число пользователей и место.'
 const metaDescription =
   'Оплата в Интеграме — в токенах: большинство действий стоит 1 токен, тяжёлые операции дороже. Вы платите за реальную работу, а не за число пользователей.'
-const ogImage = `${SITE}/og/home.png`
+const ogImage = `${SITE}/og/tokens.png`
 
 const jsonLd = {
   '@context': 'https://schema.org',
