@@ -210,6 +210,11 @@ const bodyHtml = `
 // ───────────────────────────────────────────────────────────────────────────
 //  Structured data: WebPage + Article
 // ───────────────────────────────────────────────────────────────────────────
+// Даты для разметки Article (issue #559, п. 6): datePublished — дата первого
+// коммита страницы, dateModified — дата сборки, как в prerender-knowledge-base.mjs.
+const datePublished = '2026-06-15'
+const dateModified = new Date().toISOString().slice(0, 10)
+
 const canonical = `${SITE}${PATH}`
 const ogTitle =
   'Агент создаёт приложение: Интеграм против зарубежных и российских low-code платформ'
@@ -219,7 +224,7 @@ const ogDescription =
 const seoTitle = 'Интеграм против low-code платформ и ИИ-агентов'
 const metaDescription =
   'Сравнение Интеграма с low-code платформами и ИИ-агентами-кодерами: Retool AI, Power Platform, NocoDB, Appsmith, Bpium, ELMA365, Claude Code, Codex.'
-const ogImage = `${SITE}/og/knowledge-base.png`
+const ogImage = `${SITE}/og/agent-platforms.png`
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -239,6 +244,8 @@ const jsonLd = {
       headline: ogTitle,
       description: ogDescription,
       inLanguage: 'ru',
+      datePublished,
+      dateModified,
       mainEntityOfPage: canonical,
       url: canonical,
       image: ogImage,

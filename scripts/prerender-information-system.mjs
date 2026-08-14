@@ -197,7 +197,8 @@ const bodyHtml = `
       <a href="/excel-to-app.html#excel-form">Загрузить Excel и получить систему</a> ·
       <a href="/knowledge-base/22-information-system-constructor.html">Как собрать ИС на Интеграме</a> ·
       <a href="/">На главную</a> ·
-      <a href="/knowledge-base">База знаний</a>
+      <a href="/knowledge-base">База знаний</a> ·
+      <a href="/agent-platforms.html">Платформы с ИИ-агентами</a>
     </p>
     <p style="margin-top:0.6rem">
       Читайте в блоге:
@@ -231,6 +232,11 @@ const bodyHtml = `
 // ───────────────────────────────────────────────────────────────────────────
 //  Structured data: WebPage + Article + FAQPage
 // ───────────────────────────────────────────────────────────────────────────
+// Даты для разметки Article (issue #559, п. 6): datePublished — дата первого
+// коммита страницы, dateModified — дата сборки, как в prerender-knowledge-base.mjs.
+const datePublished = '2026-07-10'
+const dateModified = new Date().toISOString().slice(0, 10)
+
 const canonical = `${SITE}${PATH}`
 const ogTitle =
   'Что такое информационная система (ИС): виды, классификация, свойства'
@@ -240,7 +246,7 @@ const ogDescription =
 const seoTitle = 'Что такое информационная система (ИС): виды и свойства'
 const metaDescription =
   'Информационная система (ИС): определение по 149-ФЗ и ГОСТ, состав, классификация, виды (ERP, CRM, СЭД, АСУ ТП, ГИС) и свойства — и как собрать ИС без кода.'
-const ogImage = `${SITE}/og/knowledge-base.png`
+const ogImage = `${SITE}/og/informatsionnaya-sistema.png`
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -260,6 +266,8 @@ const jsonLd = {
       headline: ogTitle,
       description: ogDescription,
       inLanguage: 'ru',
+      datePublished,
+      dateModified,
       mainEntityOfPage: canonical,
       url: canonical,
       image: ogImage,

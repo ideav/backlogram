@@ -269,7 +269,58 @@ await render(
 )
 console.log(`✓ public/og/home.png`)
 
-// 4. Organization logo referenced from JSON-LD (Organization.logo). The file
+// 4. Лендинги раздела. До issue #559 (п. 7) четыре страницы делили карточку
+//    базы знаний, а токены брали баннер главной, поэтому в мессенджерах и
+//    соцсетях разные страницы выглядели одинаково. Тексты взяты из ogTitle /
+//    ogDescription соответствующих prerender-скриптов, чтобы картинка и
+//    страница говорили одно и то же.
+const landingCards = [
+  {
+    slug: 'sravnenie-s-bitrix-amocrm',
+    eyebrow: 'Сравнение · Битрикс24 и AmoCRM',
+    title: 'Интеграм против Битрикс24 и AmoCRM',
+    subtitle:
+      'В коробочных CRM часть логики нельзя изменить даже за деньги. Интеграм — конструктор: модель данных, воронки и правила процесса настраиваются под вас.',
+  },
+  {
+    slug: 'excel-to-app',
+    eyebrow: 'Excel → приложение',
+    title: 'Загрузите Excel — получите приложение за ~45 минут',
+    subtitle:
+      'Пришлите таблицы и пару слов о задаче — вернём ссылку на готовое веб-приложение на платформе Интеграм. Без программирования и долгого внедрения.',
+  },
+  {
+    slug: 'agent-platforms',
+    eyebrow: 'Платформы с ИИ-агентами',
+    title: 'Агент создаёт приложение: Интеграм против low-code платформ',
+    subtitle:
+      'Сравнение с Retool AI, Power Platform Copilot, NocoDB, Appsmith, Bpium, ELMA365, BPMSoft, AppMaster и агентами-кодерами по модели «агент собирает сервис под ключ».',
+  },
+  {
+    slug: 'informatsionnaya-sistema',
+    eyebrow: 'База знаний · определения',
+    title: 'Что такое информационная система: виды, классификация, свойства',
+    subtitle:
+      'Определение по 149-ФЗ и ГОСТ, состав, классификация и виды ИС — ERP, CRM, СЭД, АСУ ТП, ГИС — и как собрать свою ИС на low-code платформе с ИИ.',
+  },
+  {
+    slug: 'tokens',
+    eyebrow: 'Цены · токены',
+    title: 'Токены Интеграма — оплата за реальные действия',
+    subtitle:
+      'Большинство действий стоит 1 токен, тяжёлые операции дороже. Вы платите за реальную работу, а не за число пользователей и гигабайты места.',
+  },
+]
+
+for (const card of landingCards) {
+  await render(
+    cardJSX({ eyebrow: card.eyebrow, title: card.title, subtitle: card.subtitle }),
+    resolve(outDir, `${card.slug}.png`)
+  )
+  console.log(`✓ public/og/${card.slug}.png`)
+}
+
+// 5. Organization logo referenced from JSON-LD (Organization.logo). The file
 //    was missing, so structured data pointed at a 404; generate it here.
 const logosDir = resolve(root, 'public/logos')
 mkdirSync(logosDir, { recursive: true })
@@ -283,4 +334,6 @@ await render(
 )
 console.log(`✓ public/logos/integram-og.png`)
 
-console.log(`\nDone: ${knowledgeBaseArticles.length + 3} OG cards generated`)
+console.log(
+  `\nDone: ${knowledgeBaseArticles.length + 3 + landingCards.length} OG cards generated`,
+)

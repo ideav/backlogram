@@ -155,7 +155,8 @@ const bodyHtml = `
       <a href="${PATH}#zayavka">Заказать демо</a> ·
       <a href="/">На главную</a> ·
       <a href="/excel-to-app.html">Загрузить Excel — получить приложение</a> ·
-      <a href="/catalog-matching.html">Сопоставление каталогов</a>
+      <a href="/catalog-matching.html">Сопоставление каталогов</a> ·
+      <a href="/agent-platforms.html">Платформы с ИИ-агентами</a>
     </p>
     <p style="margin-top:0.6rem">
       Читайте в блоге:
