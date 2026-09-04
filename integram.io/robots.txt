@@ -1,0 +1,6 @@
+# SEO: трекинговые GET-параметры рекламных систем не создают отдельные страницы.
+# Яндекс: https://yandex.ru/support/webmaster/robot-workings/clean-param.html
+# (ideav/backlogram#563 — дубли integram.io/?yd=…&ybaip=1&etext=…)
+User-agent: *
+Allow: /
+Clean-param: yd&ybaip&etext&from
