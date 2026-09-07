@@ -114,7 +114,7 @@ const groups = [
   {
     title: 'Бизнес-практика no-code',
     blurb: 'О ценах, кейсах и о том, как считать стоимость владения.',
-    slugs: ['16-pricing-policy'],
+    slugs: ['16-pricing-policy', '25-production-plan-fact'],
   },
   {
     title: 'Основы: информационные системы',
