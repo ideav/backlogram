@@ -1,10 +1,11 @@
-// issue #565 — статья базы знаний № 25 «План, который помнит факт».
+// issue #565 — статья базы знаний № 25 «Один контрагент — три способа на него
+// смотреть» и блог-пост по тому же материалу (vecmory, статья 08 —
+// «Один контрагент, три способа на него смотреть — архитектура вместо костыля»).
 //
-// Материал — из реального дефекта планирования производства (ideav/crm#4885,
-// исправление ideav/crm#4895): выполненная наладка терялась при урегулировании
-// на следующий день. Проверяем, что статья на месте, держит ключевые тезисы
-// (сохранность сделанного, независимость от момента нажатия), ссылается на
-// первоисточники, спутована с блог-постом и попадает в sitemap/llms.txt/OG.
+// Проверяем, что статья на месте, держит ключевые тезисы (запись контрагента
+// одна, взгляды — связи с типами; новый взгляд — строка в справочнике, а не
+// миграция; цена переиграть решение — час), ссылается на первоисточники,
+// спутована с блог-постом и попадает в sitemap/llms.txt/OG и на индекс.
 
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
@@ -17,7 +18,7 @@ const kbDataSource = readFileSync(
 const sitemap = readFileSync(new URL('../public/sitemap.xml', import.meta.url), 'utf8')
 const llms = readFileSync(new URL('../public/llms.txt', import.meta.url), 'utf8')
 const post = readFileSync(
-  new URL('../blog-v2/src/content/posts/plan-pomnit-naladku.md', import.meta.url),
+  new URL('../blog-v2/src/content/posts/odin-kontragent-tri-vzglyada.md', import.meta.url),
   'utf8',
 )
 
@@ -31,66 +32,105 @@ function extractArticleBlock(slug) {
   return kbDataSource.slice(start, end)
 }
 
-test('article #25 publishes the plan-remembers-fact article', () => {
-  const block = extractArticleBlock('25-production-plan-fact')
+test('article #25 publishes the counterparty-three-views article', () => {
+  const block = extractArticleBlock('25-counterparty-three-views')
 
   assert.match(block, /number: '25'/)
-  assert.match(block, /План, который помнит факт/)
-  assert.match(block, /производствен/i)
+  assert.match(block, /Один контрагент — три способа на него смотреть/)
+  assert.match(block, /контрагент/i)
 })
 
-test('article #25 keeps the two key theses of the fix', () => {
-  const block = extractArticleBlock('25-production-plan-fact')
+test('article #25 keeps the key theses: одна запись, взгляды — связи с типами', () => {
+  const block = extractArticleBlock('25-counterparty-three-views')
 
-  // сделанная работа не теряется при переносах
-  assert.match(block, /наладк/i)
-  assert.match(block, /нулевой выработк/i)
-  // результат не зависит от момента нажатия
-  assert.match(block, /не зависит от того, когда нажали кнопк/i)
-  // сходимость «сделано + осталось»
-  assert.match(block, /сделано \+ осталось/)
+  // сущность отдельно от её типизированных связей
+  assert.match(block, /запись контрагента одна, а взгляды отделов — связи с типами/i)
+  assert.match(block, /входит в холдинг по ИНН/)
+  assert.match(block, /заказчик → подразделение/)
+  // три разных взгляда названы поимённо
+  assert.match(block, /бухгалтер/i)
+  assert.match(block, /продаж/i)
+  assert.match(block, /поставщик/i)
 })
 
-test('article #25 describes the flow: факт отмечается, решение за человеком', () => {
-  const block = extractArticleBlock('25-production-plan-fact')
+test('article #25 keeps the numbers: новый взгляд = строка, цена переиграть = час', () => {
+  const block = extractArticleBlock('25-counterparty-three-views')
+
+  // контрольные цифры из первоисточника
+  assert.match(block, /418 типов/)
+  assert.match(block, /133 731/)
+  assert.match(block, /0,16 мс/)
+  assert.match(block, /\+402/)
+  // новый взгляд — строка в справочнике типов, а не миграция
+  assert.match(block, /строка в справочнике/i)
+  assert.match(block, /миграц/i)
+  // цена переиграть решение
+  assert.match(block, /стоит час/i)
+})
+
+test('article #25 describes the flow and the EAV cautionary tale', () => {
+  const block = extractArticleBlock('25-counterparty-three-views')
 
   assert.match(block, /flowDiagram:/)
   assert.match(block, /integramScenario:/)
-  assert.match(block, /Урегулировать/)
-  assert.match(block, /отклонени/i)
-  assert.match(block, /решение остаётся за человеком|Решение принимает человек|человек всё равно решает/i)
+  // три слоя против «свалки из четырёх колонок»
+  assert.match(block, /типы/i)
+  assert.match(block, /контроллер/i)
+  assert.match(block, /индекс/i)
+  // честные ограничения
+  assert.match(block, /договор[её]нност/i)
+  assert.match(block, /переклассификац/i)
 })
 
-test('article #25 cites the real fix and the companion blog post', () => {
-  const block = extractArticleBlock('25-production-plan-fact')
+test('article #25 cites the engineering source and the companion blog post', () => {
+  const block = extractArticleBlock('25-counterparty-three-views')
 
-  assert.match(block, /github\.com\/ideav\/crm\/issues\/4885/)
-  assert.match(block, /github\.com\/ideav\/crm\/pull\/4895/)
-  assert.match(block, /ideav\.ru\/blog\/posts\/plan-pomnit-naladku\//)
-  assert.match(block, /sourceUrl: 'https:\/\/github\.com\/ideav\/backlogram\/issues\/565'/)
+  assert.match(
+    block,
+    /github\.com\/ideav\/python2node\/blob\/main\/packages\/vecmory\/articles\/08-counterparty-three-views\.md/,
+  )
+  assert.match(block, /github\.com\/ideav\/python2node\/issues\/342/)
+  assert.match(block, /ideav\.ru\/blog\/posts\/odin-kontragent-tri-vzglyada\//)
+  assert.match(
+    block,
+    /sourceUrl: 'https:\/\/github\.com\/ideav\/python2node\/blob\/main\/packages\/vecmory\/articles\/08-counterparty-three-views\.md'/,
+  )
 })
 
-test('article #25 is grouped, sitemapped and listed in llms.txt', () => {
+test('article #25 is grouped, sitemapped, listed in llms.txt and has an OG card', () => {
   const prerenderSource = readFileSync(
     new URL('../scripts/prerender-knowledge-base.mjs', import.meta.url),
     'utf8',
   )
 
-  assert.match(prerenderSource, /'25-production-plan-fact'/)
-  assert.match(sitemap, /knowledge-base\/25-production-plan-fact\.html/)
-  assert.match(llms, /knowledge-base\/25-production-plan-fact\.html/)
+  // группа «Реляционные данные: Airtable и Notion»
+  const relationalGroup = prerenderSource.slice(
+    prerenderSource.indexOf("'04-related-tables'"),
+    prerenderSource.indexOf('Альтернатива заказной разработке'),
+  )
+  assert.match(relationalGroup, /'25-counterparty-three-views'/)
+  assert.doesNotMatch(prerenderSource, /'25-production-plan-fact'/)
+  assert.match(sitemap, /knowledge-base\/25-counterparty-three-views\.html/)
+  assert.doesNotMatch(sitemap, /25-production-plan-fact/)
+  assert.match(llms, /knowledge-base\/25-counterparty-three-views\.html/)
+  assert.doesNotMatch(llms, /25-production-plan-fact/)
   assert.ok(
-    existsSync(new URL('../public/og/25-production-plan-fact.png', import.meta.url)),
-    'expected public/og/25-production-plan-fact.png to be committed',
+    existsSync(new URL('../public/og/25-counterparty-three-views.png', import.meta.url)),
+    'expected public/og/25-counterparty-three-views.png to be committed',
   )
 })
 
 test('the companion blog post is published and points at the knowledge-base article', () => {
-  assert.match(post, /^title: "Вечером план помнил наладку/m)
+  assert.match(post, /^title: "Бухгалтерия, продажи и закупки спорят/m)
   assert.match(post, /^pubDate: '2026-09-07'$/m)
   assert.match(post, /^category: "О платформе"$/m)
   assert.doesNotMatch(post, /^draft:\s*true/m)
   assert.doesNotMatch(post, /^canonical:/m)
-  assert.match(post, /knowledge-base\/25-production-plan-fact\.html/)
-  assert.match(post, /github\.com\/ideav\/crm\/issues\/4885/)
+  // скаляр с двоеточием не должен остаться без кавычек (issue #284)
+  assert.doesNotMatch(post, /^description: [^"']/m)
+  assert.match(post, /knowledge-base\/25-counterparty-three-views\.html/)
+  assert.match(
+    post,
+    /github\.com\/ideav\/python2node\/blob\/main\/packages\/vecmory\/articles\/08-counterparty-three-views\.md/,
+  )
 })

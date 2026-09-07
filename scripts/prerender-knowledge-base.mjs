@@ -76,7 +76,12 @@ const groups = [
     title: 'Реляционные данные: Airtable и Notion',
     blurb:
       'Когда между сущностями появляются связи, фильтры на уровне строк и нужна предсказуемая работа на сотнях тысяч записей.',
-    slugs: ['04-related-tables', '06-airtable-control', '07-notion-relational-data'],
+    slugs: [
+      '04-related-tables',
+      '06-airtable-control',
+      '07-notion-relational-data',
+      '25-counterparty-three-views',
+    ],
   },
   {
     title: 'Права доступа и контроль данных',
@@ -114,7 +119,7 @@ const groups = [
   {
     title: 'Бизнес-практика no-code',
     blurb: 'О ценах, кейсах и о том, как считать стоимость владения.',
-    slugs: ['16-pricing-policy', '25-production-plan-fact'],
+    slugs: ['16-pricing-policy'],
   },
   {
     title: 'Основы: информационные системы',
