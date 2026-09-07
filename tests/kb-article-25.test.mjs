@@ -134,3 +134,28 @@ test('the companion blog post is published and points at the knowledge-base arti
     /github\.com\/ideav\/python2node\/blob\/main\/packages\/vecmory\/articles\/08-counterparty-three-views\.md/,
   )
 })
+
+test('the blog post uses the images from the vecmory 08 article', () => {
+  // КДПВ — и как обложка (frontmatter image), и в тексте
+  assert.match(post, /^image: \/uploads\/kontragent-tri-vzglyada-kdpv\.png$/m)
+  assert.match(post, /!\[[^\]]*\]\(\/uploads\/kontragent-tri-vzglyada-kdpv\.png\)/)
+  // инфографика «цена четвёртого взгляда» — в разделе про строку в справочнике
+  assert.match(post, /!\[[^\]]*\]\(\/uploads\/kontragent-tri-vzglyada-infografika\.png\)/)
+
+  for (const file of [
+    'kontragent-tri-vzglyada-kdpv.png',
+    'kontragent-tri-vzglyada-infografika.png',
+  ]) {
+    assert.ok(
+      existsSync(new URL(`../blog-v2/public/uploads/${file}`, import.meta.url)),
+      `expected blog-v2/public/uploads/${file} to be committed`,
+    )
+  }
+
+  // alt-тексты несут содержание, а не «enter image description here»
+  const alts = [...post.matchAll(/!\[([^\]]*)\]\(\/uploads\//g)].map((m) => m[1])
+  for (const alt of alts) {
+    assert.ok(alt.length > 40, `image alt should be descriptive, got: "${alt}"`)
+    assert.doesNotMatch(alt, /enter image description/i)
+  }
+})
