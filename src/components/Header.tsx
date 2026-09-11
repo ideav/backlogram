@@ -134,15 +134,32 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation.
+          max-h + overflow: шапка fixed, меню живёт внутри неё и страницей не
+          прокручивается — семь крупных пунктов и «Ещё» выталкивали низ блока за
+          экран, и кнопка «Войти» была недостижима (issue #572). Высота ограничена
+          вьюпортом без шапки (h-16 = 4rem), остальное скроллится внутри. */}
       {isOpen && (
         <motion.div
           id="mobile-nav"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800"
+          className="lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 max-h-[calc(100dvh-4rem)] overflow-y-auto"
         >
           <div className="px-4 pt-2 pb-6 space-y-1">
+            {/* «Войти» — первой строкой: ради неё меню и открывают, а внизу списка
+                она оказывалась за краем экрана (issue #572). */}
+            <div className="pt-2 pb-3 px-3">
+              <a
+                href="https://ideav.ru/start.html"
+                target="start"
+                rel="noopener noreferrer"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-center w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg"
+              >
+                Войти
+              </a>
+            </div>
             {navLinks.map((link) => (
               <a
                 key={link.name}
@@ -186,17 +203,6 @@ export function Header() {
               )}
             </div>
 
-            <div className="pt-4 px-3">
-              <a
-                href="https://ideav.ru/start.html"
-                target="start"
-                rel="noopener noreferrer"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center justify-center w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg"
-              >
-                Войти
-              </a>
-            </div>
           </div>
         </motion.div>
       )}
