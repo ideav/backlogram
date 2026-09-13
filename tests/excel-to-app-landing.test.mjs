@@ -9,9 +9,11 @@ const routerSource = read('../src/router.tsx')
 const homeSource = read('../src/pages/Home.tsx')
 const headerSource = read('../src/components/Header.tsx')
 const sitemapSource = read('../public/sitemap.xml')
+const backendSource = read('../public/excel-to-app.php')
 
 test('the /excel-to-app.html route is registered and renders ExcelToApp', () => {
-  assert.match(routerSource, /import ExcelToApp from '\.\/pages\/ExcelToApp'/)
+  // Страница грузится лениво (code-splitting, issue #451), а не статическим импортом.
+  assert.match(routerSource, /const ExcelToApp = lazy\(\(\) => import\('\.\/pages\/ExcelToApp'\)\)/)
   assert.match(
     routerSource,
     /path:\s*'excel-to-app\.html',\s*\n\s*element:\s*<ExcelToApp \/>/,
@@ -73,6 +75,46 @@ test('the landing offers the @Integrammbot Telegram shortcut next to the upload 
   assert.match(pageSource, /href=\{TELEGRAM_BOT_URL\}/)
   assert.match(pageSource, /Открыть в Telegram-боте/)
   assert.match(pageSource, /@Integrammbot/)
+})
+
+test('the landing sells the paid process analysis as the next step', () => {
+  assert.match(pageSource, /const ANALYSIS_PRICE = '20 000 ₽'/)
+  const section = pageSource.match(/<section\s+id="razbor"\s+className="([^"]+)"/)
+  assert.ok(section, 'expected an offer section with id="razbor"')
+  assert.match(section[1], /(?:^|\s)scroll-mt-\d+(?:\s|$)/)
+  assert.match(pageSource, /Разбор процесса/)
+  assert.match(pageSource, /\{ANALYSIS_PRICE\}/)
+})
+
+test('the landing no longer advertises the retail self-serve tariffs', () => {
+  // Розничные 1 950 / 5 950 ₽/мес уводили разговор от проекта к коробке.
+  // Оплата 12 500 ₽ живёт только в секции за якорем #12500 и здесь не проверяется.
+  assert.doesNotMatch(pageSource, /1 ?950 рублей в месяц/)
+  assert.doesNotMatch(pageSource, /5950 рублей в месяц/)
+})
+
+test('the landing file limits stay within what the backend accepts', () => {
+  // Расхождение молча роняло заявку уже после загрузки: браузер пропускал файл,
+  // сервер его отбивал.
+  const landingMax = pageSource.match(/const MAX_FILE_BYTES = (\d+) \* 1024 \* 1024/)
+  const backendMax = backendSource.match(/INTAKE_UPLOAD_MAX_BYTES',\s*\(string\)\s*\((\d+) \* 1024 \* 1024\)/)
+  assert.ok(landingMax, 'expected MAX_FILE_BYTES on the landing')
+  assert.ok(backendMax, 'expected the INTAKE_UPLOAD_MAX_BYTES default in the backend')
+  assert.ok(
+    Number(landingMax[1]) <= Number(backendMax[1]),
+    `landing allows ${landingMax[1]} MB but the backend default accepts ${backendMax[1]} MB`,
+  )
+
+  const landingExt = pageSource.match(/const ACCEPTED_EXTENSIONS = \[([^\]]+)\]/)
+  const backendExt = backendSource.match(/INTAKE_ALLOWED_EXT',\s*'([^']+)'/)
+  assert.ok(landingExt, 'expected ACCEPTED_EXTENSIONS on the landing')
+  assert.ok(backendExt, 'expected the INTAKE_ALLOWED_EXT default in the backend')
+  const allowed = backendExt[1].split(',').map(s => s.trim())
+  for (const raw of landingExt[1].split(',')) {
+    const ext = raw.trim().replace(/^'\./, '').replace(/'$/, '')
+    if (!ext) continue
+    assert.ok(allowed.includes(ext), `landing accepts .${ext} but the backend default rejects it`)
+  }
 })
 
 test('the landing form anchor has scroll margin for the fixed header', () => {

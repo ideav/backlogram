@@ -101,7 +101,9 @@ if ($contact === '') {
 // ── Collect uploaded files ────────────────────────────────────────────────────
 $maxBytes   = (int) intake_config('INTAKE_UPLOAD_MAX_BYTES', (string) (10 * 1024 * 1024));
 $maxFiles   = (int) intake_config('INTAKE_UPLOAD_MAX_FILES', '10');
-$allowedExt = array_filter(array_map('trim', explode(',', (string) intake_config('INTAKE_ALLOWED_EXT', 'xlsx,xls,csv,ods'))));
+// xlsm — рабочие книги с макросами; на производстве присылают именно их,
+// а лендинг их принимал, пока сервер отбивал.
+$allowedExt = array_filter(array_map('trim', explode(',', (string) intake_config('INTAKE_ALLOWED_EXT', 'xlsx,xls,xlsm,csv,ods'))));
 
 $uploads = intake_collect_uploads($_FILES);
 if (count($uploads) > $maxFiles) {
