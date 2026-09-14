@@ -24,6 +24,7 @@ import {
   Eye,
   TrendingUp,
   AlertTriangle,
+  ClipboardList,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs'
@@ -53,8 +54,13 @@ const TELEGRAM_BOT_URL = 'https://t.me/Integrammbot'
 
 const ACCEPTED_EXTENSIONS = ['.xls', '.xlsx', '.xlsm', '.csv', '.ods']
 const ACCEPT_ATTR = ACCEPTED_EXTENSIONS.join(',')
-const MAX_FILE_BYTES = 25 * 1024 * 1024
+// Держим в тех же рамках, что INTAKE_UPLOAD_MAX_BYTES / INTAKE_ALLOWED_EXT
+// в public/excel-to-app.php — иначе файл проходит проверку в браузере и
+// отбивается сервером уже после загрузки.
+const MAX_FILE_BYTES = 10 * 1024 * 1024
 const MAX_FILES = 10
+
+const ANALYSIS_PRICE = '20 000 ₽'
 
 const PAYMENT_HASH = '#12500'
 const PAYMENT_CHECKOUT_URL = 'https://checkout.tochka.com/cc7f594c-58a5-4ada-8c13-91b678ac2868'
@@ -287,7 +293,7 @@ export default function ExcelToApp() {
     {
       icon: <UploadCloud size={22} />,
       title: 'Загружаете Excel',
-      text: 'Один или несколько файлов — прайсы, склад, клиенты, заказы. Как есть, без подготовки.',
+      text: 'Сменные отчёты, заявки, склад, спецификации, акты. Как есть, без подготовки.',
     },
     {
       icon: <MessageSquare size={22} />,
@@ -297,7 +303,12 @@ export default function ExcelToApp() {
     {
       icon: <Sparkles size={22} />,
       title: 'Получаете приложение',
-      text: 'Через ~45 минут пришлём ссылку на готовую базу Интеграм с вашими данными.',
+      text: 'Через ~45 минут пришлём ссылку на готовую базу Интеграм с вашими данными. Бесплатно.',
+    },
+    {
+      icon: <ClipboardList size={22} />,
+      title: 'Разбираем процесс',
+      text: 'Дальше — по желанию: два интервью и техническое задание, по которому систему можно внедрять и развивать.',
     },
   ]
 
@@ -310,8 +321,8 @@ export default function ExcelToApp() {
       winner: 'integram' as const,
     },
     {
-      label: 'Бюджет (MVP)',
-      integram: '12 500 ₽',
+      label: 'Бюджет на старте',
+      integram: `Демонстрация бесплатно, разбор с ТЗ — ${ANALYSIS_PRICE}`,
       saas: 'от 50 000 ₽ + подписки',
       custom: 'от 1 500 000 ₽',
       winner: 'integram' as const,
@@ -529,11 +540,11 @@ export default function ExcelToApp() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="max-w-3xl mx-auto text-lg md:text-xl text-slate-600 dark:text-slate-300 leading-relaxed mb-10"
           >
-            Пришлите свои таблицы и пару слов о задаче. Мы превратим их в работающее
-            веб-приложение на платформе Интеграм — быстрее, чем вы найдёте фрилансера.
-            Никаких формул, макросов и настройки — только готовый результат со ссылкой.
-            На выходе — аналог Excel для командной работы: те же данные, но с формами,
-            правами доступа и отчётами.
+            Пришлите таблицы, по которым живёт ваш участок, склад или объект, и пару
+            слов о задаче. Мы превратим их в работающее веб-приложение на платформе
+            Интеграм — быстрее, чем вы найдёте фрилансера. На выходе — аналог Excel
+            для командной работы: те же данные, но с формами, правами доступа
+            и отчётами. Демонстрация бесплатна.
           </motion.p>
 
           <motion.div
@@ -759,12 +770,23 @@ export default function ExcelToApp() {
                   </h2>
                   <p className="text-slate-500 dark:text-slate-400 text-lg leading-relaxed">
                     Мы уже взялись за ваши файлы. Примерно через 45 минут пришлём ссылку на
-                    готовую базу Интеграм на указанный контакт.
+                    готовую базу Интеграм на указанный контакт. Через{' '}
+                    <a
+                      href={TELEGRAM_BOT_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      @Integrammbot
+                    </a>{' '}
+                    ссылка приходит прямо в чат и не теряется в спаме — напишите нам туда,
+                    если через час ничего не пришло.
                   </p>
                   <div className="mt-4 p-4 rounded-xl bg-blue-50 dark:bg-blue-950/30 text-sm text-blue-700 dark:text-blue-300 text-left">
                     <strong>Что будет дальше:</strong> вы получите реляционную базу данных, рабочие
-                    места для сотрудников и бизнес-логику, готовую к использованию. Всё это будет
-                    доступно по ссылке в вашем браузере или телефоне.
+                    места для сотрудников и бизнес-логику, готовую к использованию — бесплатно и
+                    без обязательств. Если захотите довести это до системы, которую можно внедрять,
+                    следующий шаг — <a href="#razbor" className="underline font-semibold">разбор процесса с ТЗ</a>.
                   </div>
                 </div>
                 <button
@@ -780,7 +802,9 @@ export default function ExcelToApp() {
                 <div>
                   <h2 className="text-2xl md:text-3xl font-bold mb-2">Загрузите свои таблицы</h2>
                   <p className="text-slate-500 dark:text-slate-400">
-                    Excel, CSV или Google Sheets-экспорт. Всё остальное сделаем мы.
+                    Excel, CSV или Google Sheets-экспорт — сменные отчёты, заявки, склад,
+                    спецификации. Чем ближе файл к реальной работе участка, тем толковее
+                    получится приложение.
                   </p>
                 </div>
 
@@ -955,29 +979,82 @@ export default function ExcelToApp() {
         <p className="text-center text-base text-slate-600 dark:text-slate-300 leading-relaxed">
           Приложение будет в виде схемы данных, основных рабочих мест и базовых
           действий, которые описаны в вашем ТЗ или могут быть из него однозначно
-          поняты. Вы сможете сразу его протестировать и потом забрать себе
-          за 12 500 ₽. В первый месяц вам доступны доработки вашего проекта с
-          использованием ИИ-агента. Дальнейшее использование ИИ-агента —
-          дополнительно 5950 рублей в месяц к{' '}
-          <a
-            href="https://ideav.ru/start.html#tarif"
-            className="text-blue-600 dark:text-blue-400 hover:underline"
-          >
-            основному тарифу
-          </a>
-          .
-        </p>
-        <p className="mt-4 text-center text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-          Стоимость владения этой базой согласно{' '}
-          <a
-            href="https://ideav.ru/start.html#tarif"
-            className="text-blue-600 dark:text-blue-400 hover:underline"
-          >
-            тарифам ideav.ru
-          </a>{' '}
-          — от 1950 рублей в месяц.
+          поняты. Это бесплатно: посмотрите на свои данные в работе и решайте
+          дальше сами.
         </p>
       </div>
+
+      {/* Платный первый шаг: разбор процесса с ТЗ на выходе */}
+      <section id="razbor" className="scroll-mt-24 py-20 border-t border-slate-200 dark:border-slate-900 bg-slate-50/60 dark:bg-slate-900/30">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 text-blue-600 dark:text-blue-400 text-sm font-medium mb-4">
+              <ClipboardList size={14} />
+              Следующий шаг
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Что происходит на 46-й минуте</h2>
+            <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+              За 45 минут агент переносит в приложение то, что уже есть в ваших таблицах.
+              Чего в них нет — того он не придумает: где кончается зона мастера и начинается
+              зона снабженца, какие статусы у заказа, что видит директор, а что не должен.
+              Это вытаскивается из разговора, а не из файла.
+            </p>
+          </div>
+
+          <div className="rounded-2xl sm:rounded-3xl border border-blue-500/30 bg-white dark:bg-slate-950 shadow-xl dark:shadow-2xl px-4 py-8 sm:p-10">
+            <h3 className="text-2xl font-bold mb-2">Разбор процесса</h3>
+            <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+              Два интервью с теми, кто работает в процессе. На выходе — техническое задание,
+              по которому систему можно внедрять: своими силами, нашими или чьими угодно.
+              Документ остаётся вашим в любом случае.
+            </p>
+
+            <ul className="space-y-3 mb-8">
+              {[
+                'Границы проекта: что входит в первый этап, а что сознательно оставлено на потом',
+                'Модель данных — справочники, связи, вычисляемые показатели',
+                'Роли и права: кто что видит и кто что может менять',
+                'Рабочие места под каждую роль — от планшета в цеху до дашборда руководителя',
+                'Приёмочный сценарий и критерии приёмки: по чему считать, что работа сделана',
+                'Дорожная карта следующих этапов поверх готовой модели, без её переделки',
+              ].map((item, i) => (
+                <li key={i} className="flex items-start gap-3 text-slate-600 dark:text-slate-300">
+                  <CheckCircle2 size={20} className="text-blue-500 shrink-0 mt-0.5" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-6 border-t border-slate-200 dark:border-slate-800">
+              <div>
+                <div className="text-3xl font-bold text-slate-900 dark:text-white">{ANALYSIS_PRICE}</div>
+                <div className="text-sm text-slate-500 dark:text-slate-400">фиксированная цена, срок — несколько дней</div>
+              </div>
+              <a
+                href={TELEGRAM_BOT_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="sm:ml-auto w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all inline-flex items-center justify-center gap-2 group"
+              >
+                <Send size={18} />
+                Обсудить разбор
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </a>
+            </div>
+          </div>
+
+          <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+            Хостинг готовой базы — по{' '}
+            <a
+              href="https://ideav.ru/start.html#tarif"
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              тарифам ideav.ru
+            </a>
+            . Разработку можно вести и на своём сервере.
+          </p>
+        </div>
+      </section>
 
       {/* Comparison with foreign agent-platforms (business language) */}
       <section className="py-16 border-t border-slate-200 dark:border-slate-900 bg-slate-50/60 dark:bg-slate-900/30">
