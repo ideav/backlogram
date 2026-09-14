@@ -14,7 +14,9 @@ export function Header() {
     { name: 'Технология', href: '/#technology' },
     { name: 'Как работаем', href: '/#process' },
     { name: 'Примеры', href: '/#cases' },
-    { name: 'Цены', href: '/#pricing' },
+    // #578: пункт ведёт на каталог услуг с ценами, а не на якорь главной —
+    // Яндексу нужна отдельная страница услуг, чтобы считать сайт «сайтом услуг».
+    { name: 'Услуги и цены', href: '/uslugi.html' },
     { name: 'Больше CRM', href: '/sravnenie-s-bitrix-amocrm.html' },
     { name: 'База знаний', href: '/knowledge-base.html' },
     { name: 'Блог', href: 'https://ideav.ru/blog/', external: true },

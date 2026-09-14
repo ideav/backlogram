@@ -32,6 +32,8 @@ export function Footer() {
               <li><a href="/#process" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Схема работы</a></li>
               <li><a href="/#cases" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Примеры</a></li>
               <li><a href="/#pricing" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Стоимость</a></li>
+              {/* #578: каталог услуг с ценами — сигнал «сайта услуг» для Яндекса. */}
+              <li><Link to="/uslugi.html" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Услуги и цены</Link></li>
             </ul>
           </div>
 
@@ -80,7 +82,8 @@ export function Footer() {
 
         <div className="pt-8 border-t border-slate-200 dark:border-slate-900 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-slate-400 dark:text-slate-500 text-xs">
-            © {currentYear} АО «Интеграм». Все права защищены.
+            {/* Реквизиты на каждой странице — коммерческий сигнал для Яндекса (issue #578). */}
+            © {currentYear} АО «Интеграм». Все права защищены. · ИНН 9716002710 · ОГРН 1247700757590
           </div>
           <div className="text-slate-400 dark:text-slate-500 text-xs italic">
             Не только замена Excel. Промышленный инструмент ускорения разработки.

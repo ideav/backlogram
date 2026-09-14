@@ -26,6 +26,8 @@ const UseCaseLanding = lazy(() => import('./pages/UseCaseLanding'))
 const UseCaseHub = lazy(() => import('./pages/UseCaseHub'))
 const Privacy = lazy(() => import('./pages/Privacy'))
 const Terms = lazy(() => import('./pages/Terms'))
+// #578: каталог услуг с ценами — коммерческие сигналы для рейтинга в Яндексе.
+const Services = lazy(() => import('./pages/Services'))
 
 export const router = createBrowserRouter([
   {
@@ -134,6 +136,15 @@ export const router = createBrowserRouter([
       {
         path: 'terms',
         element: <Terms />,
+      },
+      // Каталог услуг с ценами (issue #578) — сигналы «сайта услуг» для Яндекса.
+      {
+        path: 'uslugi.html',
+        element: <Services />,
+      },
+      {
+        path: 'uslugi',
+        element: <Services />,
       },
       // Хаб тематических решений (issue #431)
       {
