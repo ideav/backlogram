@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-en
+dist-excel
 dist-ssr
 *.local
 
@@ -37,3 +38,6 @@ dist-ssr
 
 # Telegram bot credentials (copy from telegram-config.example.php and fill in values)
 public/telegram-config.php
+
+# Настройки приёма заявок лендинга на отдельном домене (токен бота, почта)
+site-excel/public/order-config.php
