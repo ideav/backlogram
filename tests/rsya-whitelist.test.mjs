@@ -8,7 +8,7 @@ import {
   normalizePlacement,
   planExclusions,
 } from '../scripts/direct-rsya-whitelist-sync.mjs'
-import { storedExclusions, trustedGroups } from '../scripts/direct-create-trusted-rsya-campaign.mjs'
+import { bidModifiers, storedExclusions, trustedGroups } from '../scripts/direct-create-trusted-rsya-campaign.mjs'
 
 const read = (p) => readFileSync(new URL(p, import.meta.url), 'utf8')
 const whitelist = JSON.parse(read('../docs/marketing/rsya-whitelist.json'))
@@ -95,4 +95,25 @@ test('в традиционную кампанию мусорные ключи �
 
 test('без сохранённого списка кампания стартует с пустым запретом', () => {
   assert.deepEqual(storedExclusions('нет-такого-файла.json'), [])
+})
+
+test('корректировки по устройствам выключают мобильный инвентарь, десктоп остаётся', () => {
+  // 696 из 990 площадок в отчёте — мобильные приложения; они живут только на
+  // смартфонах и планшетах, поэтому одна корректировка заменяет 696 строк
+  // чёрного списка. Обнулять заодно и десктоп нельзя — API отбивает.
+  const modifiers = bidModifiers(123, { mobilePct: 0, tabletPct: 0, blockRetargetingId: 0 })
+  assert.equal(modifiers.length, 2)
+  assert.equal(modifiers[0].MobileAdjustment.BidModifier, 0)
+  assert.equal(modifiers[1].TabletAdjustment.BidModifier, 0)
+  assert.ok(modifiers.every(m => !('DesktopAdjustment' in m)))
+})
+
+test('сегмент-блокировка добавляется только когда задано условие ретаргетинга', () => {
+  const without = bidModifiers(123, { mobilePct: 50, tabletPct: 50, blockRetargetingId: 0 })
+  assert.equal(without.length, 2)
+
+  const withSegment = bidModifiers(123, { mobilePct: 50, tabletPct: 50, blockRetargetingId: 777 })
+  const retargeting = withSegment.at(-1).RetargetingAdjustment
+  assert.equal(retargeting.RetargetingConditionId, 777)
+  assert.equal(retargeting.BidModifier, 0, 'сегмент отсекается полностью, а не понижается')
 })

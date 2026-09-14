@@ -21,7 +21,9 @@
  *
  * Окружение: DIRECT_TOKEN, SITE_URL, METRIKA_ID, GOAL_ID (цель для отчётности),
  * NETWORK_CPC_RUB (средняя цена клика, по умолчанию 25), WEEKLY_RUB (недельный
- * лимит, по умолчанию 7000).
+ * лимит, по умолчанию 7000), MOBILE_PCT / TABLET_PCT (корректировки по
+ * устройствам, по умолчанию 0 — показов на них нет), BLOCK_RETARGETING_ID
+ * (условие ретаргетинга из сегмента Метрики, которому ставим 0 %).
  */
 
 import { existsSync, readFileSync } from 'node:fs'
@@ -49,6 +51,39 @@ const cfg = {
   goalId: Number(process.env.GOAL_ID ?? 0),
   cpcRub: Number(process.env.NETWORK_CPC_RUB ?? 25),
   weeklyRub: Number(process.env.WEEKLY_RUB ?? 7000),
+  // Корректировки по устройствам, % от ставки. 0 = показов нет вовсе.
+  // По умолчанию мобильные и планшеты выключены: 696 из 990 площадок в
+  // отчёте — мобильные приложения (com.fungames.blockcraft и родня), а они
+  // существуют только на этих устройствах. Одна корректировка убирает их
+  // целиком и освобождает лимит запрета под настоящие сайты.
+  mobilePct: Number(process.env.MOBILE_PCT ?? 0),
+  tabletPct: Number(process.env.TABLET_PCT ?? 0),
+  // Условие ретаргетинга из сегмента Метрики («мусорные» визиты или
+  // достигшие цели-ловушки). 0 % по нему = не показывать этим людям.
+  blockRetargetingId: Number(process.env.BLOCK_RETARGETING_ID ?? 0),
+}
+
+/**
+ * Корректировки уровня кампании.
+ *
+ * Ограничение Директа: в одной группе нельзя одновременно обнулить мобильные и
+ * десктоп — кампания осталась бы без показов вообще, и API такое отбивает.
+ */
+export function bidModifiers(campaignId, config = cfg) {
+  const modifiers = [
+    { CampaignId: campaignId, MobileAdjustment: { BidModifier: config.mobilePct } },
+    { CampaignId: campaignId, TabletAdjustment: { BidModifier: config.tabletPct } },
+  ]
+  if (config.blockRetargetingId) {
+    modifiers.push({
+      CampaignId: campaignId,
+      RetargetingAdjustment: {
+        RetargetingConditionId: config.blockRetargetingId,
+        BidModifier: 0,
+      },
+    })
+  }
+  return modifiers
 }
 
 /** Группы без мусорной: за клики платим деньгами. */
@@ -140,6 +175,17 @@ async function main() {
   const added = await call('campaigns', 'add', { Campaigns: [campaignPayload(excluded)] })
   const [campaignId] = apply ? idsOf(added, 'AddResults') : ['<id кампании>']
   console.log(`кампания: ${campaignId}`)
+
+  console.log(
+    `корректировки: смартфоны ${cfg.mobilePct} %, планшеты ${cfg.tabletPct} %` +
+      (cfg.blockRetargetingId ? `, сегмент ${cfg.blockRetargetingId} — 0 %` : ''),
+  )
+  if (cfg.mobilePct === 0 && cfg.tabletPct === 0) {
+    // Замер по РСЯ-кампаниям за июль–сентябрь: desktop дал 10 кликов из 1065.
+    console.warn('  ВНИМАНИЕ: остаётся только десктоп. В текущих кампаниях это ~1 % трафика.')
+    console.warn('  Так и задумано для доверенных площадок, но показов будет мало и они будут дорогими.')
+  }
+  await call('bidmodifiers', 'add', { BidModifiers: bidModifiers(campaignId) })
 
   for (const group of trustedGroups(groups)) {
     const groupAdded = await call('adgroups', 'add', {
