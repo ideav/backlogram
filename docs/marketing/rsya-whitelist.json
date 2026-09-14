@@ -1,0 +1,24 @@
+{
+  "_comment": "Белый список площадок РСЯ. Всё, чего здесь нет, считается мусором и уезжает в запрещённые площадки кампании (scripts/direct-rsya-whitelist-sync.mjs). Поддомены разрешаются автоматически: habr.com разрешает и m.habr.com. Список пополняется владельцем — см. docs/marketing/rsya-trusted-placements.md.",
+  "allow": [
+    "rbc.ru",
+    "habr.com",
+    "avito.ru",
+    "kommersant.ru",
+    "vedomosti.ru",
+    "forbes.ru",
+    "iz.ru",
+    "lenta.ru",
+    "ria.ru",
+    "interfax.ru",
+    "cnews.ru",
+    "tadviser.ru",
+    "vc.ru",
+    "hh.ru",
+    "banki.ru",
+    "drom.ru",
+    "auto.ru",
+    "kinopoisk.ru"
+  ],
+  "_allowNote": "Стартовый набор, а не решение: РБК, Авито и Хабр названы владельцем, остальные добавлены как однотипные деловые и отраслевые площадки. Список ждёт полной версии от владельца — всё лишнее вычеркнуть, недостающее дописать."
+}
