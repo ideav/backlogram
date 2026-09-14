@@ -42,6 +42,10 @@ DirectoryIndex index.html
   # вместо документа. Правило обязано стоять ВЫШЕ front controller.
   RewriteRule ^privacy/?$ /privacy.html [R=301,L]
 
+  # /uslugi → /uslugi.html (issue #578): без правила безрасширенный путь ушёл бы
+  # front controller'ом в движок Интеграма как имя базы «uslugi».
+  RewriteRule ^uslugi/?$ /uslugi.html [R=301,L]
+
   # Front controller: real files/dirs served as-is; everything else → index.php.
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
