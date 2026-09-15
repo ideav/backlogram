@@ -28,7 +28,8 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
-const API = 'https://api.direct.yandex.com/json/v5'
+import { call as apiCall } from './lib/direct-api.mjs'
+
 const MICRO = 1_000_000
 const REGION_RUSSIA = 225
 
@@ -146,20 +147,7 @@ async function call(service, method, params) {
     // видно всю цепочку запросов, а не только первый.
     return { dryRun: true }
   }
-  const response = await fetch(`${API}/${service}`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${cfg.token}`,
-      'Accept-Language': 'ru',
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-    body,
-  })
-  const payload = await response.json()
-  if (payload.error) {
-    throw new Error(`${service}.${method}: ${payload.error.error_string} — ${payload.error.error_detail}`)
-  }
-  return payload.result
+  return apiCall(service, method, params, cfg.token)
 }
 
 /** Из ответа Директа достаёт id, попутно показывая предупреждения. */
