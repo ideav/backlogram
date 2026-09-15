@@ -10,6 +10,9 @@
 
 header('Content-Type: application/json');
 
+// Общие хелперы (лимиты вложений, sendDocument) — issue #399.
+require_once __DIR__ . '/intake-shared.php';
+
 // ── Same-host verification ────────────────────────────────────────────────────
 // Compare the HTTP_REFERER origin against the current server host.
 // Requests without a Referer header or from a different host are rejected.
@@ -118,6 +121,49 @@ if ($contact === '' && $task === '') {
     exit;
 }
 
+// ── Вложения (issue #399) ─────────────────────────────────────────────────────
+// Файлы формы пересылаются этим же ботом прямо в Telegram-чат заявок
+// (sendDocument), чтобы их не приходилось выкачивать и копировать руками.
+$maxFiles   = (int) intake_config('INTAKE_UPLOAD_MAX_FILES', '10');
+$maxBytes   = (int) intake_config('INTAKE_UPLOAD_MAX_BYTES', (string) (10 * 1024 * 1024));
+$allowedExt = array_values(array_filter(array_map('trim', explode(',', strtolower(
+    (string) intake_config('NOTIFY_ALLOWED_EXT', 'xlsx,xls,csv,ods,doc,docx,pdf,png,jpg,jpeg,txt')
+)))));
+
+$attachments = []; // [{tmp, name, size}]
+if (!empty($_FILES['files'])) {
+    $f     = $_FILES['files'];
+    $names = is_array($f['name'])     ? $f['name']     : [$f['name']];
+    $tmps  = is_array($f['tmp_name']) ? $f['tmp_name'] : [$f['tmp_name']];
+    $sizes = is_array($f['size'])     ? $f['size']     : [$f['size']];
+    $errs  = is_array($f['error'])    ? $f['error']    : [$f['error']];
+
+    if (count($names) > $maxFiles) {
+        http_response_code(400);
+        echo json_encode(['ok' => false, 'error' => "Не больше $maxFiles файлов на заявку."]);
+        exit;
+    }
+    foreach ($names as $i => $origName) {
+        $err = $errs[$i] ?? UPLOAD_ERR_NO_FILE;
+        if ($err === UPLOAD_ERR_NO_FILE) continue;
+        $size = (int) ($sizes[$i] ?? 0);
+        if ($err !== UPLOAD_ERR_OK
+            || !is_uploaded_file((string) ($tmps[$i] ?? ''))
+            || !intake_is_allowed_upload((string) $origName, $size, $maxBytes, $allowedExt)) {
+            http_response_code(400);
+            echo json_encode([
+                'ok'    => false,
+                'error' => 'Файл «' . $origName . '» не принят: до ' . round($maxBytes / 1048576) . ' МБ, форматы ' . implode(', ', $allowedExt) . '.',
+            ]);
+            exit;
+        }
+        // Имя оставляем человекочитаемым (кириллица ок для Telegram) — режем
+        // только пути и управляющие символы.
+        $safeName = trim(preg_replace('/[\x00-\x1F]+/', ' ', basename(str_replace('\\', '/', (string) $origName))));
+        $attachments[] = ['tmp' => (string) $tmps[$i], 'name' => $safeName !== '' ? $safeName : 'file', 'size' => $size];
+    }
+}
+
 // ── Build Telegram message ────────────────────────────────────────────────────
 function esc(string $text): string {
     // Escape MarkdownV2 special characters.
@@ -131,6 +177,7 @@ if ($name !== '')    $lines[] = "👤 *Имя:* " . esc($name);
 if ($company !== '') $lines[] = "🏢 *Компания:* " . esc($company);
 if ($contact !== '') $lines[] = "📬 *Контакт:* " . esc($contact);
 if ($task !== '')    $lines[] = "📝 *Задача:*\n" . esc($task);
+if ($attachments)    $lines[] = "📎 *Файлы:* " . esc(count($attachments) . ' шт — придут следом');
 
 $message = implode("\n", $lines);
 
@@ -174,4 +221,28 @@ if ($http_code !== 200 || empty($tg_response['ok'])) {
     exit;
 }
 
-echo json_encode(['ok' => true, 'message' => 'Сообщение отправлено.']);
+// ── Пересылка вложений тем же ботом (sendDocument) ───────────────────────────
+$files_sent = 0;
+$files_failed = [];
+foreach ($attachments as $a) {
+    $caption = 'Файл к заявке' . ($contact !== '' ? ' от ' . $contact : '');
+    $doc = intake_telegram_send_document(TELEGRAM_BOT_TOKEN, (string) TELEGRAM_CHAT_ID, $a['tmp'], $a['name'], $caption, $base);
+    if ($doc['ok']) {
+        $files_sent++;
+    } else {
+        $files_failed[] = $a['name'];
+    }
+}
+
+if ($files_failed) {
+    // Текст заявки уже ушёл — не валим запрос, но честно говорим, что донести.
+    echo json_encode([
+        'ok'           => true,
+        'message'      => 'Заявка отправлена, но файлы не дошли: ' . implode(', ', $files_failed) . '. Пришлите их в Telegram @qdmadept.',
+        'files_sent'   => $files_sent,
+        'files_failed' => $files_failed,
+    ]);
+    exit;
+}
+
+echo json_encode(['ok' => true, 'message' => 'Сообщение отправлено.', 'files_sent' => $files_sent]);

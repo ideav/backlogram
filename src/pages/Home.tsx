@@ -35,7 +35,9 @@ import {
   Sparkles,
   Briefcase,
   ServerCog,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Paperclip,
+  X
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { USE_CASES } from '../data/usecases'
@@ -66,6 +68,18 @@ type FormState = 'idle' | 'sending' | 'success' | 'error'
 
 const CAPTCHA_CLIENT_KEY = (import.meta.env.VITE_SMARTCAPTCHA_CLIENT_KEY as string | undefined) ?? ''
 
+// Лимиты вложений формы (issue #399) — зеркалят серверные в telegram-notify.php:
+// файлы улетают ботом прямо в Telegram-чат заявок (sendDocument, лимит API 50 МБ).
+const ATTACH_MAX_FILES = 10
+const ATTACH_MAX_BYTES = 10 * 1024 * 1024
+const ATTACH_ACCEPT = '.xlsx,.xls,.csv,.ods,.doc,.docx,.pdf,.png,.jpg,.jpeg,.txt'
+
+function formatBytes(n: number): string {
+  if (n >= 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} МБ`
+  if (n >= 1024) return `${Math.round(n / 1024)} КБ`
+  return `${n} Б`
+}
+
 function hasIdbCookie(): boolean {
   return document.cookie.split(';').some(c => c.trimStart().startsWith('idb_'))
 }
@@ -78,8 +92,31 @@ export default function Home() {
   const [isCaptchaRequested, setIsCaptchaRequested] = React.useState(false)
   const [isHeroTeaserActive, setIsHeroTeaserActive] = React.useState(false)
   const [idbCookieFound] = React.useState(() => hasIdbCookie())
+  const [attachedFiles, setAttachedFiles] = React.useState<File[]>([])
   const captchaContainerRef = React.useRef<HTMLDivElement>(null)
   const captchaWidgetIdRef = React.useRef<number | null>(null)
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
+
+  function addFiles(list: FileList | null) {
+    if (!list || list.length === 0) return
+    const next = [...attachedFiles]
+    for (const f of Array.from(list)) {
+      if (next.length >= ATTACH_MAX_FILES) {
+        setErrorMsg(`Не больше ${ATTACH_MAX_FILES} файлов на заявку.`)
+        setFormState('error')
+        break
+      }
+      if (f.size > ATTACH_MAX_BYTES) {
+        setErrorMsg(`«${f.name}» больше 10 МБ — приложите файл поменьше или пришлите его в Telegram.`)
+        setFormState('error')
+        continue
+      }
+      if (!next.some(x => x.name === f.name && x.size === f.size)) next.push(f)
+    }
+    setAttachedFiles(next)
+    setIsCaptchaRequested(true)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
 
   React.useEffect(() => {
     if (!CAPTCHA_CLIENT_KEY || !isCaptchaRequested || idbCookieFound) return
@@ -116,12 +153,14 @@ export default function Home() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const form = e.currentTarget
-    const data: Record<string, string> = {
-      name:    (form.elements.namedItem('name')    as HTMLInputElement).value,
-      company: (form.elements.namedItem('company') as HTMLInputElement).value,
-      contact: (form.elements.namedItem('contact') as HTMLInputElement).value,
-      task:    (form.elements.namedItem('task')    as HTMLTextAreaElement).value,
-    }
+    // FormData вместо JSON (issue #399): бэкенд читает поля из $_POST, а
+    // вложения из $_FILES и пересылает их ботом прямо в Telegram-чат заявок.
+    const data = new FormData()
+    data.set('name',    (form.elements.namedItem('name')    as HTMLInputElement).value)
+    data.set('company', (form.elements.namedItem('company') as HTMLInputElement).value)
+    data.set('contact', (form.elements.namedItem('contact') as HTMLInputElement).value)
+    data.set('task',    (form.elements.namedItem('task')    as HTMLTextAreaElement).value)
+    for (const f of attachedFiles) data.append('files[]', f, f.name)
 
     if (CAPTCHA_CLIENT_KEY && !idbCookieFound) {
       if (!captchaToken) {
@@ -129,7 +168,7 @@ export default function Home() {
         setFormState('error')
         return
       }
-      data.captcha_token = captchaToken
+      data.set('captcha_token', captchaToken)
     }
 
     setFormState('sending')
@@ -138,14 +177,14 @@ export default function Home() {
     try {
       const res = await fetch('/telegram-notify.php', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: data,
       })
       const json = await res.json()
       if (json.ok) {
         setFormState('success')
         reachGoal('lead', { source: 'home' })
         form.reset()
+        setAttachedFiles([])
         setCaptchaToken('')
         setIsCaptchaRequested(false)
         if (captchaWidgetIdRef.current !== null && window.smartCaptcha && captchaContainerRef.current) {
@@ -1285,6 +1324,58 @@ export default function Home() {
 
             <div className="bg-slate-50 dark:bg-slate-900/50 px-3 py-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 backdrop-blur-sm">
               <form className="space-y-4" onSubmit={handleSubmit}>
+                {/* Окно ввода как в ИИ-чатах (issue #399): большое поле задачи,
+                    скрепка для вложений; файлы бот переслёт прямо в Telegram-чат заявок. */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1">Задача</label>
+                  <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl focus-within:border-blue-500 transition-all overflow-hidden">
+                    <textarea
+                      name="task"
+                      rows={6}
+                      onInput={() => setIsCaptchaRequested(true)}
+                      className="w-full bg-transparent px-4 pt-3 pb-1 text-slate-800 dark:text-slate-100 outline-none resize-none block"
+                      placeholder="Опишите задачу своими словами: что учитываете, где сейчас живут данные, что должно получиться. Можно приложить Excel, ТЗ или скриншоты."
+                    />
+                    {attachedFiles.length > 0 && (
+                      <ul className="flex flex-wrap gap-2 px-3 pb-2">
+                        {attachedFiles.map((f, i) => (
+                          <li key={`${f.name}-${f.size}`} className="flex items-center gap-2 max-w-full pl-3 pr-1.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-300">
+                            <Paperclip size={12} className="shrink-0 text-blue-500" />
+                            <span className="truncate max-w-[11rem]" title={f.name}>{f.name}</span>
+                            <span className="text-slate-400 dark:text-slate-500 shrink-0">{formatBytes(f.size)}</span>
+                            <button
+                              type="button"
+                              aria-label={`Убрать файл ${f.name}`}
+                              onClick={() => setAttachedFiles(attachedFiles.filter((_, j) => j !== i))}
+                              className="shrink-0 rounded-full p-0.5 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                            >
+                              <X size={12} />
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-900 px-2 py-1.5">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        multiple
+                        accept={ATTACH_ACCEPT}
+                        className="hidden"
+                        onChange={e => addFiles(e.target.files)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm text-slate-500 dark:text-slate-400 hover:text-blue-500 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
+                      >
+                        <Paperclip size={16} />
+                        Прикрепить файлы
+                      </button>
+                      <span className="pr-2 text-[11px] text-slate-300 dark:text-slate-600">до {ATTACH_MAX_FILES} файлов, 10 МБ каждый</span>
+                    </div>
+                  </div>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1">Имя</label>
@@ -1300,10 +1391,6 @@ export default function Home() {
                   {/* required гасит submit-событие для пустого контакта, чтобы автоцель
                       Метрики «Отправка формы» не засчитала пустую заявку (issue #467). */}
                   <input name="contact" type="text" required onInvalid={e => { e.preventDefault(); setFormState('error'); setErrorMsg('Укажите контакт — email или Telegram, куда прислать оценку.') }} onInput={() => setIsCaptchaRequested(true)} className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 sm:py-3 text-slate-800 dark:text-slate-100 focus:border-blue-500 outline-none transition-all" placeholder="@username" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1">Задача (коротко)</label>
-                  <textarea name="task" rows={3} className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 sm:py-3 text-slate-800 dark:text-slate-100 focus:border-blue-500 outline-none transition-all resize-none" placeholder="Нужно перенести учет ПДн из Excel..." />
                 </div>
 
                 {formState === 'success' && (

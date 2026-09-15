@@ -29,6 +29,25 @@ if (strpos($path, '/sendMessage') !== false) {
     exit;
 }
 
+// Telegram sendDocument (multipart) — раw body у multipart пустой, поэтому
+// логируем имя файла и подпись отдельной записью (issue #399).
+if (strpos($path, '/sendDocument') !== false) {
+    if ($logFile) {
+        file_put_contents(
+            $logFile,
+            json_encode([
+                'method'   => $method,
+                'path'     => $path,
+                'document' => $_FILES['document']['name'] ?? null,
+                'caption'  => $_POST['caption'] ?? '',
+            ]) . "\n",
+            FILE_APPEND | LOCK_EX
+        );
+    }
+    echo json_encode(['ok' => true, 'result' => ['message_id' => 2]]);
+    exit;
+}
+
 // GitHub Contents API (file upload)
 if ($method === 'PUT' && strpos($path, '/contents/') !== false) {
     http_response_code(201);

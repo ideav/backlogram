@@ -276,4 +276,45 @@ if (!defined('INTAKE_SHARED_LOADED')) {
             'description' => $data['description'] ?? null,
         ];
     }
+
+    /**
+     * Send a file to a Telegram chat via sendDocument (multipart upload;
+     * Bot API limit — 50 MB per file). Attachments from the site form land
+     * straight in the intake chat, so nothing has to be copied over by hand
+     * (issue #399).
+     *
+     * @return array{ok:bool, http_code:int, description:?string}
+     */
+    function intake_telegram_send_document(string $botToken, string $chatId, string $filePath, string $filename, string $caption = '', string $apiBase = 'https://api.telegram.org'): array {
+        $url = rtrim($apiBase, '/') . '/bot' . $botToken . '/sendDocument';
+        $fields = [
+            'chat_id'  => $chatId,
+            'document' => new CURLFile($filePath, 'application/octet-stream', $filename),
+        ];
+        if ($caption !== '') {
+            // Telegram caps captions at 1024 characters; plain text (no parse_mode).
+            $fields['caption'] = function_exists('mb_substr') ? mb_substr($caption, 0, 1024) : substr($caption, 0, 1024);
+        }
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $fields,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 60,
+        ]);
+        $response = curl_exec($ch);
+        $code     = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error    = curl_error($ch);
+        curl_close($ch);
+
+        if ($response === false) {
+            return ['ok' => false, 'http_code' => 0, 'description' => $error ?: 'request failed'];
+        }
+        $data = json_decode((string) $response, true);
+        return [
+            'ok'          => $code === 200 && !empty($data['ok']),
+            'http_code'   => $code,
+            'description' => $data['description'] ?? null,
+        ];
+    }
 }
