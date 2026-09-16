@@ -49,3 +49,6 @@ define('SMARTCAPTCHA_SERVER_KEY',   'ysc2_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 // define('INTAKE_UPLOAD_MAX_BYTES',  '10485760');        // 10 MiB per file
 // define('INTAKE_UPLOAD_MAX_FILES',  '10');              // max attachments per request
 // define('INTAKE_ALLOWED_EXT',       'xlsx,xls,csv,ods');// allowed attachment extensions
+// define('NOTIFY_ALLOWED_EXT',       'xlsx,xls,csv,ods,doc,docx,pdf,png,jpg,jpeg,txt');
+//                                                        // extensions for the CTA form
+//                                                        // (telegram-notify.php → sendDocument)
