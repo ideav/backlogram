@@ -71,6 +71,9 @@ $contact = trim((string) ($data['contact'] ?? ''));
 $task    = trim((string) ($data['task'] ?? ''));
 $consent = (string) ($data['consent'] ?? '');
 $trap    = trim((string) ($data['website'] ?? ''));
+// Вид заявки (issue #596): demo — «пришлите Excel, соберём приложение»,
+// razbor — запись на платный разбор заготовки.
+$kind    = ($data['kind'] ?? '') === 'demo' ? 'demo' : 'razbor';
 
 // Honeypot: живой посетитель этого поля не видит, значит заполнить его мог
 // только автомат. Отвечаем успехом, чтобы боту нечего было узнать из ответа.
@@ -86,6 +89,42 @@ if ($consent === '') {
 }
 if (mb_strlen($task) > 5000 || mb_strlen($name) > 200 || mb_strlen($contact) > 200) {
     order_respond(400, ['ok' => false, 'error' => 'Слишком длинно — сократите, пожалуйста.']);
+}
+
+// ── Вложения (issue #596): Excel и ТЗ из формы демонстрации ─────────────────
+// До 5 файлов по 10 МБ; после текста заявки уходят тем же ботом (sendDocument).
+$ORDER_MAX_FILES  = 5;
+$ORDER_MAX_BYTES  = 10 * 1024 * 1024;
+$ORDER_ALLOWED    = ['xlsx', 'xls', 'csv', 'ods', 'doc', 'docx', 'pdf', 'txt'];
+
+$attachments = []; // [{tmp, name, size}]
+if (!empty($_FILES['files'])) {
+    $f     = $_FILES['files'];
+    $names = is_array($f['name'])     ? $f['name']     : [$f['name']];
+    $tmps  = is_array($f['tmp_name']) ? $f['tmp_name'] : [$f['tmp_name']];
+    $sizes = is_array($f['size'])     ? $f['size']     : [$f['size']];
+    $errs  = is_array($f['error'])    ? $f['error']    : [$f['error']];
+
+    if (count($names) > $ORDER_MAX_FILES) {
+        order_respond(400, ['ok' => false, 'error' => "Не больше $ORDER_MAX_FILES файлов — остальное дошлите в телеграм."]);
+    }
+    foreach ($names as $i => $origName) {
+        $err = $errs[$i] ?? UPLOAD_ERR_NO_FILE;
+        if ($err === UPLOAD_ERR_NO_FILE) continue;
+        $size = (int) ($sizes[$i] ?? 0);
+        $ext  = strtolower(pathinfo((string) $origName, PATHINFO_EXTENSION));
+        if ($err !== UPLOAD_ERR_OK
+            || !is_uploaded_file((string) ($tmps[$i] ?? ''))
+            || $size <= 0 || $size > $ORDER_MAX_BYTES
+            || !in_array($ext, $ORDER_ALLOWED, true)) {
+            order_respond(400, [
+                'ok'    => false,
+                'error' => 'Файл «' . $origName . '» не принят: до 10 МБ, форматы ' . implode(', ', $ORDER_ALLOWED) . '.',
+            ]);
+        }
+        $safe = trim(preg_replace('/[\x00-\x1F]+/', ' ', basename(str_replace('\\', '/', (string) $origName))));
+        $attachments[] = ['tmp' => (string) $tmps[$i], 'name' => $safe !== '' ? $safe : 'file', 'size' => $size];
+    }
 }
 
 // ── Лимит: 3 заявки с одного IP за 10 минут ─────────────────────────────────
@@ -106,8 +145,9 @@ $hits[] = $now;
 @file_put_contents($stamp, json_encode(array_values($hits)), LOCK_EX);
 
 // ── Уведомление ──────────────────────────────────────────────────────────────
+$subject = $kind === 'demo' ? 'Заявка на демонстрацию (Excel → приложение)' : 'Заявка на разбор';
 $lines = [
-    'Заявка на разбор с ' . $server_host,
+    $subject . ' с ' . $server_host,
     '',
     'Имя:     ' . $name,
     'Контакт: ' . $contact,
@@ -115,6 +155,10 @@ $lines = [
     'Задача:',
     $task,
 ];
+if ($attachments) {
+    $lines[] = '';
+    $lines[] = 'Файлы: ' . count($attachments) . ' шт — придут следом.';
+}
 $body = implode("\n", $lines);
 
 $sent = false;
@@ -132,6 +176,26 @@ if ($token !== null && $chatId !== null) {
     ]);
     $result = @file_get_contents('https://api.telegram.org/bot' . $token . '/sendMessage', false, $context);
     $sent   = $result !== false;
+
+    // Файлы — тем же ботом, sendDocument (multipart через curl): Excel и ТЗ
+    // приходят в чат заявок сами, выкачивать их ниоткуда не нужно.
+    if ($sent && $attachments && function_exists('curl_init')) {
+        foreach ($attachments as $a) {
+            $ch = curl_init('https://api.telegram.org/bot' . $token . '/sendDocument');
+            curl_setopt_array($ch, [
+                CURLOPT_POST           => true,
+                CURLOPT_POSTFIELDS     => [
+                    'chat_id'  => $chatId,
+                    'caption'  => mb_substr('Файл к заявке от ' . $contact, 0, 1024),
+                    'document' => new CURLFile($a['tmp'], 'application/octet-stream', $a['name']),
+                ],
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT        => 60,
+            ]);
+            curl_exec($ch);
+            curl_close($ch);
+        }
+    }
 }
 
 $to = order_config('ORDER_EMAIL_TO');
@@ -141,7 +205,7 @@ if ($to !== null) {
         'From: Excel-лендинг <' . $from . '>',
         'Content-Type: text/plain; charset=UTF-8',
     ];
-    $sent = @mail($to, 'Заявка на разбор: ' . $name, $body, implode("\r\n", $headers)) || $sent;
+    $sent = @mail($to, $subject . ': ' . $name, $body, implode("\r\n", $headers)) || $sent;
 }
 
 if (!$sent) {
