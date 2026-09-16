@@ -81,8 +81,11 @@ if ($trap !== '') {
     order_respond(200, ['ok' => true]);
 }
 
-if ($name === '' || $contact === '' || $task === '') {
-    order_respond(400, ['ok' => false, 'error' => 'Заполните имя, контакт и пару слов о задаче.']);
+// Обязателен только контакт (issue #596): имя и описание не должны мешать
+// человеку просто прислать файл. Пустое описание допустимо, если есть файлы
+// (проверка ниже, после разбора вложений).
+if ($contact === '') {
+    order_respond(400, ['ok' => false, 'error' => 'Укажите контакт — почту, телефон или телеграм, куда ответить.']);
 }
 if ($consent === '') {
     order_respond(400, ['ok' => false, 'error' => 'Без согласия на обработку данных отправить нельзя.']);
@@ -144,16 +147,21 @@ if (count($hits) >= 3) {
 $hits[] = $now;
 @file_put_contents($stamp, json_encode(array_values($hits)), LOCK_EX);
 
+// Демонстрации нужен материал: файл или хотя бы пара слов о задаче.
+if ($kind === 'demo' && $task === '' && !$attachments) {
+    order_respond(400, ['ok' => false, 'error' => 'Приложите файл или напишите пару слов о задаче.']);
+}
+
 // ── Уведомление ──────────────────────────────────────────────────────────────
 $subject = $kind === 'demo' ? 'Заявка на демонстрацию (Excel → приложение)' : 'Заявка на разбор';
 $lines = [
     $subject . ' с ' . $server_host,
     '',
-    'Имя:     ' . $name,
+    'Имя:     ' . ($name !== '' ? $name : '(не указано)'),
     'Контакт: ' . $contact,
     '',
     'Задача:',
-    $task,
+    $task !== '' ? $task : '(без описания — смотри файлы)',
 ];
 if ($attachments) {
     $lines[] = '';
@@ -161,57 +169,38 @@ if ($attachments) {
 }
 $body = implode("\n", $lines);
 
-$sent = false;
+// ── Очередь + доставка ──────────────────────────────────────────────────────
+// Канал до Telegram-прокси нестабилен (маршрут между дата-центрами теряет
+// большинство TCP-соединений), поэтому заявка СНАЧАЛА сохраняется на диск,
+// и только потом делается попытка доставить. Не доставилось — доберёт cron
+// (order-deliver.php). Посетителю в обоих случаях отвечаем успехом: заявка
+// уже не потеряется.
+require_once __DIR__ . '/order-lib.php';
 
-$token  = order_config('TELEGRAM_BOT_TOKEN');
-$chatId = order_config('TELEGRAM_CHAT_ID');
-if ($token !== null && $chatId !== null) {
-    $context = stream_context_create([
-        'http' => [
-            'method'  => 'POST',
-            'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
-            'content' => http_build_query(['chat_id' => $chatId, 'text' => $body]),
-            'timeout' => 5,
-        ],
-    ]);
-    $result = @file_get_contents('https://api.telegram.org/bot' . $token . '/sendMessage', false, $context);
-    $sent   = $result !== false;
+$spool = order_spool_dir();
+$saved = order_spool_save($spool, [
+    'subject' => $subject,
+    'body'    => $body,
+    'contact' => $contact,
+], $attachments);
 
-    // Файлы — тем же ботом, sendDocument (multipart через curl): Excel и ТЗ
-    // приходят в чат заявок сами, выкачивать их ниоткуда не нужно.
-    if ($sent && $attachments && function_exists('curl_init')) {
-        foreach ($attachments as $a) {
-            $ch = curl_init('https://api.telegram.org/bot' . $token . '/sendDocument');
-            curl_setopt_array($ch, [
-                CURLOPT_POST           => true,
-                CURLOPT_POSTFIELDS     => [
-                    'chat_id'  => $chatId,
-                    'caption'  => mb_substr('Файл к заявке от ' . $contact, 0, 1024),
-                    'document' => new CURLFile($a['tmp'], 'application/octet-stream', $a['name']),
-                ],
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT        => 60,
-            ]);
-            curl_exec($ch);
-            curl_close($ch);
-        }
+if ($saved === null) {
+    // Спул не записался (нет прав/места) — доставляем в лоб, как раньше;
+    // при неудаче честно признаёмся.
+    $ok = order_deliver_message($body) && order_deliver_files($attachments, $contact);
+    order_mail_copy($subject, $name, $body, $server_host);
+    if (!$ok) {
+        error_log('order.php: spool недоступен и доставка не удалась');
+        order_respond(500, ['ok' => false, 'error' => 'Не смогли доставить заявку. Напишите, пожалуйста, в телеграм @Integrammbot.']);
     }
+    order_respond(200, ['ok' => true]);
 }
 
-$to = order_config('ORDER_EMAIL_TO');
-if ($to !== null) {
-    $from    = order_config('ORDER_EMAIL_FROM', 'noreply@' . $server_host);
-    $headers = [
-        'From: Excel-лендинг <' . $from . '>',
-        'Content-Type: text/plain; charset=UTF-8',
-    ];
-    $sent = @mail($to, $subject . ': ' . $name, $body, implode("\r\n", $headers)) || $sent;
+// Попытка доставить сразу (2 захода) — в большинстве случаев дойдёт, и cron
+// ничего добирать не придётся.
+if (order_spool_deliver($saved)) {
+    order_spool_cleanup($saved);
 }
-
-if (!$sent) {
-    // Иначе заявка просто исчезает — честнее сказать, чем показать успех.
-    error_log('order.php: канал доставки не настроен или доставка не удалась');
-    order_respond(500, ['ok' => false, 'error' => 'Не смогли доставить заявку. Напишите, пожалуйста, в телеграм @Integrammbot.']);
-}
+order_mail_copy($subject, $name, $body, $server_host);
 
 order_respond(200, ['ok' => true]);
