@@ -76,8 +76,9 @@ $source  = trim($data['source']  ?? '');
 
 // Человекочитаемые названия источников заявки (по какой странице/форме пришла).
 $SOURCE_LABELS = [
-    'catalog-matching' => 'Сопоставление каталогов',
-    'excel-to-app'     => 'Excel → приложение',
+    'catalog-matching'    => 'Сопоставление каталогов',
+    'excel-to-app'        => 'Excel → приложение',
+    'excel-to-app-razbor' => 'Разбор ИИ-приложения — заказ звонка',
 ];
 $source_label = $SOURCE_LABELS[$source] ?? $source;
 

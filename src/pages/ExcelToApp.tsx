@@ -25,6 +25,8 @@ import {
   TrendingUp,
   AlertTriangle,
   ClipboardList,
+  Phone,
+  PhoneCall,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs'
@@ -51,6 +53,11 @@ const CAPTCHA_CLIENT_KEY = (import.meta.env.VITE_SMARTCAPTCHA_CLIENT_KEY as stri
 
 const SUBMIT_ENDPOINT = '/excel-to-app.php'
 const TELEGRAM_BOT_URL = 'https://t.me/Integrammbot'
+// Разбор обсуждается с человеком, а не с ботом загрузки Excel (issue #591).
+const RAZBOR_TELEGRAM_URL = 'https://t.me/qdmadept'
+const RAZBOR_PHONE = '+7 (995) 506-01-67'
+const RAZBOR_PHONE_HREF = '+79955060167'
+const RAZBOR_NOTE_DEFAULT = 'Разбор ИИ-приложения'
 
 const ACCEPTED_EXTENSIONS = ['.xls', '.xlsx', '.xlsm', '.csv', '.ods']
 const ACCEPT_ATTR = ACCEPTED_EXTENSIONS.join(',')
@@ -114,6 +121,101 @@ export default function ExcelToApp() {
   const [showPayForm, setShowPayForm] = React.useState(false)
   const [payEmail, setPayEmail] = React.useState('')
   const [payError, setPayError] = React.useState('')
+
+  // Двухэтапный CTA разбора (issue #591): кнопка раскрывает выбор канала
+  // (Telegram / позвонить / заказать звонок), форма звонка шлётся в тот же
+  // Telegram-чат заявок через telegram-notify.php.
+  const [razborOpen, setRazborOpen] = React.useState(false)
+  const [showCallbackForm, setShowCallbackForm] = React.useState(false)
+  const [cbName, setCbName] = React.useState('')
+  const [cbPhone, setCbPhone] = React.useState('')
+  const [cbNote, setCbNote] = React.useState(RAZBOR_NOTE_DEFAULT)
+  const [cbConsent, setCbConsent] = React.useState(false)
+  const [cbState, setCbState] = React.useState<FormState>('idle')
+  const [cbError, setCbError] = React.useState('')
+  const [cbCaptchaToken, setCbCaptchaToken] = React.useState('')
+  const cbCaptchaContainerRef = React.useRef<HTMLDivElement>(null)
+  const cbCaptchaWidgetIdRef = React.useRef<number | null>(null)
+
+  // Отдельный виджет капчи для формы звонка: основной привязан к контейнеру
+  // формы загрузки Excel и живёт своим жизненным циклом.
+  React.useEffect(() => {
+    if (!CAPTCHA_CLIENT_KEY || !showCallbackForm || idbCookieFound) return
+
+    function initCbCaptcha() {
+      if (!cbCaptchaContainerRef.current || !window.smartCaptcha || cbCaptchaWidgetIdRef.current !== null) return
+      cbCaptchaWidgetIdRef.current = window.smartCaptcha.render(cbCaptchaContainerRef.current, {
+        sitekey: CAPTCHA_CLIENT_KEY,
+        callback: (token: string) => setCbCaptchaToken(token),
+        'expired-callback': () => setCbCaptchaToken(''),
+        'error-callback': () => setCbCaptchaToken(''),
+      })
+    }
+
+    if (window.smartCaptcha) {
+      initCbCaptcha()
+      return
+    }
+    const script = document.createElement('script')
+    script.src = 'https://smartcaptcha.yandexcloud.net/captcha.js'
+    script.defer = true
+    script.onload = initCbCaptcha
+    document.head.appendChild(script)
+
+    return () => {
+      if (cbCaptchaWidgetIdRef.current !== null && window.smartCaptcha) {
+        window.smartCaptcha.destroy(cbCaptchaWidgetIdRef.current)
+        cbCaptchaWidgetIdRef.current = null
+      }
+    }
+  }, [showCallbackForm])
+
+  async function handleCallbackSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const phone = cbPhone.trim()
+    if (!phone) {
+      setCbError('Укажите телефон, по которому перезвонить.')
+      setCbState('error')
+      return
+    }
+    const captchaActive = Boolean(CAPTCHA_CLIENT_KEY) && !idbCookieFound
+    if (captchaActive && !cbCaptchaToken) {
+      setCbError('Пожалуйста, пройдите проверку капчи.')
+      setCbState('error')
+      return
+    }
+    setCbState('sending')
+    setCbError('')
+    try {
+      const payload: Record<string, string> = {
+        name: cbName.trim(),
+        contact: phone,
+        task: `Заказ звонка: ${cbNote.trim() || RAZBOR_NOTE_DEFAULT}`,
+        source: 'excel-to-app-razbor',
+      }
+      if (captchaActive) payload.captcha_token = cbCaptchaToken
+      const res = await fetch('/telegram-notify.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      const json = await res.json()
+      if (json.ok) {
+        setCbState('success')
+        reachGoal('razbor_callback', { page: 'excel-to-app' })
+      } else {
+        setCbState('error')
+        setCbError(json.error ?? 'Произошла ошибка. Попробуйте позже.')
+        if (cbCaptchaWidgetIdRef.current !== null && window.smartCaptcha) {
+          window.smartCaptcha.reset(cbCaptchaWidgetIdRef.current)
+          setCbCaptchaToken('')
+        }
+      }
+    } catch {
+      setCbState('error')
+      setCbError('Не удалось отправить запрос. Проверьте соединение.')
+    }
+  }
 
   const handlePay = () => {
     const email = payEmail.trim()
@@ -1030,17 +1132,128 @@ export default function ExcelToApp() {
                 <div className="text-3xl font-bold text-slate-900 dark:text-white">{ANALYSIS_PRICE}</div>
                 <div className="text-sm text-slate-500 dark:text-slate-400">фиксированная цена, срок — несколько дней</div>
               </div>
-              <a
-                href={TELEGRAM_BOT_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="sm:ml-auto w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all inline-flex items-center justify-center gap-2 group"
-              >
-                <Send size={18} />
-                Обсудить разбор
-                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-              </a>
+              {/* Шаг 1 (issue #591): кнопка раскрывает выбор канала — Telegram
+                  есть не у всех, поэтому рядом телефон и заказ звонка. */}
+              {!razborOpen && (
+                <button
+                  type="button"
+                  onClick={() => setRazborOpen(true)}
+                  className="sm:ml-auto w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all inline-flex items-center justify-center gap-2 group"
+                >
+                  <Send size={18} />
+                  Обсудить разбор
+                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+              )}
             </div>
+
+            {/* Шаг 2: каналы связи. Цели Метрики — на каждое действие. */}
+            {razborOpen && (
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                <a
+                  href={RAZBOR_TELEGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => reachGoal('razbor_tg', { page: 'excel-to-app' })}
+                  className="flex flex-col items-center gap-2 px-4 py-5 rounded-2xl border border-blue-500/30 bg-blue-50 dark:bg-blue-950/30 hover:border-blue-500 transition-all text-center"
+                >
+                  <Send size={22} className="text-blue-500" />
+                  <span className="font-bold text-slate-900 dark:text-white">Написать в Telegram</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-400">@qdmadept</span>
+                </a>
+                <a
+                  href={`tel:${RAZBOR_PHONE_HREF}`}
+                  onClick={() => reachGoal('razbor_call', { page: 'excel-to-app' })}
+                  className="flex flex-col items-center gap-2 px-4 py-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:border-blue-500 transition-all text-center"
+                >
+                  <Phone size={22} className="text-blue-500" />
+                  <span className="font-bold text-slate-900 dark:text-white">Позвонить</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-400">{RAZBOR_PHONE}</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setShowCallbackForm(v => !v)}
+                  className={`flex flex-col items-center gap-2 px-4 py-5 rounded-2xl border transition-all text-center ${showCallbackForm ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:border-blue-500'}`}
+                >
+                  <PhoneCall size={22} className="text-blue-500" />
+                  <span className="font-bold text-slate-900 dark:text-white">Заказать звонок</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-400">перезвоним сами</span>
+                </button>
+              </div>
+            )}
+
+            {razborOpen && showCallbackForm && (
+              cbState === 'success' ? (
+                <div className="mt-4 flex items-center gap-2 text-green-600 dark:text-green-400 font-medium">
+                  <CheckCircle2 size={18} />
+                  Заявка на звонок отправлена — перезвоним в рабочее время.
+                </div>
+              ) : (
+                <form onSubmit={handleCallbackSubmit} className="mt-4 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="cb-name" className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1">Имя</label>
+                      <input
+                        id="cb-name"
+                        type="text"
+                        value={cbName}
+                        onChange={e => setCbName(e.target.value)}
+                        placeholder="Александр"
+                        className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 sm:py-3 text-slate-800 dark:text-slate-100 focus:border-blue-500 outline-none transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="cb-phone" className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1">Телефон</label>
+                      <input
+                        id="cb-phone"
+                        type="tel"
+                        required
+                        value={cbPhone}
+                        onChange={e => { setCbPhone(e.target.value); if (cbError) { setCbError(''); setCbState('idle') } }}
+                        placeholder="+7 900 000-00-00"
+                        className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 sm:py-3 text-slate-800 dark:text-slate-100 focus:border-blue-500 outline-none transition-all"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="cb-note" className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1">Примечание</label>
+                    <input
+                      id="cb-note"
+                      type="text"
+                      value={cbNote}
+                      onChange={e => setCbNote(e.target.value)}
+                      className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 sm:py-3 text-slate-800 dark:text-slate-100 focus:border-blue-500 outline-none transition-all"
+                    />
+                  </div>
+                  {cbState === 'error' && (
+                    <div className="text-red-500 dark:text-red-400 text-sm font-medium">{cbError}</div>
+                  )}
+                  {CAPTCHA_CLIENT_KEY && !idbCookieFound && <div ref={cbCaptchaContainerRef} />}
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={cbConsent}
+                      onChange={e => setCbConsent(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 dark:border-slate-600 accent-blue-600 cursor-pointer"
+                    />
+                    <span className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                      Я даю согласие на{' '}
+                      <a href="/privacy.html" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-500 transition-colors">
+                        обработку персональных данных
+                      </a>
+                    </span>
+                  </label>
+                  <button
+                    type="submit"
+                    disabled={cbState === 'sending' || !cbConsent}
+                    className="w-full sm:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all inline-flex items-center justify-center gap-2"
+                  >
+                    <PhoneCall size={16} />
+                    {cbState === 'sending' ? 'Отправка...' : 'Жду звонка'}
+                  </button>
+                </form>
+              )
+            )}
           </div>
 
           <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
