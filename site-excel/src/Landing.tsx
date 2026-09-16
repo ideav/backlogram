@@ -162,6 +162,11 @@ function OrderForm({
     const form = event.currentTarget
     const data = new FormData(form)
     data.set('kind', kind)
+    // Для демонстрации нужен хоть какой-то материал: файл или пара слов.
+    if (withFiles && files.length === 0 && String(data.get('task') ?? '').trim() === '') {
+      setError('Приложите файл или напишите пару слов о задаче.')
+      return
+    }
     for (const f of files) data.append('files[]', f, f.name)
     setBusy(true)
     setError('')
@@ -212,16 +217,8 @@ function OrderForm({
       <p className="mt-2 text-slate-600">{sub}</p>
 
       <div className="mt-6 space-y-4">
-        <label className="block">
-          <span className="text-sm font-medium text-slate-700">Как вас зовут</span>
-          <input
-            name="name"
-            required
-            maxLength={200}
-            className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </label>
-
+        {/* Обязателен только контакт (issue #596): имя и описание не должны
+            мешать человеку просто прислать файл. */}
         <label className="block">
           <span className="text-sm font-medium text-slate-700">
             Куда ответить — почта, телефон или телеграм
@@ -235,10 +232,23 @@ function OrderForm({
         </label>
 
         <label className="block">
-          <span className="text-sm font-medium text-slate-700">{taskLabel}</span>
+          <span className="text-sm font-medium text-slate-700">
+            Как вас зовут <span className="font-normal text-slate-400">(необязательно)</span>
+          </span>
+          <input
+            name="name"
+            maxLength={200}
+            className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-sm font-medium text-slate-700">
+            {taskLabel}{' '}
+            {withFiles && <span className="font-normal text-slate-400">(можно пропустить, если приложили файл)</span>}
+          </span>
           <textarea
             name="task"
-            required
             rows={4}
             maxLength={5000}
             className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
