@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Партнёрская программа Интеграм: готовые шаблоны для внедренцев. Ставите клиенту за час, продаёте как свою услугу, получаете скидку 30% на облачный тариф." />
+    <meta name="keywords" content="партнёрская программа,интеграм,внедренцам,сопоставление каталогов,нормализация НСИ,сопоставление номенклатуры,партнёрам,low-code,no-code" />
+    <link rel="stylesheet" href="css/libs.min.css">
+    <link rel="stylesheet" href="css/style.min.css?1">
+    <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+    <title>Партнёрам — Интеграм</title>
+    <style>
+        /* Страница партнёрам: своих компонентов минимум, всё остальное — классы лендинга. */
+        .p-hero { padding: 60px 0 20px; }
+        .p-hero__lead { max-width: 760px; margin-top: 18px; }
+        .p-grid { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-top: 36px; }
+        .p-card { background: #fff; border: 1px solid #e3e9f2; border-radius: 12px; padding: 24px 26px; }
+        .p-card__num { color: #2c7be5; font-weight: 600; font-size: 20px; line-height: 1; margin-bottom: 10px; display: block; }
+        .p-card h3 { margin: 0 0 8px; font-size: 20px; line-height: 1.3; }
+        .p-card p { margin: 0; }
+        .p-steps { margin-top: 32px; border-top: 1px solid #e3e9f2; }
+        .p-step { display: grid; grid-template-columns: 56px 1fr 180px; gap: 18px; padding: 16px 0; border-bottom: 1px solid #e3e9f2; align-items: start; }
+        .p-step__n { color: #2c7be5; font-weight: 600; }
+        .p-step__who { color: #8a97a8; }
+        @media (max-width: 720px) { .p-step { grid-template-columns: 40px 1fr; } .p-step__who { grid-column: 2; } }
+        .p-split { display: grid; gap: 0; grid-template-columns: 1fr 1fr; border: 1px solid #e3e9f2; border-radius: 12px; overflow: hidden; margin-top: 28px; background: #fff; }
+        .p-split > div { padding: 24px 26px; }
+        .p-split > div + div { border-left: 1px solid #e3e9f2; }
+        @media (max-width: 720px) { .p-split { grid-template-columns: 1fr; } .p-split > div + div { border-left: 0; border-top: 1px solid #e3e9f2; } }
+        .p-split ul, .p-card ul { margin: 12px 0 0; padding-left: 20px; }
+        .p-split li, .p-card li { margin-bottom: 8px; }
+        .p-money { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-top: 28px; }
+        .p-money__big { color: #2c7be5; font-weight: 700; font-size: 44px; line-height: 1; margin: 6px 0 10px; }
+        .p-example { background: #f4f7fb; border-radius: 12px; padding: 24px 26px; margin-top: 28px; }
+        .p-example__row { font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: 15px; margin: 6px 0; }
+        .p-example__mark { color: #2c7be5; }
+        .p-form { background: #fff; border: 1px solid #e3e9f2; border-radius: 12px; padding: 30px 32px; margin-top: 36px; max-width: 640px; }
+        .p-form .fg { margin-bottom: 18px; }
+        .p-note { color: #8a97a8; margin-top: 16px; }
+        .p-materials { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
+    </style>
+</head>
+
+<body class="m-page">
+    <div class="wrapper">
+        <header class="header">
+            <div class="header__wrap">
+                <div class="container">
+                    <div class="header__inner">
+                        <a href="/" class="header__logo">
+                            <img src="img/logo2.svg" alt="Интеграм">
+                        </a>
+
+                        <div class="menu">
+                            <div class="menu__scroll">
+                                <nav class="nav">
+                                    <ul>
+                                        <li><a href="/#alternative">Что предлагаем</a></li>
+                                        <li><a href="/#solution">Как это работает</a></li>
+                                        <li><a href="/#for-who">Для кого подходит</a></li>
+                                        <li><a href="/#tariffs">Тарифы</a></li>
+                                        <li><a href="/partners.html">Партнёрам</a></li>
+                                    </ul>
+                                </nav>
+                                <div class="header-user">
+                                    <a target="login" href="https://app.integram.io">
+                                        <button class="header-user__btn1 m-btn m-btn-blue-outline">
+                                            <span>Войти</span>
+                                        </button>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section class="m-section p-hero">
+                <div class="container">
+                    <h1 class="h2">Партнёрам: готовые шаблоны, которые вы продаёте как своё внедрение</h1>
+                    <div class="p-hero__lead">
+                        <p class="text36 text20-tablet medium-text">Шаблон ставится в базу клиента за час. Внедрение продаёте вы по своей цене, а на облачный тариф получаете скидку 30% — разница остаётся вам всё время, пока клиент работает.</p>
+                    </div>
+                    <div class="p-materials">
+                        <a href="/partners/deck-partner.html"><button class="m-btn m-btn-blue"><span>Как это устроено — презентация</span></button></a>
+                        <a href="/partners/deck-client.html"><button class="m-btn m-btn-blue-outline"><span>Презентация для вашего клиента</span></button></a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="m-section">
+                <div class="container">
+                    <div class="h2">Первый шаблон: сопоставление каталогов</div>
+                    <p class="text22">Покупатель присылает заявку своими словами. В вашем каталоге та же позиция называется иначе. Совпадения по строке нет, ВПР не работает, а таких строк в заявке тысячи — и сегодня их разбирают руками.</p>
+
+                    <div class="p-example">
+                        <div class="p-example__row">заявка &nbsp;&nbsp;→ картридж hp cf280a чёрный, 2700 стр.</div>
+                        <div class="p-example__row">каталог &nbsp;→ Картридж HP CF280A черный 2700 страниц</div>
+                        <div class="p-example__row p-example__mark">совпало → картридж · hp · cf · 280 · a · 2700стр &nbsp;&nbsp;товар + марка + модель</div>
+                    </div>
+
+                    <div class="p-grid">
+                        <div class="p-card">
+                            <h3>Объяснимо</h3>
+                            <p class="text22">Для каждой пары видно, по каким словам она предложена и как сложилась оценка. Это не чёрная коробка и не «нейросеть решила».</p>
+                        </div>
+                        <div class="p-card">
+                            <h3>Воспроизводимо</h3>
+                            <p class="text22">Тот же файл через месяц даёт тот же результат, независимо от того, кто работает.</p>
+                        </div>
+                        <div class="p-card">
+                            <h3>С памятью</h3>
+                            <p class="text22">Решение, принятое человеком, запоминается и не переспрашивается при следующих прогонах.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="m-section">
+                <div class="container">
+                    <div class="h2">Кому это продавать</div>
+                    <p class="text22">Лучший клиент — тот, у кого обе стороны описаны текстом и есть хотя бы один устойчивый признак: артикул, бренд, модель, размер.</p>
+                    <div class="p-grid">
+                        <div class="p-card"><h3>Дистрибьюторы и поставщики</h3><p class="text22">Входящие заявки в наименованиях покупателя.</p></div>
+                        <div class="p-card"><h3>Тендерные отделы</h3><p class="text22">Сопоставить позиции закупки со своим ассортиментом в срок.</p></div>
+                        <div class="p-card"><h3>Снабжение производств</h3><p class="text22">Прайсы разных поставщиков на одну номенклатуру.</p></div>
+                    </div>
+                    <p class="text22 p-note">Не подходит, если позиции описаны только кодами, чертежами или фотографиями: там нечего сопоставлять по тексту. Такой случай честнее назвать отдельным проектом.</p>
+                </div>
+            </section>
+
+            <section class="m-section">
+                <div class="container">
+                    <div class="h2">Как проходит внедрение</div>
+                    <div class="p-steps">
+                        <div class="p-step"><div class="p-step__n">01</div><div class="text22">Получаете от клиента два файла: его заявку и свой каталог</div><div class="p-step__who text22">партнёр</div></div>
+                        <div class="p-step"><div class="p-step__n">02</div><div class="text22">Ставите шаблон в базу клиента одной командой</div><div class="p-step__who text22">партнёр</div></div>
+                        <div class="p-step"><div class="p-step__n">03</div><div class="text22">Проходите мастер: раскладываете колонки Excel по полям</div><div class="p-step__who text22">партнёр</div></div>
+                        <div class="p-step"><div class="p-step__n">04</div><div class="text22">Загружаете данные и прогоняете токенизацию</div><div class="p-step__who text22">партнёр</div></div>
+                        <div class="p-step"><div class="p-step__n">05</div><div class="text22">Оператор клиента размечает частые слова: что товар, что марка, что модель</div><div class="p-step__who text22">клиент</div></div>
+                        <div class="p-step"><div class="p-step__n">06</div><div class="text22">Массовый подбор, проверка спорных пар, выгрузка в Excel или JSON</div><div class="p-step__who text22">клиент</div></div>
+                    </div>
+                    <p class="text22 p-note">Целевой норматив — 60 минут от двух файлов до первого массового прогона. Это норматив, по которому мы проверяем шаблон на первых внедрениях, а не обещание, что задача клиента решится за час.</p>
+                </div>
+            </section>
+
+            <section class="m-section">
+                <div class="container">
+                    <div class="h2">Три уровня настройки</div>
+                    <div class="p-grid">
+                        <div class="p-card">
+                            <span class="p-card__num">Уровень 1</span>
+                            <h3>Установка и мастер</h3>
+                            <p class="text22">Одна команда ставит таблицы, отчёты, роли, права и рабочие места. Дальше мастер разбирает два Excel прямо в браузере и предлагает соответствие колонок. В конструктор базы заходить не нужно.</p>
+                        </div>
+                        <div class="p-card">
+                            <span class="p-card__num">Уровень 2</span>
+                            <h3>Настройки категории</h3>
+                            <p class="text22">Обязательные атрибуты, мягкие веса, вес точного артикула, границы серой зоны. Всё правится формой — это данные, а не разработка. Здесь партнёр работает сам и всегда.</p>
+                        </div>
+                        <div class="p-card">
+                            <span class="p-card__num">Уровень 3</span>
+                            <h3>Правила разбора наименований</h3>
+                            <p class="text22">Стоп-слова, разделители, нормализация написаний — делаете сами. Правила для единиц измерения присылаете нам: час-два, и вы получаете готовое выражение.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="m-section">
+                <div class="container">
+                    <div class="h2">На чём вы зарабатываете</div>
+                    <div class="p-money">
+                        <div class="p-card">
+                            <h3>Внедрение</h3>
+                            <p class="text22">Продаёте сами и назначаете свою цену. Ваш аргумент перед клиентом — час работы вместо недель ручного разбора заявок.</p>
+                        </div>
+                        <div class="p-card">
+                            <h3>Облачный тариф</h3>
+                            <div class="p-money__big">30%</div>
+                            <p class="text22">Скидка от публичной цены. Разница между публичной и партнёрской ценой остаётся вам постоянной маржой на всё время подписки клиента.</p>
+                        </div>
+                    </div>
+                    <p class="text22 p-note">Отдельной лицензии на шаблон нет: платформа подписная, шаблон входит в неё. Чем больше развёрнутых баз, тем больше постоянная часть дохода.</p>
+                </div>
+            </section>
+
+            <section class="m-section">
+                <div class="container">
+                    <div class="h2">Где проходит граница</div>
+                    <p class="text22">Правило простое: решается данными — это шаблон, требует правки кода или схемы — это отдельный проект.</p>
+                    <div class="p-split">
+                        <div>
+                            <h3>Делаете сами</h3>
+                            <ul class="text22">
+                                <li>другая категория: свои атрибуты, веса, соответствие колонок</li>
+                                <li>другие названия колонок и листов Excel</li>
+                                <li>пороги, серая зона, включение ИИ-доуточнения</li>
+                                <li>стоп-слова и разделители при разборе наименований</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3>Зовёте нас</h3>
+                            <ul class="text22">
+                                <li>новые сущности данных, которых нет в схеме</li>
+                                <li>изменение самого алгоритма оценки</li>
+                                <li>интеграции дальше документированной выгрузки JSON</li>
+                                <li>другая модель процесса, а не «два каталога → кандидаты»</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="text22 p-note">Первая линия поддержки — вы, по гайду внедренца. Вторая — мы. Чтобы разобраться быстро, к обращению нужны версия шаблона, конфиг базы, пройденные шаги и обезличенный образец данных: без них диагноз не ставится.</p>
+                </div>
+            </section>
+
+            <section class="m-section">
+                <div class="container">
+                    <div class="h2">Что мы не обещаем</div>
+                    <div class="p-grid">
+                        <div class="p-card"><h3>Полной автоматики</h3><p class="text22">Спорные пары проверяет человек. Это свойство задачи: там, где система не уверена, она говорит об этом, а не угадывает.</p></div>
+                        <div class="p-card"><h3>Идеального качества с первой загрузки</h3><p class="text22">Правила под отрасль настраиваются, и первые прогоны нужны, чтобы их уточнить.</p></div>
+                        <div class="p-card"><h3>Работы без участия клиента</h3><p class="text22">Разметку частых слов ведёт человек, знающий ассортимент. Размечать весь словарь не нужно — список отсортирован по частоте.</p></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="m-section">
+                <div class="container">
+                    <div class="h2">Стать партнёром</div>
+                    <p class="text22">Оставьте контакты — покажем шаблон на живой базе и обсудим условия. Если у вас уже есть клиент с такой задачей, возьмём его первым пилотом и пройдём внедрение вместе.</p>
+
+                    <div class="p-form">
+                        <form action="" class="modal-form _req-form">
+                            <div class="modal-form__fields">
+                                <div class="fg fg-dynamic">
+                                    <input name="user-name" required type="text">
+                                    <label>Ваше имя и компания</label>
+                                </div>
+                                <div class="fg fg-dynamic">
+                                    <input name="user-phone" required type="tel">
+                                    <label>Номер телефона</label>
+                                </div>
+                                <div class="fg fg-dynamic">
+                                    <input name="user-email" required type="email">
+                                    <label>E-mail</label>
+                                </div>
+                            </div>
+                            <button class="modal-form__btn m-btn m-btn-blue">
+                                <span>Обсудить партнёрство</span>
+                            </button>
+                            <div class="text text-center" style="margin-top:18px">
+                                <p>Нажимая на кнопку, вы даете согласие на обработку персональных данных и соглашаетесь c <a href="/terms.html" style="color:#2c7be5">Правилами использования</a></p>
+                            </div>
+                        </form>
+                    </div>
+
+                    <p class="text22 p-note">Или напишите напрямую: телеграм <a href="https://t.me/ideavr" style="color:#2c7be5">@ideavr</a>, телефон <a href="tel:+79955060167" style="color:#2c7be5">+7 (995) 506-01-67</a> ежедневно с 8:00 до 22:00 по Москве.</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="footer__top">
+                    <div class="footer__top-col">
+                        <a href="/" class="footer__logo">
+                            <img src="img/logo2.svg" alt="Интеграм">
+                        </a>
+                        <div class="footer__desc">
+                            <div class="text22">
+                                В реестре отечественного ПО<br />
+                                Реестровая запись №30872
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer__top-col">
+                        <div class="footer-nav">
+                            <ul class="footer-nav__list">
+                                <li><a href="/#solution">Инструментарий</a></li>
+                                <li><a href="/#alternative">Что предлагаем</a></li>
+                                <li><a href="/#tariffs">Тарифы</a></li>
+                                <li><a href="/partners.html">Партнёрам</a></li>
+                            </ul>
+                            <ul class="footer-nav__list">
+                                <li><a href="/#advantages">Преимущества</a></li>
+                                <li><a href="/#for-who">Для кого подходит</a></li>
+                                <li><a href="/#results">Примеры</a></li>
+                                <li><a href="/#about">О нас</a></li>
+                            </ul>
+                            <ul class="footer-nav__list">
+                                <li><a target="login" href="https://app.integram.io">Вход</a></li>
+                                <li><a target="reg" href="https://app.integram.io#reg">Регистрация</a></li>
+                                <li><a target="rt" href="https://rutube.ru/channel/41204904/videos/">RUTUBE</a></li>
+                                <li><a target="blog" href="https://ideav.ru/blog/">Блог</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="footer__top-col">
+                        <div class="footer-contacts">
+                            <a href="tel:+79955060167" class="footer-contacts__phone text36">
+                                +7 (995) 506-01-67
+                            </a>
+                            <div class="text22">
+                                ежедневно с 8:00 до 22:00 (Мск)
+                            </div>
+                            <a href="mailto:care@integram.io" class="footer-contacts__email text24">
+                                care@integram.io
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer__bottom">
+                    <a href="/terms.html" class="footer__link">Правила использования</a>
+                    <a href="/OfferOJSC.pdf" class="footer__link">Публичная оферта</a>
+                    <a href="/acct.html" class="footer__link">Платежная информация</a>
+                    <div class="footer__info">АО Интеграм, ИНН: 9716002710</div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <div class="modal thank-modal" id="thankModal">
+        <div class="modal__bg modal-bg _close-modal"></div>
+        <div class="modal__dialog">
+            <img src="img/thank.svg" alt="" class="thank-modal__icon">
+            <div class="thank-modal__title h2">Спасибо!</div>
+            <div class="thank-modal__desc">
+                <div class="text36 text20-tablet medium-text">Ваша заявка отправлена</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/libs.min.js"></script>
+    <script src="js/main.min.js"></script>
+</body>
+
+</html>
