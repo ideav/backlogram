@@ -4,3 +4,6 @@
 User-agent: *
 Allow: /
 Clean-param: yd&ybaip&etext&from
+
+# Карта сайта (#589): без этой строки поисковик ищет её вслепую.
+Sitemap: https://integram.io/sitemap.xml
