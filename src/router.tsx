@@ -17,6 +17,8 @@ const ExcelConstructor = lazy(() => import('./pages/ExcelConstructor'))
 const InformationSystem = lazy(() => import('./pages/InformationSystem'))
 const BitrixAmoComparison = lazy(() => import('./pages/BitrixAmoComparison'))
 const Tokens = lazy(() => import('./pages/Tokens'))
+// #605: опросник «квинтеты / обычные таблицы / комбинация» из меморандума.
+const KvintetyIliTablicy = lazy(() => import('./pages/KvintetyIliTablicy'))
 // #553: персональная страница с контактами (требование поддержки Хабра к профилю).
 const AlexeySemenov = lazy(() => import('./pages/AlexeySemenov'))
 const AdImages = lazy(() => import('./pages/AdImages'))
@@ -93,6 +95,14 @@ export const router = createBrowserRouter([
       {
         path: 'tokens.html',
         element: <Tokens />,
+      },
+      {
+        path: 'kvintety-ili-tablicy.html',
+        element: <KvintetyIliTablicy />,
+      },
+      {
+        path: 'kvintety-ili-tablicy',
+        element: <KvintetyIliTablicy />,
       },
       {
         path: 'alexey-semenov.html',

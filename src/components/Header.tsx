@@ -30,6 +30,7 @@ export function Header() {
     { name: 'Конструктор вместо Excel', href: '/konstruktor-prilozhenij.html' },
     { name: 'Excel → приложение', href: '/excel-to-app.html' },
     { name: 'Сопоставление каталогов', href: '/catalog-matching.html' },
+    { name: 'Квинтеты или таблицы', href: '/kvintety-ili-tablicy.html' },
     {
       name: 'Предпосылки no-code конструктора',
       href: 'https://ideav.ru/blog/posts/predposylki-no-code-konstruktora-integram/',

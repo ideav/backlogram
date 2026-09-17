@@ -48,6 +48,8 @@ export function Footer() {
               <li><Link to="/sravnenie-s-bitrix-amocrm.html" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Интеграм vs Битрикс24 / AmoCRM</Link></li>
               <li><a href="https://integram.io/api.html" target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Интеграции</a></li>
               <li><Link to="/tokens.html" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Токены</Link></li>
+              {/* #605: опросник по архитектуре хранения — приложение к меморандуму. */}
+              <li><Link to="/kvintety-ili-tablicy.html" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Квинтеты или таблицы</Link></li>
               {/* Соглашение живёт на ideav.ru: раньше пункт уводил на чужой домен integram.io. */}
               <li><Link to="/terms.html" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Правила использования</Link></li>
               {/* Политика по 152-ФЗ должна быть общедоступна с любой страницы (issue #542). */}
