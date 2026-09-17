@@ -1,4 +1,4 @@
-import { useRef, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import {
   ArrowRight,
   BarChart3,
@@ -12,6 +12,7 @@ import {
   Table2,
   Users,
   X,
+  ZoomIn,
 } from 'lucide-react'
 import { GOALS, reachGoal, reachSignupGoal } from './conversion'
 import { Logo } from './Logo'
@@ -65,6 +66,8 @@ const SCREENS = [
     caption: 'Отчёты и графики поверх тех же данных',
   },
 ]
+
+type Screen = (typeof SCREENS)[number]
 
 const PAINS = [
   {
@@ -325,9 +328,72 @@ function OrderForm({
   )
 }
 
+/**
+ * Скриншот в полный размер поверх страницы. В плитке картинки обрезаны до
+ * полоски 160 px (`object-cover`), и по ним не видно, что там на самом деле, —
+ * поэтому они кликабельны (issue #603).
+ *
+ * Никаких целей отсюда не уходит: просмотр картинки — не конверсия, и клик по
+ * ней не должен попадать в статистику, на которой учится стратегия Директа.
+ */
+function Lightbox({ screen, onClose }: { screen: Screen; onClose: () => void }) {
+  const closeRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null
+    closeRef.current?.focus()
+
+    function onKeyDown(event: KeyboardEvent): void {
+      if (event.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKeyDown)
+
+    // Фон под слоем не должен уезжать от колеса мыши.
+    const scrollLocked = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      document.body.style.overflow = scrollLocked
+      opener?.focus?.()
+    }
+  }, [onClose])
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={screen.caption}
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/85 backdrop-blur-sm p-4 sm:p-8 cursor-zoom-out"
+    >
+      <button
+        ref={closeRef}
+        type="button"
+        onClick={onClose}
+        aria-label="Закрыть"
+        className="absolute top-3 right-3 sm:top-5 sm:right-5 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+      >
+        <X size={24} />
+      </button>
+
+      {/* Клик по самой картинке не закрывает: её хотят рассматривать. */}
+      <figure className="max-w-5xl cursor-default" onClick={event => event.stopPropagation()}>
+        <img
+          src={screen.src}
+          alt={screen.alt}
+          className="max-h-[80vh] w-auto mx-auto rounded-xl bg-white shadow-2xl object-contain"
+        />
+        <figcaption className="mt-4 text-center text-sm text-slate-200">{screen.caption}</figcaption>
+      </figure>
+    </div>
+  )
+}
+
 export default function Landing() {
   const [funnelOpen, setFunnelOpen] = useState(false)
   const [signupOpen, setSignupOpen] = useState(false)
+  const [zoomed, setZoomed] = useState<Screen | null>(null)
 
   function openFunnel(): void {
     setFunnelOpen(true)
@@ -422,10 +488,30 @@ export default function Landing() {
               и графики, в которые уже можно вносить записи.
             </p>
             <div className="mt-8 grid gap-6 sm:grid-cols-3">
-              {SCREENS.map(({ src, alt, caption }) => (
-                <figure key={src} className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
-                  <img src={src} alt={alt} loading="lazy" className="w-full h-40 object-cover object-top" />
-                  <figcaption className="px-4 py-3 text-sm text-slate-600">{caption}</figcaption>
+              {SCREENS.map(screen => (
+                <figure
+                  key={screen.src}
+                  className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setZoomed(screen)}
+                    aria-label={`Открыть в полный размер: ${screen.caption}`}
+                    className="group relative block w-full cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-inset"
+                  >
+                    <img
+                      src={screen.src}
+                      alt={screen.alt}
+                      loading="lazy"
+                      className="w-full h-40 object-cover object-top transition-transform duration-300 group-hover:scale-105"
+                    />
+                    {/* Значок виден всегда: на телефоне навести курсор некуда,
+                        а по обрезанной полоске не догадаться, что она кликабельна. */}
+                    <span className="absolute top-2 right-2 p-1.5 rounded-lg bg-slate-900/55 text-white group-hover:bg-slate-900/75 transition-colors">
+                      <ZoomIn size={16} />
+                    </span>
+                  </button>
+                  <figcaption className="px-4 py-3 text-sm text-slate-600">{screen.caption}</figcaption>
                 </figure>
               ))}
             </div>
@@ -570,6 +656,8 @@ export default function Landing() {
           <p>© {new Date().getFullYear()} АО «Интеграм»</p>
         </div>
       </footer>
+
+      {zoomed && <Lightbox screen={zoomed} onClose={() => setZoomed(null)} />}
     </div>
   )
 }
