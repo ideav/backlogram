@@ -10,6 +10,26 @@ export const BLOG_URL = 'https://ideav.ru/blog'
 
 export const BLOG_POSTS = [
   {
+    slug: 'ierarhicheskii-oltp-izmeryaem-sleduyushchii-uroven-unifikacii',
+    url: 'https://ideav.ru/blog/posts/ierarhicheskii-oltp-izmeryaem-sleduyushchii-uroven-unifikacii/',
+    title: 'Иерархический OLTP: измеряем следующий уровень унификации',
+    description: 'Выносим разрезы аналитики на верхний уровень транзакции в квартетной модели: 1 млн транзакций, Postgres 16, честные цифры выигрышей и проигрышей.',
+    date: '2026-09-10',
+    dateLabel: '10 сентября 2026',
+    category: 'Технологии',
+    image: 'https://ideav.ru/blog/abstract/blog-material-1.svg',
+  },
+  {
+    slug: 'odin-kontragent-tri-vzglyada',
+    url: 'https://ideav.ru/blog/posts/odin-kontragent-tri-vzglyada/',
+    title: 'Бухгалтерия, продажи и закупки спорят об одном контрагенте. Кто из них прав?',
+    description: 'Одной компании-контрагенту бухгалтерии нужен один ИНН, продажам — три подразделения с отдельными менеджерами, закупкам — поставщик с договорами. В большинстве систем этот спор заканчивается компромиссом, неудобным никому. Рассказываем, как устроено, когда правы все, — простыми словами.',
+    date: '2026-09-07',
+    dateLabel: '7 сентября 2026',
+    category: 'О платформе',
+    image: 'https://ideav.ru/blog/uploads/kontragent-tri-vzglyada-kdpv.png',
+  },
+  {
     slug: 'promyshlennoe-prilozhenie-shansy-riski-trudoemkost',
     url: 'https://ideav.ru/blog/posts/promyshlennoe-prilozhenie-shansy-riski-trudoemkost/',
     title: 'Оценка в 300 часов: как взвесить шансы, риски и трудоёмкость промышленного приложения',
@@ -57,7 +77,7 @@ export const BLOG_POSTS = [
     date: '2026-07-16',
     dateLabel: '16 июля 2026',
     category: 'О платформе',
-    image: 'https://ideav.ru/blog/abstract/blog-material-5.svg',
+    image: 'https://ideav.ru/blog/abstract/blog-material-1.svg',
   },
   {
     slug: 'integram-fc-chto-poluchilos-razbor-po-ekranam',
@@ -78,25 +98,5 @@ export const BLOG_POSTS = [
     dateLabel: '27 июня 2026',
     category: 'Проекты',
     image: 'https://ideav.ru/blog/uploads/og/integram-fc-tables.jpg',
-  },
-  {
-    slug: 'massovoe-sopostavlenie-katalogov',
-    url: 'https://ideav.ru/blog/posts/massovoe-sopostavlenie-katalogov/',
-    title: 'Массовое сопоставление каталогов в Интеграме: автоматический подбор пар',
-    description: 'Продолжаем тему сопоставления каталогов: массовый автоподбор в несколько потоков, как считается оценка точности, кандидаты-альтернативы, выгрузка в Excel и доуточнение шорт-листа языковой моделью — без программирования.',
-    date: '2026-06-23',
-    dateLabel: '23 июня 2026',
-    category: 'Обучение',
-    image: 'https://ideav.ru/blog/uploads/og/e09f9acc-matching-results.jpg',
-  },
-  {
-    slug: 'ii-chat-vnutri-bazy-agent-dorabatyvaet-prilozhenie',
-    url: 'https://ideav.ru/blog/posts/ii-chat-vnutri-bazy-agent-dorabatyvaet-prilozhenie/',
-    title: 'ИИ-чат внутри приложения: тот же агент дорабатывает базу изнутри',
-    description: 'В каждой базе Интеграма появился ИИ-чат, который вызывает того же агента-разработчика — он дорабатывает приложение прямо изнутри. Рассказываем, как это выглядит, что можно просить и как устроены доступ и безопасность.',
-    date: '2026-06-17',
-    dateLabel: '17 июня 2026',
-    category: 'О платформе',
-    image: 'https://ideav.ru/blog/uploads/og/ii-chat-vnutri-bazy.jpg',
   },
 ]
