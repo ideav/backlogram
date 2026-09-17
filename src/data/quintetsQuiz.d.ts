@@ -18,14 +18,16 @@ export interface QuizLink {
 }
 
 /**
- * Ответ: текст, баллы [Квинтеты, РСУБД], человеко-часы [Квинтеты, РСУБД],
- * пояснение (`{link}` — место подстановки ссылки) и сама ссылка.
+ * Ответ: текст, баллы [Квинтеты, РСУБД], человеко-часы на разработку
+ * [Квинтеты, РСУБД], пояснение для бизнес-читателя (`{link}` — место
+ * подстановки ссылки), техническая расшифровка (уходит в title) и сама ссылка.
  * null в часах = «так не делается».
  */
 export type QuizOption = [
   string,
   [number, number],
   [number | null, number | null],
+  string,
   string,
   QuizLink?,
 ]
@@ -85,9 +87,6 @@ export interface QuizVerdict extends QuizScore {
 export const QUIZ_META: QuizMeta
 export const VARIANTS: string[]
 export const VARIANT_KEYS: string[]
-export const COMBO_FIX: number
-export const COMBO_MONTH: number
-export const HORIZON: number
 export const COMBO_SURCHARGE: number
 export const SCALE_GOOD: number
 export const SCALE_OK: number

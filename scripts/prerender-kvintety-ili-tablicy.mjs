@@ -61,7 +61,7 @@ function escape(s) {
 /** Пояснение к ответу: `{link}` разворачивается в <a>, остальное экранируется. */
 function noteHtml(option) {
   const text = option[3] ?? ''
-  const link = option[4]
+  const link = option[5]
   if (!link) return escape(text)
   const [before, after = ''] = text.split('{link}')
   return `${escape(before)}<a href="${escape(link.href)}">${escape(link.text)}</a>${escape(after)}`
@@ -90,7 +90,10 @@ const rowsHtml = QUESTIONS.flatMap((q, qi) =>
       .map((val, i) => `<td class="n${val === 0 ? ' zero' : ''}${i === 2 && noPenalty ? ' free' : ''}">${val}</td>`)
       .join('')
     const hourCells = h.map((val) => `<td class="n mute">${escape(hoursLabel(val))}</td>`).join('')
-    return `<tr>${head}<td>${escape(o[0])}</td>${pointCells}${hourCells}<td>${noteHtml(o)}</td></tr>`
+    // Техническая расшифровка уходит в title — в снапшоте она нужна поисковику
+    // и читателю без JS ровно так же, как в интерактивной версии.
+    const why = o[4] ? ` title="${escape(o[4])}"` : ''
+    return `<tr>${head}<td>${escape(o[0])}</td>${pointCells}${hourCells}<td${why}>${noteHtml(o)}</td></tr>`
   }),
 ).join('\n      ')
 
@@ -136,13 +139,13 @@ const bodyHtml = `
     </details>
   </header>
   <h2>Таблица баллов и часов целиком</h2>
-  <p>Отметьте по одному ответу в каждом вопросе, сложите баллы и сложите часы. Подсвеченная клетка — комбинация без штрафа в баллах: один из чистых вариантов вопрос не тянет. Часы — человеко-часы за 36 месяцев, «—» значит «так не делается».</p>
+  <p>Отметьте по одному ответу в каждом вопросе, сложите баллы и сложите часы. Подсвеченная клетка — комбинация без штрафа в баллах: один из чистых вариантов вопрос не тянет. Часы — человеко-часы на разработку, «—» значит «так не делается». Наведите курсор на пояснение, чтобы увидеть замеры, из которых взята оценка.</p>
   <div class="qz-prerender__wrap">
     <table>
       <thead>
         <tr>
           <th rowspan="2">№</th><th rowspan="2">Вопрос</th><th rowspan="2">Ответ</th>
-          <th colspan="3">Баллы</th><th colspan="3">Человеко-часы за 3 года</th>
+          <th colspan="3">Баллы</th><th colspan="3">Человеко-часы на разработку</th>
           <th rowspan="2">Почему</th>
         </tr>
         <tr>
