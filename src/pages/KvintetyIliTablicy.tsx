@@ -87,7 +87,7 @@ function OptionScores({ option, w }: { option: QuizOption; w: number }) {
       </div>
       <div className="mt-1 flex justify-end gap-1 text-[11px] tabular-nums text-slate-400 dark:text-slate-500">
         {h.map((v, i) => (
-          <span key={i} title={`${VARIANTS[i]}: человеко-часы за 3 года`} className="min-w-[2.25rem]">
+          <span key={i} title={`${VARIANTS[i]}: человеко-часы на разработку`} className="min-w-[2.25rem]">
             {hoursLabel(v)}
           </span>
         ))}
@@ -102,7 +102,7 @@ function OptionScores({ option, w }: { option: QuizOption; w: number }) {
  *
  * Механическое приложение к меморандуму «Квинтеты против традиционных таблиц»:
  * тринадцать вопросов о проекте, у каждого ответа — баллы трёх вариантов и
- * человеко-часы за три года. Вопросы, баллы, часы и правила счёта берутся из
+ * человеко-часы на разработку. Вопросы, баллы, часы и правила счёта берутся из
  * src/data/quintetsQuiz.mjs — общего источника со снапшотом
  * (scripts/prerender-kvintety-ili-tablicy.mjs), поэтому разойтись они не могут.
  */
@@ -185,7 +185,7 @@ export default function KvintetyIliTablicy() {
       i === 2 && v.complete ? `${COMBO_SURCHARGE} ч надбавки за стык` : '',
       crossHours ? `${crossHours} ч перекоса` : '',
     ].filter(Boolean)
-    return `${v.hours[i]} чел.-ч за 3 года${parts.length ? ` (в них ${parts.join(' и ')})` : ''}`
+    return `${v.hours[i]} чел.-ч на разработку${parts.length ? ` (в них ${parts.join(' и ')})` : ''}`
   }
 
   const h1Head = QUIZ_META.h1.slice(0, QUIZ_META.h1.length - QUIZ_META.h1Accent.length)
@@ -279,8 +279,13 @@ export default function KvintetyIliTablicy() {
                       <span className="min-w-0 flex-1 text-sm text-slate-700 dark:text-slate-200">
                         {o[0]}
                         {o[3] && (
-                          <span className="mt-1 block text-[13px] leading-relaxed text-slate-500 dark:text-slate-400">
-                            <Note text={o[3]} link={o[4]} />
+                          // Видимая подпись — на языке заказчика; замеры и названия
+                          // механизмов живут в title, чтобы не мешать чтению.
+                          <span
+                            title={o[4] || undefined}
+                            className="mt-1 block text-[13px] leading-relaxed text-slate-500 dark:text-slate-400"
+                          >
+                            <Note text={o[3]} link={o[5]} />
                           </span>
                         )}
                       </span>
@@ -375,16 +380,16 @@ export default function KvintetyIliTablicy() {
                   <>
                     <p className="pt-1">
                       <b>Рекомендация:</b> {v.tie.map(i => VARIANTS[i]).join(' или ')}
-                      {v.tie.length > 1 ? ' — равный счёт' : ''}, {v.hours[v.best]} чел.-ч разницы
-                      за три года.
+                      {v.tie.length > 1 ? ' — равный счёт' : ''}, {v.hours[v.best]} чел.-ч на
+                      разработку.
                     </p>
                     {v.cheapest != null && v.cheapest !== v.best && (
                       <p>
                         Дешевле по труду другой вариант: {VARIANTS[v.cheapest]} —{' '}
                         {v.hours[v.cheapest]} чел.-ч против {v.hours[v.best]}, но он проигрывает{' '}
                         {v.sum[v.best] - v.sum[v.cheapest]} баллов. Разница в{' '}
-                        {Math.abs(v.hours[v.best] - v.hours[v.cheapest])} чел.-ч за три года — это и
-                        есть цена вопроса.
+                        {Math.abs(v.hours[v.best] - v.hours[v.cheapest])} чел.-ч на разработке — это
+                        и есть цена вопроса.
                       </p>
                     )}
                     {v.best === 2 && (
@@ -453,8 +458,8 @@ export default function KvintetyIliTablicy() {
           <p className="mt-2 max-w-3xl text-sm text-slate-500 dark:text-slate-400">
             Та же механика на бумаге: отметьте по одному ответу в каждом вопросе, сложите баллы и
             сложите часы. Подсвеченная клетка — комбинация без штрафа в баллах: один из чистых
-            вариантов вопрос не тянет. Часы — человеко-часы за 36 месяцев, «—» значит «так не
-            делается».
+            вариантов вопрос не тянет. Часы — человеко-часы на разработку, «—» значит «так не
+            делается». Наведите курсор на пояснение, чтобы увидеть замеры, из которых взята оценка.
           </p>
 
           <div className="mt-5 overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
@@ -465,7 +470,7 @@ export default function KvintetyIliTablicy() {
                   <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 p-2 text-left w-52">Вопрос</th>
                   <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 p-2 text-left w-48">Ответ</th>
                   <th colSpan={3} className="border border-slate-200 dark:border-slate-800 p-2 text-center">Баллы</th>
-                  <th colSpan={3} className="border border-slate-200 dark:border-slate-800 p-2 text-center">Человеко-часы за 3 года</th>
+                  <th colSpan={3} className="border border-slate-200 dark:border-slate-800 p-2 text-center">Человеко-часы на разработку</th>
                   <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 p-2 text-left">Почему</th>
                 </tr>
                 <tr>
@@ -507,8 +512,8 @@ export default function KvintetyIliTablicy() {
                             {hoursLabel(val)}
                           </td>
                         ))}
-                        <td className="border border-slate-200 dark:border-slate-800 p-2">
-                          <Note text={o[3]} link={o[4]} />
+                        <td title={o[4] || undefined} className="border border-slate-200 dark:border-slate-800 p-2">
+                          <Note text={o[3]} link={o[5]} />
                         </td>
                       </tr>
                     )

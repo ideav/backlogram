@@ -88,6 +88,36 @@ test('у каждого ответа заданы и баллы, и часы о�
   assert.equal(new Set(ids).size, ids.length, 'id вопросов должны быть уникальны')
 })
 
+// Подпись под ответом читает заказчик, а не инженер: в ней нет ни номеров
+// разделов меморандума, ни миллисекунд. Всё это уходит в title — отдельное поле
+// o[4], которое страница и снапшот рисуют атрибутом.
+test('видимое пояснение — на языке заказчика, замеры спрятаны в title', () => {
+  for (const q of QUESTIONS) {
+    for (const o of q.o) {
+      const [text, , , note, why, link] = o
+      // Пустая строка — законный ответ «пояснять нечего»; undefined означал бы,
+      // что поле просто забыли, и ссылка уехала бы не в тот слот кортежа.
+      assert.equal(typeof note, 'string', `«${text}»: пояснение задаётся строкой`)
+      assert.equal(typeof why, 'string', `«${text}»: расшифровка задаётся строкой`)
+      assert.doesNotMatch(note, /(ЗА|ПРОТИВ)-\d+/, `«${text}»: ссылка на раздел меморандума — в title`)
+      assert.doesNotMatch(note, /\d+\s*(мс|нс|мкс)\b/, `«${text}»: замеры — в title`)
+      if (link !== undefined) {
+        assert.ok(link.href && link.text, `«${text}»: ссылка задаётся парой href/text`)
+        assert.match(note, /\{link\}/, `«${text}»: ссылке нужно место подстановки в пояснении`)
+      }
+    }
+  }
+})
+
+test('часы — трудозатраты на разработку, а не стоимость владения за горизонт', () => {
+  const page = readFileSync(resolve(repo, 'src/pages/KvintetyIliTablicy.tsx'), 'utf8')
+  const script = readFileSync(resolve(repo, 'scripts/prerender-kvintety-ili-tablicy.mjs'), 'utf8')
+  const data = readFileSync(resolve(repo, 'src/data/quintetsQuiz.mjs'), 'utf8')
+  for (const [name, src] of [['страница', page], ['снапшот', script], ['данные', data]]) {
+    assert.doesNotMatch(src, /за 3 года|за три года|36 месяц/, `${name}: горизонта у опросника нет`)
+  }
+})
+
 test('правило перекоса адресует существующие вопросы и ответы', () => {
   assert.ok(CROSS.length > 0, 'перекос — часть модели, а не украшение')
   for (const c of CROSS) {
@@ -116,9 +146,9 @@ test('перекос дорожает только парой ответов и 
   assert.equal(both.cross.length, 1, 'пара ответов включает перекос')
 
   // Часы по вопросам складываются, поэтому надбавка видна как остаток сверх суммы
-  // двух изменений: она идёт целиком РСУБД и равна 160 часам.
+  // двух изменений: она идёт целиком РСУБД и равна 80 часам.
   const rowsOnly = onlyWho.hours[1] + onlyQry.hours[1] - neither.hours[1]
-  assert.equal(both.hours[1] - rowsOnly, 160, 'перекос обязан добавлять ровно 160 часов РСУБД')
+  assert.equal(both.hours[1] - rowsOnly, 80, 'перекос обязан добавлять ровно 80 часов РСУБД')
   assert.equal(
     both.hours[0],
     onlyWho.hours[0] + onlyQry.hours[0] - neither.hours[0],
@@ -154,8 +184,8 @@ test('комбинация платит надбавку за стык толь�
   const rows = QUESTIONS.reduce((a, q) => a + hours(q.o[0])[2], 0)
   assert.equal(partial.complete, false)
   assert.equal(partial.hours[2], hours(QUESTIONS[0].o[0])[2], 'на неполном наборе надбавки ещё нет')
-  assert.equal(full.hours[2] - rows, COMBO_SURCHARGE, 'на полном — 128 часов за стык двух хранилищ')
-  assert.equal(COMBO_SURCHARGE, 128)
+  assert.equal(full.hours[2] - rows, COMBO_SURCHARGE, 'на полном — надбавка за стык двух хранилищ')
+  assert.equal(COMBO_SURCHARGE, 56)
 })
 
 test('SPA знает оба маршрута опросника', () => {
@@ -268,10 +298,12 @@ test('prerender пишет crawlable dist/kvintety-ili-tablicy.html со все�
   }
   // Итоговая строка и перекос.
   assert.match(out, /Потолок баллов и самый трудоёмкий набор ответов/)
-  assert.match(out, /\+160 ч/)
+  assert.match(out, /\+80 ч/)
   // Ссылка из пояснения развёрнута, а не осталась плейсхолдером.
   assert.doesNotMatch(out, /\{link\}/)
   assert.match(out, /<a href="\/catalog-matching\.html">/)
+  // Техническая расшифровка уехала в title и не мешает читать пояснение.
+  assert.match(out, /<td title="[^"]*ПРОТИВ-5[^"]*">/)
 })
 
 test('prerender не трогает dist/index.html', () => {
