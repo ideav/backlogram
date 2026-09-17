@@ -19,6 +19,10 @@ import { Logo } from './Logo'
 
 const TELEGRAM_BOT_URL = 'https://t.me/Integrammbot'
 const CONTACT_EMAIL = 'abc@integram.io'
+// Политика обработки персональных данных живёт на основном сайте (#542) —
+// лендинг на своём домене ведёт на неё абсолютной ссылкой, а не на якорь #privacy:
+// тут своей страницы политики нет, подвал даёт лишь краткую справку.
+const PRIVACY_URL = 'https://ideav.ru/privacy.html'
 const ANALYSIS_PRICE = '20 000 ₽'
 const SUBMIT_ENDPOINT = 'order.php'
 
@@ -306,7 +310,12 @@ function OrderForm({
           <input type="checkbox" name="consent" required className="mt-1" />
           <span>
             Даю согласие на обработку персональных данных на условиях{' '}
-            <a href="#privacy" className="text-blue-600 hover:underline">
+            <a
+              href={PRIVACY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
               политики
             </a>
             .
@@ -642,6 +651,15 @@ export default function Landing() {
             Отозвать согласие и удалить данные можно письмом на{' '}
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-blue-600 hover:underline">
               {CONTACT_EMAIL}
+            </a>
+            . Полный текст —{' '}
+            <a
+              href={PRIVACY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              политика обработки персональных данных
             </a>
             .
           </p>
