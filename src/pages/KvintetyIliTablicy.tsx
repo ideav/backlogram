@@ -191,7 +191,11 @@ export default function KvintetyIliTablicy() {
   const h1Head = QUIZ_META.h1.slice(0, QUIZ_META.h1.length - QUIZ_META.h1Accent.length)
 
   return (
-    <div className="overflow-hidden">
+    // overflow-x-clip, а не overflow-hidden: `overflow: hidden` на предке
+    // делает его контейнером прокрутки, и липкая колонка «Итог» перестаёт
+    // прилипать к верху окна — она прилипает к невидимому контейнеру и едет
+    // вместе со страницей. `clip` режет так же, но контейнера не создаёт.
+    <div className="overflow-x-clip">
       {/* Hero */}
       <section className="pt-28 pb-10 lg:pt-36 lg:pb-14 border-b border-slate-200 dark:border-slate-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

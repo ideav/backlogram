@@ -182,6 +182,32 @@ test('страница доступна из шапки, подвала, sitemap
   )
 })
 
+test('колонке «Итог» ничто не мешает прилипать', () => {
+  const page = readFileSync(resolve(repo, 'src/pages/KvintetyIliTablicy.tsx'), 'utf8')
+  assert.match(page, /lg:sticky lg:top-24/)
+  // `overflow: hidden` на любом предке делает его контейнером прокрутки, и
+  // sticky прилипает к нему, а не к окну. Проверяем предков колонки: корень
+  // страницы и сетку опросника. Корень режет по горизонтали через clip —
+  // контейнера прокрутки он не создаёт.
+  const body = page.slice(page.indexOf('export default function'))
+  const root = body.match(/return \(\s*(?:\/\/[^\n]*\n\s*)*<div className="([^"]+)"/)[1]
+  assert.match(root, /overflow-x-clip/)
+  assert.ok(!/\boverflow-hidden\b/.test(root), 'overflow-hidden на корне ломает sticky')
+  const grid = page.match(/<div className="([^"]*lg:grid-cols-\[[^"]*)"/)[1]
+  assert.ok(!/\boverflow-/.test(grid), 'overflow на сетке ломает sticky')
+})
+
+test('в меню «Ещё» пункт стоит последним и помечен New', () => {
+  const more = header.match(/const moreLinks = \[([\s\S]*?)\n  \]/)
+  assert.ok(more, 'в шапке должен быть список moreLinks')
+  const entries = more[1].split(/\},?\s*\n/).filter((e) => e.includes('href'))
+  const last = entries[entries.length - 1]
+  assert.match(last, /\/kvintety-ili-tablicy\.html/, 'пункт должен быть последним в «Ещё»')
+  assert.match(last, /badge: 'New'/)
+  // Метку рисуют оба списка — десктопный выпадающий и мобильный раскрывающийся.
+  assert.equal(header.match(/\{link\.badge && <NewBadge \/>\}/g)?.length, 2)
+})
+
 test('build прогоняет пререндер опросника после базы знаний и до пререндера главной', () => {
   const pkg = JSON.parse(readFileSync(resolve(repo, 'package.json'), 'utf8'))
   const build = pkg.scripts.build

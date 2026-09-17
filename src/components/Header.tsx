@@ -5,6 +5,16 @@ import { useState } from 'react'
 import { useTheme } from '../context/ThemeContext'
 import { Logo } from './Logo'
 
+// Пометка «New» у пункта меню. Одна на десктопный выпадающий список и на
+// мобильный — чтобы метка не разъехалась между ними.
+function NewBadge() {
+  return (
+    <span className="shrink-0 rounded-full bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-500 dark:text-blue-400">
+      New
+    </span>
+  )
+}
+
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
@@ -30,12 +40,14 @@ export function Header() {
     { name: 'Конструктор вместо Excel', href: '/konstruktor-prilozhenij.html' },
     { name: 'Excel → приложение', href: '/excel-to-app.html' },
     { name: 'Сопоставление каталогов', href: '/catalog-matching.html' },
-    { name: 'Квинтеты или таблицы', href: '/kvintety-ili-tablicy.html' },
     {
       name: 'Предпосылки no-code конструктора',
       href: 'https://ideav.ru/blog/posts/predposylki-no-code-konstruktora-integram/',
       external: true,
     },
+    // Свежий пункт держим последним и помечаем «New»: список «Ещё» читают
+    // сверху вниз, и новое заметнее в конце, чем в середине (issue #605).
+    { name: 'Квинтеты или таблицы', href: '/kvintety-ili-tablicy.html', badge: 'New' },
   ]
 
   return (
@@ -86,9 +98,10 @@ export function Header() {
                       key={link.name}
                       href={link.href}
                       {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                      className="block px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
+                      className="flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
                     >
                       {link.name}
+                      {link.badge && <NewBadge />}
                     </a>
                   ))}
                 </div>
@@ -197,9 +210,10 @@ export function Header() {
                       href={link.href}
                       onClick={() => setIsOpen(false)}
                       {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                      className="block pl-6 pr-3 py-3 text-base text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400"
+                      className="flex items-center gap-2 pl-6 pr-3 py-3 text-base text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400"
                     >
                       {link.name}
+                      {link.badge && <NewBadge />}
                     </a>
                   ))}
                 </div>
