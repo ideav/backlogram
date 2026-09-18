@@ -1,0 +1,234 @@
+split ok
+############ S1+S2 — ПРОГОН 1 (холодный) ############
+=== S1 wide (RRN) — колонка без индекса, ожидается Seq Scan
+ Execution Time: 1208.789 ms
+=== S1 flat (RRN) — общий индекс по значению любого реквизита
+ Execution Time: 2.271 ms
+=== S1 hier4 (RRN)
+ Execution Time: 3.434 ms
+=== S1 jb (RRN) — GIN jsonb_path_ops
+ Execution Time: 0.540 ms
+=== S2 hier4 — одним запросом по рёбрам: pan → транзакция → разрез → соседи → amount
+ Execution Time: 11.478 ms
+=== S2 wide — группа восстанавливается сравнением четырёх колонок
+ Execution Time: 1.627 ms
+=== S2 jb шаг 1 из 2: прочитать документ по PAN (время считать вместе с шагом 2)
+=== S2 jb шаг 2 из 2: соседи по четырём значениям
+ Execution Time: 5.253 ms
+
+############ S1+S2 — ПРОГОН 2 (тёплый, эти числа берём) ############
+Timing is on.
+
+================================================================
+== S1. Поиск по реквизиту, под который не заведён свой индекс
+================================================================
+Time: 1.465 ms
+=== S1 wide (RRN) — колонка без индекса, ожидается Seq Scan
+                                     QUERY PLAN                                      
+-------------------------------------------------------------------------------------
+ Aggregate (actual time=119.707..131.359 rows=1 loops=1)
+   Buffers: shared hit=49936
+   ->  Gather (actual time=119.542..131.349 rows=1 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=49936
+         ->  Parallel Seq Scan on wide (actual time=100.006..115.772 rows=0 loops=3)
+               Filter: ("RRN" = '903984255173'::text)
+               Rows Removed by Filter: 333330
+               Buffers: shared hit=49936
+ Planning:
+   Buffers: shared hit=14
+ Planning Time: 0.089 ms
+ Execution Time: 131.399 ms
+(14 rows)
+
+Time: 132.045 ms
+=== S1 flat (RRN) — общий индекс по значению любого реквизита
+                                        QUERY PLAN                                         
+-------------------------------------------------------------------------------------------
+ Aggregate (actual time=0.046..0.046 rows=1 loops=1)
+   Buffers: shared hit=5
+   ->  Index Scan using flat_t_lower_idx on flat (actual time=0.043..0.043 rows=1 loops=1)
+         Index Cond: ((t = 1036) AND (lower("left"(val, 127)) = '903984255173'::text))
+         Buffers: shared hit=5
+ Planning:
+   Buffers: shared hit=86
+ Planning Time: 0.409 ms
+ Execution Time: 0.064 ms
+(9 rows)
+
+Time: 0.903 ms
+=== S1 hier4 (RRN)
+                                         QUERY PLAN                                          
+---------------------------------------------------------------------------------------------
+ Aggregate (actual time=0.033..0.033 rows=1 loops=1)
+   Buffers: shared hit=5
+   ->  Index Scan using hier4_t_lower_idx on hier4 (actual time=0.031..0.032 rows=1 loops=1)
+         Index Cond: ((t = 1036) AND (lower("left"(val, 127)) = '903984255173'::text))
+         Buffers: shared hit=5
+ Planning:
+   Buffers: shared hit=57
+ Planning Time: 0.170 ms
+ Execution Time: 0.043 ms
+(9 rows)
+
+Time: 0.457 ms
+=== S1 jb (RRN) — GIN jsonb_path_ops
+                                    QUERY PLAN                                     
+-----------------------------------------------------------------------------------
+ Aggregate (actual time=0.049..0.050 rows=1 loops=1)
+   Buffers: shared hit=5
+   ->  Bitmap Heap Scan on jb (actual time=0.048..0.048 rows=1 loops=1)
+         Recheck Cond: (doc @> jsonb_build_object('RRN', '903984255173'))
+         Heap Blocks: exact=1
+         Buffers: shared hit=5
+         ->  Bitmap Index Scan on jb_gin (actual time=0.033..0.033 rows=1 loops=1)
+               Index Cond: (doc @> jsonb_build_object('RRN', '903984255173'))
+               Buffers: shared hit=4
+ Planning:
+   Buffers: shared hit=66
+ Planning Time: 0.433 ms
+ Execution Time: 0.062 ms
+(13 rows)
+
+Time: 0.791 ms
+
+================================================================
+== S2. Связь: обход по ребру против сборки группы по значениям
+================================================================
+Time: 0.204 ms
+=== S2 hier4 — одним запросом по рёбрам: pan → транзакция → разрез → соседи → amount
+                                                   QUERY PLAN                                                    
+-----------------------------------------------------------------------------------------------------------------
+ Aggregate (actual time=0.264..0.265 rows=1 loops=1)
+   Buffers: shared hit=122
+   ->  Nested Loop (actual time=0.117..0.248 rows=18 loops=1)
+         Buffers: shared hit=122
+         ->  Nested Loop (actual time=0.105..0.144 rows=18 loops=1)
+               Buffers: shared hit=32
+               ->  Nested Loop (actual time=0.069..0.070 rows=1 loops=1)
+                     Buffers: shared hit=10
+                     ->  Index Scan using hier4_t_lower_idx on hier4 q (actual time=0.025..0.026 rows=1 loops=1)
+                           Index Cond: ((t = 1001) AND (lower("left"(val, 127)) = '4625092648361236'::text))
+                           Buffers: shared hit=5
+                     ->  Index Scan using hier4_pkey on hier4 t2 (actual time=0.042..0.042 rows=1 loops=1)
+                           Index Cond: (id = q.up)
+                           Buffers: shared hit=5
+               ->  Index Scan using hier4_up_t_idx on hier4 s (actual time=0.035..0.071 rows=18 loops=1)
+                     Index Cond: ((up = t2.up) AND (t = 100))
+                     Buffers: shared hit=22
+         ->  Index Scan using hier4_up_t_idx on hier4 a (actual time=0.005..0.005 rows=1 loops=18)
+               Index Cond: ((up = s.id) AND (t = 1003))
+               Buffers: shared hit=90
+ Planning:
+   Buffers: shared hit=177
+ Planning Time: 0.688 ms
+ Execution Time: 0.317 ms
+(24 rows)
+
+Time: 1.413 ms
+=== S2 wide — группа восстанавливается сравнением четырёх колонок
+                                           QUERY PLAN                                           
+------------------------------------------------------------------------------------------------
+ Aggregate (actual time=0.331..0.332 rows=1 loops=1)
+   Buffers: shared hit=190
+   InitPlan 1 (returns $0,$1,$2,$3)
+     ->  Index Scan using wide_pan_idx on wide wide_1 (actual time=0.017..0.018 rows=1 loops=1)
+           Index Cond: (pan = '4625092648361236'::text)
+           Buffers: shared hit=4
+   ->  Index Scan using "wide_DT_Gosb_idx" on wide (actual time=0.037..0.323 rows=18 loops=1)
+         Index Cond: (("DT" = $0) AND ("Gosb" = $1))
+         Filter: (("CCY" = $2) AND ("Merchant_Type" = $3))
+         Rows Removed by Filter: 203
+         Buffers: shared hit=190
+ Planning:
+   Buffers: shared hit=30
+ Planning Time: 0.116 ms
+ Execution Time: 0.347 ms
+(15 rows)
+
+Time: 0.671 ms
+=== S2 jb шаг 1 из 2: прочитать документ по PAN (время считать вместе с шагом 2)
+Time: 0.321 ms
+=== S2 jb шаг 2 из 2: соседи по четырём значениям
+                                                               QUERY PLAN                                                                
+-----------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate (actual time=0.989..0.989 rows=1 loops=1)
+   Buffers: shared hit=47
+   ->  Bitmap Heap Scan on jb (actual time=0.861..0.976 rows=18 loops=1)
+         Recheck Cond: (doc @> jsonb_build_object('DT', '2026-07-16', 'Gosb', 'Gosb-10', 'CCY', 'RUB', 'Merchant_Type', 'MCC-7011'))
+         Heap Blocks: exact=18
+         Buffers: shared hit=47
+         ->  Bitmap Index Scan on jb_gin (actual time=0.853..0.853 rows=18 loops=1)
+               Index Cond: (doc @> jsonb_build_object('DT', '2026-07-16', 'Gosb', 'Gosb-10', 'CCY', 'RUB', 'Merchant_Type', 'MCC-7011'))
+               Buffers: shared hit=29
+ Planning:
+   Buffers: shared hit=1
+ Planning Time: 0.130 ms
+ Execution Time: 1.006 ms
+(13 rows)
+
+Time: 1.309 ms
+
+================================================================
+
+############ S3 — один раз ############
+Timing is on.
+== S3. Новый 55-й реквизит: цена расширения схемы
+================================================================
+=== S3 размеры до
+ relname |  total  
+---------+---------
+ flat    | 5896 MB
+ hier4   | 5486 MB
+ jb      | 1687 MB
+ wide    | 458 MB
+(4 rows)
+
+Time: 3.518 ms
+=== S3a wide: ALTER TABLE ADD COLUMN без DEFAULT — правка каталога
+ALTER TABLE
+Time: 2.214 ms
+=== S3b wide: заполнить у миллиона строк — перезапись всех строк
+UPDATE 999990
+Time: 19361.002 ms (00:19.361)
+=== S3c jb: дописать ключ в каждый документ — перезапись всех документов
+UPDATE 999990
+Time: 103100.293 ms (01:43.100)
+=== S3d flat: новый реквизит строками, t=1054 — только вставка
+INSERT 0 999990
+Time: 45901.238 ms (00:45.901)
+=== S3e hier4: то же
+INSERT 0 999990
+Time: 48001.885 ms (00:48.002)
+=== S3 размеры после, до VACUUM — здесь виден раздув от перезаписи
+ relname |  total  
+---------+---------
+ flat    | 5982 MB
+ hier4   | 5572 MB
+ jb      | 3049 MB
+ wide    | 917 MB
+(4 rows)
+
+Time: 8.941 ms
+VACUUM
+Time: 1719.447 ms (00:01.719)
+VACUUM
+Time: 22392.637 ms (00:22.393)
+VACUUM
+Time: 1710.426 ms (00:01.710)
+VACUUM
+Time: 1211.140 ms (00:01.211)
+=== S3 размеры после VACUUM ANALYZE
+ relname |  total  
+---------+---------
+ flat    | 5982 MB
+ hier4   | 5572 MB
+ jb      | 3049 MB
+ wide    | 917 MB
+(4 rows)
+
+Time: 7.617 ms
+
+== Готово. Корпус изменён: перезалить load.sql + alt.sql перед другими замерами.
+EXIT=0
