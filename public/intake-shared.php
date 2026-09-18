@@ -248,11 +248,11 @@ if (!defined('INTAKE_SHARED_LOADED')) {
      */
     function intake_telegram_send_message(string $botToken, string $chatId, string $text, string $apiBase = 'https://api.telegram.org', string $parseMode = 'MarkdownV2'): array {
         $url = rtrim($apiBase, '/') . '/bot' . $botToken . '/sendMessage';
-        $payload = json_encode([
-            'chat_id'    => $chatId,
-            'text'       => $text,
-            'parse_mode' => $parseMode,
-        ]);
+        $fields = ['chat_id' => $chatId, 'text' => $text];
+        if ($parseMode !== '') {
+            $fields['parse_mode'] = $parseMode;
+        }
+        $payload = json_encode($fields);
         $ch = curl_init($url);
         curl_setopt_array($ch, [
             CURLOPT_POST           => true,
@@ -316,5 +316,105 @@ if (!defined('INTAKE_SHARED_LOADED')) {
             'http_code'   => $code,
             'description' => $data['description'] ?? null,
         ];
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Спул доставки заявок (issue #598)
+    //
+    //  Канал ideav-сервер → Telegram-прокси теряет большинство TCP-соединений
+    //  (замер 2026-09-16: ~2 из 10 доходят), поэтому доставка устроена как
+    //  очередь на диске: заявка и файлы сохраняются, попытка отправки идёт
+    //  после, а недоставленное добирает cron (tg-deliver.php). Посетителю в
+    //  обоих случаях отвечаем успехом — заявка уже не потеряется.
+    //
+    //  Секреты (токен, chat_id, api_base) в спуле НЕ хранятся — резолвятся
+    //  из конфигурации при доставке. В meta.json лежит только текст, parse_mode
+    //  и подпись к файлам.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /** Каталог очереди — вне вебрута, чтобы содержимое не раздавалось наружу. */
+    function intake_spool_dir(): string {
+        $configured = intake_config('NOTIFY_SPOOL_DIR');
+        if ($configured !== null) {
+            return rtrim($configured, '/');
+        }
+        $root = $_SERVER['DOCUMENT_ROOT'] ?? __DIR__;
+        return rtrim(dirname($root), '/') . '/tg-spool-notify';
+    }
+
+    /**
+     * Сохранить заявку в очередь. Возвращает путь каталога заявки или null.
+     *
+     * @param array{text:string, parse_mode:string, caption:string} $message
+     * @param array<array{tmp:string, name:string}>                 $attachments
+     */
+    function intake_spool_save(string $spool, array $message, array $attachments): ?string {
+        if (!is_dir($spool) && !@mkdir($spool, 0700, true) && !is_dir($spool)) {
+            return null;
+        }
+        $dir = $spool . '/' . date('Ymd-His') . '-' . bin2hex(random_bytes(4));
+        if (!@mkdir($dir, 0700)) {
+            return null;
+        }
+        $files = [];
+        foreach ($attachments as $i => $a) {
+            $dest = $dir . '/file' . $i;
+            $moved = is_uploaded_file($a['tmp']) ? @move_uploaded_file($a['tmp'], $dest) : @copy($a['tmp'], $dest);
+            if ($moved) {
+                $files[] = ['path' => $dest, 'name' => $a['name']];
+            }
+        }
+        $meta = [
+            'text'       => $message['text'],
+            'parse_mode' => $message['parse_mode'] ?? '',
+            'caption'    => $message['caption'] ?? '',
+            'files'      => $files,
+            'created'    => time(),
+        ];
+        if (@file_put_contents($dir . '/meta.json', json_encode($meta, JSON_UNESCAPED_UNICODE), LOCK_EX) === false) {
+            return null;
+        }
+        return $dir;
+    }
+
+    /** Доставить заявку из каталога очереди. true — всё ушло. */
+    function intake_spool_deliver(string $dir): bool {
+        $meta = json_decode((string) @file_get_contents($dir . '/meta.json'), true);
+        if (!is_array($meta)) {
+            return false;
+        }
+        $token  = intake_config('TELEGRAM_BOT_TOKEN');
+        $chatId = intake_config('TELEGRAM_CHAT_ID');
+        if ($token === null || $chatId === null) {
+            return false;
+        }
+        $base = (string) intake_config('TELEGRAM_API_BASE', 'https://api.telegram.org');
+        $parseMode = (string) ($meta['parse_mode'] ?? '');
+        if (empty($meta['message_sent'])) {
+            $res = intake_telegram_send_message($token, $chatId, (string) $meta['text'], $base, $parseMode);
+            if (!$res['ok']) {
+                return false;
+            }
+            $meta['message_sent'] = true;
+            @file_put_contents($dir . '/meta.json', json_encode($meta, JSON_UNESCAPED_UNICODE), LOCK_EX);
+        }
+        $ok = true;
+        foreach ((array) ($meta['files'] ?? []) as $f) {
+            $path = $f['path'] ?? '';
+            if ($path === '' || !is_readable($path)) {
+                continue;
+            }
+            $sent = intake_telegram_send_document($token, $chatId, $path, (string) $f['name'], (string) ($meta['caption'] ?? ''), $base);
+            $ok = $ok && $sent['ok'];
+        }
+        return $ok;
+    }
+
+    /** Удалить каталог доставленной заявки. */
+    function intake_spool_cleanup(string $dir): void {
+        foreach (glob($dir . '/*') ?: [] as $f) {
+            @unlink($f);
+        }
+        @rmdir($dir);
     }
 }

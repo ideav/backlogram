@@ -182,68 +182,37 @@ if ($attachments)    $lines[] = "📎 *Файлы:* " . esc(count($attachments) 
 
 $message = implode("\n", $lines);
 
-// ── Send to Telegram ──────────────────────────────────────────────────────────
-$base = defined('TELEGRAM_API_BASE') ? rtrim(TELEGRAM_API_BASE, '/') : 'https://api.telegram.org';
-$url = $base . '/bot' . TELEGRAM_BOT_TOKEN . '/sendMessage';
-$payload = json_encode([
-    'chat_id'    => TELEGRAM_CHAT_ID,
+// ── Доставка через спул (issue #598) ─────────────────────────────────────────
+// Канал до Telegram-прокси нестабилен (теряет большинство TCP-соединений),
+// поэтому заявка СНАЧАЛА сохраняется на диск, и только потом делается попытка
+// доставить. Не доставилось — доберёт cron (tg-deliver.php). Посетителю в
+// обоих случаях отвечаем успехом: заявка уже не потеряется.
+$caption = 'Файл к заявке' . ($contact !== '' ? ' от ' . $contact : '');
+$spool   = intake_spool_dir();
+$saved   = intake_spool_save($spool, [
     'text'       => $message,
     'parse_mode' => 'MarkdownV2',
-]);
+    'caption'    => $caption,
+], $attachments);
 
-$ch = curl_init($url);
-curl_setopt_array($ch, [
-    CURLOPT_POST           => true,
-    CURLOPT_POSTFIELDS     => $payload,
-    CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_TIMEOUT        => 10,
-]);
-$response = curl_exec($ch);
-$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curl_error = curl_error($ch);
-curl_close($ch);
-
-if ($curl_error) {
-    http_response_code(502);
-    echo json_encode(['ok' => false, 'error' => 'Could not reach Telegram API: ' . $curl_error]);
-    exit;
-}
-
-$tg_response = json_decode($response, true);
-
-if ($http_code !== 200 || empty($tg_response['ok'])) {
-    http_response_code(502);
-    echo json_encode([
-        'ok'    => false,
-        'error' => 'Telegram API error.',
-        'details' => $tg_response['description'] ?? $response,
-    ]);
-    exit;
-}
-
-// ── Пересылка вложений тем же ботом (sendDocument) ───────────────────────────
-$files_sent = 0;
-$files_failed = [];
-foreach ($attachments as $a) {
-    $caption = 'Файл к заявке' . ($contact !== '' ? ' от ' . $contact : '');
-    $doc = intake_telegram_send_document(TELEGRAM_BOT_TOKEN, (string) TELEGRAM_CHAT_ID, $a['tmp'], $a['name'], $caption, $base);
-    if ($doc['ok']) {
-        $files_sent++;
-    } else {
-        $files_failed[] = $a['name'];
+if ($saved === null) {
+    // Спул недоступен (нет прав/места) — доставляем в лоб, как раньше.
+    $base = defined('TELEGRAM_API_BASE') ? rtrim(TELEGRAM_API_BASE, '/') : 'https://api.telegram.org';
+    $res  = intake_telegram_send_message(TELEGRAM_BOT_TOKEN, (string) TELEGRAM_CHAT_ID, $message, $base, 'MarkdownV2');
+    if (!$res['ok']) {
+        http_response_code(502);
+        echo json_encode(['ok' => false, 'error' => 'Не удалось отправить заявку. Напишите, пожалуйста, в Telegram @qdmadept.']);
+        exit;
     }
-}
-
-if ($files_failed) {
-    // Текст заявки уже ушёл — не валим запрос, но честно говорим, что донести.
-    echo json_encode([
-        'ok'           => true,
-        'message'      => 'Заявка отправлена, но файлы не дошли: ' . implode(', ', $files_failed) . '. Пришлите их в Telegram @qdmadept.',
-        'files_sent'   => $files_sent,
-        'files_failed' => $files_failed,
-    ]);
+    foreach ($attachments as $a) {
+        intake_telegram_send_document(TELEGRAM_BOT_TOKEN, (string) TELEGRAM_CHAT_ID, $a['tmp'], $a['name'], $caption, $base);
+    }
+    echo json_encode(['ok' => true, 'message' => 'Сообщение отправлено.']);
     exit;
 }
 
-echo json_encode(['ok' => true, 'message' => 'Сообщение отправлено.', 'files_sent' => $files_sent]);
+// Попытка доставить сразу (в большинстве случаев дойдёт, cron ничего не добирает).
+if (intake_spool_deliver($saved)) {
+    intake_spool_cleanup($saved);
+}
+echo json_encode(['ok' => true, 'message' => 'Заявка принята.']);
