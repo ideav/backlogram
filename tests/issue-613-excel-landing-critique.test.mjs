@@ -45,6 +45,8 @@ test('скриншоты в кейсах — только обезличенны
   const shots = [...cases.matchAll(/src: '(img\/[^']+)'/g)].map(m => m[1])
   assert.deepEqual(shots, [
     'img/uc-petfood-1.png', 'img/uc-petfood-2.png', 'img/uc-petfood-3.png',
+    'img/uc-atex-1.png', 'img/uc-atex-2.png', 'img/uc-atex-3.png',
+    'img/uc-xcom-1.png', 'img/uc-xcom-2.png', 'img/uc-xcom-3.png',
     'img/uc-demo-ceo.png', 'img/uc-demo-grafiki.png', 'img/uc-demo-klienty.png',
   ])
   for (const shot of shots) readFileSync(fileURLToPath(new URL(`../site-excel/public/${shot}`, import.meta.url)))
