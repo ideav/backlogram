@@ -15,7 +15,7 @@ import {
   ZoomIn,
 } from 'lucide-react'
 import { GOALS, reachGoal, reachSignupGoal } from './conversion'
-import { Cases } from './Cases'
+import { Cases, type Shot } from './Cases'
 import { HowItWorks } from './HowItWorks'
 import { Logo } from './Logo'
 import { Pricing } from './Pricing'
@@ -74,7 +74,7 @@ const SCREENS = [
   },
 ]
 
-type Screen = (typeof SCREENS)[number]
+type Screen = Shot
 
 const PAINS = [
   {
@@ -538,7 +538,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <Cases />
+        <Cases onZoom={setZoomed} />
 
         {/* Боли и что вместо них */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12 grid gap-12 lg:grid-cols-2">

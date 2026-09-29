@@ -36,7 +36,16 @@ test('слайдер «было → стало» — четыре реальны
   for (const client of ['Атекс', 'ПЕТФУД', 'XCOM', 'Спортзания']) {
     assert.ok(cases.includes(`client: '${client}'`), `нет кейса ${client}`)
   }
-  assert.match(landing, /<Cases \/>/)
+  assert.match(landing, /<Cases onZoom=\{setZoomed\} \/>/)
+})
+
+test('скриншоты в кейсах — только обезличенные, с заменённым логотипом', () => {
+  // Исходники из ideav/crm/screenshots/articles несут логотип клиента; на
+  // лендинг идут только перерисованные копии uc-demo-*.
+  const shots = [...cases.matchAll(/src: '(img\/[^']+)'/g)].map(m => m[1])
+  assert.deepEqual(shots, ['img/uc-demo-ceo.png', 'img/uc-demo-grafiki.png', 'img/uc-demo-klienty.png'])
+  for (const shot of shots) readFileSync(fileURLToPath(new URL(`../site-excel/public/${shot}`, import.meta.url)))
+  assert.ok(!/sportzania/i.test(shots.join()), 'исходные файлы с логотипом на лендинг не идут')
 })
 
 test('механизм и сравнение с конкурентами показаны, со ссылкой на подробности', () => {
