@@ -445,7 +445,7 @@ export default function Landing() {
           <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-16 pb-12 sm:pt-24">
             <p className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 bg-white text-blue-600 text-sm font-medium">
               <Sparkles size={14} />
-              Бесплатная демонстрация примерно за 45 минут
+              Бесплатная демонстрация за ~45 минут
             </p>
             <h1 className="mt-6 text-4xl sm:text-5xl font-bold tracking-tight leading-tight">
               Сделайте себе <span className="text-blue-600">полноценное приложение</span>
