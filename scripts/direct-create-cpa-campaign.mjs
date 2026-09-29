@@ -30,6 +30,7 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
 import { call as apiCall } from './lib/direct-api.mjs'
+import { CORE_FILE, loadNegatives } from './excel-cpa-import-core.mjs'
 
 const MICRO = 1_000_000
 const REGION_RUSSIA = 225
@@ -63,7 +64,11 @@ export function configProblems(config = cfg, willApply = apply) {
   return problems
 }
 
-const { groups } = JSON.parse(readFileSync(KEYWORDS_FILE, 'utf8'))
+// Ручные группы (hot, pain) и коммерческий срез SEO-ядра — одним списком.
+const groups = [
+  ...JSON.parse(readFileSync(KEYWORDS_FILE, 'utf8')).groups,
+  ...JSON.parse(readFileSync(CORE_FILE, 'utf8')).groups,
+]
 
 /** Ограничения Директа на длину полей текстового объявления. */
 export const AD_LIMITS = { Title: 56, Title2: 30, Text: 81 }
@@ -132,10 +137,10 @@ export const CALLOUTS = ['Демонстрация бесплатно', 'Сер�
 /**
  * Минус-слова на всю кампанию. Прошлый запуск (714501622, сентябрь) собрал
  * 33 клика и ноль заявок, и шли они в основном с автотаргетинга по «эксель
- * скачать»: человек ищет файл, а не систему учёта. «бесплатно» сюда не входит —
- * демонстрация на лендинге и правда бесплатная.
+ * скачать»: человек ищет файл, а не систему учёта. Список по категориям —
+ * docs/marketing/excel-cpa-negatives.json (там же — что и почему НЕ минусуется).
  */
-export const CAMPAIGN_NEGATIVES = ['скачать', 'шаблон', 'образец', 'бланк', 'торрент']
+export const CAMPAIGN_NEGATIVES = loadNegatives()
 
 /** Автотаргетинг поиска: только запросы, прямо совпадающие с тем, что мы продаём. */
 export const EXACT_ONLY = ['EXACT', 'ALTERNATIVE', 'COMPETITOR', 'BROADER', 'ACCESSORY']
