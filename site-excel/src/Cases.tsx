@@ -1,11 +1,13 @@
 import { useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
-import { ArrowRight, ChevronLeft, ChevronRight, FileSpreadsheet, LayoutDashboard } from 'lucide-react'
+import { ArrowRight, ChevronLeft, ChevronRight, FileSpreadsheet, LayoutDashboard, ZoomIn } from 'lucide-react'
 
 // Кейсы — настоящие приложения клиентов Интеграма, собранные в ideav/crm
 // (templates/atex, db13417569248up, xcom, sportzania). Каждый факт на слайде
 // взят из ТЗ, issue или документации того репозитория; цифр эффекта («сэкономили
-// N часов») там нет — и здесь их нет. Скриншотов тоже нет: на снимках рабочих
-// баз бывают живые данные клиентов (issue #613).
+// N часов») там нет — и здесь их нет. Скриншоты — только обезличенные: экраны
+// Спортзании сняты с демо-данными (ideav/crm#4126), логотип заменён (issue #613).
+
+export type Shot = { src: string; alt: string; caption: string }
 
 type Case = {
   client: string
@@ -13,6 +15,7 @@ type Case = {
   before: string[]
   after: string[]
   facts: string[]
+  screens?: Shot[]
 }
 
 const CASES: Case[] = [
@@ -72,6 +75,11 @@ const CASES: Case[] = [
       'Лиды и сделки подтягиваются из Битрикс24, Google-таблицы синхронизируются',
     ],
     facts: ['13 листов дашборда', 'интеграция с Битрикс24'],
+    screens: [
+      { src: 'img/uc-demo-ceo.png', alt: 'Дашборд руководителя: план, факт и процент выполнения', caption: 'Показатели для CEO: план / факт' },
+      { src: 'img/uc-demo-grafiki.png', alt: 'Графики поступлений и выручки за три года', caption: 'Графики для инвестора' },
+      { src: 'img/uc-demo-klienty.png', alt: 'Таблица клиентов со статусами «Клиент» и «Лид»', caption: 'Клиенты и лиды' },
+    ],
   },
 ]
 
@@ -101,7 +109,7 @@ function Column({ tone, title, items }: { tone: 'before' | 'after'; title: strin
 }
 
 /** Слайдер «было → стало»: стрелки, точки, свайп и клавиши ←/→. */
-export function Cases() {
+export function Cases({ onZoom }: { onZoom: (shot: Shot) => void }) {
   const [index, setIndex] = useState(0)
   const startX = useRef<number | null>(null)
   const current = CASES[index]
@@ -166,6 +174,28 @@ export function Cases() {
           </div>
           <Column tone="after" title="Стало" items={current.after} />
         </div>
+
+        {current.screens && (
+          <div className="mt-6">
+            <div className="grid gap-3 grid-cols-3">
+              {current.screens.map(shot => (
+                <button
+                  key={shot.src}
+                  type="button"
+                  onClick={() => onZoom(shot)}
+                  aria-label={`Открыть в полный размер: ${shot.caption}`}
+                  className="group relative block rounded-xl border border-slate-200 overflow-hidden cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+                >
+                  <img src={shot.src} alt={shot.alt} loading="lazy" className="w-full h-24 sm:h-32 object-cover object-left-top" />
+                  <span className="absolute top-1.5 right-1.5 p-1 rounded-md bg-slate-900/55 text-white group-hover:bg-slate-900/75 transition-colors">
+                    <ZoomIn size={14} />
+                  </span>
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-xs text-slate-400">Экраны сняты на демо-данных: клиенты, суммы и логотип заменены.</p>
+          </div>
+        )}
 
         <ul className="mt-6 flex flex-wrap gap-2">
           {current.facts.map(fact => (
