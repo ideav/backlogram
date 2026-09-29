@@ -19,7 +19,8 @@
  *   SITE_URL         адрес лендинга, например https://example.ru
  *   METRIKA_ID       счётчик Метрики нового домена
  *   GOAL_ID          id цели signup_click в этом счётчике
- *   CPA_RUB          цена конверсии, ₽ (по умолчанию 500)
+ *   CPA_RUB          цена конверсии днём, ₽ (по умолчанию 500)
+ *   NIGHT_CPA_RUB    цена конверсии ночью, ₽ (по умолчанию CPA_RUB / 10)
  *   WEEKLY_RUB       недельный лимит расхода, ₽ (по умолчанию 10000)
  *   GOAL_VALUE_RUB   ценность цели для Директа, ₽ (по умолчанию 4000)
  */
@@ -44,6 +45,7 @@ const cfg = {
   counterId: Number(process.env.METRIKA_ID ?? 0),
   goalId: Number(process.env.GOAL_ID ?? 0),
   cpaRub: Number(process.env.CPA_RUB ?? 500),
+  nightCpaRub: Number(process.env.NIGHT_CPA_RUB ?? Number(process.env.CPA_RUB ?? 500) / 10),
   weeklyRub: Number(process.env.WEEKLY_RUB ?? 10000),
   // Ценность цели — не чек разбора, а ожидаемая выручка с одной записи:
   // 20 000 ₽ при гипотезе «продаётся каждая пятая». Гипотеза не проверена,
@@ -139,27 +141,49 @@ export const CAMPAIGN_NEGATIVES = ['скачать', 'шаблон', 'образ
 export const EXACT_ONLY = ['EXACT', 'ALTERNATIVE', 'COMPETITOR', 'BROADER', 'ACCESSORY']
   .map(Category => ({ Category, Value: Category === 'EXACT' ? 'YES' : 'NO' }))
 
+/**
+ * Смены по московскому времени (решение владельца 29.09.2026): днём с 8:00 до
+ * 21:00 конверсия стоит CPA_RUB, ночью — вдесятеро дешевле. Поэтому каждая
+ * площадка разведена на две кампании с непересекающимся расписанием: одна
+ * кампания не умеет платить за конверсию по-разному в разные часы.
+ */
+export const DAY_HOURS = { from: 8, to: 21 }
+
+/** Строки расписания Директа: «день недели,ставка на час 0,…,час 23»; 100 — показ, 0 — нет. */
+export function scheduleFor(shift) {
+  const hours = Array.from({ length: 24 }, (_, h) => {
+    const isDay = h >= DAY_HOURS.from && h < DAY_HOURS.to
+    return (shift === 'day') === isDay ? 100 : 0
+  })
+  return [1, 2, 3, 4, 5, 6, 7].map(day => [day, ...hours].join(','))
+}
+
 /** Стратегия оплаты за конверсии для одной площадки (поиск или сети). */
-export function payForConversion() {
+export function payForConversion(shift = 'day') {
   return {
     BiddingStrategyType: 'PAY_FOR_CONVERSION',
     PayForConversion: {
-      Cpa: Math.round(cfg.cpaRub * MICRO),
+      Cpa: Math.round((shift === 'night' ? cfg.nightCpaRub : cfg.cpaRub) * MICRO),
       GoalId: cfg.goalId,
       WeeklySpendLimit: Math.round(cfg.weeklyRub * MICRO),
     },
   }
 }
 
-export function campaignPayload(name, slug, where) {
+export function campaignPayload(name, slug, where, shift = 'day') {
   return {
     Name: name,
     StartDate: new Date().toISOString().slice(0, 10),
     NegativeKeywords: { Items: CAMPAIGN_NEGATIVES },
+    TimeZone: 'Europe/Moscow',
+    TimeTargeting: {
+      Schedule: { Items: scheduleFor(shift) },
+      ConsiderWorkingWeekends: 'YES',
+    },
     TextCampaign: {
       BiddingStrategy: {
-        Search: where === 'search' ? payForConversion() : { BiddingStrategyType: 'SERVING_OFF' },
-        Network: where === 'network' ? payForConversion() : { BiddingStrategyType: 'SERVING_OFF' },
+        Search: where === 'search' ? payForConversion(shift) : { BiddingStrategyType: 'SERVING_OFF' },
+        Network: where === 'network' ? payForConversion(shift) : { BiddingStrategyType: 'SERVING_OFF' },
       },
       CounterIds: { Items: [cfg.counterId] },
       PriorityGoals: {
@@ -175,8 +199,10 @@ export function campaignPayload(name, slug, where) {
 }
 
 const CAMPAIGNS = [
-  campaignPayload('Excel-CPA поиск', 'excel-cpa-search', 'search'),
-  campaignPayload('Excel-CPA сети', 'excel-cpa-network', 'network'),
+  campaignPayload('Excel-CPA поиск день', 'excel-cpa-search-day', 'search', 'day'),
+  campaignPayload('Excel-CPA поиск ночь', 'excel-cpa-search-night', 'search', 'night'),
+  campaignPayload('Excel-CPA сети день', 'excel-cpa-network-day', 'network', 'day'),
+  campaignPayload('Excel-CPA сети ночь', 'excel-cpa-network-night', 'network', 'night'),
 ]
 
 async function call(service, method, params) {
@@ -209,7 +235,7 @@ async function main() {
 
   console.log(apply ? 'Создаю кампании в боевом кабинете (всё остановленным).' : 'Сухой прогон: ничего не отправляю.')
   console.log(`Лендинг: ${cfg.siteUrl} | счётчик: ${cfg.counterId} | цель: ${cfg.goalId}`)
-  console.log(`Цена конверсии: ${cfg.cpaRub} ₽ | недельный лимит: ${cfg.weeklyRub} ₽`)
+  console.log(`Цена конверсии: днём ${cfg.cpaRub} ₽, ночью ${cfg.nightCpaRub} ₽ | недельный лимит: ${cfg.weeklyRub} ₽ на кампанию`)
 
   // Уточнения — общие для аккаунта, заводятся один раз на все объявления.
   const calloutsAdded = await call('adextensions', 'add', {

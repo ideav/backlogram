@@ -202,3 +202,21 @@ test('в ядре не осталось офисного мусора', () => {
     assert.ok(!all.includes(phrase), `мусорная фраза «${phrase}» вернулась в ядро`)
   }
 })
+
+test('смены: день 8–21 по Москве, ночь — остальное, конверсия ночью вдесятеро дешевле', () => {
+  const day = campaignPayload('д', 'd', 'search', 'day')
+  const night = campaignPayload('н', 'n', 'search', 'night')
+  assert.equal(day.TimeZone, 'Europe/Moscow')
+  const hoursOf = c => c.TimeTargeting.Schedule.Items[0].split(',').slice(1).map(Number)
+  const d = hoursOf(day)
+  const n = hoursOf(night)
+  assert.equal(d.length, 24)
+  assert.deepEqual(d.map((v, h) => (v ? h : null)).filter(h => h !== null), [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20])
+  // Каждый час ровно в одной смене — ни дыр, ни двойной оплаты.
+  for (let h = 0; h < 24; h++) assert.equal(Boolean(d[h]) + Boolean(n[h]), 1, `час ${h}`)
+  assert.equal(day.TimeTargeting.Schedule.Items.length, 7)
+
+  const cpa = c => c.TextCampaign.BiddingStrategy.Search.PayForConversion.Cpa
+  assert.equal(cpa(day), 500_000_000)
+  assert.equal(cpa(night), 50_000_000)
+})
