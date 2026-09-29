@@ -124,7 +124,7 @@ const GROUPS: Group[] = [
   },
 ]
 
-function PlanCard({ plan, onOrder }: { plan: Plan; onOrder: () => void }) {
+function PlanCard({ plan, onOrder }: { plan: Plan; onOrder: (plan: string) => void }) {
   const { icon: Icon } = plan
   const button = `mt-6 w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-semibold transition-colors ${
     plan.accent ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-blue-50 hover:bg-blue-100 text-blue-700'
@@ -165,7 +165,7 @@ function PlanCard({ plan, onOrder }: { plan: Plan; onOrder: () => void }) {
           {plan.cta} <ArrowRight size={18} />
         </a>
       ) : (
-        <button type="button" onClick={onOrder} className={button}>
+        <button type="button" onClick={() => onOrder(plan.title)} className={button}>
           {plan.cta} <ArrowRight size={18} />
         </button>
       )}
@@ -175,11 +175,11 @@ function PlanCard({ plan, onOrder }: { plan: Plan; onOrder: () => void }) {
 
 /**
  * Цены на виду, без клика (критика в issue #613: «клиент не понимает, сколько
- * это стоит»). Кнопки карточек открывают ту же воронку, что и кнопка в первом
- * экране: целевая кнопка разбора по-прежнему появляется только после
- * раскрытия, см. conversion.ts.
+ * это стоит»). Кнопки карточек открывают модальную заявку на экспресс-разработку
+ * с названием выбранной карточки (issue #619). Сама кнопка целей не шлёт: цель
+ * `express_lead` уходит только после принятой заявки, см. conversion.ts.
  */
-export function Pricing({ onOrder }: { onOrder: () => void }) {
+export function Pricing({ onOrder }: { onOrder: (plan: string) => void }) {
   return (
     <section id="ceny" className="scroll-mt-16 max-w-6xl mx-auto px-4 sm:px-6 py-12 space-y-6">
       <h2 className="text-2xl sm:text-3xl font-bold">Сколько стоит</h2>
