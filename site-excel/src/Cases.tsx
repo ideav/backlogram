@@ -131,7 +131,7 @@ export function Cases({ onZoom }: { onZoom: (shot: Shot) => void }) {
     'p-2 rounded-full border border-slate-300 bg-white text-slate-600 hover:border-blue-500 hover:text-blue-600 transition-colors'
 
   return (
-    <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+    <section id="keysy" className="scroll-mt-16 max-w-5xl mx-auto px-4 sm:px-6 py-12">
       <div className="flex items-end justify-between gap-4">
         <div>
           <h2 className="text-2xl sm:text-3xl font-bold">Было в Excel → стало приложением</h2>

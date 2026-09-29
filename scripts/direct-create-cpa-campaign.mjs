@@ -66,6 +66,12 @@ const { groups } = JSON.parse(readFileSync(KEYWORDS_FILE, 'utf8'))
 /** Ограничения Директа на длину полей текстового объявления. */
 export const AD_LIMITS = { Title: 56, Title2: 30, Text: 81 }
 
+/**
+ * Title и Title2 вместе тоже ограничены: длиннее — Директ молча выбрасывает
+ * Title2 (только предупреждение), и объявление уходит с одним заголовком.
+ */
+export const AD_TITLES_TOTAL = 56
+
 /** Ссылка объявления с UTM; {ad_id}/{keyword} подставляет сам Директ. */
 export function href(campaignSlug, siteUrl = cfg.siteUrl) {
   const utm = [
@@ -84,24 +90,54 @@ export function href(campaignSlug, siteUrl = cfg.siteUrl) {
  * длина в пределах AD_LIMITS (за превышение Директ отбивает объявление).
  */
 export function adsFor(campaignSlug, siteUrl = cfg.siteUrl) {
+  // Цифры в текстах — ровно те, что на лендинге (site-excel/src/Pricing.tsx,
+  // Landing.tsx): расхождение с посадочной модерация Директа отбивает.
   return [
     {
       Title: 'Excel остаётся Excel’ем',
       Title2: 'Сделаем из него приложение',
-      Text: 'Пришлите таблицу — через 45 минут вернём приложение с вашими данными. Бесплатно.',
+      Text: 'Пришлите таблицу — через 45 минут покажем приложение на ваших данных. Бесплатно.',
     },
     {
-      Title: 'Таблица на весь цех — не учёт',
-      Title2: 'Покажем, как это выглядит',
-      Text: 'Формы, права доступа и отчёты вместо файла в почте. Демонстрация бесплатно.',
+      Title: 'Учёт из Excel — в приложение',
+      Title2: 'Демо бесплатно, 45 минут',
+      Text: 'Формы, права доступа и отчёты вместо файла в почте. Облако от 1 950 ₽/мес.',
     },
     {
-      Title: 'Ваши таблицы — рабочая система',
-      Title2: 'За 45 минут, без внедрения',
-      Text: 'Присылаете файл как есть — получаете ссылку на готовую базу. Без настройки.',
+      Title: 'Из таблиц — в систему учёта',
+      Title2: 'Покажем на ваших файлах',
+      Text: 'Кейсы: корма, рулоны, продажи. Разбор процесса с ТЗ — 20 000 ₽. Сервер в России.',
     },
-  ].map(ad => ({ ...ad, Href: href(campaignSlug, siteUrl), Mobile: 'NO' }))
+  ].map(ad => ({ ...ad, Href: href(campaignSlug, siteUrl) }))
 }
+
+/** Ограничения Директа на быстрые ссылки и уточнения. */
+export const SITELINK_LIMITS = { Title: 30, Description: 60, TitlesTotal: 66 }
+export const CALLOUT_LIMIT = 25
+
+/** Быстрые ссылки — на якоря разделов, которые есть на странице без клика. */
+export function sitelinksFor(campaignSlug, siteUrl = cfg.siteUrl) {
+  return [
+    { Title: 'Сколько стоит', Description: 'Демонстрация бесплатно, облако от 1 950 ₽ в месяц', anchor: 'ceny' },
+    { Title: 'Кейсы клиентов', Description: 'Было в Excel — стало приложением: корма, рулоны, продажи', anchor: 'keysy' },
+    { Title: 'Как это работает', Description: 'Как агент читает структуру ваших таблиц', anchor: 'kak' },
+    { Title: 'Сравнение с Power Apps', Description: 'Чем Интеграм отличается от Power Apps и Quickbase', anchor: 'sravnenie' },
+  ].map(({ anchor, ...link }) => ({ ...link, Href: `${href(campaignSlug, siteUrl)}#${anchor}` }))
+}
+
+export const CALLOUTS = ['Демонстрация бесплатно', 'Сервер в России', 'Реестр российского ПО', 'Облако от 1 950 ₽/мес']
+
+/**
+ * Минус-слова на всю кампанию. Прошлый запуск (714501622, сентябрь) собрал
+ * 33 клика и ноль заявок, и шли они в основном с автотаргетинга по «эксель
+ * скачать»: человек ищет файл, а не систему учёта. «бесплатно» сюда не входит —
+ * демонстрация на лендинге и правда бесплатная.
+ */
+export const CAMPAIGN_NEGATIVES = ['скачать', 'шаблон', 'образец', 'бланк', 'торрент']
+
+/** Автотаргетинг поиска: только запросы, прямо совпадающие с тем, что мы продаём. */
+export const EXACT_ONLY = ['EXACT', 'ALTERNATIVE', 'COMPETITOR', 'BROADER', 'ACCESSORY']
+  .map(Category => ({ Category, Value: Category === 'EXACT' ? 'YES' : 'NO' }))
 
 /** Стратегия оплаты за конверсии для одной площадки (поиск или сети). */
 export function payForConversion() {
@@ -119,6 +155,7 @@ export function campaignPayload(name, slug, where) {
   return {
     Name: name,
     StartDate: new Date().toISOString().slice(0, 10),
+    NegativeKeywords: { Items: CAMPAIGN_NEGATIVES },
     TextCampaign: {
       BiddingStrategy: {
         Search: where === 'search' ? payForConversion() : { BiddingStrategyType: 'SERVING_OFF' },
@@ -131,6 +168,9 @@ export function campaignPayload(name, slug, where) {
       Settings: [{ Option: 'ADD_METRICA_TAG', Value: 'YES' }],
     },
     _slug: slug,
+    // На поиске автотаргетинг и привёл «эксель скачать» — там он сужен до
+    // целевых запросов (EXACT_ONLY). В сетях — включён: см. «Сети отдельной кампанией».
+    _autotargeting: where === 'network',
   }
 }
 
@@ -171,13 +211,25 @@ async function main() {
   console.log(`Лендинг: ${cfg.siteUrl} | счётчик: ${cfg.counterId} | цель: ${cfg.goalId}`)
   console.log(`Цена конверсии: ${cfg.cpaRub} ₽ | недельный лимит: ${cfg.weeklyRub} ₽`)
 
+  // Уточнения — общие для аккаунта, заводятся один раз на все объявления.
+  const calloutsAdded = await call('adextensions', 'add', {
+    AdExtensions: CALLOUTS.map(CalloutText => ({ Callout: { CalloutText } })),
+  })
+  const calloutIds = apply ? idsOf(calloutsAdded, 'AddResults') : ['<id уточнений>']
+
   for (const campaign of CAMPAIGNS) {
-    const { _slug: slug, ...payload } = campaign
+    const { _slug: slug, _autotargeting: autotargeting, ...payload } = campaign
     console.log(`\n=== ${payload.Name} ===`)
 
     const added = await call('campaigns', 'add', { Campaigns: [payload] })
     const [campaignId] = apply ? idsOf(added, 'AddResults') : [`<id ${slug}>`]
+    if (!campaignId) throw new Error('кампания не создана — см. ошибку выше')
     console.log(`кампания: ${campaignId}`)
+
+    // Набор быстрых ссылок свой на кампанию: в ссылках её UTM.
+    const setAdded = await call('sitelinks', 'add', { SitelinksSets: [{ Sitelinks: sitelinksFor(slug) }] })
+    const [sitelinkSetId] = apply ? idsOf(setAdded, 'AddResults') : [`<id ссылок ${slug}>`]
+    if (!sitelinkSetId) throw new Error('быстрые ссылки не созданы — см. ошибку выше')
 
     for (const group of groups) {
       const groupPayload = {
@@ -188,16 +240,42 @@ async function main() {
       }
       const groupAdded = await call('adgroups', 'add', { AdGroups: [groupPayload] })
       const [groupId] = apply ? idsOf(groupAdded, 'AddResults') : [`<id ${slug}-${group.slug}>`]
+      if (!groupId) throw new Error(`группа ${group.name} не создана — см. ошибку выше`)
       console.log(`  группа ${group.name}: ${groupId} (${group.keywords.length} фраз)`)
 
-      await call('keywords', 'add', {
+      const keywordsAdded = await call('keywords', 'add', {
         Keywords: group.keywords.map(Keyword => ({ Keyword, AdGroupId: groupId })),
       })
+      // Отказы Директ кладёт внутрь ответа при HTTP 200 — без разбора их не видно.
+      if (apply) idsOf(keywordsAdded, 'AddResults')
 
-      await call('ads', 'add', {
-        Ads: adsFor(slug).map(TextAd => ({ AdGroupId: groupId, TextAd })),
+      const adsAdded = await call('ads', 'add', {
+        Ads: adsFor(slug).map(ad => ({
+          AdGroupId: groupId,
+          TextAd: { ...ad, SitelinkSetId: sitelinkSetId, AdExtensionIds: calloutIds },
+        })),
       })
+      if (apply) idsOf(adsAdded, 'AddResults')
     }
+
+    // ---autotargeting Директ заводит в каждой группе сам и удалить не даёт
+    // (5005). Дальше площадки ведут себя по-разному (проверено 29.09.2026):
+    // на поиске его нельзя и остановить (8305), можно только сузить до
+    // целевых запросов; в сетевой кампании Директ, наоборот, сам его
+    // останавливает, а по схеме он там нужен — включаем.
+    const found = await call('keywords', 'get', {
+      SelectionCriteria: { CampaignIds: [campaignId] },
+      FieldNames: ['Id', 'Keyword'],
+    })
+    const autoIds = (found?.Keywords ?? []).filter(k => k.Keyword.startsWith('---autotargeting')).map(k => k.Id)
+    if (autoIds.length && autotargeting) {
+      idsOf(await call('keywords', 'resume', { SelectionCriteria: { Ids: autoIds } }), 'ResumeResults')
+    } else if (autoIds.length) {
+      idsOf(await call('keywords', 'update', {
+        Keywords: autoIds.map(Id => ({ Id, AutotargetingCategories: EXACT_ONLY })),
+      }), 'UpdateResults')
+    }
+    console.log(`  автотаргетинг: ${autotargeting ? 'включён' : 'только целевые запросы'} (${apply ? autoIds.length : '…'} групп)`)
 
     if (apply) {
       // Кампания создаётся активной — останавливаем сразу, до того как

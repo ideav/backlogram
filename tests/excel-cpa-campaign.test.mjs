@@ -2,7 +2,10 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 
-import { AD_LIMITS, adsFor, campaignPayload, configProblems, href } from '../scripts/direct-create-cpa-campaign.mjs'
+import {
+  AD_LIMITS, AD_TITLES_TOTAL, CALLOUTS, CALLOUT_LIMIT, CAMPAIGN_NEGATIVES, SITELINK_LIMITS,
+  adsFor, campaignPayload, configProblems, href, sitelinksFor,
+} from '../scripts/direct-create-cpa-campaign.mjs'
 
 const read = (p) => readFileSync(new URL(p, import.meta.url), 'utf8')
 
@@ -66,6 +69,52 @@ test('объявления влезают в лимиты Директа', () =>
       )
     }
   }
+})
+
+test('два заголовка объявления вместе влезают в общий лимит', () => {
+  for (const ad of adsFor('excel-cpa-search', 'https://example.ru')) {
+    const total = ad.Title.length + ad.Title2.length
+    assert.ok(total <= AD_TITLES_TOTAL, `«${ad.Title}» + «${ad.Title2}» = ${total} > ${AD_TITLES_TOTAL}`)
+  }
+})
+
+test('быстрые ссылки и уточнения влезают в лимиты Директа', () => {
+  const links = sitelinksFor('excel-cpa-search', 'https://example.ru')
+  assert.ok(links.length >= 2 && links.length <= 8)
+  let titles = 0
+  for (const link of links) {
+    assert.ok(link.Title.length <= SITELINK_LIMITS.Title, `«${link.Title}» длиннее ${SITELINK_LIMITS.Title}`)
+    assert.ok(link.Description.length <= SITELINK_LIMITS.Description, `«${link.Description}» длиннее ${SITELINK_LIMITS.Description}`)
+    // «!» и «?» в заголовке быстрой ссылки Директ отбивает на приёме.
+    assert.ok(!/[!?]/.test(link.Title), `«${link.Title}»: ! и ? в быстрой ссылке запрещены`)
+    titles += link.Title.length
+  }
+  assert.ok(titles <= SITELINK_LIMITS.TitlesTotal, `заголовки ссылок вместе ${titles} > ${SITELINK_LIMITS.TitlesTotal}`)
+  for (const text of CALLOUTS) assert.ok(text.length <= CALLOUT_LIMIT, `уточнение «${text}» длиннее ${CALLOUT_LIMIT}`)
+})
+
+test('быстрые ссылки ведут на якоря, которые есть на лендинге без клика', () => {
+  // #demo и #price появляются только после первого клика — туда ссылка вела бы в пустоту.
+  const sources = ['Landing.tsx', 'Pricing.tsx', 'Cases.tsx', 'HowItWorks.tsx']
+    .map(f => read(`../site-excel/src/${f}`)).join('\n')
+  for (const link of sitelinksFor('excel-cpa-search', 'https://example.ru')) {
+    const anchor = link.Href.split('#')[1]
+    assert.ok(!['demo', 'price', 'zayavka'].includes(anchor), `#${anchor} скрыт до клика`)
+    assert.ok(sources.includes(`id="${anchor}"`), `на лендинге нет якоря #${anchor}`)
+  }
+})
+
+test('минус-слова кампании не режут собственные фразы ядра', () => {
+  const all = keywords.groups.flatMap(g => g.keywords)
+  for (const minus of CAMPAIGN_NEGATIVES) {
+    const hit = all.find(k => k.split(/\s+/).includes(minus))
+    assert.ok(!hit, `минус-слово «${minus}» есть во фразе «${hit}»`)
+  }
+})
+
+test('автотаргетинг: на поиске сужен до целевых, в сетях включён', () => {
+  assert.equal(campaignPayload('Excel-CPA поиск', 'excel-cpa-search', 'search')._autotargeting, false)
+  assert.equal(campaignPayload('Excel-CPA сети', 'excel-cpa-network', 'network')._autotargeting, true)
 })
 
 test('ссылка объявления ведёт на лендинг и размечена UTM', () => {

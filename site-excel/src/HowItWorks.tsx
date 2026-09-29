@@ -56,7 +56,7 @@ const OURS = [
 export function HowItWorks() {
   return (
     <>
-      <section className="bg-slate-50 border-y border-slate-200">
+      <section id="kak" className="scroll-mt-16 bg-slate-50 border-y border-slate-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
           <h2 className="text-2xl sm:text-3xl font-bold">Как агент читает вашу структуру</h2>
           <p className="mt-3 text-slate-600 max-w-2xl">
@@ -89,7 +89,7 @@ export function HowItWorks() {
         </div>
       </section>
 
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+      <section id="sravnenie" className="scroll-mt-16 max-w-5xl mx-auto px-4 sm:px-6 py-12">
         <h2 className="text-2xl sm:text-3xl font-bold">А Power Apps или Quickbase?</h2>
         <p className="mt-3 text-slate-600 max-w-2xl">
           Сделать приложение из таблицы умеют и они. Разница в том, чья структура получится на
