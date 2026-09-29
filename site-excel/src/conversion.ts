@@ -33,6 +33,14 @@ export const GOALS = {
   signupBlocked: 'signup_blocked',
   /** Форма отправлена. */
   lead: 'lead',
+  /**
+   * Принята заявка на экспресс-разработку из модальной формы карточек цен
+   * (issue #619). Кликом её не достать: нужно заполнить обязательные поля и
+   * получить от order.php подтверждение, а сверху — проверка на человека.
+   */
+  express: 'express_lead',
+  /** Та же заявка, но отправитель не прошёл проверку на человека. */
+  expressBlocked: 'express_blocked',
 } as const
 
 const MIN_DWELL_MS = 2500
@@ -87,4 +95,14 @@ export function reachGoal(goal: string, params?: Record<string, unknown>): void 
 export function reachSignupGoal(source: string): void {
   const params = { source, dwell_ms: dwellMs() }
   reachGoal(looksHuman() ? GOALS.signup : GOALS.signupBlocked, params)
+}
+
+/**
+ * Цель модальной заявки (issue #619). Зовётся только после ответа order.php
+ * «принято», поэтому до неё не доходит автомат, который жмёт кнопки: кнопка
+ * лишь открывает форму. Проверка на человека — та же, что у `signup_click`.
+ */
+export function reachExpressGoal(plan: string): void {
+  const params = { plan, dwell_ms: dwellMs() }
+  reachGoal(looksHuman() ? GOALS.express : GOALS.expressBlocked, params)
 }

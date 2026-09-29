@@ -21,15 +21,16 @@ test('цены из макета владельца на месте', () => {
 
 test('цены видны без клика, а целевая кнопка — по-прежнему только в воронке', () => {
   const [beforeFunnel] = landing.split('{funnelOpen && (')
-  assert.match(beforeFunnel, /<Pricing onOrder=\{openFunnel\} \/>/)
+  // С #619 карточки цен открывают модальную заявку, а не воронку.
+  assert.match(beforeFunnel, /<Pricing onOrder=\{setExpressPlan\} \/>/)
   assert.match(beforeFunnel, /href="#ceny"/)
-  // Карточки цен открывают воронку, но не шлют целевую цель сами.
+  // Карточки цен не шлют целевую цель сами.
   assert.ok(!pricing.includes('reachSignupGoal'), 'карточки цен не должны слать signup_click')
   assert.ok(!pricing.includes('Записаться на разбор'), 'вторая целевая кнопка обойдёт защиту')
 })
 
-test('price_open уходит один раз, сколько бы кнопок воронку ни открывало', () => {
-  assert.match(landing, /if \(!funnelOpen\) reachGoal\(GOALS\.priceOpen/)
+test('price_open уходит один раз и только через проверку на человека', () => {
+  assert.match(landing, /if \(!funnelOpen && looksHuman\(\)\) reachGoal\(GOALS\.priceOpen/)
 })
 
 test('слайдер «было → стало» — четыре реальных кейса', () => {

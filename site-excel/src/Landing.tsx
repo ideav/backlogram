@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import {
   ArrowRight,
   BarChart3,
@@ -14,7 +14,7 @@ import {
   X,
   ZoomIn,
 } from 'lucide-react'
-import { GOALS, reachGoal, reachSignupGoal } from './conversion'
+import { GOALS, looksHuman, reachExpressGoal, reachGoal, reachSignupGoal } from './conversion'
 import { Cases, type Shot } from './Cases'
 import { HowItWorks } from './HowItWorks'
 import { Logo } from './Logo'
@@ -125,7 +125,10 @@ function formatBytes(n: number): string {
   return `${n} Б`
 }
 
-/** Форма заявки: демонстрация (с файлами) и запись на разбор — одна разметка. */
+/**
+ * Форма заявки: демонстрация (с файлами), запись на разбор и экспресс-разработка
+ * из карточек цен (issue #619) — одна разметка.
+ */
 function OrderForm({
   kind,
   title,
@@ -133,14 +136,17 @@ function OrderForm({
   submitLabel,
   withFiles,
   taskLabel,
+  plan,
   onSent,
 }: {
-  kind: 'demo' | 'razbor'
+  kind: 'demo' | 'razbor' | 'express'
   title: string
   sub: string
   submitLabel: string
   withFiles: boolean
   taskLabel: string
+  /** Карточка цен, с которой открыта форма, — уходит в заявку. */
+  plan?: string
   onSent?: () => void
 }) {
   const [sent, setSent] = useState(false)
@@ -172,6 +178,7 @@ function OrderForm({
     const form = event.currentTarget
     const data = new FormData(form)
     data.set('kind', kind)
+    if (plan) data.set('plan', plan)
     for (const f of files) data.append('files[]', f, f.name)
     setBusy(true)
     setError('')
@@ -183,6 +190,7 @@ function OrderForm({
         return
       }
       reachGoal(GOALS.lead, { source: `excel-cpa-landing-${kind}` })
+      if (kind === 'express') reachExpressGoal(plan ?? '')
       setSent(true)
       onSent?.()
     } catch {
@@ -402,15 +410,79 @@ function Lightbox({ screen, onClose }: { screen: Screen; onClose: () => void }) 
   )
 }
 
+/**
+ * Модальная заявка на экспресс-разработку — её открывают кнопки карточек цен
+ * (issue #619), по образцу формы ideav.ru/#cta.
+ *
+ * Открытие окна целей не шлёт: кликер, который жмёт всё подряд, дальше пустой
+ * формы не продвинется. Цель `express_lead` уходит только из OrderForm после
+ * ответа order.php «принято». По фону окно не закрывается — случайный клик
+ * мимо не должен стирать набранный текст; только крестик и Escape.
+ */
+function ExpressModal({ plan, onClose }: { plan: string; onClose: () => void }) {
+  const closeRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null
+    closeRef.current?.focus()
+
+    function onKeyDown(event: KeyboardEvent): void {
+      if (event.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKeyDown)
+
+    const scrollLocked = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      document.body.style.overflow = scrollLocked
+      opener?.focus?.()
+    }
+  }, [onClose])
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Заявка на экспресс-разработку приложений"
+      className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/70 backdrop-blur-sm"
+    >
+      <div className="relative max-w-2xl mx-auto px-4 pt-16 pb-10">
+        <button
+          ref={closeRef}
+          type="button"
+          onClick={onClose}
+          aria-label="Закрыть"
+          className="absolute top-3 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+        >
+          <X size={22} />
+        </button>
+        <OrderForm
+          kind="express"
+          plan={plan}
+          title="Заявка на экспресс-разработку приложений"
+          sub={`Вы выбрали: «${plan}». Опишите задачу и приложите Excel или ТЗ — оценим архитектуру и сроки за 24 часа.`}
+          submitLabel="Отправить заявку"
+          withFiles
+          taskLabel="Что за процесс и что должно получиться"
+        />
+      </div>
+    </div>
+  )
+}
+
 export default function Landing() {
   const [funnelOpen, setFunnelOpen] = useState(false)
   const [signupOpen, setSignupOpen] = useState(false)
   const [zoomed, setZoomed] = useState<Screen | null>(null)
+  const [expressPlan, setExpressPlan] = useState<string | null>(null)
+  const closeExpress = useCallback(() => setExpressPlan(null), [])
 
   function openFunnel(): void {
-    // Кнопок, открывающих воронку, теперь несколько (первый экран и карточки
-    // цен), а цель — одна на посетителя.
-    if (!funnelOpen) reachGoal(GOALS.priceOpen, { dwell: 'first_click' })
+    // price_open — цель одного клика, поэтому только через проверку на
+    // человека (issue #619): кликер не должен набивать и наблюдательные цели.
+    if (!funnelOpen && looksHuman()) reachGoal(GOALS.priceOpen, { dwell: 'first_click' })
     setFunnelOpen(true)
     requestAnimationFrame(() => {
       document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -432,9 +504,9 @@ export default function Landing() {
       <header className="border-b border-slate-200 bg-white/90 backdrop-blur sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <Logo className="h-7 w-auto text-slate-900" />
-          <a href={`mailto:${CONTACT_EMAIL}`} className="text-sm text-slate-500 hover:text-blue-600">
-            {CONTACT_EMAIL}
-          </a>
+          {/* Адрес текстом, а не почтовой ссылкой: клик по ней — автоцель Метрики
+              «Клик по email», достижимая кликером с первого экрана (issue #619). */}
+          <span className="text-sm text-slate-500 select-all">{CONTACT_EMAIL}</span>
         </div>
       </header>
 
@@ -578,7 +650,7 @@ export default function Landing() {
 
         <HowItWorks />
 
-        <Pricing onOrder={openFunnel} />
+        <Pricing onOrder={setExpressPlan} />
 
         {funnelOpen && (
           <>
@@ -666,9 +738,7 @@ export default function Landing() {
           </p>
           <p>
             Отозвать согласие и удалить данные можно письмом на{' '}
-            <a href={`mailto:${CONTACT_EMAIL}`} className="text-blue-600 hover:underline">
-              {CONTACT_EMAIL}
-            </a>
+            <span className="text-slate-700 select-all">{CONTACT_EMAIL}</span>
             . Полный текст —{' '}
             <a
               href={PRIVACY_URL}
@@ -693,6 +763,7 @@ export default function Landing() {
       </footer>
 
       {zoomed && <Lightbox screen={zoomed} onClose={() => setZoomed(null)} />}
+      {expressPlan && <ExpressModal plan={expressPlan} onClose={closeExpress} />}
     </div>
   )
 }
