@@ -41,9 +41,14 @@ test('слайдер «было → стало» — четыре реальны
 
 test('скриншоты в кейсах — только обезличенные, с заменённым логотипом', () => {
   // Исходники из ideav/crm/screenshots/articles несут логотип клиента; на
-  // лендинг идут только перерисованные копии uc-demo-*.
+  // лендинг идут только перерисованные копии uc-demo-* и демо-экраны uc-petfood-*.
   const shots = [...cases.matchAll(/src: '(img\/[^']+)'/g)].map(m => m[1])
-  assert.deepEqual(shots, ['img/uc-demo-ceo.png', 'img/uc-demo-grafiki.png', 'img/uc-demo-klienty.png'])
+  assert.deepEqual(shots, [
+    'img/uc-petfood-1.png', 'img/uc-petfood-2.png', 'img/uc-petfood-3.png',
+    'img/uc-atex-1.png', 'img/uc-atex-2.png', 'img/uc-atex-3.png',
+    'img/uc-xcom-1.png', 'img/uc-xcom-2.png', 'img/uc-xcom-3.png',
+    'img/uc-demo-ceo.png', 'img/uc-demo-grafiki.png', 'img/uc-demo-klienty.png',
+  ])
   for (const shot of shots) readFileSync(fileURLToPath(new URL(`../site-excel/public/${shot}`, import.meta.url)))
   assert.ok(!/sportzania/i.test(shots.join()), 'исходные файлы с логотипом на лендинг не идут')
 })
