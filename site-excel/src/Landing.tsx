@@ -15,7 +15,10 @@ import {
   ZoomIn,
 } from 'lucide-react'
 import { GOALS, reachGoal, reachSignupGoal } from './conversion'
+import { Cases } from './Cases'
+import { HowItWorks } from './HowItWorks'
 import { Logo } from './Logo'
+import { Pricing } from './Pricing'
 
 const TELEGRAM_BOT_URL = 'https://t.me/Integrammbot'
 const CONTACT_EMAIL = 'abc@integram.io'
@@ -405,8 +408,10 @@ export default function Landing() {
   const [zoomed, setZoomed] = useState<Screen | null>(null)
 
   function openFunnel(): void {
+    // Кнопок, открывающих воронку, теперь несколько (первый экран и карточки
+    // цен), а цель — одна на посетителя.
+    if (!funnelOpen) reachGoal(GOALS.priceOpen, { dwell: 'first_click' })
     setFunnelOpen(true)
-    reachGoal(GOALS.priceOpen, { dwell: 'first_click' })
     requestAnimationFrame(() => {
       document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     })
@@ -466,6 +471,12 @@ export default function Landing() {
                 <p className="text-slate-500">Ниже — форма: пришлите файлы и опишите задачу.</p>
               )}
             </div>
+            <p className="mt-5 text-sm text-slate-500">
+              Демонстрация — бесплатно · разбор процесса — {ANALYSIS_PRICE} · облако — от 1 950 ₽/мес.{' '}
+              <a href="#ceny" className="text-blue-600 hover:underline">
+                Все цены
+              </a>
+            </p>
           </div>
         </section>
 
@@ -527,6 +538,8 @@ export default function Landing() {
           </div>
         </section>
 
+        <Cases />
+
         {/* Боли и что вместо них */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12 grid gap-12 lg:grid-cols-2">
           <div>
@@ -562,6 +575,10 @@ export default function Landing() {
             </div>
           </div>
         </section>
+
+        <HowItWorks />
+
+        <Pricing onOrder={openFunnel} />
 
         {funnelOpen && (
           <>
