@@ -1,10 +1,12 @@
 <?php
 /**
- * Unit assertions for the pure helpers in public/intake-shared.php.
+ * Unit assertions for the pure helpers in public/intake-shared.php
+ * (plus intake_sanitize_filename(), which lives in public/intake-queue.php).
  * Exits 0 on success; on the first failure prints the message and exits 1.
  */
 
 require __DIR__ . '/../../public/intake-shared.php';
+require __DIR__ . '/../../public/intake-queue.php';
 
 $failures = 0;
 function check(string $label, bool $cond): void {

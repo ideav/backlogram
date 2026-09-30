@@ -173,6 +173,7 @@ if ($needsConfirmation) {
             'ttl_hours'   => (string) max(1, (int) round($ttl / 3600)),
             'тематика'    => $topic !== '' ? "Тематика: $topic" : '',
             'файлы'       => $uploads ? "\nФайлов приложено: " . count($uploads) . '.' : '',
+            'сайт'        => (string) ($_SERVER['HTTP_HOST'] ?? 'ideav.ru'),
         ]);
         $mailed = intake_mail_send($contact, intake_mail_confirm_subject(), $body);
 

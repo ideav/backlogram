@@ -17,6 +17,8 @@ if (!defined('INTAKE_PUBLISH_LOADED')) {
     define('INTAKE_PUBLISH_LOADED', true);
 
     require_once __DIR__ . '/intake-shared.php';
+    // intake_sanitize_filename() — оттуда же, откуда берутся файлы заявки.
+    require_once __DIR__ . '/intake-queue.php';
 
     /**
      * Опубликовать заявку.

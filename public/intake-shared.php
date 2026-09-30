@@ -69,15 +69,6 @@ if (!defined('INTAKE_SHARED_LOADED')) {
         return preg_replace('/([_*\[\]()~`>#+\-=|{}.!\\\\])/', '\\\\$1', $text);
     }
 
-    /** Build a filesystem-safe filename from an arbitrary upload name. */
-    function intake_sanitize_filename(string $name): string {
-        $name = basename($name);
-        // Collapse anything that is not alphanumeric / dot / dash / underscore.
-        $name = preg_replace('/[^A-Za-z0-9._-]+/', '_', $name);
-        $name = trim($name, '._');
-        return $name !== '' ? $name : 'file';
-    }
-
     /**
      * Validate a single uploaded file by extension and size.
      *

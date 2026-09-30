@@ -394,7 +394,9 @@ test('e2e: неподтверждённая заявка с истёкшим с�
     const confirmUrl = /(http:\/\/\S+excel-to-app-confirm\.php\?token=[^\s]+)/.exec(readMail(stand.mailLog)[0].body)[1]
     assert.match(readMail(stand.mailLog)[0].body, /1 ч/, 'срок в письме считается из настройки')
 
-    await new Promise(r => setTimeout(r, 1500))
+    // TTL меряется в целых секундах: ждём с запасом больше двух, иначе на
+    // границе секунды заявка ещё не просрочена и тест мигает.
+    await new Promise(r => setTimeout(r, 2300))
 
     const late = await fetch(confirmUrl)
     assert.equal(late.status, 410, 'просроченная ссылка должна честно говорить, что устарела')

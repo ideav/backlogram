@@ -221,6 +221,9 @@ test('end-to-end: catalog-matching source uses its own wording and accepts two f
 
 test('end-to-end: missing contact is rejected with 400', async () => {
   const appPort = await getFreePort()
+  // Свой каталог счётчика: без него лимит заявок с 127.0.0.1 копится в общем
+  // временном каталоге между прогонами, и тест отвечает 429 вместо 400.
+  const workdir = mkdtempSync(join(tmpdir(), 'excel-to-app-nocontact-'))
   const appProc = spawn('php', ['-S', `127.0.0.1:${appPort}`, '-t', join(root, 'public')], {
     env: {
       ...process.env,
@@ -228,6 +231,7 @@ test('end-to-end: missing contact is rejected with 400', async () => {
       SMARTCAPTCHA_SERVER_KEY: '',
       GITHUB_TOKEN: 'test-token',
       GITHUB_ISSUE_REPO: 'mock/repo',
+      INTAKE_RATE_LIMIT_DIR: join(workdir, 'rl'),
     },
     stdio: 'ignore',
   })
@@ -241,5 +245,6 @@ test('end-to-end: missing contact is rejected with 400', async () => {
     assert.equal(json.ok, false)
   } finally {
     appProc.kill()
+    rmSync(workdir, { recursive: true, force: true })
   }
 })
