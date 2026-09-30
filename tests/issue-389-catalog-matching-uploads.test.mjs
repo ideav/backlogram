@@ -12,6 +12,11 @@ const read = (p) => readFileSync(new URL(p, import.meta.url), 'utf8')
 
 const pageSource = read('../src/pages/CatalogMatching.tsx')
 const backendSource = read('../public/excel-to-app.php')
+// Шаг публикации (issue title/body, Telegram) вынесен из эндпоинта в
+// intake-publish.php: с issue #624 его зовут из двух мест — сразу и после
+// подтверждения адреса. Метка источника по-прежнему правит формулировки,
+// просто читать её надо там.
+const publishSource = read('../public/intake-publish.php')
 
 test('the catalog-matching form posts to the A2 intake handler as multipart', () => {
   // No longer the JSON-only telegram-notify endpoint.
@@ -56,7 +61,11 @@ test('the A2 backend is source-aware so the wording matches the form', () => {
   // Reads the source field and maps it to a human-readable label.
   assert.match(backendSource, /\$_POST\['source'\]/)
   assert.match(backendSource, /'catalog-matching'\s*=>\s*'Сопоставление каталогов'/)
-  // The label drives the issue title, issue body heading and Telegram heading.
-  assert.match(backendSource, /intake_build_issue_body\(\s*\$sourceLabel/)
-  assert.match(backendSource, /intake_build_telegram_message\(\s*\$sourceLabel/)
+  // Метка уезжает в шаг публикации вместе с остальными полями заявки…
+  assert.match(backendSource, /'source_label'\s*=>\s*\$sourceLabel/)
+  // …и там правит заголовок issue, тело issue и уведомление в Telegram.
+  assert.match(publishSource, /\$sourceLabel = \(string\) \$order\['source_label'\]/)
+  assert.match(publishSource, /"Заявка: \$sourceLabel"/)
+  assert.match(publishSource, /intake_build_issue_body\(\s*\$sourceLabel/)
+  assert.match(publishSource, /intake_build_telegram_message\(\s*\$sourceLabel/)
 })

@@ -4,11 +4,15 @@ import { execFileSync, spawn } from 'node:child_process'
 import { readFileSync, existsSync, mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import net from 'node:net'
 
-const root = new URL('..', import.meta.url).pathname
+// fileURLToPath, а не URL.pathname: на Windows pathname отдаёт «/C:/…», и
+// join() склеивает «C:\C:\…» — встроенный сервер тогда не поднимается вовсе.
+const root = fileURLToPath(new URL('..', import.meta.url))
 const sharedPhp = join(root, 'public/intake-shared.php')
 const endpointPhp = join(root, 'public/excel-to-app.php')
+const publishPhp = join(root, 'public/intake-publish.php')
 
 function php(args, opts = {}) {
   return execFileSync('php', args, { encoding: 'utf8', ...opts })
@@ -41,7 +45,7 @@ async function waitForPort(port, timeoutMs = 8000) {
 }
 
 test('php -l reports no syntax errors in intake PHP files', () => {
-  for (const file of [sharedPhp, endpointPhp]) {
+  for (const file of [sharedPhp, endpointPhp, publishPhp]) {
     const out = php(['-l', file])
     assert.match(out, /No syntax errors detected/, `${file} should lint clean`)
   }
@@ -54,18 +58,22 @@ test('pure intake helpers pass their unit assertions', () => {
 
 test('endpoint requires GitHub configuration and the criteria features are present', () => {
   const src = readFileSync(endpointPhp, 'utf8')
+  // Публикация заявки (issue, вложения, Telegram) вынесена в intake-publish.php:
+  // с issue #624 её зовут из двух мест — сразу и после подтверждения адреса.
+  const publishSrc = readFileSync(publishPhp, 'utf8')
   // Criterion: создание issue через GitHub API
-  assert.match(src, /intake_github_create_issue/, 'should create a GitHub issue')
+  assert.match(publishSrc, /intake_github_create_issue/, 'should create a GitHub issue')
   // Criterion: вложение файлов
-  assert.match(src, /intake_github_upload_file/, 'should upload attachments')
+  assert.match(publishSrc, /intake_github_upload_file/, 'should upload attachments')
   assert.match(src, /\$_FILES/, 'should read uploaded files')
+  assert.match(src, /intake_publish_order/, 'endpoint must go through the shared publish step')
   // Criterion: уведомление в Telegram
-  assert.match(src, /intake_telegram_send_message/, 'should notify Telegram')
+  assert.match(publishSrc, /intake_telegram_send_message/, 'should notify Telegram')
   // Criterion: защита от спама (captcha + лимиты)
   assert.match(src, /intake_verify_captcha/, 'should verify captcha')
   assert.match(src, /intake_rate_limit/, 'should rate-limit by IP')
   // Criterion: токен из env, не в репозитории
-  assert.match(src, /intake_config\('GITHUB_TOKEN'/, 'token must come from config/env, not be hardcoded')
+  assert.match(publishSrc, /intake_config\('GITHUB_TOKEN'/, 'token must come from config/env, not be hardcoded')
 })
 
 test('telegram-config.php is git-ignored (token never committed)', () => {
@@ -73,6 +81,9 @@ test('telegram-config.php is git-ignored (token never committed)', () => {
   assert.match(gitignore, /public\/telegram-config\.php/, 'config with secrets must be git-ignored')
 })
 
+// Прямая публикация без подтверждения адреса: так теперь идут заявки без email
+// и любая заявка при INTAKE_CONFIRM_REQUIRED=0. Путь «email + подтверждение»
+// проверяется в excel-to-app-confirm.test.mjs (issue #624).
 test('end-to-end: form upload creates issue, attaches file, notifies Telegram', async () => {
   const mockPort = await getFreePort()
   const appPort = await getFreePort()
@@ -97,6 +108,8 @@ test('end-to-end: form upload creates issue, attaches file, notifies Telegram', 
       TELEGRAM_CHAT_ID: '123',
       TELEGRAM_API_BASE: `http://127.0.0.1:${mockPort}`,
       INTAKE_RATE_LIMIT_DIR: join(workdir, 'rl'),
+      // Этот тест — про сам шаг публикации, поэтому double opt-in выключен.
+      INTAKE_CONFIRM_REQUIRED: '0',
     },
     stdio: 'ignore',
   })

@@ -7,9 +7,15 @@
  *   1. Accept a multipart/form-data POST with contact fields and Excel
  *      attachments.
  *   2. Guard against spam (same-origin check, SmartCaptcha, per-IP rate limit).
- *   3. Commit each attachment to a GitHub repository via the Contents API.
- *   4. Create a GitHub issue describing the order, linking the attachments.
- *   5. Notify the owner's Telegram bot that a new order arrived.
+ *   3. Заявки с email — в очередь со статусом pending_confirmation, клиенту
+ *      уходит письмо со ссылкой подтверждения (double opt-in, issue #624).
+ *      Публикация и сборка начинаются только из excel-to-app-confirm.php.
+ *   4. Заявки без email (телеграм-контакт) публикуются сразу, как и раньше:
+ *      вложения → GitHub, issue, уведомление в Telegram.
+ *
+ * Почему подтверждение именно в начале: сборку делает ИИ-агент, каждая заявка
+ * стоит денег, и форма без подтверждения адреса — это оплаченная сборка на
+ * любой опечатку и любой чужой адрес.
  *
  * Secrets are read from the environment (see telegram-config.example.php):
  *   GITHUB_TOKEN, GITHUB_ISSUE_REPO, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, …
@@ -20,6 +26,9 @@
 header('Content-Type: application/json');
 
 require_once __DIR__ . '/intake-shared.php';
+require_once __DIR__ . '/intake-publish.php';
+require_once __DIR__ . '/intake-queue.php';
+require_once __DIR__ . '/intake-mail.php';
 
 // Optional config file with define()s (git-ignored). Environment still wins.
 $config_file = __DIR__ . '/telegram-config.php';
@@ -121,88 +130,111 @@ foreach ($uploads as $file) {
     }
 }
 
-// ── GitHub configuration ──────────────────────────────────────────────────────
-$githubToken  = (string) intake_config('GITHUB_TOKEN', '');
-$issueRepo    = (string) intake_config('GITHUB_ISSUE_REPO', '');
-$uploadRepo   = (string) intake_config('GITHUB_UPLOAD_REPO', $issueRepo);
-$uploadBranch = (string) intake_config('GITHUB_UPLOAD_BRANCH', 'main');
-$apiBase      = (string) intake_config('GITHUB_API_BASE', 'https://api.github.com');
-$labels       = array_values(array_filter(array_map('trim', explode(',', (string) intake_config('GITHUB_ISSUE_LABELS', '')))));
+// ── Double opt-in: заявки с email ждут подтверждения адреса (#624) ────────────
+// Подтверждение нужно там, где за заявкой стоит автоматическая сборка. Формы
+// вроде «сопоставление каталогов» — это обращение к оператору, сборку они не
+// запускают, и лишний шаг там только теряет лид; список источников настраивается.
+$confirmSources = array_values(array_filter(array_map(
+    'trim',
+    explode(',', (string) intake_config('INTAKE_CONFIRM_SOURCES', 'excel-to-app,excel-constructor'))
+)));
+$needsConfirmation = intake_config_flag('INTAKE_CONFIRM_REQUIRED', true)
+    && in_array($source, $confirmSources, true)
+    && intake_is_email($contact);
 
-if ($githubToken === '' || $issueRepo === '') {
-    intake_respond(500, ['ok' => false, 'error' => 'GitHub integration is not configured.']);
+if ($needsConfirmation) {
+    // Отдельный лимит по адресу: IP-лимит выше не мешает нагенерить заявок на
+    // один и тот же чужой адрес с разных адресов сети.
+    $perEmailMax = (int) intake_config('INTAKE_CONFIRM_MAX_PER_EMAIL', '3');
+    if (!intake_rate_limit('email:' . strtolower($contact), $perEmailMax, 86400, $rateDir)) {
+        intake_respond(429, ['ok' => false, 'error' => 'На этот адрес уже отправлено несколько заявок. Проверьте почту или напишите нам в Telegram.']);
+    }
+
+    $queueDir = intake_queue_dir();
+    $ttl      = intake_confirm_ttl();
+    $created  = intake_queue_create($queueDir, [
+        'source'       => $source,
+        'source_label' => $sourceLabel,
+        'name'         => $name,
+        'company'      => $company,
+        'contact'      => $contact,
+        'topic'        => $topic,
+        'ip'           => $clientIp,
+    ], $uploads, $ttl);
+
+    if ($created !== null) {
+        $confirmUrl = intake_confirm_url(
+            $created['token'],
+            $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? '',
+            ($_SERVER['HTTPS'] ?? '') !== '' || ($_SERVER['REQUEST_SCHEME'] ?? 'https') === 'https'
+        );
+        $body = intake_render_template(intake_mail_confirm_template(), [
+            'confirm_url' => $confirmUrl,
+            'ttl_hours'   => (string) max(1, (int) round($ttl / 3600)),
+            'тематика'    => $topic !== '' ? "Тематика: $topic" : '',
+            'файлы'       => $uploads ? "\nФайлов приложено: " . count($uploads) . '.' : '',
+        ]);
+        $mailed = intake_mail_send($contact, intake_mail_confirm_subject(), $body);
+
+        if ($mailed) {
+            intake_respond(200, [
+                'ok'         => true,
+                'status'     => 'pending_confirmation',
+                'request_id' => $created['id'],
+                'message'    => 'Мы отправили письмо на ' . $contact . '. Перейдите по ссылке из письма — и мы начнём собирать приложение. Ссылка действует '
+                    . max(1, (int) round($ttl / 3600)) . ' ч.',
+            ]);
+        }
+
+        // Письмо не ушло (почта хоста легла) — заявку не теряем: убираем её из
+        // очереди и публикуем сразу, как делали до #624. Оператор увидит заявку
+        // в Telegram и ответит руками.
+        error_log('excel-to-app.php: письмо-подтверждение не отправлено, публикуем заявку напрямую: ' . $created['id']);
+        $uploads = intake_queue_files($queueDir, $created['id']);
+        $uploads = array_map(
+            static fn(array $f): array => ['name' => $f['name'], 'tmp_name' => $f['path'], 'size' => (int) @filesize($f['path']), 'error' => UPLOAD_ERR_OK],
+            $uploads
+        );
+        $requestId = $created['id'];
+    } else {
+        error_log('excel-to-app.php: очередь недоступна, публикуем заявку напрямую');
+    }
 }
 
-// ── Upload attachments to the repository ──────────────────────────────────────
+// ── Публикация заявки: вложения → GitHub, issue, Telegram ─────────────────────
 // Group all attachments of one request under a unique directory so the issue
 // body can link to them. We avoid Date/random helpers being unavailable here —
 // PHP has them — using a timestamp + short random suffix.
-$requestId = date('Ymd-His') . '-' . substr(bin2hex(random_bytes(4)), 0, 8);
-$uploadDir = 'orders/' . $requestId;
+$requestId = $requestId ?? intake_queue_new_id();
 
-$attachmentLinks = [];
-foreach ($uploads as $index => $file) {
-    $safeName = intake_sanitize_filename($file['name']);
-    $repoPath = $uploadDir . '/' . sprintf('%02d-%s', $index + 1, $safeName);
-    $contents = file_get_contents($file['tmp_name']);
-    if ($contents === false) {
-        intake_respond(500, ['ok' => false, 'error' => 'Не удалось прочитать загруженный файл.']);
-    }
-    $result = intake_github_upload_file(
-        $uploadRepo,
-        $repoPath,
-        $contents,
-        "chore(orders): attachment for $requestId",
-        $uploadBranch,
-        $githubToken,
-        $apiBase
-    );
-    if (!$result['ok']) {
-        intake_respond(502, [
-            'ok'      => false,
-            'error'   => 'Не удалось сохранить вложение в репозитории.',
-            'details' => $result['body']['message'] ?? $result['error'] ?? null,
-        ]);
-    }
-    $attachmentLinks[] = [
-        'name' => $safeName,
-        'url'  => $result['body']['content']['html_url'] ?? ($result['body']['content']['download_url'] ?? ''),
-    ];
-}
+$published = intake_publish_order(
+    [
+        'id'           => $requestId,
+        'source_label' => $sourceLabel,
+        'name'         => $name,
+        'company'      => $company,
+        'contact'      => $contact,
+        'topic'        => $topic,
+    ],
+    array_map(static fn(array $f): array => ['name' => $f['name'], 'path' => $f['tmp_name']], $uploads)
+);
 
-// ── Create the issue ──────────────────────────────────────────────────────────
-$issueTitle = "Заявка: $sourceLabel" . ($company !== '' ? " — $company" : ($name !== '' ? " — $name" : ''));
-$issueBody  = intake_build_issue_body($sourceLabel, $name, $company, $contact, $topic, $attachmentLinks, $requestId);
-
-$issueResult = intake_github_create_issue($issueRepo, $issueTitle, $issueBody, $labels, $githubToken, $apiBase);
-if (!$issueResult['ok']) {
-    intake_respond(502, [
+if (!$published['ok']) {
+    intake_respond($published['status'], array_filter([
         'ok'      => false,
-        'error'   => 'Не удалось создать issue.',
-        'details' => $issueResult['body']['message'] ?? $issueResult['error'] ?? null,
-    ]);
-}
-$issueUrl    = $issueResult['body']['html_url'] ?? '';
-$issueNumber = $issueResult['body']['number'] ?? null;
-
-// ── Notify Telegram (best effort: never fail the order if Telegram is down) ───
-$telegramSent = false;
-$botToken = (string) intake_config('TELEGRAM_BOT_TOKEN', '');
-$chatId   = (string) intake_config('TELEGRAM_CHAT_ID', '');
-if ($botToken !== '' && $chatId !== '') {
-    $tgBase  = (string) intake_config('TELEGRAM_API_BASE', 'https://api.telegram.org');
-    $message = intake_build_telegram_message($sourceLabel, $name, $company, $contact, $topic, $attachmentLinks, $issueUrl);
-    $tg = intake_telegram_send_message($botToken, $chatId, $message, $tgBase);
-    $telegramSent = $tg['ok'];
+        'error'   => $published['error'] ?? 'Не удалось принять заявку.',
+        'details' => $published['details'] ?? null,
+    ], static fn($v) => $v !== null));
 }
 
 intake_respond(200, [
     'ok'           => true,
+    'status'       => 'accepted',
     'message'      => 'Заявка принята. Мы свяжемся с вами в ближайшее время.',
-    'issue_url'    => $issueUrl,
-    'issue_number' => $issueNumber,
-    'attachments'  => count($attachmentLinks),
-    'telegram'     => $telegramSent,
+    'issue_url'    => $published['issue_url'],
+    'issue_number' => $published['issue_number'],
+    'attachments'  => count($published['attachments']),
+    'telegram'     => $published['telegram'],
 ]);
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -246,46 +278,4 @@ function intake_collect_uploads(array $files): array {
         }
     }
     return $out;
-}
-
-/** Compose the GitHub issue body (Markdown). */
-function intake_build_issue_body(string $heading, string $name, string $company, string $contact, string $topic, array $attachments, string $requestId): string {
-    $lines = ["## Новая заявка «$heading»", ''];
-    if ($name !== '')    $lines[] = "- **Имя:** $name";
-    if ($company !== '') $lines[] = "- **Компания:** $company";
-    if ($contact !== '') $lines[] = "- **Контакт:** $contact";
-    $lines[] = "- **ID заявки:** `$requestId`";
-    $lines[] = '';
-    if ($topic !== '') {
-        $lines[] = '### Тематика';
-        $lines[] = $topic;
-        $lines[] = '';
-    }
-    $lines[] = '### Вложения';
-    if ($attachments) {
-        foreach ($attachments as $a) {
-            $lines[] = $a['url'] !== '' ? "- [{$a['name']}]({$a['url']})" : "- {$a['name']}";
-        }
-    } else {
-        $lines[] = '_Файлы не приложены._';
-    }
-    $lines[] = '';
-    $lines[] = '---';
-    $lines[] = '_Создано автоматически обработчиком приёма заявок (A2)._';
-    return implode("\n", $lines);
-}
-
-/** Compose the Telegram notification (MarkdownV2). */
-function intake_build_telegram_message(string $heading, string $name, string $company, string $contact, string $topic, array $attachments, string $issueUrl): string {
-    $e = 'intake_escape_markdown';
-    $lines = ['*Новая заявка «' . $heading . '»*'];
-    if ($name !== '')    $lines[] = '👤 *Имя:* ' . $e($name);
-    if ($company !== '') $lines[] = '🏢 *Компания:* ' . $e($company);
-    if ($contact !== '') $lines[] = '📬 *Контакт:* ' . $e($contact);
-    if ($topic !== '')   $lines[] = "📝 *Тематика:*\n" . $e($topic);
-    $lines[] = '📎 *Файлов:* ' . $e((string) count($attachments));
-    if ($issueUrl !== '') {
-        $lines[] = '🔗 ' . $e($issueUrl);
-    }
-    return implode("\n", $lines);
 }

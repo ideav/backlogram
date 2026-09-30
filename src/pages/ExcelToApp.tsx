@@ -106,6 +106,8 @@ export default function ExcelToApp() {
 
   const [formState, setFormState] = React.useState<FormState>('idle')
   const [errorMsg, setErrorMsg] = React.useState('')
+  // Непустая строка — заявка принята, но ждёт подтверждения адреса (#624).
+  const [pendingMsg, setPendingMsg] = React.useState('')
   const [files, setFiles] = React.useState<File[]>([])
   const [topic, setTopic] = React.useState('')
   const [contact, setContact] = React.useState('')
@@ -366,6 +368,10 @@ export default function ExcelToApp() {
       })
       const json = await res.json().catch(() => ({ ok: false }))
       if (res.ok && json.ok) {
+        // Заявка с email ждёт подтверждения адреса (#624): пока клиент не
+        // перешёл по ссылке из письма, сборка не начата. Обещать «уже взялись
+        // за ваши файлы» в этом случае нельзя — человек будет ждать зря.
+        setPendingMsg(json.status === 'pending_confirmation' ? String(json.message ?? '') : '')
         setFormState('success')
         reachGoal('lead', { source: 'excel-to-app' })
         setFiles([])
@@ -868,22 +874,39 @@ export default function ExcelToApp() {
                 </div>
                 <div className="space-y-3">
                   <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-50">
-                    Заявка принята!
+                    {pendingMsg !== '' ? 'Остался один шаг — подтвердите почту' : 'Заявка принята!'}
                   </h2>
-                  <p className="text-slate-500 dark:text-slate-400 text-lg leading-relaxed">
-                    Мы уже взялись за ваши файлы. Примерно через 45 минут пришлём ссылку на
-                    готовую базу Интеграм на указанный контакт. Через{' '}
-                    <a
-                      href={TELEGRAM_BOT_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 dark:text-blue-400 hover:underline"
-                    >
-                      @Integrammbot
-                    </a>{' '}
-                    ссылка приходит прямо в чат и не теряется в спаме — напишите нам туда,
-                    если через час ничего не пришло.
-                  </p>
+                  {pendingMsg !== '' ? (
+                    <p className="text-slate-500 dark:text-slate-400 text-lg leading-relaxed">
+                      {pendingMsg} Сборку запускает ИИ-агент, поэтому мы начинаем её только после
+                      перехода по ссылке — так на вашу заявку точно хватит времени. Письма нет в
+                      течение пары минут? Проверьте папку «Спам» или напишите нам через{' '}
+                      <a
+                        href={TELEGRAM_BOT_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 dark:text-blue-400 hover:underline"
+                      >
+                        @Integrammbot
+                      </a>
+                      .
+                    </p>
+                  ) : (
+                    <p className="text-slate-500 dark:text-slate-400 text-lg leading-relaxed">
+                      Мы уже взялись за ваши файлы. Примерно через 45 минут пришлём ссылку на
+                      готовую базу Интеграм на указанный контакт. Через{' '}
+                      <a
+                        href={TELEGRAM_BOT_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 dark:text-blue-400 hover:underline"
+                      >
+                        @Integrammbot
+                      </a>{' '}
+                      ссылка приходит прямо в чат и не теряется в спаме — напишите нам туда,
+                      если через час ничего не пришло.
+                    </p>
+                  )}
                   <div className="mt-4 p-4 rounded-xl bg-blue-50 dark:bg-blue-950/30 text-sm text-blue-700 dark:text-blue-300 text-left">
                     <strong>Что будет дальше:</strong> вы получите реляционную базу данных, рабочие
                     места для сотрудников и бизнес-логику, готовую к использованию — бесплатно и

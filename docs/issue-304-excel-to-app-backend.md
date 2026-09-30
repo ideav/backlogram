@@ -13,6 +13,7 @@
 | --- | --- |
 | `public/excel-to-app.php` | Эндпоинт приёма заявки (форма A1 шлёт сюда `multipart/form-data`). |
 | `public/intake-shared.php` | Переиспользуемые помощники (config, captcha, GitHub API, Telegram, rate-limit). Тестируемые чистые функции. |
+| `public/intake-publish.php` | Шаг публикации: вложения → GitHub, issue, уведомление в Telegram. Выделен из эндпоинта в [#624](https://github.com/ideav/backlogram/issues/624) — его зовут из двух мест. |
 | `public/telegram-config.example.php` | Пример конфигурации. Копируется в `telegram-config.php` (git-ignored). |
 
 ## Поток обработки
@@ -25,6 +26,14 @@
      fail-open — никогда не «роняет» форму само по себе).
 3. **Валидация:** обязателен контакт; вложения проверяются по расширению
    (`xlsx, xls, csv, ods`), размеру (≤10 МиБ) и количеству (≤10).
+3a. **Подтверждение адреса (с [#624](https://github.com/ideav/backlogram/issues/624)).**
+   Если контакт — email и форма из `INTAKE_CONFIRM_SOURCES`, заявка не публикуется
+   сразу: она уходит в файловую очередь со статусом `pending_confirmation`, а
+   клиенту отправляется письмо со ссылкой (24 ч). Шаги 4–6 выполняются только
+   после перехода по ссылке, и дальше заявку забирает сборщик. Заявки с
+   Telegram-контактом идут как раньше — сразу в шаг 4. Полное описание контура,
+   протокол моста и порядок выкатки —
+   [`docs/issue-624-double-optin-loop.md`](issue-624-double-optin-loop.md).
 4. **Вложения → GitHub.** Каждый файл коммитится через Contents API в каталог
    `orders/<request-id>/NN-<имя>` репозитория `GITHUB_UPLOAD_REPO`.
 5. **Issue → GitHub.** Создаётся issue в `GITHUB_ISSUE_REPO` с полями заявки и
@@ -32,7 +41,10 @@
 6. **Telegram.** Владельцу отправляется уведомление со ссылкой на issue
    (best-effort: сбой Telegram не отменяет уже принятую заявку).
 
-Ответ — JSON: `{ ok, message, issue_url, issue_number, attachments, telegram }`.
+Ответ — JSON: `{ ok, message, issue_url, issue_number, attachments, telegram }` со
+`status: "accepted"`, а для заявки, ожидающей подтверждения, —
+`{ ok: true, status: "pending_confirmation", request_id, message }` (формы
+показывают это сообщение вместо «заявка принята»).
 
 ## Контракт формы (поля)
 
@@ -69,6 +81,10 @@
 | `INTAKE_ALLOWED_EXT` | `xlsx,xls,csv,ods` | Разрешённые расширения. |
 | `INTAKE_SKIP_HOST_CHECK` | `0` | Отключить same-origin проверку (только для локальной отладки/тестов). |
 
+Переменные контура подтверждения (`INTAKE_CONFIRM_*`, `INTAKE_QUEUE_*`,
+`INTAKE_MAIL_*`, `INTAKE_BUILD_TOKEN`) описаны в
+[`docs/issue-624-double-optin-loop.md`](issue-624-double-optin-loop.md).
+
 ## Тесты
 
 `tests/excel-to-app-backend.test.mjs`:
@@ -80,5 +96,8 @@
 - сквозной тест: поднимается мок GitHub + Telegram API (`php -S`), эндпоинт
   получает реальную multipart-заявку с `.xlsx`, проверяется загрузка файла,
   создание issue и уведомление Telegram.
+
+`tests/excel-to-app-confirm.test.mjs` — контур подтверждения из #624 (письмо,
+ссылка, мост, письмо с результатом, просрочка, лимиты).
 
 Запуск: `npm test`.

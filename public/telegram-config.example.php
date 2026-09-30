@@ -43,6 +43,33 @@ define('SMARTCAPTCHA_SERVER_KEY',   'ysc2_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 // define('GITHUB_UPLOAD_BRANCH',  'main');               // branch for attachment commits
 // define('GITHUB_ISSUE_LABELS',   'excel-to-app,order'); // comma-separated labels (optional)
 
+// ── Замкнутый контур: подтверждение адреса → сборка → письмо (issue #624) ────
+// Подробности и порядок выкатки — docs/issue-624-double-optin-loop.md.
+//
+// define('INTAKE_CONFIRM_REQUIRED',     '1');   // double opt-in для заявок с email (по умолчанию включён)
+// define('INTAKE_CONFIRM_SOURCES',      'excel-to-app,excel-constructor'); // формы, за которыми стоит сборка
+// define('INTAKE_CONFIRM_TTL',          '86400');  // срок жизни ссылки подтверждения, сек (24 ч)
+// define('INTAKE_CONFIRM_MAX_PER_EMAIL','3');      // заявок на один адрес за сутки
+// define('INTAKE_CONFIRM_URL',          'https://ideav.ru/excel-to-app-confirm.php'); // иначе собирается по текущему хосту
+// define('INTAKE_QUEUE_DIR',            '/var/www/.../excel-to-app-queue');  // ВНЕ вебрута: в очереди файлы клиентов
+// define('INTAKE_QUEUE_KEEP_DELIVERED', '2592000'); // сколько держать доставленные заявки, сек (30 дней)
+
+// ── Почта писем клиенту (подтверждение и «приложение готово») ────────────────
+// Отправлять только с домена, у которого настроены SPF/DKIM/DMARC (ideav.ru),
+// иначе письма ложатся в спам.
+//
+// define('INTAKE_MAIL_FROM',      'welcome@ideav.ru');
+// define('INTAKE_MAIL_FROM_NAME', 'Интеграм');
+// define('INTAKE_MAIL_REPLY_TO',  'abc@integram.io');
+// define('INTAKE_MAIL_BCC',       '');            // копия себе — контроль отправки
+// define('INTAKE_MAIL_TRANSPORT', 'mail');        // mail | file (сухой прогон)
+// define('INTAKE_MAIL_FILE',      '/tmp/intake-mail.log'); // куда писать при transport=file
+
+// ── Мост к сборщику (@Integrammbot забирает работу сам) ──────────────────────
+// Держать ТОЛЬКО в окружении. Не задан — excel-to-app-build.php отвечает 503.
+//
+// define('INTAKE_BUILD_TOKEN', 'длинная-случайная-строка');
+
 // ── Spam protection / upload limits (optional; sensible defaults apply) ───────
 // define('INTAKE_RATE_LIMIT_MAX',    '5');               // max requests per IP per window
 // define('INTAKE_RATE_LIMIT_WINDOW', '3600');            // window in seconds

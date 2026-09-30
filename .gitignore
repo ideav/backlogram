@@ -39,5 +39,10 @@ dist-ssr
 # Telegram bot credentials (copy from telegram-config.example.php and fill in values)
 public/telegram-config.php
 
+# Очередь заявок с подтверждением адреса (issue #624). На сервере каталог живёт
+# вне вебрута, но при локальном запуске `php -S -t public` он оказывается здесь,
+# и в нём лежат чужие файлы — в репозиторий им нельзя.
+excel-to-app-queue/
+
 # Настройки приёма заявок лендинга на отдельном домене (токен бота, почта)
 site-excel/public/order-config.php
