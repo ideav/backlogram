@@ -287,6 +287,8 @@ export default function ExcelConstructor() {
   // ── Форма заявки «Заказать демо» → Telegram ────────────────────────────────
   const [formState, setFormState] = useState<FormState>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  // Непустая строка — заявка принята, но ждёт подтверждения адреса (#624).
+  const [pendingMsg, setPendingMsg] = useState('')
   const [consentChecked, setConsentChecked] = useState(false)
   const [captchaToken, setCaptchaToken] = useState('')
   const [isCaptchaRequested, setIsCaptchaRequested] = useState(false)
@@ -392,6 +394,10 @@ export default function ExcelConstructor() {
       })
       const json = await res.json().catch(() => ({ ok: false }))
       if (res.ok && json.ok) {
+        // Заявка с email ждёт подтверждения адреса (#624): сборка стартует
+        // только после перехода по ссылке из письма, и человек должен это
+        // увидеть — иначе он просто ждёт результата, который не начали делать.
+        setPendingMsg(json.status === 'pending_confirmation' ? String(json.message ?? '') : '')
         setFormState('success')
         reachGoal('lead', { source: 'excel-constructor' })
         form.reset()
@@ -740,9 +746,15 @@ export default function ExcelConstructor() {
               </div>
 
               {formState === 'success' && (
-                <div className="flex items-center gap-2 text-green-500 dark:text-green-400 text-sm font-medium">
-                  <CheckCircle2 size={16} />
-                  Заявка отправлена! Свяжемся с вами в течение 24 часов.
+                <div className="flex items-start gap-2 text-green-500 dark:text-green-400 text-sm font-medium">
+                  <CheckCircle2 size={16} className="mt-0.5 shrink-0" />
+                  {pendingMsg !== '' ? (
+                    <span>
+                      <strong>Проверьте почту.</strong> {pendingMsg}
+                    </span>
+                  ) : (
+                    <span>Заявка отправлена! Свяжемся с вами в течение 24 часов.</span>
+                  )}
                 </div>
               )}
               {formState === 'error' && (

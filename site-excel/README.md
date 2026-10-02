@@ -64,6 +64,25 @@ SITE_URL=https://<домен> METRIKA_ID=<счётчик> npm run build:excel
 
 Настройки — через окружение или `public/order-config.php` (в git не входит): `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `ORDER_EMAIL_TO`.
 
+Доставка устроена спулом ([`public/order-lib.php`](public/order-lib.php)): заявка сначала ложится на диск, потом делается попытка отправки, недоставленное добирает cron каждые 5 минут.
+
+```
+*/5 * * * * php /path/to/excel-to-app.ru/order-deliver.php
+```
+
+### Подтверждение адреса (issue #624)
+
+Заявка на демонстрацию с **email**-контактом уходит оператору и сборщику не сразу: сначала на этот адрес идёт письмо со ссылкой (24 ч), и только переход по ней ставит заявку в работу. Причина — сборку делает ИИ-агент: заявка с опечаткой в адресе означает оплаченную сборку, о которой никто не узнает. Заявки на разбор, экспресс-разработку и заявки с телеграм-контактом идут как раньше.
+
+Контур — тот же, что на ideav.ru, и код у него общий: `public/intake-*.php` здесь — **сгенерированные копии** из вебрута основного сайта, править их нельзя.
+
+```bash
+node ../scripts/sync-excel-intake.mjs     # из корня репозитория
+node --test ../tests/excel-landing-confirm.test.mjs
+```
+
+Связка лендинга с библиотекой — [`public/order-intake.php`](public/order-intake.php), страница подтверждения — `public/order-confirm.php`, мост к сборщику — `public/order-build.php`. Настройки (`ORDER_QUEUE_DIR`, `ORDER_BUILD_TOKEN`, `ORDER_CONFIRM_*`), раскладку по серверу и то, почему `order.php` нельзя заливать целиком, см. [`docs/issue-624-double-optin-loop.md`](../docs/issue-624-double-optin-loop.md).
+
 ## Кампания
 
 Стратегия, ключи, тексты объявлений и порядок запуска — в [`docs/marketing/excel-cpa-campaign.md`](../docs/marketing/excel-cpa-campaign.md). Скрипт создания кампании через API — [`scripts/direct-create-cpa-campaign.mjs`](../scripts/direct-create-cpa-campaign.mjs).

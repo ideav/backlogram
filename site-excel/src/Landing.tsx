@@ -150,6 +150,10 @@ function OrderForm({
   onSent?: () => void
 }) {
   const [sent, setSent] = useState(false)
+  // Адрес ждёт подтверждения по ссылке из письма (issue #624): заявка принята,
+  // но сборка не начнётся, пока человек не перейдёт по ссылке, — и обещать ему
+  // «вернёмся со ссылкой на приложение» в этом случае нельзя.
+  const [pending, setPending] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [files, setFiles] = useState<File[]>([])
@@ -184,13 +188,21 @@ function OrderForm({
     setError('')
     try {
       const response = await fetch(SUBMIT_ENDPOINT, { method: 'POST', body: data })
-      const payload = (await response.json().catch(() => ({}))) as { ok?: boolean; error?: string }
+      const payload = (await response.json().catch(() => ({}))) as {
+        ok?: boolean
+        error?: string
+        status?: string
+        message?: string
+      }
       if (!response.ok || !payload.ok) {
         setError(payload.error ?? 'Не получилось отправить. Напишите нам в телеграм — так надёжнее.')
         return
       }
       reachGoal(GOALS.lead, { source: `excel-cpa-landing-${kind}` })
       if (kind === 'express') reachExpressGoal(plan ?? '')
+      if (payload.status === 'pending_confirmation') {
+        setPending(payload.message ?? 'Мы отправили письмо со ссылкой — перейдите по ней, и мы начнём сборку.')
+      }
       setSent(true)
       onSent?.()
     } catch {
@@ -204,12 +216,16 @@ function OrderForm({
     return (
       <div className="rounded-2xl border border-green-500/30 bg-green-50 p-6 sm:p-8">
         <h3 className="text-xl font-bold flex items-center gap-2">
-          <CheckCircle2 size={22} className="text-green-600" /> Принято
+          <CheckCircle2 size={22} className="text-green-600" />
+          {pending ? 'Подтвердите адрес' : 'Принято'}
         </h3>
+        {pending && <p className="mt-3 text-slate-800 font-medium leading-relaxed">{pending}</p>}
         <p className="mt-3 text-slate-700 leading-relaxed">
-          {kind === 'demo'
-            ? 'Вернёмся со ссылкой на готовое приложение. Быстрее всего — в '
-            : 'Ответим в течение рабочего дня. Быстрее всего — в '}
+          {pending
+            ? 'Письма нет через пару минут — посмотрите в «Спам». Или напишите нам в '
+            : kind === 'demo'
+              ? 'Вернёмся со ссылкой на готовое приложение. Быстрее всего — в '
+              : 'Ответим в течение рабочего дня. Быстрее всего — в '}
           <a
             href={TELEGRAM_BOT_URL}
             target="_blank"
