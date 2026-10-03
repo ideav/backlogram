@@ -29,8 +29,14 @@ if (file_exists($config_file)) {
     require_once $config_file;
 }
 
-// В CLI нет DOCUMENT_ROOT — вебрут это каталог самого скрипта.
-$_SERVER['DOCUMENT_ROOT'] = $_SERVER['DOCUMENT_ROOT'] ?? __DIR__;
+// В CLI вебрут — это каталог самого скрипта. Именно empty(), а не
+// `?? __DIR__`: PHP CLI кладёт в DOCUMENT_ROOT пустую строку, а `??`
+// срабатывает только на null, и каталог очереди считался бы от «».
+// Пока INTAKE_QUEUE_DIR задан явно, это незаметно — и ровно поэтому
+// такое живёт годами (см. order-deliver.php, где не задан).
+if (empty($_SERVER['DOCUMENT_ROOT'])) {
+    $_SERVER['DOCUMENT_ROOT'] = __DIR__;
+}
 
 $queueDir = intake_queue_dir();
 if (!is_dir($queueDir)) {

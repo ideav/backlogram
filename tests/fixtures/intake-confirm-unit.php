@@ -102,6 +102,58 @@ check('письмо-результат не раздаёт пароли роле
 check('тема результата содержит тематику', intake_mail_app_ready_subject('интернет-магазина') === 'Ваше приложение для интернет-магазина готово — Интеграм');
 check('тема результата без тематики не ломается', intake_mail_app_ready_subject('') === 'Ваше приложение готово — Интеграм');
 
+// ── Вебрут в CLI: DOCUMENT_ROOT задан, но пуст ─────────────────────────────
+// PHP CLI кладёт в $_SERVER['DOCUMENT_ROOT'] пустую строку, а не оставляет
+// ключ незаданным, поэтому `?? __DIR__` на него не срабатывает. Из-за этого
+// крон доставки лендинга считал путь спула от «» и две недели молча выходил.
+$savedRoot = $_SERVER['DOCUMENT_ROOT'] ?? null;
+$_SERVER['DOCUMENT_ROOT'] = '';
+check(
+    'пустой DOCUMENT_ROOT не даёт пути от корня',
+    strpos(intake_queue_dir(), '/excel-to-app-queue') > 1
+);
+$_SERVER['DOCUMENT_ROOT'] = '/var/www/site.ru';
+check(
+    'заданный DOCUMENT_ROOT берётся как есть',
+    intake_queue_dir() === '/var/www/excel-to-app-queue'
+);
+if ($savedRoot === null) {
+    unset($_SERVER['DOCUMENT_ROOT']);
+} else {
+    $_SERVER['DOCUMENT_ROOT'] = $savedRoot;
+}
+
+// ── Сторож зависшего спула ─────────────────────────────────────────────────
+// Доставку чинить некому, если о поломке никто не узнаёт: раньше о заявке,
+// висящей в спуле, писалось только в лог через 14 дней.
+$spoolDir = sys_get_temp_dir() . '/intake-spool-unit-' . bin2hex(random_bytes(4));
+mkdir($spoolDir, 0700, true);
+$meta = ['created' => 1000, 'body' => 'Заявка на демонстрацию, текст для оператора'];
+
+$sentTo = [];
+$capture = static function (string $to) use (&$sentTo): bool {
+    $sentTo[] = $to;
+    return true;
+};
+putenv('INTAKE_MAIL_TRANSPORT=file');
+putenv('INTAKE_MAIL_FILE=' . $spoolDir . '/alert-mail.log');
+putenv('INTAKE_SPOOL_STUCK_AFTER=3600');
+
+check('свежая заявка тревоги не поднимает', intake_spool_alert($spoolDir, $meta, 'тест', 1000 + 60) === false);
+check('метки ещё нет', !file_exists($spoolDir . '/alerted'));
+check('залежавшаяся заявка поднимает тревогу', intake_spool_alert($spoolDir, $meta, 'тест', 1000 + 7200) === true);
+check('повторно не дёргает', intake_spool_alert($spoolDir, $meta, 'тест', 1000 + 10800) === false);
+$alertLog = (string) @file_get_contents($spoolDir . '/alert-mail.log');
+check('в письме есть текст заявки — её можно отработать руками', str_contains($alertLog, 'текст для оператора'));
+check('в письме сказано, какой спул', str_contains($alertLog, 'тест'));
+check('заявка без времени создания тревоги не поднимает', intake_spool_alert($spoolDir . '/nope', ['body' => 'x'], 'тест', 99999) === false);
+putenv('INTAKE_MAIL_TRANSPORT');
+putenv('INTAKE_MAIL_FILE');
+putenv('INTAKE_SPOOL_STUCK_AFTER');
+@unlink($spoolDir . '/alerted');
+@unlink($spoolDir . '/alert-mail.log');
+@rmdir($spoolDir);
+
 // ── intake_queue_path: id из URL не должен выводить из каталога ─────────────
 check('нормальный id даёт путь', intake_queue_path('/q', '20260929-210000-1a2b3c4d') === '/q/20260929-210000-1a2b3c4d');
 check('обход каталога отбит', intake_queue_path('/q', '../../etc') === null);
@@ -162,6 +214,39 @@ $files = intake_queue_files($queue, $id);
 check('вложение перенесено в очередь', count($files) === 1 && is_file($files[0]['path']));
 check('содержимое вложения сохранено', file_get_contents($files[0]['path']) === "a;b\n1;2\n");
 check('имя вложения обезврежено', $files[0]['name'] !== '' && !str_contains($files[0]['name'], '/'));
+
+// ── Заявка с байтами не в UTF-8 ────────────────────────────────────────────
+// Найдено при выкатке 03.10.2026: json_encode отказывался кодировать такую
+// запись, file_put_contents молча писал пустую строку и возвращал 0 (не false),
+// и в очереди оставался request.json на 0 байт. Снаружи всё выглядело успешно:
+// клиенту сказали «письмо отправлено», а подтверждать было уже нечего.
+$broken = intake_queue_create($queue, [
+    'source'  => 'excel-to-app',
+    'contact' => 'cp1251@example.com',
+    // «Диагностика» в CP1251 — так приходит текст от клиента со старой кодировкой.
+    'topic'   => hex2bin('c4e8e0e3edeef1f2e8eae0'),
+], [], 86400, 1000);
+check('заявка с битой кодировкой всё равно создаётся', is_array($broken));
+$brokenId = (string) ($broken['id'] ?? '');
+check(
+    'request.json не пустой',
+    $brokenId !== '' && filesize($queue . '/' . $brokenId . '/request.json') > 0
+);
+check('заявка с битой кодировкой читается обратно', is_array(intake_queue_load($queue, $brokenId)));
+check(
+    'битые байты заменены, остальное на месте',
+    (intake_queue_load($queue, $brokenId)['contact'] ?? '') === 'cp1251@example.com'
+);
+check(
+    'подтвердить такую заявку можно',
+    intake_queue_confirm($queue, (string) $broken['token'], 1000 + 60)['status'] === 'ok'
+);
+check(
+    'после подтверждения запись не обнулилась',
+    filesize($queue . '/' . $brokenId . '/request.json') > 0
+        && (intake_queue_load($queue, $brokenId)['status'] ?? '') === INTAKE_STATUS_CONFIRMED
+);
+intake_queue_remove($queue, $brokenId);
 
 // Чужой токен той же заявки не подходит.
 $wrong = intake_queue_confirm($queue, $id . '.' . str_repeat('cd', 32));

@@ -44,7 +44,10 @@ if (!defined('INTAKE_QUEUE_LOADED')) {
         if ($configured !== '') {
             return rtrim(str_replace('\\', '/', $configured), '/');
         }
-        $root = (string) ($_SERVER['DOCUMENT_ROOT'] ?? __DIR__);
+        // Пустая строка — это CLI: DOCUMENT_ROOT там задан, но пуст,
+        // и `?? __DIR__` на него не срабатывает (см. order-deliver.php).
+        $root = (string) ($_SERVER['DOCUMENT_ROOT'] ?? '');
+        $root = $root !== '' ? $root : __DIR__;
         $root = rtrim(str_replace('\\', '/', $root), '/');
         return dirname($root) . '/excel-to-app-queue';
     }
@@ -102,14 +105,39 @@ if (!defined('INTAKE_QUEUE_LOADED')) {
         return is_array($data) ? $data : null;
     }
 
-    /** Записать request.json атомарно (tmp + rename). */
+    /**
+     * Записать request.json атомарно (tmp + rename).
+     *
+     * `JSON_INVALID_UTF8_SUBSTITUTE` — не украшательство: в заявку попадает
+     * текст, набранный человеком, и байты, которые пришли не в UTF-8,
+     * встречаются (старый почтовый клиент, вставка из Windows-приложения,
+     * самодельный клиент формы). Без этого флага json_encode возвращает
+     * `false`, `file_put_contents` молча пишет пустую строку и возвращает `0`
+     * — не `false`, — а дальше `rename` превращает заявку в пустой
+     * request.json. Снаружи всё выглядит успешным: клиенту сказали «письмо
+     * отправлено», а подтвердить заявку уже нечем — записи нет. Найдено при
+     * выкатке 03.10.2026.
+     *
+     * Подменить битый символ на U+FFFD лучше, чем потерять заявку: всё
+     * остальное в ней читается, а оператор увидит ромбик и поймёт.
+     */
     function intake_queue_write(string $dir, array $record): bool {
         $path = intake_queue_path($dir, (string) ($record['id'] ?? ''));
         if ($path === null || !is_dir($path)) {
             return false;
         }
-        $json = json_encode($record, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-        $tmp  = $path . '/request.json.tmp';
+        $json = json_encode(
+            $record,
+            JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_INVALID_UTF8_SUBSTITUTE
+        );
+        if ($json === false) {
+            // Осталось то, что подменой символов не чинится (глубина, рекурсия).
+            // Пустую запись не оставляем: пусть вызывающий считает, что очередь
+            // недоступна, и доставит заявку обычным путём.
+            error_log('intake-queue: json_encode отказал (' . json_last_error_msg() . '), заявка в очередь не записана');
+            return false;
+        }
+        $tmp = $path . '/request.json.tmp';
         if (@file_put_contents($tmp, $json, LOCK_EX) === false) {
             return false;
         }
@@ -246,10 +274,20 @@ if (!defined('INTAKE_QUEUE_LOADED')) {
             // мусорного токена и показать человеку «уже подтверждено» вместо
             // «ссылка не найдена».
 
-            $json = json_encode($record, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            // Тот же флаг и та же причина, что в intake_queue_write: без него
+            // `(string) false` затёрло бы уже подтверждённую заявку в ноль
+            // байт — и сборщик её больше не увидел бы.
+            $json = json_encode(
+                $record,
+                JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_INVALID_UTF8_SUBSTITUTE
+            );
+            if ($json === false) {
+                error_log('intake-queue: json_encode отказал при подтверждении ' . $parsed['id'] . ', запись не тронута');
+                return ['status' => 'not_found'];
+            }
             ftruncate($handle, 0);
             rewind($handle);
-            fwrite($handle, (string) $json);
+            fwrite($handle, $json);
             fflush($handle);
             return ['status' => 'ok', 'record' => $record];
         } finally {

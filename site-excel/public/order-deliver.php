@@ -22,9 +22,18 @@ if (PHP_SAPI !== 'cli') {
     exit;
 }
 
-// В CLI нет DOCUMENT_ROOT — вебрут это каталог самого скрипта. Ставится до
-// подключения библиотек: от него считаются каталоги очередей.
-$_SERVER['DOCUMENT_ROOT'] = $_SERVER['DOCUMENT_ROOT'] ?? __DIR__;
+// В CLI вебрут — это каталог самого скрипта. Ставится до подключения
+// библиотек: от него считаются каталоги спула и очереди.
+//
+// ВАЖНО: именно empty(), а не `?? __DIR__`. PHP CLI не оставляет
+// DOCUMENT_ROOT незаданным — он кладёт туда ПУСТУЮ СТРОКУ, а `??`
+// срабатывает только на null. С `??` спул считался от «», получался путь
+// `/tg-spool`, его не существовало, и скрипт молча выходил с кодом 0.
+// Из-за этого крон лендинга не разбирал спул с 16.09.2026 по 03.10.2026 —
+// без единой строчки в логе.
+if (empty($_SERVER['DOCUMENT_ROOT'])) {
+    $_SERVER['DOCUMENT_ROOT'] = __DIR__;
+}
 
 require_once __DIR__ . '/order-lib.php';
 // Очередь подтверждений (#624). Файлов может не быть, если контур на этот
@@ -33,6 +42,10 @@ $order_intake = __DIR__ . '/order-intake.php';
 if (is_file($order_intake)) {
     require_once $order_intake;
 }
+// Сторож зависших заявок живёт в intake-mail.php, а его подключает
+// order-intake.php (ему нужен intake_config() поверх order_config(), и
+// в одиночку intake-mail.php на лендинге не загрузится). Поэтому ниже —
+// проверка function_exists: без контура #624 крон работает как раньше.
 
 // ── Очередь подтверждений: просроченные удалить, подтверждённые дослать ──────
 $expired = 0;
@@ -61,14 +74,17 @@ if (function_exists('order_queue_dir')) {
 
 $spool = order_spool_dir();
 if (!is_dir($spool)) {
-    if ($expired || $spooled) {
-        echo date('c') . " expired=$expired spooled=$spooled\n";
-    }
-    exit(0); // спул пуст — остальное сделано
+    // Не молча: каталог спула создаётся при первой заявке, но его отсутствие
+    // вместе с посчитанным «не туда» путём — ровно тот случай, который две
+    // недели оставался незамеченным. Пусть будет видно в логе крона.
+    echo date('c') . " order-deliver: каталога спула нет: $spool"
+        . " expired=$expired spooled=$spooled\n";
+    exit(0);
 }
 
 $delivered = 0;
 $left = 0;
+$alerted = 0;
 foreach (glob($spool . '/*', GLOB_ONLYDIR) ?: [] as $dir) {
     if (order_spool_deliver($dir)) {
         order_spool_cleanup($dir);
@@ -77,11 +93,15 @@ foreach (glob($spool . '/*', GLOB_ONLYDIR) ?: [] as $dir) {
     }
     $left++;
     $meta = json_decode((string) @file_get_contents($dir . '/meta.json'), true);
-    if (is_array($meta) && time() - (int) ($meta['created'] ?? 0) > 14 * 86400) {
-        error_log('order-deliver: заявка висит больше 14 дней: ' . $dir);
+    // Сторож из intake-mail.php: заявка висит дольше порога — письмо оператору
+    // один раз. Почтой, а не в Telegram: это Telegram и не работает.
+    if (is_array($meta) && function_exists('intake_spool_alert')
+        && intake_spool_alert($dir, $meta, 'excel-to-app.ru')) {
+        $alerted++;
     }
 }
 
 if ($delivered || $left || $expired || $spooled) {
-    echo date('c') . " delivered=$delivered left=$left expired=$expired spooled=$spooled\n";
+    echo date('c') . " delivered=$delivered left=$left alerted=$alerted"
+        . " expired=$expired spooled=$spooled\n";
 }
