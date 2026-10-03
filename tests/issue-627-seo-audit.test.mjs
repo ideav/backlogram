@@ -18,7 +18,8 @@ import { renderStaticNav } from '../scripts/lib/static-nav.mjs'
 import { nbsp, nbspHtml } from '../src/lib/typography.mjs'
 import { humanDate, freshnessLine } from '../src/lib/dates.mjs'
 import { CM_META, CM_FORM } from '../src/data/catalogMatching.mjs'
-import { QUIZ_META, QUESTIONS } from '../src/data/quintetsQuiz.mjs'
+import { QUIZ_META, QUIZ_INTRO, QUESTIONS } from '../src/data/quintetsQuiz.mjs'
+import { HOME_FAQ } from '../src/data/home-faq.mjs'
 import { offerPath, PRICES_VALID_UNTIL, SERVICES } from '../src/data/services.mjs'
 
 const repo = fileURLToPath(new URL('..', import.meta.url))
@@ -225,6 +226,43 @@ test('число материалов в прозе llms.txt совпадает 
   const stated = Number(/серия из (\d+) материалов/.exec(llms)?.[1])
   const actual = (read('src/data/knowledgeBase.ts').match(/^ {4}slug: '/gm) ?? []).length
   assert.equal(stated, actual, 'обновите число в llms.txt вместе со статьёй')
+})
+
+// ───────────────────────────────────────────────────────────────────────────
+// Назначение страницы о квинтетах — решение владельца по issue #627:
+// она для тех, кто ищет информацию про нас, а не под спрос по слову «квинтет».
+// Отсюда два инварианта: бренд в метаданных и хотя бы один контекстный вход.
+// ───────────────────────────────────────────────────────────────────────────
+
+test('метаданные опросника несут бренд и держат лимиты выдачи', () => {
+  assert.ok(QUIZ_META.title.includes('Интеграм'), 'без бренда страницу не найдут по запросу про нас')
+  assert.ok(QUIZ_META.description.includes('Интеграм'), 'в описании нет бренда')
+  assert.ok(QUIZ_META.keywords.includes('Интеграм'), 'в keywords нет бренда')
+  assert.ok(QUIZ_META.title.length <= 60, `title ${QUIZ_META.title.length} симв. — обрежется в выдаче`)
+  assert.ok(
+    QUIZ_META.description.length <= 158,
+    `description ${QUIZ_META.description.length} симв. — обрежется в выдаче`,
+  )
+})
+
+test('шапка опросника объясняет, что квинтеты — модель хранения Интеграма', () => {
+  // Без этого абзаца страница читается как отвлечённое сравнение трёх вариантов
+  // и на вопрос «на чём работает Интеграм» не отвечает.
+  const [head, body] = QUIZ_INTRO[0]
+  assert.match(`${head} ${body}`, /Интеграм/)
+})
+
+test('на опросник ведёт контекстная ссылка, а не только меню', () => {
+  // Пункт меню — не вход для того, кто изучает платформу: он ищет ответ, а не
+  // раздел. FAQ главной — единственная поверхность, которая этот запрос ловит.
+  const faqLinks = HOME_FAQ.map((item) => item.link?.href)
+  assert.ok(
+    faqLinks.includes(QUIZ_META.path),
+    'ни один ответ FAQ главной не ведёт на опросник о квинтетах',
+  )
+  const storage = HOME_FAQ.find((item) => item.link?.href === QUIZ_META.path)
+  assert.match(storage.q.toLowerCase(), /хранит/, 'вопрос должен быть про хранение данных')
+  assert.match(storage.a, /квинтет/i, 'ответ должен называть модель хранения своим именем')
 })
 
 // ───────────────────────────────────────────────────────────────────────────

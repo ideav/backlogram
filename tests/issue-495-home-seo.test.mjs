@@ -79,8 +79,10 @@ test('H1 в статическом снапшоте совпадает с H1 г�
 // ── 3. FAQPage из общего источника ────────────────────────────────────────
 test('FAQ главной — один источник на React и пререндер', () => {
   // 7 вопросов из af.md (блок 13) + 2 добавлены под ключевые кластеры
-  // «информационная система» и «автоматизация рутинных задач» (issue #518).
-  assert.equal(HOME_FAQ.length, 9)
+  // «информационная система» и «автоматизация рутинных задач» (issue #518),
+  // десятый — «на чём Интеграм хранит данные» под брендовый поиск: он же
+  // единственный вход на опросник о квинтетах помимо меню (issue #627).
+  assert.equal(HOME_FAQ.length, 10)
 
   // React рендерит вопросы из общего модуля, а не из захардкоженного массива.
   assert.match(homeTsx, /import \{ HOME_FAQ \} from '\.\.\/data\/home-faq'/)
@@ -153,6 +155,7 @@ const PAGES = [
   '/konstruktor-prilozhenij.html',
   '/informatsionnaya-sistema.html',
   '/sravnenie-s-bitrix-amocrm.html',
+  '/kvintety-ili-tablicy.html',
   '/tokens.html',
   '/knowledge-base',
   '/resheniya.html',
