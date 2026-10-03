@@ -377,6 +377,24 @@ if (!defined('INTAKE_QUEUE_LOADED')) {
         return $out;
     }
 
+    /**
+     * Удалить вложения заявки, оставив саму заявку.
+     *
+     * Файлы клиента нужны ровно до конца сборки: после `deliver`/`fail` они
+     * больше никому не пригодятся, а это чужие таблицы — пусть не лежат.
+     * Сама запись остаётся: по ней видно историю и она нужна, чтобы повторный
+     * `deliver` не разослал второе письмо.
+     */
+    function intake_queue_drop_files(string $dir, string $id): int {
+        $dropped = 0;
+        foreach (intake_queue_files($dir, $id) as $file) {
+            if (@unlink($file['path'])) {
+                $dropped++;
+            }
+        }
+        return $dropped;
+    }
+
     /** Удалить заявку вместе с вложениями. */
     function intake_queue_remove(string $dir, string $id): bool {
         $path = intake_queue_path($dir, $id);

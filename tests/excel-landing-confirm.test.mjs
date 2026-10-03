@@ -297,9 +297,22 @@ test('e2e: подтверждённая заявка доходит до сбо�
     assert.equal(claimJson.jobs[0].contact, 'ivan@example.com')
     assert.match(claimJson.jobs[0].body, /интернет-магазин чая/, 'сборщик должен видеть текст заявки')
     assert.equal(claimJson.jobs[0].files[0].name, 'orders.csv', 'сборщику видно, какие файлы искать')
+    assert.equal(claimJson.jobs[0].files[0].index, 1, 'по индексу сборщик просит файл у моста')
+    assert.equal(claimJson.jobs[0].files_via, 'bridge', 'файлы лендинга берутся по мосту, а не из чата')
 
     const claim2 = await (await buildCall(stand.appPort, { action: 'claim' })).json()
     assert.equal(claim2.count, 0, 'взятая в работу заявка не выдаётся снова')
+
+    // Главное ради чего всё: сборщик забирает сам файл, а не его имя.
+    const file = await buildCall(stand.appPort, { action: 'file', request_id: requestId, index: 1 })
+    assert.equal(file.status, 200)
+    assert.match(file.headers.get('content-disposition') ?? '', /orders\.csv/)
+    assert.equal(await file.text(), 'col1;col2\n1;2\n', 'содержимое файла должно дойти байт в байт')
+
+    const missing = await buildCall(stand.appPort, { action: 'file', request_id: requestId, index: 9 })
+    assert.equal(missing.status, 404, 'несуществующий индекс — 404, а не чужой файл')
+    const noIndex = await buildCall(stand.appPort, { action: 'file', request_id: requestId, index: 0 })
+    assert.equal(noIndex.status, 404, 'нулевой индекс не должен выдавать ничего')
 
     const deliver = await buildCall(stand.appPort, {
       action: 'deliver',
@@ -329,6 +342,12 @@ test('e2e: подтверждённая заявка доходит до сбо�
     })).json()
     assert.equal(twice.already, true, 'повторный deliver должен быть идемпотентным')
     assert.equal(stand.mail().length, 2, 'второго письма с результатом быть не должно')
+
+    // Сборка кончилась — чужие таблицы в очереди больше не лежат.
+    const after = await buildCall(stand.appPort, { action: 'file', request_id: requestId, index: 1 })
+    assert.equal(after.status, 404, 'после deliver вложения должны быть удалены')
+    const status = await (await buildCall(stand.appPort, { action: 'status', request_id: requestId })).json()
+    assert.equal(status.request.status, 'delivered')
   } finally {
     stand.stop()
   }
