@@ -17,13 +17,19 @@ const backendSource = read('../public/excel-to-app.php')
 // подтверждения адреса. Метка источника по-прежнему правит формулировки,
 // просто читать её надо там.
 const publishSource = read('../public/intake-publish.php')
+// Адрес отправки, форматы вложений и лимит размера переехали в данные страницы:
+// их же читает статический снапшот, в котором формы раньше не было вовсе
+// (issue #627, п. 2). Литералы проверяем в модуле, разметку — в компоненте.
+const { CM_FORM } = await import('../src/data/catalogMatching.mjs')
 
 test('the catalog-matching form posts to the A2 intake handler as multipart', () => {
   // No longer the JSON-only telegram-notify endpoint.
   assert.doesNotMatch(pageSource, /telegram-notify\.php/)
-  assert.match(pageSource, /const SUBMIT_ENDPOINT = '\/excel-to-app\.php'/)
+  assert.equal(CM_FORM.endpoint, '/excel-to-app.php')
+  assert.equal(CM_FORM.source, 'catalog-matching')
+  assert.match(pageSource, /const SUBMIT_ENDPOINT = CM_FORM\.endpoint/)
   assert.match(pageSource, /new FormData\(\)/)
-  assert.match(pageSource, /payload\.append\('source', 'catalog-matching'\)/)
+  assert.match(pageSource, /payload\.append\('source', CM_FORM\.source\)/)
   assert.match(pageSource, /fetch\(SUBMIT_ENDPOINT, \{/)
 })
 
@@ -36,7 +42,8 @@ test('the form offers two optional catalog attachments (SKU + RFP)', () => {
   assert.match(pageSource, /const \[ourCatalog, setOurCatalog\] = useState<File \| null>\(null\)/)
   assert.match(pageSource, /const \[theirCatalog, setTheirCatalog\] = useState<File \| null>\(null\)/)
   // Spreadsheet formats only.
-  assert.match(pageSource, /const ACCEPTED_EXTENSIONS = \[[^\]]*'\.xlsx'/)
+  assert.match(pageSource, /const ACCEPTED_EXTENSIONS = CM_FORM\.extensions/)
+  assert.deepEqual(CM_FORM.extensions, ['.xlsx', '.xls', '.csv', '.ods'])
 })
 
 test('attachments are sent under files[] with role-encoded names', () => {

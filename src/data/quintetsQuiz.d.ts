@@ -10,6 +10,10 @@ export interface QuizMeta {
   /** Хвост заголовка, подсвеченный цветом; часть h1 дословно. */
   h1Accent: string
   lead: string
+  /** Дата публикации страницы, YYYY-MM-DD — для JSON-LD datePublished. */
+  publishedAt: string
+  /** Дата последней правки содержимого, YYYY-MM-DD — для dateModified. */
+  updatedAt: string
 }
 
 export interface QuizLink {

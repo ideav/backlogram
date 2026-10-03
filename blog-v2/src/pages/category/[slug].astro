@@ -5,7 +5,8 @@ import {
   getPostsByCategorySlug,
 } from '../../lib/categories'
 import { getCollection } from 'astro:content'
-import { withBase } from '../../lib/url'
+import { absoluteWithBase, withBase } from '../../lib/url'
+import { collectionGraph } from '../../lib/jsonld'
 
 export async function getStaticPaths() {
   const cats = await getAllCategories()
@@ -46,11 +47,28 @@ function readingTime(body: string): number {
 }
 
 const allCats = await getAllCategories()
+
+// Разметка раздела (issue #627, п. 1).
+const blogUrl = absoluteWithBase('/', Astro.site!)
+const pageUrl = absoluteWithBase(`/category/${Astro.params.slug}/`, Astro.site!)
+const graph = collectionGraph({
+  site: Astro.site!.toString().replace(/\/+$/, ''),
+  url: pageUrl,
+  blogUrl,
+  name: `Раздел «${name}» — Блог Интеграм`,
+  description: `Статьи блога Интеграм в разделе «${name}»: ${count} материалов.`,
+  trail: [{ name, url: pageUrl }],
+  items: display.map((p) => ({
+    name: p.data.title,
+    url: absoluteWithBase(`/posts/${p.id}/`, Astro.site!),
+  })),
+})
 ---
 
 <BaseLayout
-  title={`Раздел «${name}» — Блог Интеграм`}
+  title={`Раздел «${name}» — Интеграм`}
   description={`Статьи блога Интеграм в разделе «${name}»: ${count} материалов.`}
+  jsonLd={graph}
 >
   <section class="max-w-[78rem] mx-auto px-6 lg:px-12 pt-14 pb-12 border-b border-[var(--color-hairline)]">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-x-10">

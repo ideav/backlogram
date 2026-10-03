@@ -34,6 +34,7 @@ const indexHtml = readFileSync(resolve(repo, 'index.html'), 'utf8')
 const router = readFileSync(resolve(repo, 'src/router.tsx'), 'utf8')
 const header = readFileSync(resolve(repo, 'src/components/Header.tsx'), 'utf8')
 const footer = readFileSync(resolve(repo, 'src/components/Footer.tsx'), 'utf8')
+const nav = readFileSync(resolve(repo, 'src/data/nav.mjs'), 'utf8')
 const htaccess = readFileSync(resolve(repo, 'public/.htaccess'), 'utf8')
 const sitemap = readFileSync(resolve(repo, 'public/sitemap.xml'), 'utf8')
 const homeTitle = indexHtml.match(/<title>([\s\S]*?)<\/title>/)[1]
@@ -50,6 +51,9 @@ function makeWorkspace(prefix) {
   // Оба пререндера читают данные из src/data — без них песочница падает на
   // ERR_MODULE_NOT_FOUND.
   cpSync(resolve(repo, 'src/data'), resolve(work, 'src/data'), { recursive: true })
+  // Подпись «Опубликовано … · обновлено …» считает общий хелпер src/lib/dates.mjs
+  // (issue #627, п. 5) — его тоже надо положить в песочницу.
+  cpSync(resolve(repo, 'src/lib'), resolve(work, 'src/lib'), { recursive: true })
   writeFileSync(resolve(work, 'dist/index.html'), indexHtml)
   return work
 }
@@ -195,8 +199,16 @@ test('SPA знает оба маршрута опросника', () => {
 })
 
 test('страница доступна из шапки, подвала, sitemap и по адресу без расширения', () => {
-  assert.match(header, /href: '\/kvintety-ili-tablicy\.html'/)
-  assert.match(footer, /to="\/kvintety-ili-tablicy\.html"/)
+  // Ссылки шапки и подвала лежат в src/data/nav.mjs: тот же список уезжает в
+  // статический HTML каждой страницы (issue #627, п. 3). Пункт нужен в обоих
+  // списках — в «Ещё» и в группе «Ресурсы» подвала.
+  assert.equal(
+    (nav.match(/href: '\/kvintety-ili-tablicy\.html'/g) ?? []).length,
+    2,
+    'пункт должен быть и в меню «Ещё», и в подвале',
+  )
+  assert.match(header, /from '\.\.\/data\/nav'/)
+  assert.match(footer, /from '\.\.\/data\/nav'/)
   assert.match(sitemap, /<loc>https:\/\/ideav\.ru\/kvintety-ili-tablicy\.html<\/loc>/)
   assert.match(htaccess, /RewriteRule \^kvintety-ili-tablicy\/\?\$ \/kvintety-ili-tablicy\.html \[R=301,L\]/)
   // Редирект обязан стоять выше front controller — иначе путь уйдёт в движок.
@@ -228,8 +240,8 @@ test('колонке «Итог» ничто не мешает прилипат�
 })
 
 test('в меню «Ещё» пункт стоит последним и помечен New', () => {
-  const more = header.match(/const moreLinks = \[([\s\S]*?)\n  \]/)
-  assert.ok(more, 'в шапке должен быть список moreLinks')
+  const more = nav.match(/export const headerMoreLinks = \[([\s\S]*?)\n\]/)
+  assert.ok(more, 'в nav.mjs должен быть список headerMoreLinks')
   const entries = more[1].split(/\},?\s*\n/).filter((e) => e.includes('href'))
   const last = entries[entries.length - 1]
   assert.match(last, /\/kvintety-ili-tablicy\.html/, 'пункт должен быть последним в «Ещё»')

@@ -298,3 +298,30 @@
     opacity: 0.18;
   }
 }
+
+/* ========================================
+   ВИДИМЫЙ ФОКУС КЛАВИАТУРЫ
+   ======================================== */
+
+/* Поля форм лида на /excel-to-app.html и /catalog-matching.html помечены
+   `outline-none` + `focus:border-blue-500`: в фокусе менялся цвет рамки в 1 px,
+   контура не было вовсе — пользователь с клавиатуры не видел, где он
+   (аудит 02.10.2026, issue #627, п. 4; WCAG 2.2, 2.4.11/2.4.13).
+
+   Правило намеренно вне @layer: Tailwind держит утилиты в слое `utilities`, а
+   неслоёные объявления в каскаде сильнее любого слоя — иначе `.outline-none`
+   из разметки снова погасила бы контур, как ни задирай специфичность.
+   `:focus-visible`, а не `:focus`: мышиные клики кольцо не рисуют.
+
+   Оговорка к замеру аудита: он снимал стили программным `focus()`, при котором
+   `:focus-visible` в Chromium не срабатывает, поэтому «ни рамки, ни тени» в
+   отчёте — не полная картина. Проверять настоящим Tab. */
+:where(a[href], area, button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.dark
+  :where(a[href], area, button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline-color: #60a5fa;
+}

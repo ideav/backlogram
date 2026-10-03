@@ -25,6 +25,38 @@ import {
 } from 'lucide-react'
 import Breadcrumbs from '../components/Breadcrumbs'
 import { reachGoal } from '../lib/metrika'
+import {
+  CM_META,
+  CM_FLOW,
+  CM_STEPS,
+  CM_PILLARS,
+  CM_COMPARE_ROWS,
+  CM_AUDIENCE,
+  CM_FORM,
+} from '../data/catalogMatching'
+import { freshnessLine } from '../lib/dates'
+
+// Текст страницы лежит в src/data/catalogMatching.mjs — оттуда же его берёт
+// статический снапшот scripts/prerender-catalog-matching.mjs. Иконки данные
+// несут строковыми именами, компоненты подставляются по этой таблице (тот же
+// приём, что в src/pages/UseCaseLanding.tsx).
+const ICONS: Record<string, typeof Upload> = {
+  Upload,
+  Scissors,
+  GitCompare,
+  Cpu,
+  ListChecks,
+  FileSpreadsheet,
+  Sparkles,
+  Boxes,
+  Gauge,
+  Layers,
+}
+
+function Icon({ name, size }: { name: string; size: number }) {
+  const Cmp = ICONS[name] ?? Sparkles
+  return <Cmp size={size} />
+}
 
 declare global {
   interface Window {
@@ -49,13 +81,13 @@ const CAPTCHA_CLIENT_KEY = (import.meta.env.VITE_SMARTCAPTCHA_CLIENT_KEY as stri
 // вложения в каталог orders/ репозитория на GitHub, заводит issue со ссылками
 // на файлы и шлёт уведомление в Telegram. Поле source = 'catalog-matching'
 // отличает заявку с этой страницы (см. public/excel-to-app.php).
-const SUBMIT_ENDPOINT = '/excel-to-app.php'
+const SUBMIT_ENDPOINT = CM_FORM.endpoint
 
 // Два каталога — необязательные вложения (#389): свой каталог (SKU) и каталог
 // контрагента (RFP). Те же форматы и лимиты, что и на /excel-to-app.html.
-const ACCEPTED_EXTENSIONS = ['.xlsx', '.xls', '.csv', '.ods']
+const ACCEPTED_EXTENSIONS = CM_FORM.extensions
 const ACCEPT_ATTR = ACCEPTED_EXTENSIONS.join(',')
-const MAX_FILE_BYTES = 25 * 1024 * 1024
+const MAX_FILE_BYTES = CM_FORM.maxFileMb * 1024 * 1024
 
 function hasIdbCookie(): boolean {
   return document.cookie.split(';').some((c) => c.trimStart().startsWith('idb_'))
@@ -101,112 +133,6 @@ function setCanonical(href: string) {
   }
   el.setAttribute('href', href)
 }
-
-// Полный цикл сопоставления — от двух сырых каталогов до выгрузки результата.
-const flow = [
-  { icon: <Upload size={18} />, label: 'Загрузка каталогов' },
-  { icon: <Scissors size={18} />, label: 'Токенизация' },
-  { icon: <GitCompare size={18} />, label: 'Сопоставление' },
-  { icon: <Cpu size={18} />, label: 'Массовый подбор' },
-  { icon: <ListChecks size={18} />, label: 'Проверка кандидатов' },
-  { icon: <FileSpreadsheet size={18} />, label: 'Выгрузка в Excel' },
-]
-
-interface Step {
-  icon: React.ReactNode
-  title: string
-  body: string
-}
-
-const steps: Step[] = [
-  {
-    icon: <Upload size={22} />,
-    title: 'Загрузка по сохранённой настройке',
-    body: 'Свой каталог (SKU) и каталог контрагента (RFP) загружаются из Excel по заранее сохранённой настройке: Интеграм сам распознаёт листы и колонки и показывает, сколько строк будет загружено. Скорость — порядка 500–1000 записей в секунду.',
-  },
-  {
-    icon: <Scissors size={22} />,
-    title: 'Токенизация наименований',
-    body: 'Один запрос разбивает наименование позиции на отдельные слова-токены и наполняет общий справочник токенов. Обе таблицы используют один и тот же справочник — именно это позволяет искать пересечения.',
-  },
-  {
-    icon: <GitCompare size={22} />,
-    title: 'Рабочее место сопоставления',
-    body: 'Для любой позиции контрагента Интеграм по токенам подбирает кандидатов из вашего каталога. Совпадение марки, модели и типа подсвечивается зелёным; под каждый тип продукции настройка задаётся запросом, без программирования.',
-  },
-  {
-    icon: <Cpu size={22} />,
-    title: 'Массовый автоматический подбор',
-    body: 'Кнопка Start запускает автоподбор в несколько потоков: механизм сам находит лучшие пары и пишет в таблицу RFP подобранный артикул и альтернативных кандидатов. Скорость — порядка 120 сопоставлений в минуту; 22 000 позиций обрабатываются за пару-тройку часов.',
-  },
-  {
-    icon: <FileSpreadsheet size={22} />,
-    title: 'Выгрузка и передача',
-    body: 'Отдельный запрос собирает подобранный артикул и все альтернативы и выгружает результат в Excel или отдаёт через JSON API во внешнюю систему.',
-  },
-  {
-    icon: <Sparkles size={22} />,
-    title: 'Доуточнение языковой моделью',
-    body: 'Когда объём невелик, шорт-лист кандидатов можно отдать языковой модели — она выберет из коротких списков только то, что точно совпадает. Дорогое перемножение «все на все» при этом не нужно: модель работает уже по отобранным парам.',
-  },
-]
-
-interface CompareRow {
-  criterion: string
-  them: string
-  us: string
-}
-
-const compareRows: CompareRow[] = [
-  {
-    criterion: 'Запуск',
-    them: 'Развёртывание Elasticsearch, индексы, пайплайны, код разработчика',
-    us: 'Готовые таблицы и запросы в конструкторе — без кода',
-  },
-  {
-    criterion: 'Логика сопоставления',
-    them: 'Алгоритмы нечёткого поиска нужно писать и сопровождать',
-    us: 'Токены + пересечение + веса настраиваются запросом',
-  },
-  {
-    criterion: 'Настройка под тип товара',
-    them: 'Правки в коде и переиндексация',
-    us: 'Меняется условие запроса, без релиза',
-  },
-  {
-    criterion: 'Массовый прогон',
-    them: 'Свой многопоточный обработчик',
-    us: 'Встроенный автоподбор в несколько потоков',
-  },
-  {
-    criterion: 'Результат',
-    them: 'Нужно выгружать отдельно',
-    us: 'Подобранный артикул, альтернативы, экспорт в Excel и API из коробки',
-  },
-  {
-    criterion: 'Где хранятся данные',
-    them: 'Зависит от инфраструктуры',
-    us: 'Сервер в РФ — ideav.ru, данные принадлежат вам',
-  },
-]
-
-const pillars = [
-  {
-    icon: <Boxes size={24} />,
-    title: 'Один справочник токенов на оба каталога',
-    body: 'Токены ваших позиций и позиций контрагента живут в одной таблице — пересечение находится одним JOIN, а не внешним поисковым движком.',
-  },
-  {
-    icon: <Gauge size={24} />,
-    title: 'Понятная и настраиваемая оценка',
-    body: 'Точность пары считается из числа совпавших токенов и отношения их общей длины к длине наименования. Формулу видно, её можно усложнять и оттачивать.',
-  },
-  {
-    icon: <Layers size={24} />,
-    title: 'Веса и обязательные совпадения',
-    body: 'Частым словам — меньший вес, маркерам бренда и типа товара — флажки «обязательно совпадает». Разметку токенов помогает проставить ИИ.',
-  },
-]
 
 // Один необязательный файл-каталог: пустое состояние — кликабельная зона
 // «Прикрепить файл», заполненное — имя файла, размер и кнопка «убрать».
@@ -384,7 +310,7 @@ export default function CatalogMatching() {
     setErrorMsg('')
 
     const payload = new FormData()
-    payload.append('source', 'catalog-matching')
+    payload.append('source', CM_FORM.source)
     payload.append('name', name)
     payload.append('company', company)
     payload.append('contact', contact)
@@ -405,7 +331,7 @@ export default function CatalogMatching() {
       const json = await res.json().catch(() => ({ ok: false }))
       if (res.ok && json.ok) {
         setFormState('success')
-        reachGoal('lead', { source: 'catalog-matching' })
+        reachGoal('lead', { source: CM_FORM.source })
         form.reset()
         setOurCatalog(null)
         setTheirCatalog(null)
@@ -452,16 +378,17 @@ export default function CatalogMatching() {
             transition={{ duration: 0.5 }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5"
           >
-            Массовое сопоставление каталогов{' '}
-            <span className="text-blue-500">на сотни тысяч позиций</span>
+            {CM_META.h1.slice(0, -CM_META.h1Accent.length)}
+            <span className="text-blue-500">{CM_META.h1Accent}</span>
           </motion.h1>
 
-          <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
-            Один и тот же товар в вашем каталоге и в каталоге контрагента назван по-разному и имеет
-            разные артикулы. Инструмент сопоставляет такие позиции автоматически — через токенизацию
-            наименований и пересечение токенов, в несколько потоков и без программирования. Раньше под
-            это разворачивали Elasticsearch и нанимали программистов; здесь всё собрано на конструкторе
-            Интеграм.
+          <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">{CM_META.lead}</p>
+
+          {/* Дата обновления видна и человеку, и в JSON-LD снапшота (аудит #627, п. 5) */}
+          <p className="mt-4 text-sm text-slate-400 dark:text-slate-500">
+            <time dateTime={CM_META.updatedAt}>
+              {freshnessLine(CM_META.publishedAt, CM_META.updatedAt)}
+            </time>
           </p>
         </div>
       </section>
@@ -497,15 +424,17 @@ export default function CatalogMatching() {
           </p>
 
           <div className="flex flex-wrap items-stretch gap-3">
-            {flow.map((step, i) => (
+            {CM_FLOW.map((step, i) => (
               <div key={i} className="flex items-center gap-3">
                 <div className="flex items-center gap-2.5 px-4 py-3 rounded-2xl border border-blue-200 dark:border-blue-900/40 bg-blue-50/60 dark:bg-blue-950/30">
-                  <span className="text-blue-600 dark:text-blue-400">{step.icon}</span>
+                  <span className="text-blue-600 dark:text-blue-400">
+                    <Icon name={step.icon} size={18} />
+                  </span>
                   <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 whitespace-nowrap">
                     {step.label}
                   </span>
                 </div>
-                {i < flow.length - 1 && (
+                {i < CM_FLOW.length - 1 && (
                   <ArrowRight size={16} className="text-slate-300 dark:text-slate-600 shrink-0" />
                 )}
               </div>
@@ -519,14 +448,14 @@ export default function CatalogMatching() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl md:text-3xl font-bold mb-10">Что происходит на каждом шаге</h2>
           <div className="grid gap-6 md:grid-cols-2">
-            {steps.map((s, i) => (
+            {CM_STEPS.map((s, i) => (
               <div
                 key={i}
                 className="p-7 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm dark:shadow-none"
               >
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-11 h-11 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                    {s.icon}
+                    <Icon name={s.icon} size={22} />
                   </div>
                   <h3 className="text-lg font-bold leading-tight">{s.title}</h3>
                 </div>
@@ -571,13 +500,13 @@ export default function CatalogMatching() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-3 mt-8">
-            {pillars.map((p, i) => (
+            {CM_PILLARS.map((p, i) => (
               <div
                 key={i}
                 className="p-7 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm dark:shadow-none"
               >
                 <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-4">
-                  {p.icon}
+                  <Icon name={p.icon} size={24} />
                 </div>
                 <h3 className="text-lg font-bold mb-2">{p.title}</h3>
                 <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{p.body}</p>
@@ -625,7 +554,7 @@ export default function CatalogMatching() {
                 </tr>
               </thead>
               <tbody>
-                {compareRows.map((r, i) => (
+                {CM_COMPARE_ROWS.map((r, i) => (
                   <tr key={i} className="border-t border-slate-100 dark:border-slate-800/60 align-top">
                     <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">{r.criterion}</td>
                     <td className="py-3 px-4 text-slate-500 dark:text-slate-400">{r.them}</td>
@@ -684,15 +613,16 @@ export default function CatalogMatching() {
       <section className="py-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">Кому это нужно</h2>
-          <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
-            Поставщикам и дистрибьюторам, которые отвечают на запросы (RFP) и подбирают свои аналоги к
-            чужой номенклатуре; закупкам, сводящим прайс-листы поставщиков; всем, у кого две таблицы
-            «про одно и то же», но названные разными словами.
-          </p>
-          <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-10">
-            Инструмент собран на конструкторе Интеграм — без программирования, с хостингом в России,
-            и так же легко настраивается под вашу номенклатуру.
-          </p>
+          {CM_AUDIENCE.map((paragraph, i) => (
+            <p
+              key={i}
+              className={`text-lg text-slate-600 dark:text-slate-300 leading-relaxed ${
+                i === CM_AUDIENCE.length - 1 ? 'mb-10' : 'mb-4'
+              }`}
+            >
+              {paragraph}
+            </p>
+          ))}
 
           <div
             id="cta"
@@ -703,10 +633,9 @@ export default function CatalogMatching() {
                 <Sparkles size={26} />
               </div>
             </div>
-            <h3 className="text-xl md:text-2xl font-bold mb-3 text-center">Сопоставить ваши каталоги</h3>
+            <h3 className="text-xl md:text-2xl font-bold mb-3 text-center">{CM_FORM.title}</h3>
             <p className="text-slate-600 dark:text-slate-300 mb-6 max-w-xl mx-auto text-center">
-              Пришлите два каталога — настроим токенизацию и сопоставление под вашу номенклатуру и
-              вернём подобранные пары. Ответим в течение 24 часов.
+              {CM_FORM.lead}
             </p>
 
             <form className="max-w-xl mx-auto space-y-4 text-left" onSubmit={handleSubmit}>

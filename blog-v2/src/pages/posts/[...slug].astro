@@ -4,7 +4,8 @@ import { getCollection, render } from 'astro:content'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import { tagSlug } from '../../lib/tags'
 import { categorySlug } from '../../lib/categories'
-import { withBase } from '../../lib/url'
+import { absoluteWithBase, withBase } from '../../lib/url'
+import { postGraph } from '../../lib/jsonld'
 
 // og:image must be exactly 1200×630 — BaseLayout hardcodes og:image:width/height.
 // Covers that aren't already that size get a generated 1200×630 variant at
@@ -55,17 +56,45 @@ const formattedDate = post.data.pubDate
 const readingTime = Math.max(1, Math.round(post.body!.length / 1100))
 
 const initial = post.data.author.charAt(0)
+
+// Хвост <title>: раньше был « — Блог Интеграм», из-за чего у половины статей
+// заголовок не влезал в выдачу и обрезался на самом важном (аудит 02.10.2026,
+// issue #627, п. 12). Короткий хвост освобождает 5 символов под сам заголовок.
+const titleSuffix = ' — Интеграм'
+
+// Разметка статьи (issue #627, п. 1). dateModified берётся из updatedDate
+// фронтматтера, а при его отсутствии равен дате публикации — дату сборки сюда
+// подставлять нельзя, иначе каждый деплой «освежает» все статьи разом.
+const SITE = Astro.site!.toString().replace(/\/+$/, '')
+const canonicalURL =
+  post.data.canonical ?? absoluteWithBase(`/posts/${post.id}/`, Astro.site!)
+const graph = postGraph({
+  site: SITE,
+  url: canonicalURL,
+  blogUrl: absoluteWithBase('/', Astro.site!),
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.pubDate.toISOString(),
+  dateModified: (post.data.updatedDate ?? post.data.pubDate).toISOString(),
+  author: post.data.author,
+  image: post.data.image ? absoluteWithBase(ogImage(post.data.image), Astro.site!) : undefined,
+  section: post.data.category,
+  keywords: post.data.tags,
+  wordCount: (post.body!.match(/[A-Za-zА-Яа-яЁё0-9]+/g) ?? []).length,
+})
 ---
 
 <BaseLayout
-  title={`${post.data.title} — Блог Интеграм`}
+  title={`${post.data.title}${titleSuffix}`}
   description={post.data.description}
   image={ogImage(post.data.image)}
   imageAlt={post.data.title}
   canonical={post.data.canonical}
   type="article"
   publishedTime={post.data.pubDate.toISOString()}
+  modifiedTime={(post.data.updatedDate ?? post.data.pubDate).toISOString()}
   author={post.data.author}
+  jsonLd={graph}
 >
   <article class="max-w-[78rem] mx-auto px-6 lg:px-12 pt-14 pb-24" data-pagefind-body>
 

@@ -40,6 +40,7 @@ import {
   worstHours,
   hoursLabel,
 } from '../src/data/quintetsQuiz.mjs'
+import { freshnessLine } from '../src/lib/dates.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -75,6 +76,40 @@ const introHtml = QUIZ_INTRO
   .join('\n    ')
 
 const sourcesHtml = QUIZ_SOURCES.map((s) => `<li>${escape(s)}</li>`).join('\n      ')
+
+// Сам опросник в сыром HTML: тринадцать вопросов заголовками h2 и переключатели
+// с ответами. Раньше в ответе сервера были только сводная таблица и шапка —
+// формулировок вопросов, по которым страницу и могли бы найти, в HTML не было
+// вовсе (аудит 02.10.2026, issue #627, п. 2 и 11). Без JS переключатели ничего
+// не считают, поэтому баллы и часы подписаны у каждого ответа: отметить и
+// сложить можно на бумаге.
+const quizHtml = QUESTIONS.map((q, qi) => {
+  const optsHtml = q.o.map((o, oi) => {
+    const p = points(o, q.w)
+    const h = hours(o)
+    const scores =
+      `баллы: квинтеты ${p[0]}, РСУБД ${p[1]}, комбинация ${p[2]} · ` +
+      `часы: квинтеты ${hoursLabel(h[0])}, РСУБД ${hoursLabel(h[1])}, комбинация ${hoursLabel(h[2])}`
+    const note = o[3] ? `<small class="qz-prerender__note">${noteHtml(o)}</small>` : ''
+    return `
+          <li>
+            <label${o[4] ? ` title="${escape(o[4])}"` : ''}>
+              <input type="radio" name="q-${escape(q.id)}" value="${oi}">
+              <span><b>${escape(o[0])}</b>
+                <small class="qz-prerender__scores">${escape(scores)}</small>
+                ${note}
+              </span>
+            </label>
+          </li>`
+  }).join('')
+  return `
+      <section class="qz-prerender__q" id="q-${escape(q.id)}">
+        <h2>${qi + 1}. ${escape(q.t)} <small>вес ${q.w}</small></h2>
+        ${q.h ? `<p class="qz-prerender__hint">${escape(q.h)}</p>` : ''}
+        <ul class="qz-prerender__opts">${optsHtml}
+        </ul>
+      </section>`
+}).join('')
 
 const rowsHtml = QUESTIONS.flatMap((q, qi) =>
   q.o.map((o, oi) => {
@@ -130,6 +165,9 @@ const bodyHtml = `
     <p class="qz-prerender__eyebrow">Опросник по архитектуре хранения</p>
     <h1 itemprop="headline">${escape(h1Head)}<span>${escape(QUIZ_META.h1Accent)}</span></h1>
     <p class="qz-prerender__lead" itemprop="description">${escape(QUIZ_META.lead)}</p>
+    <p class="qz-prerender__dates"><time datetime="${escape(QUIZ_META.updatedAt)}">${escape(
+      freshnessLine(QUIZ_META.publishedAt, QUIZ_META.updatedAt),
+    )}</time></p>
     ${introHtml}
     <details>
       <summary>Откуда взяты часы</summary>
@@ -138,6 +176,10 @@ const bodyHtml = `
       </ul>
     </details>
   </header>
+  <p class="qz-prerender__paper">Отметьте по одному ответу в каждом вопросе и сложите подписанные
+    баллы и часы: с включённым JavaScript страница считает сумму и вердикт сама, без него
+    опросник работает как бумажный бланк.</p>
+  ${quizHtml}
   <h2>Таблица баллов и часов целиком</h2>
   <p>Отметьте по одному ответу в каждом вопросе, сложите баллы и сложите часы. Подсвеченная клетка — комбинация без штрафа в баллах: один из чистых вариантов вопрос не тянет. Часы — человеко-часы на разработку, «—» значит «так не делается». Наведите курсор на пояснение, чтобы увидеть замеры, из которых взята оценка.</p>
   <div class="qz-prerender__wrap">
@@ -180,6 +222,21 @@ const bodyHtml = `
   #qz-prerender details { margin: 1rem 0; font-size: 0.9rem; color: #475569; }
   #qz-prerender details summary { cursor: pointer; color: #1e293b; }
   #qz-prerender details li { margin: 0.4rem 0; line-height: 1.6; }
+  #qz-prerender .qz-prerender__dates { font-size: 0.85rem; color: #64748b; }
+  #qz-prerender .qz-prerender__paper { color: #475569; }
+  #qz-prerender .qz-prerender__q { margin: 1.5rem 0; padding: 1rem 1.1rem;
+    border: 1px solid #e2e8f0; border-radius: 0.9rem; }
+  #qz-prerender .qz-prerender__q h2 { font-size: 1.05rem; margin: 0; }
+  #qz-prerender .qz-prerender__q h2 small { font-size: 0.72rem; font-weight: 400; color: #94a3b8; }
+  #qz-prerender .qz-prerender__hint { font-size: 0.85rem; color: #64748b; margin: 0.35rem 0 0; }
+  #qz-prerender .qz-prerender__opts { list-style: none; margin: 0.75rem 0 0; padding: 0; }
+  #qz-prerender .qz-prerender__opts li { margin: 0.35rem 0; }
+  #qz-prerender .qz-prerender__opts label { display: flex; gap: 0.6rem; align-items: flex-start;
+    padding: 0.4rem 0.25rem; }
+  #qz-prerender .qz-prerender__opts input { margin-top: 0.3rem; flex: none; }
+  #qz-prerender .qz-prerender__opts small { display: block; font-size: 0.82rem; line-height: 1.55;
+    color: #64748b; margin-top: 0.15rem; }
+  #qz-prerender .qz-prerender__scores { font-variant-numeric: tabular-nums; }
   #qz-prerender .qz-prerender__wrap { overflow-x: auto; margin: 1rem 0; }
   #qz-prerender table { border-collapse: collapse; width: 100%; min-width: 60rem;
     font-size: 0.8rem; }
@@ -204,6 +261,9 @@ const bodyHtml = `
   .dark #qz-prerender thead th, .dark #qz-prerender .tot th { background: #0f172a; }
   .dark #qz-prerender td.mute { color: #94a3b8; }
   .dark #qz-prerender td.free, .dark #qz-prerender .cross td { background: #422006; }
+  .dark #qz-prerender .qz-prerender__paper, .dark #qz-prerender .qz-prerender__hint,
+  .dark #qz-prerender .qz-prerender__opts small { color: #94a3b8; }
+  .dark #qz-prerender .qz-prerender__q { border-color: #1e293b; }
 </style>`
 
 // ───────────────────────────────────────────────────────────────────────────
@@ -225,6 +285,46 @@ const jsonLd = {
       inLanguage: 'ru',
       isPartOf: { '@id': `${SITE}/#website` },
       publisher: { '@id': `${SITE}/#organization` },
+      datePublished: QUIZ_META.publishedAt,
+      dateModified: QUIZ_META.updatedAt,
+      primaryImageOfPage: { '@id': `${canonical}#primaryimage` },
+      mainEntity: { '@id': `${canonical}#article` },
+    },
+    {
+      // Узел организации нужен здесь же: ссылки author/publisher по @id
+      // разрешаются внутри графа одной страницы, иначе автор просто теряется.
+      '@type': 'Organization',
+      '@id': `${SITE}/#organization`,
+      name: PUBLISHER,
+      url: `${SITE}/`,
+      logo: { '@type': 'ImageObject', url: `${SITE}/logos/integram-og.png` },
+    },
+    {
+      // Содержание страницы — разбор с датами и автором, а не только таблица:
+      // без datePublished/dateModified и автора у страницы не было ни одного
+      // признака свежести (аудит 02.10.2026, issue #627, п. 11).
+      '@type': 'Article',
+      '@id': `${canonical}#article`,
+      headline: QUIZ_META.h1,
+      description: QUIZ_META.description,
+      url: canonical,
+      mainEntityOfPage: { '@id': `${canonical}#webpage` },
+      inLanguage: 'ru',
+      datePublished: QUIZ_META.publishedAt,
+      dateModified: QUIZ_META.updatedAt,
+      author: { '@id': `${SITE}/#organization` },
+      publisher: { '@id': `${SITE}/#organization` },
+      image: { '@id': `${canonical}#primaryimage` },
+      keywords: QUIZ_META.keywords,
+      articleSection: 'Архитектура хранения данных',
+    },
+    {
+      '@type': 'ImageObject',
+      '@id': `${canonical}#primaryimage`,
+      url: ogImage,
+      contentUrl: ogImage,
+      width: ogImageW,
+      height: ogImageH,
     },
     {
       '@type': 'BreadcrumbList',

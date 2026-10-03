@@ -1,25 +1,9 @@
 import { getCollection, type CollectionEntry } from 'astro:content'
 
-// Cyrillic → Latin map for tag slugs (matches WP's slug scheme).
-// "Лайфхаки" → "laifhaki", "Яндекс.Директ" → "yandeks-direkt", etc.
-const CYR_MAP: Record<string, string> = {
-  а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'e',
-  ж: 'zh', з: 'z', и: 'i', й: 'i', к: 'k', л: 'l', м: 'm',
-  н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u',
-  ф: 'f', х: 'h', ц: 'c', ч: 'ch', ш: 'sh', щ: 'sh',
-  ъ: '', ы: 'y', ь: '', э: 'e', ю: 'yu', я: 'ya',
-}
-
-export function tagSlug(tag: string): string {
-  const lower = tag.toLowerCase()
-  let out = ''
-  for (const ch of lower) {
-    if (CYR_MAP[ch] !== undefined) out += CYR_MAP[ch]
-    else if (/[a-z0-9-]/.test(ch)) out += ch
-    else out += '-'
-  }
-  return out.replace(/-+/g, '-').replace(/^-|-$/g, '')
-}
+// Слаг тега и порог «тонкого» тега живут в tag-slug.mjs: их же импортирует
+// astro.config.mjs для фильтра карты сайта, где astro:content недоступен.
+export { tagSlug, isThinTag, THIN_TAG_MIN_POSTS } from './tag-slug.mjs'
+import { tagSlug } from './tag-slug.mjs'
 
 export interface TagInfo {
   tag: string

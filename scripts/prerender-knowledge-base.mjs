@@ -37,6 +37,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { build } from 'esbuild'
+import { humanDate } from '../src/lib/dates.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -148,13 +149,6 @@ function trim(text, max = 230) {
   return t.slice(0, max).replace(/\s+\S*$/, '') + '…'
 }
 
-const today = new Date().toLocaleDateString('ru-RU', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-}).replace(' г.', '')
-const todayISO = new Date().toISOString().slice(0, 10)
-
 const articlesBySlug = new Map(knowledgeBaseArticles.map((a) => [a.slug, a]))
 const groupedSlugs = new Set(groups.flatMap((g) => g.slugs))
 const orphan = knowledgeBaseArticles.filter((a) => !groupedSlugs.has(a.slug))
@@ -166,6 +160,12 @@ if (orphan.length > 0) {
   })
 }
 const totalCount = knowledgeBaseArticles.length
+/** Самая свежая дата по статьям — `dateModified` раздела (issue #627, п. 5). */
+const collectionModified = knowledgeBaseArticles
+  .map((a) => a.updatedAt || a.publishedAt)
+  .sort()
+  .at(-1)
+const collectionModifiedHuman = humanDate(collectionModified)
 const distIndex = readFileSync(resolve(dist, 'index.html'), 'utf8')
 
 // ───────────────────────────────────────────────────────────────────────────
@@ -254,7 +254,7 @@ const indexBody = `
       команда Интеграма рассказывает, в каких сценариях наш конструктор заменяет
       или дополняет привычные инструменты — и где у него есть ограничения.
     </p>
-    <p class="kb-prerender__updated">Обновлено ${today}</p>
+    <p class="kb-prerender__updated">Обновлено ${collectionModifiedHuman}</p>
   </header>
   ${groupsHtml}
   <footer class="kb-prerender__footer">
@@ -312,7 +312,9 @@ const collectionJsonLd = {
       description: indexDescription,
       inLanguage: 'ru',
       isPartOf: { '@type': 'WebSite', name: PUBLISHER, url: SITE },
-      dateModified: todayISO,
+      // Раздел «изменён» датой самой свежей статьи, а не датой сборки: иначе
+      // каждый деплой обновлял дату раздела, в котором ничего не менялось.
+      dateModified: collectionModified,
     },
     {
       '@type': 'ItemList',
@@ -381,7 +383,11 @@ for (const article of knowledgeBaseArticles) {
         image: `${SITE}${articleImage}`,
         url,
         inLanguage: 'ru',
-        dateModified: todayISO,
+        // Даты статьи, а не даты сборки: раньше здесь стоял `todayISO`, и
+        // разметка утверждала, что все 28 материалов изменены в день деплоя,
+        // а `datePublished` не было вовсе (issue #627, п. 5).
+        datePublished: article.publishedAt,
+        dateModified: article.updatedAt || article.publishedAt,
         author: { '@type': 'Organization', name: PUBLISHER, url: SITE },
         publisher: {
           '@type': 'Organization',

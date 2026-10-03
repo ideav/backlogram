@@ -2,16 +2,20 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const repo = new URL('..', import.meta.url).pathname
+// fileURLToPath, а не pathname: на Windows pathname даёт «/C:/…» и resolve()
+// склеивает «C:\C:\…» — файл не читался вовсе.
+const repo = fileURLToPath(new URL('..', import.meta.url))
 const read = (p) => readFileSync(resolve(repo, p), 'utf8')
 
-const headerSource = read('src/components/Header.tsx')
+// Список «Ещё…» переехал из разметки Header.tsx в данные (src/data/nav.mjs):
+// те же ссылки нужны статическому блоку навигации в сыром HTML (issue #627, п. 3).
+const navSource = read('src/data/nav.mjs')
 
-// Изолируем массив moreLinks («Ещё…») из исходника Header.
 function moreLinksBlock() {
-  const match = headerSource.match(/const moreLinks = \[([\s\S]*?)\n {2}\]/)
-  assert.ok(match, 'Header should declare a moreLinks array')
+  const match = navSource.match(/export const headerMoreLinks = \[([\s\S]*?)\n\]/)
+  assert.ok(match, 'nav.mjs should declare a headerMoreLinks array')
   return match[1]
 }
 
@@ -36,11 +40,13 @@ test('«Ещё» menu links to the Платформы с ИИ-агентами p
   )
 })
 
-test('«Ещё» menu holds exactly 7 items', () => {
+test('«Ещё» menu holds exactly 8 items', () => {
   // Сравнение с Битрикс24/AmoCRM вынесено в верхнее меню как «Больше CRM»
   // (issue #4264); в «Ещё» осталось 6 пунктов, седьмым добавлены платформы с
-  // ИИ-агентами (issue #559, п. 8).
+  // ИИ-агентами (issue #559, п. 8), восьмым — опросник «Квинтеты или таблицы»
+  // (issue #605). Проверка стояла на 7 и этого пункта не заметила: на Windows
+  // файл не читался из-за «C:\C:\…» и тест не запускался вовсе (issue #627).
   const block = moreLinksBlock()
   const count = (block.match(/href:/g) || []).length
-  assert.equal(count, 7, 'the «Ещё» dropdown must have 7 entries')
+  assert.equal(count, 8, 'the «Ещё» dropdown must have 8 entries')
 })

@@ -34,6 +34,19 @@ export interface KnowledgeBaseArticleFlowDiagram {
 export interface KnowledgeBaseArticle {
   slug: string
   number: string
+  /**
+   * Дата первой публикации, `YYYY-MM-DD` — идёт в `TechArticle.datePublished`.
+   * До issue #627 поля не было, и у всех 28 статей `datePublished` уезжал
+   * пустым, а `dateModified` равнялся дате сборки: по разметке выходило, что
+   * вся база знаний написана в день последнего деплоя. Даты восстановлены по
+   * git-истории (первый коммит, добавивший slug в этот файл).
+   */
+  publishedAt: string
+  /**
+   * Дата последней правки, `YYYY-MM-DD` — идёт в `dateModified`. Ставить руками
+   * при содержательной правке статьи; без неё `dateModified` равен `publishedAt`.
+   */
+  updatedAt?: string
   title: string
   shortTitle: string
   seoTitle?: string
@@ -66,6 +79,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '01-google-sheets-150k',
     number: '01',
+    publishedAt: '2026-05-12',
     title: '150 000 записей без ручного хаоса: когда Интеграм удобнее Google Sheets',
     shortTitle: '150 000 записей вместо Google Sheets',
     compare: 'Google Sheets',
@@ -107,6 +121,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '02-excel-row-limit',
     number: '02',
+    publishedAt: '2026-05-12',
     title: 'Нет потолка одного листа Excel: как Интеграм помогает уйти от лимита 1 048 576 строк',
     shortTitle: 'Уйти от лимита строк Excel',
     compare: 'Excel',
@@ -171,6 +186,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '03-excel-file-versions',
     number: '03',
+    publishedAt: '2026-05-12',
     title: 'Единая версия данных вместо десятков файлов: почему Интеграм надежнее Excel-рассылок',
     shortTitle: 'Одна версия вместо рассылок Excel',
     compare: 'Excel и локальные файлы',
@@ -233,6 +249,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '04-related-tables',
     number: '04',
+    publishedAt: '2026-05-12',
     title: 'Связанные таблицы без ВПР и ручных справочников: чем Интеграм сильнее таблиц',
     shortTitle: 'Связанные таблицы без ВПР',
     compare: 'Excel и Google Sheets',
@@ -295,6 +312,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '05-access-rights',
     number: '05',
+    publishedAt: '2026-05-12',
     title: 'Права доступа из коробки: почему Интеграм безопаснее общей таблицы',
     shortTitle: 'Права доступа из коробки',
     compare: 'Excel, Google Sheets, простые no-code-таблицы',
@@ -366,6 +384,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '06-airtable-control',
     number: '06',
+    publishedAt: '2026-05-12',
     title: 'Собственный контур вместо SaaS-зависимости: чем Интеграм привлекательнее Airtable',
     shortTitle: 'Собственный контур вместо SaaS',
     compare: 'Airtable',
@@ -455,6 +474,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '07-notion-relational-data',
     number: '07',
+    publishedAt: '2026-05-12',
     title: 'Реляционная база вместо доски заметок: где Интеграм практичнее Notion',
     shortTitle: 'Реляционная база вместо Notion',
     seoTitle: 'Notion vs Интеграм — реляционная база и права на уровне строк вместо вики',
@@ -557,6 +577,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '08-html-templates',
     number: '08',
+    publishedAt: '2026-05-12',
     title: 'HTML-шаблоны вместо закрытого интерфейса: как Интеграм дает больше гибкости no-code-сервисов',
     shortTitle: 'HTML-шаблоны вместо конструктора',
     seoTitle: 'HTML-шаблоны вместо конструктора — Интеграм против Airtable Interfaces и Notion views',
@@ -636,6 +657,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '08a-vibe-coding-templates',
     number: '08a',
+    publishedAt: '2026-05-13',
     title: 'Вайб-кодинг рабочих мест для Интеграма: как сгенерировать шаблон ИИ и вставить его в main.html',
     shortTitle: 'Вайб-кодинг шаблонов для main.html',
     seoTitle: 'Вайб-кодинг шаблонов для main.html — Интеграм',
@@ -796,6 +818,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '09-custom-development-prototype',
     number: '09',
+    publishedAt: '2026-05-12',
     title: 'Готовое приложение быстрее заказной разработки: как Интеграм сокращает путь от идеи до прототипа',
     shortTitle: 'Прототип быстрее заказной разработки',
     seoTitle: 'Прототип быстрее заказной разработки — Интеграм',
@@ -857,6 +880,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '10-no-release-changes',
     number: '10',
+    publishedAt: '2026-05-12',
     title: 'Изменения без нового релиза: почему Интеграм дешевле поддерживать, чем заказную систему',
     shortTitle: 'Изменения без релиза',
     seoTitle: 'Изменения без релиза — Интеграм против заказной разработки',
@@ -907,6 +931,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '11-ai-interface-data-safety',
     number: '11',
+    publishedAt: '2026-05-12',
     title: 'AI помогает интерфейсу, но не ломает данные: чем Интеграм надежнее вайб-кодинга',
     shortTitle: 'AI делает интерфейс, не данные',
     seoTitle: 'AI делает интерфейс, не данные — Интеграм против вайб-кодинга',
@@ -973,6 +998,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '12-ai-prototype-rewrite',
     number: '12',
+    publishedAt: '2026-05-12',
     title: 'Без переписывания с нуля после первого демо: где Интеграм практичнее вайб-кодинга',
     shortTitle: 'Без переписывания после демо',
     seoTitle: 'Без переписывания после демо — Интеграм и AI-прототипы',
@@ -1048,6 +1074,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '13-api-json-export',
     number: '13',
+    publishedAt: '2026-05-12',
     title: 'API и JSON-экспорт вместо копипаста: как Интеграм связывает учет с внешними системами',
     shortTitle: 'API вместо ручных выгрузок',
     compare: 'Excel, Google Sheets, Notion, ручные выгрузки',
@@ -1144,6 +1171,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '14-forms',
     number: '14',
+    publishedAt: '2026-05-12',
     title: 'Формы рядом с данными: чем Интеграм удобнее связки Google Forms + Google Sheets + Zapier',
     shortTitle: 'Формы рядом с данными',
     compare: 'Google Forms + Google Sheets + Zapier',
@@ -1217,6 +1245,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '14a-reports',
     number: '14a',
+    publishedAt: '2026-05-12',
     title: 'Отчёты на той же базе: чем Интеграм удобнее связки Google Sheets + Looker Studio',
     shortTitle: 'Отчёты на той же базе',
     compare: 'Google Sheets + Looker Studio, Excel + Power BI',
@@ -1299,6 +1328,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '14b-dashboards',
     number: '14b',
+    publishedAt: '2026-05-12',
     title: 'Дашборды на тех же данных: чем Интеграм удобнее связки таблицы и внешнего BI',
     shortTitle: 'Дашборды на тех же данных',
     compare: 'Looker Studio, Power BI, Metabase, Tableau',
@@ -1384,6 +1414,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '15-local-control-files',
     number: '15',
+    publishedAt: '2026-05-12',
     title: 'Локально, с доступами и своими файлами: почему Интеграм подходит компаниям с требованиями к контролю',
     shortTitle: 'Локальное развёртывание и контроль',
     seoTitle: 'Локальное развёртывание и контроль данных — Интеграм против облачных no-code',
@@ -1460,6 +1491,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '16-pricing-policy',
     number: '16',
+    publishedAt: '2026-05-12',
     title: 'Тарифы в токенах, а не «за пользователя»: чем тарифная политика Интеграма отличается от Airtable, Notion и Google Workspace',
     shortTitle: 'Тарифы в токенах вместо оплаты за пользователя',
     seoTitle:
@@ -1606,6 +1638,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '17-smart-google-import',
     number: '17',
+    publishedAt: '2026-05-13',
     title: 'Умный импорт из Google Sheets: синхронизация по разрезам, а не по координатам ячеек',
     shortTitle: 'Умный импорт из Google Sheets',
     seoTitle: 'Умный импорт из Google Sheets в Интеграм — База знаний',
@@ -1755,6 +1788,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '18-on-premise-procurement',
     number: '18',
+    publishedAt: '2026-05-14',
     title: 'On-premise в реестре Минцифры: docker-разворот, импортозамещение и корпоративная авторизация',
     shortTitle: 'On-premise в реестре Минцифры',
     seoTitle: 'Интеграм on-premise: реестр Минцифры, docker, JWT и LDAP',
@@ -1855,6 +1889,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '19-ai-agent-app-build',
     number: '19',
+    publishedAt: '2026-06-01',
     title:
       'Приложение собирает ИИ-агент: чем подход Интеграма отличается от программистов и готовых коробок',
     shortTitle: 'Приложение собирает ИИ-агент',
@@ -1938,6 +1973,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '20-semantic-memory-without-vector-db',
     number: '20',
+    publishedAt: '2026-06-04',
     title: 'Память по смыслу без отдельной базы: рекурсия и графы в Интеграме',
     shortTitle: 'Память по смыслу без векторной БД',
     compare: 'Векторные и графовые СУБД (pgvector, Neo4j, Pinecone)',
@@ -1997,6 +2033,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '21-catalog-matching',
     number: '21',
+    publishedAt: '2026-06-23',
     title:
       'Сопоставление каталогов на сотни тысяч позиций: Интеграм вместо Elasticsearch и кода',
     shortTitle: 'Сопоставление каталогов без Elasticsearch',
@@ -2094,6 +2131,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '22-information-system-constructor',
     number: '22',
+    publishedAt: '2026-07-10',
     title: 'Информационная система на low-code с ИИ вместо заказной разработки',
     shortTitle: 'Информационная система на Интеграме',
     seoTitle: 'Как создать информационную систему без программистов — Интеграм',
@@ -2176,6 +2214,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '23-security-fault-tolerance',
     number: '23',
+    publishedAt: '2026-07-16',
     title: 'Безопасность и отказоустойчивость: данные крупного бизнеса под контролем',
     shortTitle: 'Безопасность и отказоустойчивость',
     compare: 'закрытый облачный SaaS без контроля инфраструктуры',
@@ -2249,6 +2288,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '24-pure-business-design',
     number: '24',
+    publishedAt: '2026-07-24',
     title: 'Pure Business Design: приложение по описанию задачи, без блоков и кубиков',
     shortTitle: 'Pure Business Design',
     compare: 'визуальные no-code конструкторы и ИИ-ассистенты в режиме human-in-the-loop',
@@ -2352,6 +2392,7 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
   {
     slug: '25-counterparty-three-views',
     number: '25',
+    publishedAt: '2026-09-07',
     title: 'Один контрагент — три способа на него смотреть: архитектура вместо компромисса',
     shortTitle: 'Один контрагент — три взгляда',
     compare: 'системы с одной жёсткой карточкой контрагента',

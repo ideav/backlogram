@@ -12,7 +12,12 @@ interface Props {
   canonical?: string
   type?: 'website' | 'article'
   publishedTime?: string
+  modifiedTime?: string
   author?: string
+  /** Содержимое <meta name="robots">. 'noindex, follow' — для служебных страниц. */
+  robots?: string
+  /** Граф Schema.org страницы — см. src/lib/jsonld.ts (issue #627, п. 1). */
+  jsonLd?: unknown
 }
 
 const {
@@ -23,7 +28,10 @@ const {
   canonical,
   type = 'website',
   publishedTime,
+  modifiedTime,
   author,
+  robots = 'index, follow, max-image-preview:large, max-snippet:-1',
+  jsonLd,
 } = Astro.props
 
 // Каталожные адреса канонизируем со слэшем: на подпапке Astro отдаёт pathname
@@ -38,6 +46,9 @@ function canonicalPath(pathname: string): string {
 const canonicalURL = canonical ?? new URL(canonicalPath(Astro.url.pathname), Astro.site).toString()
 // Обложка лежит в подпапке блога — /blog/uploads/… и /blog/og-default.png (issue #522).
 const imageURL = new URL(withBase(image), Astro.site).toString()
+// «<» внутри JSON-LD экранируем: иначе строка вида «</script>» в заголовке или
+// описании закрыла бы тег раньше времени.
+const jsonLdText = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : null
 ---
 
 <!doctype html>
@@ -48,7 +59,7 @@ const imageURL = new URL(withBase(image), Astro.site).toString()
     <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#1447E6" />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+    <meta name="robots" content={robots} />
 
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -72,7 +83,10 @@ const imageURL = new URL(withBase(image), Astro.site).toString()
     <meta name="twitter:image:alt" content={imageAlt} />
 
     {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+    {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
     {author && <meta property="article:author" content={author} />}
+
+    {jsonLdText && <script type="application/ld+json" set:html={jsonLdText} />}
 
     <link rel="alternate" type="application/rss+xml" title="Блог Интеграм" href={withBase("/rss.xml")} />
   </head>

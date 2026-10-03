@@ -7,6 +7,11 @@ const posts = defineCollection({
     title: z.string(),
     description: z.string(),
     pubDate: z.coerce.date(),
+    // Дата последней правки — уходит в dateModified разметки BlogPosting
+    // (issue #627, п. 1). Ставится руками: от даты сборки она менялась бы при
+    // каждом деплое и обещала поисковику свежесть, которой не было. Если правок
+    // не было, поле не нужно — dateModified равен pubDate.
+    updatedDate: z.coerce.date().optional(),
     category: z.string().default('Без категории'),
     author: z.string().default('Команда Интеграм'),
     image: z.string().optional(),
