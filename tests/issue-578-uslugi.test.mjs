@@ -92,8 +92,17 @@ test('роутер отдаёт /uslugi.html и /uslugi', () => {
 })
 
 test('шапка и футер ссылаются на /uslugi.html', () => {
-  assert.ok(read('src/components/Header.tsx').includes(`href: '/uslugi.html'`), 'нет пункта в шапке')
-  assert.ok(read('src/components/Footer.tsx').includes('/uslugi.html'), 'нет ссылки в футере')
+  // Ссылки шапки и подвала лежат в src/data/nav.mjs — одним списком на React и
+  // на статический HTML (issue #627, п. 3). Компоненты обязаны читать его,
+  // а не держать свои копии: иначе меню и сырой HTML разъедутся.
+  assert.ok(read('src/components/Header.tsx').includes(`from '../data/nav'`), 'шапка не читает nav.mjs')
+  assert.ok(read('src/components/Footer.tsx').includes(`from '../data/nav'`), 'подвал не читает nav.mjs')
+  const nav = read('src/data/nav.mjs')
+  assert.equal(
+    (nav.match(/href: '\/uslugi\.html'/g) ?? []).length,
+    2,
+    'пункт «Услуги и цены» должен быть и в шапке, и в подвале',
+  )
 })
 
 test('футер несёт реквизиты (ИНН/ОГРН) на каждой странице', () => {

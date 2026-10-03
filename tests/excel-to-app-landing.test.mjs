@@ -130,7 +130,10 @@ test('the home page promotes the Excel → app landing', () => {
 })
 
 test('the header links to the Excel → app landing', () => {
-  assert.match(headerSource, /href:\s*'\/excel-to-app\.html'/)
+  // Пункты меню переехали из разметки Header.tsx в src/data/nav.mjs: тот же
+  // список уезжает в статический HTML каждой страницы (issue #627, п. 3).
+  assert.match(headerSource, /from '\.\.\/data\/nav'/)
+  assert.match(read('../src/data/nav.mjs'), /href:\s*'\/excel-to-app\.html'/)
 })
 
 test('the landing is listed in the sitemap', () => {

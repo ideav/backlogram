@@ -4,14 +4,27 @@ import { Menu, X, Sun, Moon, ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import { useTheme } from '../context/ThemeContext'
 import { Logo } from './Logo'
+import { headerNavLinks, headerMoreLinks } from '../data/nav'
 
 // Пометка «New» у пункта меню. Одна на десктопный выпадающий список и на
 // мобильный — чтобы метка не разъехалась между ними.
+//
+// Бейдж — оформление, а не часть названия страницы, поэтому он `aria-hidden`,
+// а перед ним стоит пробел в разметке. Без того и другого текст ссылки
+// склеивался в «Квинтеты или таблицыNew»: визуально зазор давал flex-gap, но
+// краулер и скринридер читали анкор слитым (аудит 02.10.2026, issue #627, п. 14).
+// Пробел в `sr-only` — он вне потока flex, поэтому лишним элементом не встаёт.
 function NewBadge() {
   return (
-    <span className="shrink-0 rounded-full bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-500 dark:text-blue-400">
-      New
-    </span>
+    <>
+      <span className="sr-only"> </span>
+      <span
+        aria-hidden="true"
+        className="shrink-0 rounded-full bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-500 dark:text-blue-400"
+      >
+        New
+      </span>
+    </>
   )
 }
 
@@ -20,35 +33,11 @@ export function Header() {
   const [moreOpen, setMoreOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
 
-  const navLinks = [
-    { name: 'Технология', href: '/#technology' },
-    { name: 'Как работаем', href: '/#process' },
-    { name: 'Примеры', href: '/#cases' },
-    // #578: пункт ведёт на каталог услуг с ценами, а не на якорь главной —
-    // Яндексу нужна отдельная страница услуг, чтобы считать сайт «сайтом услуг».
-    { name: 'Услуги и цены', href: '/uslugi.html' },
-    { name: 'Больше CRM', href: '/sravnenie-s-bitrix-amocrm.html' },
-    { name: 'База знаний', href: '/knowledge-base.html' },
-    { name: 'Блог', href: 'https://ideav.ru/blog/', external: true },
-  ]
-
-  // «Ещё...» — раскрывающийся список: сюда складываем новое и интересное
-  const moreLinks = [
-    { name: 'Информационная система', href: '/informatsionnaya-sistema.html' },
-    { name: 'Платформы с ИИ-агентами', href: '/agent-platforms.html' },
-    { name: 'Решения вместо Excel', href: '/resheniya.html' },
-    { name: 'Конструктор вместо Excel', href: '/konstruktor-prilozhenij.html' },
-    { name: 'Excel → приложение', href: '/excel-to-app.html' },
-    { name: 'Сопоставление каталогов', href: '/catalog-matching.html' },
-    {
-      name: 'Предпосылки no-code конструктора',
-      href: 'https://ideav.ru/blog/posts/predposylki-no-code-konstruktora-integram/',
-      external: true,
-    },
-    // Свежий пункт держим последним и помечаем «New»: список «Ещё» читают
-    // сверху вниз, и новое заметнее в конце, чем в середине (issue #605).
-    { name: 'Квинтеты или таблицы', href: '/kvintety-ili-tablicy.html', badge: 'New' },
-  ]
+  // Сами ссылки живут в src/data/nav.mjs: тот же список уезжает в статический
+  // HTML каждой страницы (scripts/lib/static-nav.mjs), иначе меню видно только
+  // после JS и новые страницы остаются сиротами (issue #627, п. 3).
+  const navLinks = headerNavLinks
+  const moreLinks = headerMoreLinks
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md transition-colors duration-300">

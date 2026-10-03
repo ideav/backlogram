@@ -35,4 +35,8 @@ export interface OrderStep {
 export const SERVICES_META: ServicesMeta
 export const SERVICES: ServiceItem[]
 export const ORDER_STEPS: OrderStep[]
+/** Дата в формате YYYY-MM-DD для JSON-LD Offer.priceValidUntil. */
+export const PRICES_VALID_UNTIL: string
+/** Путь для Offer.url: `/#…` → якорь услуги на /uslugi.html. */
+export function offerPath(service: ServiceItem): string
 export function formatPrice(price: number): string

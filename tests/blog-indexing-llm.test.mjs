@@ -19,13 +19,27 @@ function agentAllowPattern(agent) {
   return new RegExp(`User-agent:\\s*${escapedAgent}\\s*\\nAllow:\\s*/`, 'i')
 }
 
+// Было: строка robots зашита в разметку шаблона, а слова «noindex» в файле нет
+// вовсе. С issue #627 (п. 6) служебные страницы блога — поиск, 404 и страницы
+// тегов с одной-двумя статьями — обязаны отдавать noindex, поэтому значение
+// переехало в проп. Инвариант сохранён, но проверяется у значения по умолчанию:
+// страница, которая ничего не передала, по-прежнему индексируется.
 test('blog pages explicitly allow search indexing in the shared layout', () => {
   assert.match(baseLayoutSource, /<html lang="ru">/)
   assert.match(
     baseLayoutSource,
-    /<meta\s+name="robots"\s+content="index, follow, max-image-preview:large, max-snippet:-1"\s*\/?>/,
+    /robots = 'index, follow, max-image-preview:large, max-snippet:-1',/,
   )
-  assert.doesNotMatch(baseLayoutSource, /noindex|nofollow/)
+  assert.match(baseLayoutSource, /<meta\s+name="robots"\s+content=\{robots\}\s*\/?>/)
+  // Единственное упоминание noindex в шаблоне — пояснение к пропу: сам шаблон
+  // закрывать страницы от индекса не умеет, это делает вызывающая страница.
+  const noindexLines = baseLayoutSource
+    .split('\n')
+    .filter((line) => /noindex|nofollow/.test(line))
+  assert.deepEqual(
+    noindexLines.map((l) => l.trim()),
+    ["/** Содержимое <meta name=\"robots\">. 'noindex, follow' — для служебных страниц. */"],
+  )
 })
 
 test('blog robots.txt allows search engines and LLM crawlers', () => {

@@ -2,7 +2,8 @@
 import { getCollection } from 'astro:content'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import { categorySlug, getAllCategories } from '../lib/categories'
-import { withBase } from '../lib/url'
+import { absoluteWithBase, withBase } from '../lib/url'
+import { collectionGraph } from '../lib/jsonld'
 
 const allPosts = await getCollection('posts', ({ data }) => !data.draft)
 const categories = await getAllCategories()
@@ -55,11 +56,28 @@ function decorate(post: NumberedPost, index: number) {
 const featured = display[0] ? decorate(display[0], 0) : undefined
 const cards = display.slice(1, 10).map((post, index) => decorate(post, index + 1))
 const archive = display.slice(10)
+
+// Разметка списка (issue #627, п. 1): до правки главная блога не отдавала
+// JSON-LD вовсе. В ItemList попадают первые 20 статей в порядке вывода.
+const blogUrl = absoluteWithBase('/', Astro.site!)
+const graph = collectionGraph({
+  site: Astro.site!.toString().replace(/\/+$/, ''),
+  url: blogUrl,
+  blogUrl,
+  name: 'Блог Интеграм — статьи о no-code, данных и автоматизации',
+  description:
+    'Практические статьи Интеграма о no-code, данных, self-hosted размещении, автоматизации и учетных системах.',
+  items: display.slice(0, 20).map((p) => ({
+    name: p.data.title,
+    url: absoluteWithBase(`/posts/${p.id}/`, Astro.site!),
+  })),
+})
 ---
 
 <BaseLayout
   title="Блог Интеграм — статьи о no-code, данных и автоматизации"
   description="Практические статьи Интеграма о no-code, данных, self-hosted размещении, автоматизации и учетных системах."
+  jsonLd={graph}
 >
   <main class="product-blog-page">
     <section class="product-blog-hero" aria-labelledby="product-blog-title">

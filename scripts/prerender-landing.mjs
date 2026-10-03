@@ -212,7 +212,7 @@ const bodyHtml = `
       <a href="/informatsionnaya-sistema.html">Что такое информационная система</a> ·
       <a href="/agent-platforms.html">Интеграм против low-code и ИИ-агентов</a> ·
       <a href="/catalog-matching.html">Сопоставление каталогов и прайсов</a> ·
-      <a href="/knowledge-base">База знаний</a>
+      <a href="/knowledge-base.html">База знаний</a>
     </nav>
     <nav class="lp-prerender__links" aria-label="Решения вместо Excel">
       <a href="/konstruktor-prilozhenij.html">Конструктор вместо Excel</a> ·

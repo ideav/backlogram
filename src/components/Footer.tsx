@@ -1,6 +1,45 @@
 import { Link } from 'react-router-dom'
 import { Send, Mail, Phone, ExternalLink } from 'lucide-react'
 import { Logo } from './Logo'
+import { footerNavGroups } from '../data/nav'
+import type { NavLink } from '../data/nav'
+
+const LINK_CLASS =
+  'text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors'
+
+// Пункт подвала. Внутренние адреса — через Link (роутер, без перезагрузки),
+// внешние — обычной <a> в новой вкладке. Сами ссылки лежат в src/data/nav.mjs:
+// оттуда их же берёт статический блок навигации в сыром HTML (issue #627, п. 3).
+function FooterLink({ link }: { link: NavLink }) {
+  const icon = link.icon === 'external' ? <ExternalLink size={12} /> : null
+  if (link.external) {
+    return (
+      <a
+        href={link.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={icon ? `${LINK_CLASS} flex items-center gap-2` : LINK_CLASS}
+      >
+        {link.name}
+        {icon}
+      </a>
+    )
+  }
+  // Якоря главной (/#technology) роутеру не нужны — это навигация внутри
+  // документа, и <a> отрабатывает её сама.
+  if (link.href.startsWith('/#')) {
+    return (
+      <a href={link.href} className={LINK_CLASS}>
+        {link.name}
+      </a>
+    )
+  }
+  return (
+    <Link to={link.href} className={LINK_CLASS}>
+      {link.name}
+    </Link>
+  )
+}
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -24,40 +63,19 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <p className="text-slate-800 dark:text-slate-100 font-semibold mb-6">Продукт</p>
-            <ul className="space-y-4">
-              <li><a href="/#technology" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Технология</a></li>
-              <li><a href="/#process" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Схема работы</a></li>
-              <li><a href="/#cases" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Примеры</a></li>
-              <li><a href="/#pricing" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Стоимость</a></li>
-              {/* #578: каталог услуг с ценами — сигнал «сайта услуг» для Яндекса. */}
-              <li><Link to="/uslugi.html" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Услуги и цены</Link></li>
-            </ul>
-          </div>
-
-          {/* Documentation / Legal */}
-          <div>
-            <p className="text-slate-800 dark:text-slate-100 font-semibold mb-6">Ресурсы</p>
-            <ul className="space-y-4">
-              <li><a href="https://help.integram.io/" target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors flex items-center gap-2">Документация <ExternalLink size={12} /></a></li>
-              <li><Link to="/knowledge-base.html" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">База знаний</Link></li>
-              <li><Link to="/resheniya.html" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Решения вместо Excel</Link></li>
-              <li><Link to="/konstruktor-prilozhenij.html" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Конструктор вместо Excel</Link></li>
-              <li><Link to="/sravnenie-s-bitrix-amocrm.html" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Интеграм vs Битрикс24 / AmoCRM</Link></li>
-              <li><a href="https://integram.io/api.html" target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Интеграции</a></li>
-              <li><Link to="/tokens.html" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Токены</Link></li>
-              {/* #605: опросник по архитектуре хранения — приложение к меморандуму. */}
-              <li><Link to="/kvintety-ili-tablicy.html" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Квинтеты или таблицы</Link></li>
-              {/* Соглашение живёт на ideav.ru: раньше пункт уводил на чужой домен integram.io. */}
-              <li><Link to="/terms.html" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Правила использования</Link></li>
-              {/* Политика по 152-ФЗ должна быть общедоступна с любой страницы (issue #542). */}
-              <li><Link to="/privacy.html" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">Обработка персональных данных</Link></li>
-              <li><a href="https://rutube.ru/channel/41204904/videos/" target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors">RUTUBE</a></li>
-              <li><a href="https://ideav.ru/blog/" target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors flex items-center gap-2">Блог <ExternalLink size={12} /></a></li>
-            </ul>
-          </div>
+          {/* Группы ссылок: «Продукт» и «Ресурсы» из src/data/nav.mjs */}
+          {footerNavGroups.map((group) => (
+            <div key={group.title}>
+              <p className="text-slate-800 dark:text-slate-100 font-semibold mb-6">{group.title}</p>
+              <ul className="space-y-4">
+                {group.links.map((link) => (
+                  <li key={link.href}>
+                    <FooterLink link={link} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
 
           {/* Contacts */}
           <div id="contacts">

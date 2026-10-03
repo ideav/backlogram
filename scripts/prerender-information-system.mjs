@@ -199,7 +199,7 @@ const bodyHtml = `
       <a href="/excel-to-app.html#excel-form">Загрузить Excel и получить систему</a> ·
       <a href="/knowledge-base/22-information-system-constructor.html">Как собрать ИС на Интеграме</a> ·
       <a href="/">На главную</a> ·
-      <a href="/knowledge-base">База знаний</a> ·
+      <a href="/knowledge-base.html">База знаний</a> ·
       <a href="/agent-platforms.html">Платформы с ИИ-агентами</a>
     </p>
     <p style="margin-top:0.6rem">
@@ -234,10 +234,12 @@ const bodyHtml = `
 // ───────────────────────────────────────────────────────────────────────────
 //  Structured data: WebPage + Article + FAQPage
 // ───────────────────────────────────────────────────────────────────────────
-// Даты для разметки Article (issue #559, п. 6): datePublished — дата первого
-// коммита страницы, dateModified — дата сборки, как в prerender-knowledge-base.mjs.
+// Даты для разметки Article (issue #559, п. 6). dateModified ставится руками:
+// от даты сборки он менялся при каждом деплое и обещал поисковику свежесть,
+// которой не было (SEO-аудит 02.10.2026, issue #627, п. 5). Правя текст
+// страницы, обновите дату здесь.
 const datePublished = '2026-07-10'
-const dateModified = new Date().toISOString().slice(0, 10)
+const dateModified = '2026-08-13'
 
 const canonical = `${SITE}${PATH}`
 const ogTitle =

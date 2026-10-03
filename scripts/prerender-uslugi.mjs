@@ -18,7 +18,14 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { SERVICES_META, SERVICES, ORDER_STEPS, formatPrice } from '../src/data/services.mjs'
+import {
+  SERVICES_META,
+  SERVICES,
+  ORDER_STEPS,
+  formatPrice,
+  offerPath,
+  PRICES_VALID_UNTIL,
+} from '../src/data/services.mjs'
 import { PRIVACY_OPERATOR } from '../src/data/privacy.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -39,6 +46,11 @@ function escape(s) {
 }
 
 const canonical = `${SITE}${PATH}`
+
+/** Абсолютный URL для JSON-LD: '/tokens.html' → 'https://ideav.ru/tokens.html'. */
+function absolute(url) {
+  return url.startsWith('/') ? `${SITE}${url}` : url
+}
 
 // ───────────────────────────────────────────────────────────────────────────
 //  Static snapshot — mirrors src/pages/Services.tsx so crawlers (Яндекс) see
@@ -164,8 +176,11 @@ const jsonLd = {
             '@type': 'Offer',
             price: String(s.price),
             priceCurrency: 'RUB',
-            url: s.url.startsWith('/') ? `${SITE}${s.url}` : s.url,
+            // offerPath() уводит `/#cta` на якорь самой услуги — см. services.mjs.
+            url: absolute(offerPath(s)),
             availability: 'https://schema.org/InStock',
+            priceValidUntil: PRICES_VALID_UNTIL,
+            seller: { '@id': `${SITE}/#organization` },
           },
         },
       })),
@@ -181,7 +196,9 @@ const jsonLd = {
   ],
 }
 
-const ogImage = `${SITE}/logos/integram-og.png`
+// Своя OG-карточка с ценами (scripts/generate-og-images.mjs, slug 'uslugi'),
+// а не общий логотип: страница коммерческая, в репосте должны быть видны цены.
+const ogImage = `${SITE}/og/uslugi.png`
 const headTags = [
   `<link rel="canonical" href="${escape(canonical)}" />`,
   `<meta property="og:type" content="website" />`,
@@ -189,11 +206,14 @@ const headTags = [
   `<meta property="og:title" content="${escape(SERVICES_META.title)}" />`,
   `<meta property="og:description" content="${escape(SERVICES_META.description)}" />`,
   `<meta property="og:image" content="${escape(ogImage)}" />`,
+  `<meta property="og:image:width" content="1200" />`,
+  `<meta property="og:image:height" content="630" />`,
   `<meta property="og:locale" content="ru_RU" />`,
   `<meta property="og:site_name" content="${PUBLISHER}" />`,
   `<meta name="twitter:card" content="summary_large_image" />`,
   `<meta name="twitter:title" content="${escape(SERVICES_META.title)}" />`,
   `<meta name="twitter:description" content="${escape(SERVICES_META.description)}" />`,
+  `<meta name="twitter:image" content="${escape(ogImage)}" />`,
   `<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`,
 ].join('\n    ')
 

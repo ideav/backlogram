@@ -3,9 +3,16 @@ import BaseLayout from '../layouts/BaseLayout.astro'
 import { withBase } from '../lib/url'
 ---
 
+{/*
+  Страница поиска — служебная: собственного содержимого у неё нет, результаты
+  рисует pagefind на клиенте. В индексе она создавала пустой дубль и тянула на
+  себя запросы (аудит 02.10.2026, issue #627, п. 6). follow оставлен: ссылки со
+  страницы ведут в блог и должны передавать вес.
+*/}
 <BaseLayout
-  title="Поиск — Блог Интеграм"
+  title="Поиск — Интеграм"
   description="Поиск по статьям блога Интеграм."
+  robots="noindex, follow"
 >
   <section class="max-w-[78rem] mx-auto px-6 lg:px-12 pt-14 pb-12 border-b border-[var(--color-hairline)]">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-x-10">

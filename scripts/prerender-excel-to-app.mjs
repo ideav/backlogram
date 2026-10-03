@@ -272,7 +272,7 @@ const bodyHtml = `
     <p>
       <a href="${PATH}#excel-form">Загрузить файлы</a> ·
       <a href="/">На главную</a> ·
-      <a href="/knowledge-base">База знаний</a>
+      <a href="/knowledge-base.html">База знаний</a>
     </p>
     <p style="margin-top:0.6rem">
       Читайте в блоге:

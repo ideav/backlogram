@@ -27,6 +27,16 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import {
+  CM_META,
+  CM_FLOW,
+  CM_STEPS,
+  CM_PILLARS,
+  CM_COMPARE_ROWS,
+  CM_AUDIENCE,
+  CM_FORM,
+} from '../src/data/catalogMatching.mjs'
+import { freshnessLine } from '../src/lib/dates.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -46,83 +56,110 @@ function escape(s) {
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-//  Static snapshot — mirrors src/pages/CatalogMatching.tsx headings so crawlers
-//  see the representative content.
+//  Static snapshot. Текст берётся из src/data/catalogMatching.mjs — того же
+//  источника, что питает src/pages/CatalogMatching.tsx. Раньше шаги цикла были
+//  набраны здесь заново и другими словами, а сравнение с Elasticsearch, опоры
+//  механики, блок «кому это нужно» и форма заявки в снапшот не попадали вовсе:
+//  краулер без JS видел около четверти текста страницы (аудит 02.10.2026,
+//  issue #627, п. 2).
 // ───────────────────────────────────────────────────────────────────────────
-const steps = [
-  {
-    h: 'Загрузка по сохранённой настройке',
-    p: 'Свой каталог (SKU) и каталог контрагента (RFP) загружаются из Excel по сохранённой настройке: Интеграм распознаёт листы и колонки и показывает число строк. Скорость — порядка 500–1000 записей в секунду.',
-  },
-  {
-    h: 'Токенизация наименований',
-    p: 'Один запрос разбивает наименование на слова-токены и наполняет общий справочник токенов. Обе таблицы используют один справочник — это позволяет искать пересечения.',
-  },
-  {
-    h: 'Рабочее место сопоставления',
-    p: 'Для позиции контрагента по токенам подбираются кандидаты из вашего каталога. Совпадение марки, модели и типа подсвечивается зелёным; настройка под тип товара задаётся запросом, без программирования.',
-  },
-  {
-    h: 'Массовый автоматический подбор',
-    p: 'Кнопка Start запускает автоподбор в несколько потоков: механизм пишет в таблицу RFP подобранный артикул и альтернативы. Скорость — порядка 120 сопоставлений в минуту; 22 000 позиций обрабатываются за пару-тройку часов.',
-  },
-  {
-    h: 'Выгрузка и передача',
-    p: 'Отдельный запрос собирает подобранный артикул и все альтернативы и выгружает результат в Excel или отдаёт через JSON API.',
-  },
-  {
-    h: 'Доуточнение языковой моделью',
-    p: 'Шорт-лист кандидатов отдаётся языковой модели, которая выбирает только то, что точно совпадает. Перемножение «все на все» не нужно — модель работает по уже отобранным парам.',
-  },
-]
-
-const stepsHtml = steps
-  .map(
-    (s) => `
+const stepsHtml = CM_STEPS.map(
+  (s) => `
       <section class="cm-prerender__group">
-        <h3>${escape(s.h)}</h3>
-        <p>${escape(s.p)}</p>
-      </section>`
-  )
-  .join('')
+        <h3>${escape(s.title)}</h3>
+        <p>${escape(s.body)}</p>
+      </section>`,
+).join('')
+
+const flowHtml = CM_FLOW.map((f, i) => `<li>${i + 1}. ${escape(f.label)}</li>`).join('')
+
+const pillarsHtml = CM_PILLARS.map(
+  (p) => `
+      <section class="cm-prerender__group">
+        <h3>${escape(p.title)}</h3>
+        <p>${escape(p.body)}</p>
+      </section>`,
+).join('')
+
+const compareHtml = `
+    <table class="cm-prerender__table">
+      <thead>
+        <tr><th>Критерий</th><th>Elasticsearch и заказная разработка</th><th>Интеграм</th></tr>
+      </thead>
+      <tbody>
+        ${CM_COMPARE_ROWS.map(
+          (r) =>
+            `<tr><th scope="row">${escape(r.criterion)}</th><td>${escape(r.them)}</td><td>${escape(r.us)}</td></tr>`,
+        ).join('\n        ')}
+      </tbody>
+    </table>`
+
+const audienceHtml = CM_AUDIENCE.map((p) => `<p>${escape(p)}</p>`).join('\n  ')
+
+// Форма заявки — настоящая, тем же обработчиком и с тем же `source`, что в
+// React-версии. Капчу она без JS не проходит, поэтому рядом стоят живые
+// альтернативы: письмо и телефон (как в снапшоте excel-to-app).
+const formHtml = `
+  <h2 id="cm-form-title">${escape(CM_FORM.title)}</h2>
+  <p>${escape(CM_FORM.lead)}</p>
+  <form id="cm-form" class="cm-prerender__form" action="${escape(CM_FORM.endpoint)}" method="post" enctype="multipart/form-data" aria-labelledby="cm-form-title">
+    <input type="hidden" name="source" value="${escape(CM_FORM.source)}" />
+    <p>
+      <label for="cm-name">Имя</label>
+      <input id="cm-name" name="name" type="text" placeholder="Александр" />
+    </p>
+    <p>
+      <label for="cm-company">Компания</label>
+      <input id="cm-company" name="company" type="text" placeholder="Digital Corp" />
+    </p>
+    <p>
+      <label for="cm-contact">Контакт — email или Telegram</label>
+      <input id="cm-contact" name="contact" type="text" required placeholder="@username или mail@company.ru" />
+    </p>
+    <p>
+      <label for="cm-task">Про ваши каталоги</label>
+      <textarea id="cm-task" name="task" rows="3" placeholder="Сколько позиций в каждом каталоге, в каком формате (Excel/CSV), какая номенклатура..."></textarea>
+    </p>
+    <p>
+      <label for="cm-files">Каталоги — необязательно</label>
+      <input id="cm-files" name="files[]" type="file" multiple accept="${escape(CM_FORM.extensions.join(','))}" />
+      <span class="cm-prerender__hint">Ваш каталог (SKU) и каталог контрагента (RFP) · ${escape(CM_FORM.extensions.join(', '))} · до ${CM_FORM.maxFileMb} МБ каждый</span>
+    </p>
+    <p><button type="submit">Отправить каталоги</button></p>
+    <p class="cm-prerender__hint">
+      Отправляя файлы, вы соглашаетесь на <a href="/privacy.html">обработку персональных данных</a>.
+    </p>
+    <p class="cm-prerender__hint">
+      Форма выше — версия страницы без JavaScript, и проверку капчи она не проходит. Если скрипты
+      отключены, пришлите каталоги письмом на <a href="mailto:abc@integram.io">abc@integram.io</a>
+      или позвоните по телефону <a href="tel:+79955060167">+7 995 506-01-67</a> — заявку примем так же.
+    </p>
+  </form>`
 
 const bodyHtml = `
 <article id="cm-prerender" itemscope itemtype="https://schema.org/Article">
   <header>
     <p class="cm-prerender__eyebrow">Инструмент на конструкторе Интеграм</p>
-    <h1 itemprop="headline">Массовое сопоставление каталогов на сотни тысяч позиций</h1>
-    <p class="cm-prerender__lead" itemprop="description">
-      Один и тот же товар в вашем каталоге и в каталоге контрагента назван по-разному и имеет разные
-      артикулы. Инструмент сопоставляет такие позиции автоматически — через токенизацию наименований
-      и пересечение токенов, в несколько потоков и без программирования. Раньше под это разворачивали
-      Elasticsearch и нанимали программистов; здесь всё собрано на конструкторе Интеграм.
-    </p>
+    <h1 itemprop="headline">${escape(CM_META.h1)}</h1>
+    <p class="cm-prerender__lead" itemprop="description">${escape(CM_META.lead)}</p>
+    <p class="cm-prerender__dates"><time datetime="${escape(CM_META.updatedAt)}">${escape(
+      freshnessLine(CM_META.publishedAt, CM_META.updatedAt),
+    )}</time></p>
   </header>
   <figure class="cm-prerender__figure">
     <img src="/catalog-tokenization.jpg" alt="Токенизация наименований: каталоги поставщика (SKU) и контрагента (RFP) разбиваются на слова-токены и сопоставляются через общий справочник токенов" width="1672" height="941" loading="lazy" itemprop="image" />
     <figcaption>Наименования из обоих каталогов разбиваются на токены и сводятся к общему справочнику — по пересечениям токенов находятся совпадения.</figcaption>
   </figure>
   <h2>Полный цикл сопоставления</h2>
+  <ol class="cm-prerender__flow">${flowHtml}</ol>
   ${stepsHtml}
-  <section class="cm-prerender__group">
-    <h2>Как считается оценка совпадения</h2>
-    <p>
-      У каждой пары есть числовая оценка точности: она складывается из количества совпавших токенов и
-      отношения их общей длины к длине наименования. Формула на виду — её можно усложнять и оттачивать
-      под номенклатуру: добавлять веса частым и редким токенам, требовать обязательного совпадения
-      бренда и типа товара.
-    </p>
-  </section>
-  <section class="cm-prerender__group">
-    <h2>Интеграм против Elasticsearch и заказной разработки</h2>
-    <p>
-      Обычно сопоставление каталогов решают поисковым движком, нечётким поиском и руками программистов.
-      В Интеграме запуск не требует развёртывания индексов и кода, логика сопоставления настраивается
-      запросом без релиза, массовый прогон идёт встроенным многопоточным автоподбором, а результат —
-      подобранный артикул, альтернативы и экспорт в Excel и API — доступен из коробки. Данные хранятся
-      на сервере в РФ.
-    </p>
-  </section>
+  <h2>Как считается оценка совпадения</h2>
+  ${pillarsHtml}
+  <h2>Интеграм против Elasticsearch и заказной разработки</h2>
+  ${compareHtml}
+  <h2>Кому это нужно</h2>
+  ${audienceHtml}
+  ${formHtml}
   <footer class="cm-prerender__footer">
     <p>
       <a href="https://ideav.ru/start.html">Начать с Интеграмом</a> ·
@@ -147,6 +184,25 @@ const bodyHtml = `
   #cm-prerender .cm-prerender__eyebrow { text-transform: uppercase; letter-spacing: 0.1em;
     font-size: 0.72rem; color: #3b82f6; font-weight: 700; margin: 0; }
   #cm-prerender .cm-prerender__lead { font-size: 1.1rem; color: #475569; max-width: 50rem; }
+  #cm-prerender .cm-prerender__dates { font-size: 0.85rem; color: #94a3b8; }
+  #cm-prerender .cm-prerender__flow { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem;
+    list-style: none; padding: 0; margin: 0.75rem 0 0; font-size: 0.95rem; color: #475569; }
+  #cm-prerender .cm-prerender__table { width: 100%; border-collapse: collapse; margin: 0.75rem 0 0;
+    font-size: 0.95rem; }
+  #cm-prerender .cm-prerender__table th, #cm-prerender .cm-prerender__table td {
+    border: 1px solid #e2e8f0; padding: 0.5rem 0.7rem; text-align: left; vertical-align: top; }
+  #cm-prerender .cm-prerender__table thead th { background: #f8fafc; }
+  #cm-prerender .cm-prerender__form { margin: 1rem 0 0; max-width: 34rem; }
+  #cm-prerender .cm-prerender__form label { display: block; font-size: 0.85rem; font-weight: 600;
+    margin-bottom: 0.25rem; }
+  #cm-prerender .cm-prerender__form input, #cm-prerender .cm-prerender__form textarea {
+    width: 100%; padding: 0.6rem 0.7rem; border: 1px solid #cbd5e1; border-radius: 0.6rem;
+    font: inherit; background: #fff; color: inherit; min-height: 2.75rem; }
+  #cm-prerender .cm-prerender__form button { min-height: 2.75rem; padding: 0.6rem 1.4rem;
+    border: 0; border-radius: 0.6rem; background: #2563eb; color: #fff; font: inherit;
+    font-weight: 600; cursor: pointer; }
+  #cm-prerender .cm-prerender__hint { display: block; font-size: 0.8rem; color: #64748b;
+    margin-top: 0.35rem; }
   #cm-prerender .cm-prerender__figure { margin: 2rem 0 0; }
   #cm-prerender .cm-prerender__figure img { width: 100%; height: auto; display: block;
     border-radius: 1rem; border: 1px solid #e2e8f0; }
@@ -158,26 +214,33 @@ const bodyHtml = `
   /* Dark colours follow the app theme (.dark on <html>, set synchronously by the
      inline <head> script from localStorage) — NOT prefers-color-scheme. */
   .dark #cm-prerender { color: #e2e8f0; }
-  .dark #cm-prerender .cm-prerender__lead, .dark #cm-prerender .cm-prerender__footer { color: #94a3b8; }
+  .dark #cm-prerender .cm-prerender__lead, .dark #cm-prerender .cm-prerender__footer,
+  .dark #cm-prerender .cm-prerender__flow { color: #94a3b8; }
+  .dark #cm-prerender .cm-prerender__table th, .dark #cm-prerender .cm-prerender__table td {
+    border-color: #1e293b; }
+  .dark #cm-prerender .cm-prerender__table thead th { background: #0f172a; }
+  .dark #cm-prerender .cm-prerender__form input, .dark #cm-prerender .cm-prerender__form textarea {
+    background: #0f172a; border-color: #1e293b; }
 </style>`
 
 // ───────────────────────────────────────────────────────────────────────────
 //  Structured data: WebPage + Article
 // ───────────────────────────────────────────────────────────────────────────
-// Даты для разметки Article (issue #559, п. 6): datePublished — дата первого
-// коммита страницы, dateModified — дата сборки, как в prerender-knowledge-base.mjs.
-const datePublished = '2026-06-23'
-const dateModified = new Date().toISOString().slice(0, 10)
+// Даты для разметки Article (issue #559, п. 6) — из src/data/catalogMatching.mjs
+// и правятся руками вместе с содержимым. Раньше dateModified брался от даты
+// сборки: он менялся при каждом деплое и обещал поисковику свежесть, которой не
+// было (SEO-аудит 02.10.2026, issue #627, п. 5).
+const datePublished = CM_META.publishedAt
+const dateModified = CM_META.updatedAt
 
 const canonical = `${SITE}${PATH}`
 const ogTitle =
   'Массовое сопоставление каталогов: сотни тысяч позиций без Elasticsearch и кода — Интеграм'
 const ogDescription =
   'Инструмент массового сопоставления позиций двух каталогов в конструкторе Интеграм: токенизация наименований, пересечение токенов, автоматический подбор в несколько потоков (~120 пар/мин), оценка точности, кандидаты-альтернативы, выгрузка в Excel и доуточнение шорт-листа языковой моделью — без программирования.'
-// SEO: <title> ≤ 60 симв. и <meta description> ≤ 158 (OG-теги ниже берут полные ogTitle/ogDescription)
-const seoTitle = 'Сопоставление каталогов без Elasticsearch | Интеграм'
-const metaDescription =
-  'Массовое сопоставление позиций двух каталогов в Интеграме: токенизация, подбор ~120 пар/мин, оценка точности, кандидаты, выгрузка в Excel — без кода.'
+// SEO: <title> ≤ 60 симв. и <meta description> ≤ 158 (OG-теги выше берут полные ogTitle/ogDescription)
+const seoTitle = CM_META.title
+const metaDescription = CM_META.description
 const ogImage = `${SITE}/catalog-tokenization.jpg`
 const ogImageW = 1672
 const ogImageH = 941

@@ -24,6 +24,9 @@ import {
   CROSS,
 } from '../data/quintetsQuiz'
 import type { QuizLink, QuizOption } from '../data/quintetsQuiz'
+// Без расширения: Vite берёт dates.mjs, TypeScript — dates.d.ts рядом с ним
+// (так же подключены и src/data/*.mjs).
+import { freshnessLine } from '../lib/dates'
 
 const SITE = 'https://ideav.ru'
 const STORAGE_KEY = 'quintets-quiz-v5'
@@ -225,6 +228,14 @@ export default function KvintetyIliTablicy() {
             {QUIZ_META.lead}
           </p>
 
+          {/* Та же строка и тем же хелпером, что в снапшоте: даты публикации и
+              правки должны совпадать с datePublished/dateModified в разметке. */}
+          <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+            <time dateTime={QUIZ_META.updatedAt}>
+              {freshnessLine(QUIZ_META.publishedAt, QUIZ_META.updatedAt)}
+            </time>
+          </p>
+
           <div className="mt-6 space-y-3 max-w-3xl text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
             {QUIZ_INTRO.map(([head, body]) => (
               <p key={head}>
@@ -255,6 +266,11 @@ export default function KvintetyIliTablicy() {
               >
                 <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                   {qi + 1}. {q.t}
+                  {/* Пробел текстовым узлом обязателен: без него в DOM заголовок
+                      читается слитно — «…за 3–5 лет?вес 12», и именно такой
+                      текст видят поисковик и скринридер (аудит 02.10.2026,
+                      issue #627). Визуально отступ по-прежнему даёт ml-2. */}
+                  {' '}
                   <span className="ml-2 text-xs font-normal text-slate-400 dark:text-slate-500">вес {q.w}</span>
                 </h2>
                 {q.h && <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{q.h}</p>}
@@ -306,7 +322,11 @@ export default function KvintetyIliTablicy() {
               </span>
             </h2>
 
-            <div className="mt-4 space-y-3">
+            {/* Счёт меняется без перезагрузки и без перевода фокуса: без живой
+                области скринридер молчит о том, что галочка что-то изменила
+                (аудит 02.10.2026, issue #627). polite — чтобы объявление не
+                перебивало чтение самого вопроса. */}
+            <div className="mt-4 space-y-3" aria-live="polite">
               {VARIANTS.map((nm, i) => (
                 <div key={nm}>
                   <div className="flex justify-between text-sm text-slate-700 dark:text-slate-200">
@@ -342,12 +362,17 @@ export default function KvintetyIliTablicy() {
               </div>
             ))}
 
+            {/* Вердикт тоже живая область: он появляется на тринадцатом ответе
+                сам, без перевода фокуса. */}
             {!v.complete ? (
-              <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+              <p className="mt-3 text-sm text-slate-500 dark:text-slate-400" aria-live="polite">
                 Ответьте на все вопросы — вердикт будет по полной сумме.
               </p>
             ) : (
-              <div className="mt-3 space-y-2 text-sm text-slate-700 dark:text-slate-200">
+              <div
+                className="mt-3 space-y-2 text-sm text-slate-700 dark:text-slate-200"
+                aria-live="polite"
+              >
                 {VARIANTS.map((nm, i) => (
                   <div key={nm}>
                     <b>{nm}:</b>{' '}

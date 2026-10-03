@@ -1,9 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import TagCloud from '../../components/TagCloud.astro'
-import { getAllTags, getPostsByTagSlug } from '../../lib/tags'
+import { getAllTags, getPostsByTagSlug, isThinTag } from '../../lib/tags'
 import { categorySlug } from '../../lib/categories'
-import { withBase } from '../../lib/url'
+import { absoluteWithBase, withBase } from '../../lib/url'
+import { collectionGraph } from '../../lib/jsonld'
 
 export async function getStaticPaths() {
   const tags = await getAllTags()
@@ -44,11 +45,33 @@ function formatDate(d: Date): string {
 function readingTime(body: string): number {
   return Math.max(1, Math.round(body.length / 1100))
 }
+
+// Тонкий тег (одна-две статьи) — это почти дубль самой статьи, в индексе ему
+// делать нечего: noindex здесь и фильтр карты сайта в astro.config.mjs работают
+// от одного порога tags.THIN_TAG_MIN_POSTS (issue #627, п. 6).
+const thin = isThinTag(count)
+
+const blogUrl = absoluteWithBase('/', Astro.site!)
+const pageUrl = absoluteWithBase(`/tag/${Astro.params.slug}/`, Astro.site!)
+const graph = collectionGraph({
+  site: Astro.site!.toString().replace(/\/+$/, ''),
+  url: pageUrl,
+  blogUrl,
+  name: `Тег «${tag}» — Блог Интеграм`,
+  description: `Статьи блога Интеграм с тегом «${tag}»: ${count} материалов о no-code, учётных системах и практике.`,
+  trail: [{ name: `Тег «${tag}»`, url: pageUrl }],
+  items: display.map((p) => ({
+    name: p.data.title,
+    url: absoluteWithBase(`/posts/${p.id}/`, Astro.site!),
+  })),
+})
 ---
 
 <BaseLayout
-  title={`Тег «${tag}» — Блог Интеграм`}
+  title={`Тег «${tag}» — Интеграм`}
   description={`Статьи блога Интеграм с тегом «${tag}»: ${count} материалов о no-code, учётных системах и практике.`}
+  robots={thin ? 'noindex, follow' : undefined}
+  jsonLd={graph}
 >
   <section class="max-w-[78rem] mx-auto px-6 lg:px-12 pt-14 pb-12 border-b border-[var(--color-hairline)]">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-x-10">
