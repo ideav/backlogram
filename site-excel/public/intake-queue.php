@@ -52,7 +52,10 @@ if (!defined('INTAKE_QUEUE_LOADED')) {
         if ($configured !== '') {
             return rtrim(str_replace('\\', '/', $configured), '/');
         }
-        $root = (string) ($_SERVER['DOCUMENT_ROOT'] ?? __DIR__);
+        // Пустая строка — это CLI: DOCUMENT_ROOT там задан, но пуст,
+        // и `?? __DIR__` на него не срабатывает (см. order-deliver.php).
+        $root = (string) ($_SERVER['DOCUMENT_ROOT'] ?? '');
+        $root = $root !== '' ? $root : __DIR__;
         $root = rtrim(str_replace('\\', '/', $root), '/');
         return dirname($root) . '/excel-to-app-queue';
     }

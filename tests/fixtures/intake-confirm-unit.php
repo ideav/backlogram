@@ -102,6 +102,58 @@ check('письмо-результат не раздаёт пароли роле
 check('тема результата содержит тематику', intake_mail_app_ready_subject('интернет-магазина') === 'Ваше приложение для интернет-магазина готово — Интеграм');
 check('тема результата без тематики не ломается', intake_mail_app_ready_subject('') === 'Ваше приложение готово — Интеграм');
 
+// ── Вебрут в CLI: DOCUMENT_ROOT задан, но пуст ─────────────────────────────
+// PHP CLI кладёт в $_SERVER['DOCUMENT_ROOT'] пустую строку, а не оставляет
+// ключ незаданным, поэтому `?? __DIR__` на него не срабатывает. Из-за этого
+// крон доставки лендинга считал путь спула от «» и две недели молча выходил.
+$savedRoot = $_SERVER['DOCUMENT_ROOT'] ?? null;
+$_SERVER['DOCUMENT_ROOT'] = '';
+check(
+    'пустой DOCUMENT_ROOT не даёт пути от корня',
+    strpos(intake_queue_dir(), '/excel-to-app-queue') > 1
+);
+$_SERVER['DOCUMENT_ROOT'] = '/var/www/site.ru';
+check(
+    'заданный DOCUMENT_ROOT берётся как есть',
+    intake_queue_dir() === '/var/www/excel-to-app-queue'
+);
+if ($savedRoot === null) {
+    unset($_SERVER['DOCUMENT_ROOT']);
+} else {
+    $_SERVER['DOCUMENT_ROOT'] = $savedRoot;
+}
+
+// ── Сторож зависшего спула ─────────────────────────────────────────────────
+// Доставку чинить некому, если о поломке никто не узнаёт: раньше о заявке,
+// висящей в спуле, писалось только в лог через 14 дней.
+$spoolDir = sys_get_temp_dir() . '/intake-spool-unit-' . bin2hex(random_bytes(4));
+mkdir($spoolDir, 0700, true);
+$meta = ['created' => 1000, 'body' => 'Заявка на демонстрацию, текст для оператора'];
+
+$sentTo = [];
+$capture = static function (string $to) use (&$sentTo): bool {
+    $sentTo[] = $to;
+    return true;
+};
+putenv('INTAKE_MAIL_TRANSPORT=file');
+putenv('INTAKE_MAIL_FILE=' . $spoolDir . '/alert-mail.log');
+putenv('INTAKE_SPOOL_STUCK_AFTER=3600');
+
+check('свежая заявка тревоги не поднимает', intake_spool_alert($spoolDir, $meta, 'тест', 1000 + 60) === false);
+check('метки ещё нет', !file_exists($spoolDir . '/alerted'));
+check('залежавшаяся заявка поднимает тревогу', intake_spool_alert($spoolDir, $meta, 'тест', 1000 + 7200) === true);
+check('повторно не дёргает', intake_spool_alert($spoolDir, $meta, 'тест', 1000 + 10800) === false);
+$alertLog = (string) @file_get_contents($spoolDir . '/alert-mail.log');
+check('в письме есть текст заявки — её можно отработать руками', str_contains($alertLog, 'текст для оператора'));
+check('в письме сказано, какой спул', str_contains($alertLog, 'тест'));
+check('заявка без времени создания тревоги не поднимает', intake_spool_alert($spoolDir . '/nope', ['body' => 'x'], 'тест', 99999) === false);
+putenv('INTAKE_MAIL_TRANSPORT');
+putenv('INTAKE_MAIL_FILE');
+putenv('INTAKE_SPOOL_STUCK_AFTER');
+@unlink($spoolDir . '/alerted');
+@unlink($spoolDir . '/alert-mail.log');
+@rmdir($spoolDir);
+
 // ── intake_queue_path: id из URL не должен выводить из каталога ─────────────
 check('нормальный id даёт путь', intake_queue_path('/q', '20260929-210000-1a2b3c4d') === '/q/20260929-210000-1a2b3c4d');
 check('обход каталога отбит', intake_queue_path('/q', '../../etc') === null);

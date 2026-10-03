@@ -28,13 +28,20 @@ if (empty($_SERVER['DOCUMENT_ROOT'])) {
     $_SERVER['DOCUMENT_ROOT'] = __DIR__;
 }
 
+// Сторож зависших заявок — письмом оператору (intake-mail.php).
+require_once __DIR__ . '/intake-mail.php';
+
 $spool = intake_spool_dir();
 if (!is_dir($spool)) {
+    // Не молча: каталога спула быть не должно, раз скрипт стоит в кроне.
+    // Молчаливый exit(0) здесь уже стоил двух недель незамеченной поломки.
+    echo date('c') . " tg-deliver: каталога спула нет: $spool\n";
     exit(0);
 }
 
 $delivered = 0;
 $left = 0;
+$alerted = 0;
 foreach (glob($spool . '/*', GLOB_ONLYDIR) ?: [] as $dir) {
     if (intake_spool_deliver($dir)) {
         intake_spool_cleanup($dir);
@@ -43,11 +50,11 @@ foreach (glob($spool . '/*', GLOB_ONLYDIR) ?: [] as $dir) {
     }
     $left++;
     $meta = json_decode((string) @file_get_contents($dir . '/meta.json'), true);
-    if (is_array($meta) && time() - (int) ($meta['created'] ?? 0) > 14 * 86400) {
-        error_log('tg-deliver: заявка висит больше 14 дней: ' . $dir);
+    if (is_array($meta) && intake_spool_alert($dir, $meta, 'ideav.ru')) {
+        $alerted++;
     }
 }
 
 if ($delivered || $left) {
-    echo date('c') . " delivered=$delivered left=$left\n";
+    echo date('c') . " delivered=$delivered left=$left alerted=$alerted\n";
 }

@@ -76,7 +76,10 @@ if (!defined('ORDER_INTAKE_LOADED')) {
         if ($configured !== '') {
             return rtrim($configured, '/');
         }
-        $root = $_SERVER['DOCUMENT_ROOT'] ?? __DIR__;
+        // Пустая строка — это CLI: DOCUMENT_ROOT там задан, но пуст,
+        // и `?? __DIR__` на него не срабатывает (см. order-deliver.php).
+        $root = (string) ($_SERVER['DOCUMENT_ROOT'] ?? '');
+        $root = $root !== '' ? $root : __DIR__;
         return rtrim(dirname($root), '/') . '/excel-order-queue';
     }
 
