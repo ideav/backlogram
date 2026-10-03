@@ -163,6 +163,39 @@ check('вложение перенесено в очередь', count($files) =
 check('содержимое вложения сохранено', file_get_contents($files[0]['path']) === "a;b\n1;2\n");
 check('имя вложения обезврежено', $files[0]['name'] !== '' && !str_contains($files[0]['name'], '/'));
 
+// ── Заявка с байтами не в UTF-8 ────────────────────────────────────────────
+// Найдено при выкатке 03.10.2026: json_encode отказывался кодировать такую
+// запись, file_put_contents молча писал пустую строку и возвращал 0 (не false),
+// и в очереди оставался request.json на 0 байт. Снаружи всё выглядело успешно:
+// клиенту сказали «письмо отправлено», а подтверждать было уже нечего.
+$broken = intake_queue_create($queue, [
+    'source'  => 'excel-to-app',
+    'contact' => 'cp1251@example.com',
+    // «Диагностика» в CP1251 — так приходит текст от клиента со старой кодировкой.
+    'topic'   => hex2bin('c4e8e0e3edeef1f2e8eae0'),
+], [], 86400, 1000);
+check('заявка с битой кодировкой всё равно создаётся', is_array($broken));
+$brokenId = (string) ($broken['id'] ?? '');
+check(
+    'request.json не пустой',
+    $brokenId !== '' && filesize($queue . '/' . $brokenId . '/request.json') > 0
+);
+check('заявка с битой кодировкой читается обратно', is_array(intake_queue_load($queue, $brokenId)));
+check(
+    'битые байты заменены, остальное на месте',
+    (intake_queue_load($queue, $brokenId)['contact'] ?? '') === 'cp1251@example.com'
+);
+check(
+    'подтвердить такую заявку можно',
+    intake_queue_confirm($queue, (string) $broken['token'], 1000 + 60)['status'] === 'ok'
+);
+check(
+    'после подтверждения запись не обнулилась',
+    filesize($queue . '/' . $brokenId . '/request.json') > 0
+        && (intake_queue_load($queue, $brokenId)['status'] ?? '') === INTAKE_STATUS_CONFIRMED
+);
+intake_queue_remove($queue, $brokenId);
+
 // Чужой токен той же заявки не подходит.
 $wrong = intake_queue_confirm($queue, $id . '.' . str_repeat('cd', 32));
 check('подтверждение чужим секретом не проходит', $wrong['status'] === 'not_found');

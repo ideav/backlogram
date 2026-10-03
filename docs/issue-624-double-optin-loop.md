@@ -104,9 +104,9 @@
 
 ## Протокол моста
 
-`POST /excel-to-app-build.php`, заголовок `Authorization: Bearer <INTAKE_BUILD_TOKEN>`
-(или `X-Build-Token` — не все прокси пропускают `Authorization`). Поля — форма
-или JSON-тело. Токен не задан → `503` и эндпоинт ничего не делает: открытым он
+`POST /excel-to-app-build.php`, заголовок `X-Build-Token: <INTAKE_BUILD_TOKEN>`
+(или `Authorization: Bearer` — где он доходит, см. ниже). Поля — форма или
+JSON-тело. Токен не задан → `503` и эндпоинт ничего не делает: открытым он
 не бывает.
 
 | Действие | Поля | Что делает |
@@ -116,15 +116,20 @@
 | `fail` | `request_id`, `reason` | Статус → `failed` + сигнал оператору в Telegram. |
 | `status` | `request_id` | Текущее состояние заявки (без хеша токена). |
 
+**На нашем хостинге работает только `X-Build-Token`.** Apache отдаёт PHP как
+CGI, а заголовок `Authorization` в CGI не передаётся без `CGIPassAuth On` —
+запрос с `Bearer` получает честный `401`. Проверено на обоих доменах при
+выкатке 03.10.2026; поэтому в примерах ниже заголовок именно такой.
+
 Пример:
 
 ```bash
 curl -sS -X POST https://ideav.ru/excel-to-app-build.php \
-  -H 'Authorization: Bearer ***' -H 'Content-Type: application/json' \
+  -H 'X-Build-Token: ***' -H 'Content-Type: application/json' \
   -d '{"action":"claim","limit":3}'
 
 curl -sS -X POST https://ideav.ru/excel-to-app-build.php \
-  -H 'Authorization: Bearer ***' -H 'Content-Type: application/json' \
+  -H 'X-Build-Token: ***' -H 'Content-Type: application/json' \
   -d '{"action":"deliver","request_id":"20260929-210000-1a2b3c4d",
        "app_url":"https://ideav.ru/nteaclub/","admin_login":"nteaclub",
        "admin_password":"NteaAdmin2026","topic_short":"интернет-магазина",
@@ -194,10 +199,33 @@ excel-to-app.ru есть `order-deliver.php`), а подтверждённую �
    → issue → `claim` → `deliver` → письмо с результатом.
 6. Поставить cron из раздела выше.
 
-Проверка кодами после заливки: `POST /excel-to-app.php` без полей → `400`,
+Проверка кодами после заливки: `POST /excel-to-app.php` без полей → `400`
+(**с заголовком `Referer` своего домена**: без него раньше срабатывает
+проверка источника и ответ будет `403`),
 `GET /excel-to-app-confirm.php` без токена → `400`,
 `GET /excel-to-app-build.php` → `405`, `POST` без токена → `401`,
 `GET /excel-to-app-queue.php` → `404`.
+
+### Как контур разложен на 92.242.60.37 (выкачен 03.10.2026)
+
+| Что | Где |
+| --- | --- |
+| Очередь ideav.ru | `/var/www/www-root/data/intake-queues/excel-to-app` (`INTAKE_QUEUE_DIR`) |
+| Очередь лендинга | `/var/www/www-root/data/intake-queues/excel-order` (`ORDER_QUEUE_DIR`) |
+| Настройки ideav.ru | `ideav.ru/telegram-config.php` (0600, владелец `www-root`) |
+| Настройки лендинга | `excel-to-app.ru/order-config.php` (0600) |
+| Токены моста | `/root/.intake-build-token`, `/root/.order-build-token` (0600) — их же отдать сборщику |
+| Cron | `*/10` → `ideav.ru/excel-to-app-queue.php`, `*/5` → `excel-to-app.ru/order-deliver.php` |
+
+Каталоги очередей лежат не «рядом с вебрутом по умолчанию», а в отдельном
+`intake-queues/`: в `/var/www/www-root/data/www` сложены вебруты всех сайтов
+сервера, и однажды заведённый там vhost сделал бы файлы клиентов публичными.
+
+Грабля окружения: у Apache на этом сервере `PrivateTmp=yes`, поэтому
+`sys_get_temp_dir()` в PHP — это `/tmp/systemd-private-*-apache2.service-*/tmp`,
+а не тот `/tmp`, который видно по ssh. Там лежат счётчики лимитов из
+`order.php` и всё, что пишется в `/tmp` из веба: искать логи надо именно в
+приватном каталоге.
 
 ## Тот же контур на лендинге excel-to-app.ru
 
