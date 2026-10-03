@@ -7,7 +7,6 @@ author: Команда Интеграм
 originalUrl: https://blog.ideav.online/2025/07/16000-klikov-i-333-konversii-v-direkte-za-2500-rublei-743-rublya-za-konversiyu
 tags:
 - Яндекс.Директ
-- Интеграм
 - Лайфхаки
 ---
 

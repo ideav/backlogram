@@ -7,7 +7,6 @@ author: Команда Интеграм
 image: /uploads/semeynyi-byudzhet-svodka.png
 tags:
 - кейсы
-- Интеграм
 - no-code
 - автоматизация
 - личные финансы

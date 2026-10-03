@@ -6,7 +6,6 @@ category: "О платформе"
 author: "Команда Интеграм"
 image: /uploads/issue-292-v-tech-ai-process-control.png
 tags:
-- Интеграм
 - Битрикс24
 - AI
 - no-code

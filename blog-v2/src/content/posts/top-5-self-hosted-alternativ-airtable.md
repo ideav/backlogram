@@ -5,7 +5,6 @@ pubDate: 2026-04-16
 category: "О платформе"
 author: "Команда Интеграм"
 tags:
-- Интеграм
 - Airtable
 - self-hosted
 - no-code

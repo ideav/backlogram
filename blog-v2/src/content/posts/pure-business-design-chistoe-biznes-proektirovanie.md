@@ -6,7 +6,6 @@ category: "О платформе"
 author: "Команда Интеграм"
 image: /uploads/hero-ai-background.webp
 tags:
-- Интеграм
 - ии-агент
 - no-code
 ---

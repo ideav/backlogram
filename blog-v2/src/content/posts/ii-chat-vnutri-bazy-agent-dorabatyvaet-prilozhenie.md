@@ -6,7 +6,6 @@ category: О платформе
 author: Команда Интеграм
 image: /uploads/ii-chat-vnutri-bazy.webp
 tags:
-- Интеграм
 - ии-агент
 - ии-чат
 - доработки

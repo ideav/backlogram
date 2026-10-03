@@ -9,7 +9,6 @@ originalUrl: https://blog.ideav.online/2026/06/keis-pekarnya-zamenila-5-excel-na
 tags:
 - кейсы
 - no-code
-- Интеграм
 - автоматизация
 ---
 

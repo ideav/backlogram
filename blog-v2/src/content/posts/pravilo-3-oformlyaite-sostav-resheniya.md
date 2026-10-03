@@ -6,7 +6,7 @@ category: Правила предпринимателя в IT
 author: Команда Интеграм
 originalUrl: https://blog.ideav.online/2024/03/pravilo-3-oformlyaite-sostav-resheniya
 tags:
-- обучение
+- правила предпринимателя
 ---
 
 После первой встречи с заказчиком вы создаете документ, фиксируя:

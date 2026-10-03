@@ -7,7 +7,6 @@ author: Команда Интеграм
 image: /uploads/integram-fc-dashboard.png
 tags:
 - кейсы
-- Интеграм
 - геймификация
 ---
 

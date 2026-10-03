@@ -8,6 +8,7 @@ image: /uploads/investor-kdpv.jpg
 originalUrl: https://blog.ideav.online/2024/10/investor-i-drugie-sposoby-privlech-dengi-na-proekt
 tags:
 - инвестиции
+- правила предпринимателя
 ---
 
 КДПВ: _В 395-й раз я слушаю вердикт: вернуться сюда с выручкой 3000$ в месяц_
