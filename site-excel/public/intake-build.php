@@ -27,10 +27,19 @@
  *
  * Протокол (POST, `Authorization: Bearer <токен>`, он же `X-Build-Token`):
  *   action=claim   [limit=1..20]      → забрать подтверждённые заявки (confirmed → building)
+ *   action=file    request_id, index  → отдать вложение заявки байтами
  *   action=deliver request_id, app_url, admin_login, admin_password, what_inside…
  *                                     → отправить клиенту письмо «приложение готово», building → delivered
  *   action=fail    request_id, reason → building → failed + сигнал оператору
  *   action=status  request_id         → текущее состояние заявки
+ *
+ * `file` нужен там, где вложения никуда больше не выкладываются: на лендинге
+ * excel-to-app.ru нет GitHub, и до этого действия таблицы клиента доезжали
+ * только до оператора в Telegram — сборщику было нечего читать, и заявки с
+ * лендинга приходилось собирать руками. Имя файла в запросе не участвует,
+ * только порядковый номер из claim: из номера нельзя составить путь наружу.
+ * Файлы живут в очереди от подтверждения до `deliver`/`fail` и удаляются
+ * сразу после — чужие таблицы не должны лежать дольше, чем нужны.
  *
  * Токен живёт только в окружении. Не задан — 503 и ничего не делаем: открытым
  * мост не бывает.
@@ -132,6 +141,28 @@ if (!defined('INTAKE_BUILD_LOADED')) {
             intake_build_respond(404, ['ok' => false, 'error' => 'Заявка не найдена: ' . $requestId]);
         }
 
+        // ── file: отдать вложение заявки байтами ─────────────────────────────
+        if ($action === 'file') {
+            $files = intake_queue_files($queueDir, $requestId);
+            $index = (int) ($input['index'] ?? 0);
+            if ($index < 1 || $index > count($files)) {
+                intake_build_respond(404, [
+                    'ok'    => false,
+                    'error' => 'Вложение не найдено: индекс ' . $index . ' из ' . count($files)
+                        . '. Файлы удаляются после deliver/fail.',
+                ]);
+            }
+            $file = $files[$index - 1];
+            // Заголовки ставим сами: intake_build_respond отдаёт JSON, а здесь
+            // нужны байты. Content-Length — чтобы сборщик увидел обрыв закачки.
+            header('Content-Type: application/octet-stream');
+            header('Content-Length: ' . (int) @filesize($file['path']));
+            header('Content-Disposition: attachment; filename="'
+                . str_replace('"', '', intake_sanitize_filename($file['name'])) . '"');
+            readfile($file['path']);
+            exit;
+        }
+
         // ── status: посмотреть состояние заявки ──────────────────────────────
         if ($action === 'status') {
             unset($record['token_hash']);
@@ -182,6 +213,8 @@ if (!defined('INTAKE_BUILD_LOADED')) {
                 'delivered_at' => time(),
                 'app_url'      => $appUrl,
             ]);
+            // Сборка закончилась — вложения больше не нужны никому.
+            intake_queue_drop_files($queueDir, $requestId);
             intake_build_respond(200, ['ok' => true, 'status' => INTAKE_STATUS_DELIVERED, 'mailed_to' => $contact]);
         }
 
@@ -189,6 +222,9 @@ if (!defined('INTAKE_BUILD_LOADED')) {
         if ($action === 'fail') {
             $reason = trim((string) ($input['reason'] ?? 'без объяснения'));
             intake_queue_mark($queueDir, $requestId, INTAKE_STATUS_FAILED, ['fail_reason' => $reason]);
+            // Дальше заявкой занимается человек, и файлы у него уже есть —
+            // оператору они ушли при подтверждении.
+            intake_queue_drop_files($queueDir, $requestId);
             if (function_exists('intake_build_alert')) {
                 intake_build_alert($requestId, (string) ($record['contact'] ?? ''), $reason);
             }

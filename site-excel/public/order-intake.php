@@ -207,9 +207,11 @@ if (!defined('ORDER_INTAKE_LOADED')) {
      * Подтверждённая заявка → оператору: в спул и попытка доставки, как у
      * обычной заявки лендинга (недоставленное добирает cron order-deliver.php).
      *
-     * Файлы заявки после успешной постановки в спул удаляются из очереди: в
-     * спуле лежит их копия, держать чужие таблицы в двух местах незачем. Сама
-     * запись остаётся — по ней идут claim/deliver и письмо с результатом.
+     * Файлы заявки из очереди НЕ удаляются: оператору ушла их копия в спуле,
+     * но сборщик берёт оригиналы отсюда — `action=file` моста (intake-build.php).
+     * Пока их удаляли сразу, заявку с лендинга нельзя было собрать
+     * автоматически: таблицы клиента доезжали только до чата оператора.
+     * Удаляются они на `deliver`/`fail`, когда сборка кончилась.
      */
     function order_confirm_publish(string $queueDir, string $id, bool $confirmed = true): bool {
         $record = intake_queue_load($queueDir, $id);
@@ -245,10 +247,6 @@ if (!defined('ORDER_INTAKE_LOADED')) {
         }
         order_mail_copy((string) ($record['subject'] ?? ''), '', $body, (string) ($record['site'] ?? ''));
 
-        // Копии файлов уже в спуле — из очереди их можно убрать.
-        foreach (intake_queue_files($queueDir, $id) as $f) {
-            @unlink($f['path']);
-        }
         intake_queue_mark($queueDir, $id, null, ['spooled' => true, 'spool_error' => null]);
         return true;
     }
