@@ -6,7 +6,6 @@ category: "О платформе"
 image: /uploads/kontragent-tri-vzglyada-kdpv.png
 author: Команда Интеграм
 tags:
-- Интеграм
 - работа с данными
 - справочники
 ---

@@ -36,7 +36,7 @@
   RewriteRule ^category/(o-platforme|obuchenie|pravila-predprinimatelya-v-it|proekty|razrabotka|tehnologii)/?$ https://ideav.ru/blog/category/$1/ [R=301,L,QSD]
 
   # 6. Tags present on the new blog.
-  RewriteRule ^tag/(ai|airtable|analitika|arhitektura|avtomatizaciya|bezopasnost|bitriks24|biznes|dorabotki|excel|finmodel|geimifikaciya|ii|ii-agent|ii-chat|integracii|integram|investicii|katalogi|keisy|konstruktor|laifhaki|lichnye-finansy|low-code|marketing|no-code|obuchenie|otchety|planirovanie|processy|proizvodstvo|rabota-s-dannymi|razrabotka|self-hosted|sopostavlenie|spravochniki|sravnenie|ssylki|tehnologii|testirovanie|vozmozhnosti|yandeks-direkt|zaprosy)/?$ https://ideav.ru/blog/tag/$1/ [R=301,L,QSD]
+  RewriteRule ^tag/(ai|airtable|analitika|arhitektura|avtomatizaciya|bezopasnost|bitriks24|biznes|dorabotki|excel|finmodel|geimifikaciya|ii|ii-agent|ii-chat|integracii|integram|investicii|issledovaniya|katalogi|keisy|konstruktor|kvartety|laifhaki|lichnye-finansy|low-code|marketing|no-code|obuchenie|otchety|planirovanie|pravila-predprinimatelya|processy|proizvoditelnost|proizvodstvo|rabota-s-dannymi|razrabotka|self-hosted|sopostavlenie|spravochniki|sravnenie|ssylki|tehnologii|testirovanie|vozmozhnosti|yandeks-direkt|zaprosy)/?$ https://ideav.ru/blog/tag/$1/ [R=301,L,QSD]
 
   # 7. Feeds -> new RSS.
   RewriteRule ^feed(/(rss|opml))?/?$ https://ideav.ru/blog/rss.xml [R=301,L,QSD]

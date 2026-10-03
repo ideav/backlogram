@@ -7,7 +7,6 @@ author: Команда Интеграм
 image: /uploads/integram-fc-tables.png
 tags:
 - кейсы
-- Интеграм
 - ии-агент
 - low-code
 ---

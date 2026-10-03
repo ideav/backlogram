@@ -6,7 +6,6 @@ category: О платформе
 author: Команда Интеграм
 image: /uploads/rekursiya-graph-cover.png
 tags:
-- Интеграм
 - low-code
 - отчёты
 - архитектура
