@@ -3,6 +3,9 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { CASES, CONTACT_EMAIL, FAQ, PAGES, PRICING_GROUPS, TELEGRAM_BOT_URL } from './src/content'
+import { metrikaSnippet } from './src/metrika'
+import { jsonLdScript, landingJsonLd } from './src/seo'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -46,19 +49,6 @@ const CANONICAL = ORIGIN + BASE
 // в Директе это выглядит как работающая цель с нулём конверсий.
 const METRIKA_ID = (process.env.METRIKA_ID ?? '').trim().replace(/\D/g, '')
 
-/** Код счётчика Метрики. Пусто, если METRIKA_ID не задан. */
-function metrikaSnippet(): string {
-  if (METRIKA_ID === '') return '<!-- METRIKA_ID не задан: счётчик не подключён -->'
-  return `<script type="text/javascript">
-      (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-      m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
-      k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-      (window,document,'script','https://mc.yandex.ru/metrika/tag.js','ym');
-      ym(${METRIKA_ID}, 'init', {webvisor:true, clickmap:true, trackLinks:true, accurateTrackBounce:true});
-    </script>
-    <noscript><div><img src="https://mc.yandex.ru/watch/${METRIKA_ID}" style="position:absolute; left:-9999px;" alt="" /></div></noscript>`
-}
-
 /**
  * Подставляет то, чего Vite не касается: canonical/og:url и счётчик в
  * index.html, robots.txt и sitemap.xml с абсолютными адресами.
@@ -76,7 +66,8 @@ function deploymentMeta(): Plugin {
     transformIndexHtml(html) {
       return html
         .replaceAll('{{CANONICAL}}', CANONICAL)
-        .replace('{{METRIKA}}', metrikaSnippet())
+        .replace('{{JSONLD}}', jsonLdScript(landingJsonLd(CANONICAL)))
+        .replace('{{METRIKA}}', metrikaSnippet(METRIKA_ID))
     },
     generateBundle() {
       this.emitFile({
@@ -98,17 +89,147 @@ function deploymentMeta(): Plugin {
         source: [
           '<?xml version="1.0" encoding="UTF-8"?>',
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-          '  <url>',
-          `    <loc>${CANONICAL}</loc>`,
-          '    <changefreq>monthly</changefreq>',
-          '    <priority>1.0</priority>',
-          '  </url>',
+          ...PAGES.flatMap(page => [
+            '  <url>',
+            `    <loc>${absolute(page.path)}</loc>`,
+            '    <changefreq>monthly</changefreq>',
+            `    <priority>${page.path === '/' ? '1.0' : '0.8'}</priority>`,
+            '  </url>',
+          ]),
           '</urlset>',
           '',
         ].join('\n'),
       })
+      this.emitFile({ type: 'asset', fileName: 'llms.txt', source: llmsTxt() })
+      this.emitFile({ type: 'asset', fileName: 'pricing.md', source: pricingMarkdown() })
+      this.emitFile({ type: 'asset', fileName: '.htaccess', source: htaccess() })
     },
   }
+}
+
+/** `/keysy/atex/` → `https://excel-to-app.ru/keysy/atex/` с учётом SITE_BASE. */
+function absolute(sitePath: string): string {
+  return CANONICAL + sitePath.replace(/^\/+/, '')
+}
+
+/**
+ * `/llms.txt` — карта домена для языковых моделей (находка 5 аудита).
+ *
+ * Пользы от автокраулинга тут немного; ценность в другом сценарии — человек
+ * даёт модели адрес сайта и спрашивает «а что это». Поэтому файл должен сам
+ * по себе отвечать на вопрос: что делаем, почём, какие кейсы, куда писать.
+ */
+function llmsTxt(): string {
+  const [home, ...rest] = PAGES
+  return [
+    '# Интеграм — приложение из Excel-таблицы',
+    '',
+    `> ${home.description}`,
+    '',
+    'Сервис АО «Интеграм»: ИИ-агент разбирает присланные рабочие таблицы Excel',
+    'и собирает из них веб-приложение с формами, ролями, правами доступа,',
+    'отчётами и графиками. Демонстрация на данных заказчика — бесплатно,',
+    'примерно 45 минут. Данные хранятся на сервере в России; платформа внесена',
+    'в реестр российского ПО (запись №30872).',
+    '',
+    '## Страницы',
+    '',
+    `- [${home.title}](${absolute(home.path)}): главная — как это устроено, цены, вопросы и ответы`,
+    ...rest.map(page => `- [${page.title}](${absolute(page.path)}): ${page.description}`),
+    `- [Цены отдельным файлом](${absolute('/pricing.md')}): тот же прайс в markdown`,
+    '',
+    '## Цены',
+    '',
+    'Демонстрация на ваших файлах — 0 ₽.',
+    ...PRICING_GROUPS.flatMap(group =>
+      group.plans.map(plan => `- ${plan.title} — ${plan.price} ₽${plan.unit ? ` ${plan.unit}` : ''}`),
+    ),
+    '',
+    '## Кейсы',
+    '',
+    ...CASES.map(
+      item =>
+        `- ${item.client}, ${item.industry.toLowerCase()} (${item.facts.join(', ')}): ${absolute(`/keysy/${item.slug}/`)}`,
+    ),
+    '',
+    '## Вопросы и ответы',
+    '',
+    ...FAQ.flatMap(({ q, a }) => [`### ${q}`, '', a, '']),
+    '## Контакты',
+    '',
+    `- Телеграм-бот: ${TELEGRAM_BOT_URL}`,
+    `- Почта: ${CONTACT_EMAIL}`,
+    '',
+  ].join('\n')
+}
+
+/** `/pricing.md` — прайс в markdown, из того же источника, что и блок «Сколько стоит». */
+function pricingMarkdown(): string {
+  const lines = [
+    '# Цены — приложение из Excel на Интеграме',
+    '',
+    `Актуально для ${CANONICAL}. Все суммы в рублях, с НДС не облагается (УСН).`,
+    '',
+    '**Демонстрация на ваших файлах — бесплатно.** Присылаете таблицы и описание',
+    'задачи, примерно через 45 минут получаете ссылку на работающее приложение',
+    'с вашими данными.',
+    '',
+  ]
+  for (const group of PRICING_GROUPS) {
+    lines.push(`## ${group.title} (${group.tag.toLowerCase()})`, '', group.body, '')
+    for (const plan of group.plans) {
+      lines.push(
+        `### ${plan.title} — ${plan.price} ₽${plan.unit ? ` ${plan.unit}` : ''}`,
+        '',
+        plan.sub,
+        '',
+        ...plan.items.map(item => `- ${item}`),
+        '',
+      )
+    }
+  }
+  lines.push(
+    '## Как заказать',
+    '',
+    `- Форма на ${CANONICAL} — приложить Excel и описать задачу.`,
+    `- Телеграм-бот ${TELEGRAM_BOT_URL} — то же самое, ответ приходит в чат.`,
+    `- Почта ${CONTACT_EMAIL}.`,
+    '',
+  )
+  return lines.join('\n')
+}
+
+/**
+ * `.htaccess` для вебрута домена.
+ *
+ * 301 с `www` (находка 6 аудита): без него у домена две версии каждой
+ * страницы, и спасает только canonical. Правило идёт первым — до любых
+ * будущих.
+ *
+ * Важно: файл не должен трогать `order.php` и каталоги статических страниц —
+ * никакого фронт-контроллера здесь нет, адреса `/keysy/<slug>/` отдаются
+ * обычным DirectoryIndex.
+ */
+function htaccess(): string {
+  return [
+    `# ${CANONICAL} — сгенерировано site-excel/vite.config.ts, правьте там.`,
+    '',
+    'DirectoryIndex index.html',
+    '',
+    '<IfModule mod_rewrite.c>',
+    '  RewriteEngine On',
+    '',
+    '  # www.excel-to-app.ru → excel-to-app.ru одним 301 (SEO, issue #626).',
+    '  RewriteCond %{HTTP_HOST} ^www\\.(.+)$ [NC]',
+    '  RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]',
+    '</IfModule>',
+    '',
+    '<IfModule mod_mime.c>',
+    '  AddType text/markdown .md',
+    '  AddCharset UTF-8 .md',
+    '</IfModule>',
+    '',
+  ].join('\n')
 }
 
 export default defineConfig({
@@ -117,6 +238,7 @@ export default defineConfig({
 
   define: {
     __METRIKA_ID__: JSON.stringify(METRIKA_ID),
+    __SITE_BASE__: JSON.stringify(BASE),
   },
 
   plugins: [react(), tailwindcss(), deploymentMeta()],

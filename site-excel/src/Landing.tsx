@@ -16,23 +16,20 @@ import {
 } from 'lucide-react'
 import { GOALS, looksHuman, reachExpressGoal, reachGoal, reachSignupGoal } from './conversion'
 import { Cases, type Shot } from './Cases'
+import { SiteFooter, SiteHeader } from './Chrome'
+import {
+  ANALYSIS_PRICE,
+  FILE_ACCEPT,
+  MAX_FILES,
+  MAX_FILE_BYTES,
+  PRIVACY_URL,
+  TELEGRAM_BOT_URL,
+} from './content'
+import { Faq } from './Faq'
 import { HowItWorks } from './HowItWorks'
-import { Logo } from './Logo'
 import { Pricing } from './Pricing'
 
-const TELEGRAM_BOT_URL = 'https://t.me/Integrammbot'
-const CONTACT_EMAIL = 'abc@integram.io'
-// Политика обработки персональных данных живёт на основном сайте (#542) —
-// лендинг на своём домене ведёт на неё абсолютной ссылкой, а не на якорь #privacy:
-// тут своей страницы политики нет, подвал даёт лишь краткую справку.
-const PRIVACY_URL = 'https://ideav.ru/privacy.html'
-const ANALYSIS_PRICE = '20 000 ₽'
 const SUBMIT_ENDPOINT = 'order.php'
-
-// Лимиты вложений — зеркалят серверные в order.php.
-const MAX_FILES = 5
-const MAX_FILE_BYTES = 10 * 1024 * 1024
-const FILE_ACCEPT = '.xlsx,.xls,.csv,.ods,.doc,.docx,.pdf,.txt'
 
 // Почему на странице ровно одна кнопка до первого клика — см. conversion.ts:
 // вся воронка (форма демонстрации и запись на разбор) появляется только после
@@ -517,14 +514,7 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-white text-slate-900">
-      <header className="border-b border-slate-200 bg-white/90 backdrop-blur sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-          <Logo className="h-7 w-auto text-slate-900" />
-          {/* Адрес текстом, а не почтовой ссылкой: клик по ней — автоцель Метрики
-              «Клик по email», достижимая кликером с первого экрана (issue #619). */}
-          <span className="text-sm text-slate-500 select-all">{CONTACT_EMAIL}</span>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main>
         {/* Hero */}
@@ -668,6 +658,8 @@ export default function Landing() {
 
         <Pricing onOrder={setExpressPlan} />
 
+        <Faq />
+
         {funnelOpen && (
           <>
             {/* Заявка на демонстрацию */}
@@ -744,39 +736,7 @@ export default function Landing() {
         )}
       </main>
 
-      <footer id="privacy" className="border-t border-slate-200 scroll-mt-6">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 text-sm text-slate-500 space-y-3">
-          <p>
-            Оператор персональных данных — АО «Интеграм», ИНН 9716002710, ОГРН 1247700757590.
-            Через форму на этой странице мы собираем имя, контакт, описание задачи и приложенные
-            файлы — только чтобы собрать демонстрацию и ответить на заявку. Данные не передаются
-            третьим лицам и хранятся на сервере в России.
-          </p>
-          <p>
-            Отозвать согласие и удалить данные можно письмом на{' '}
-            <span className="text-slate-700 select-all">{CONTACT_EMAIL}</span>
-            . Полный текст —{' '}
-            <a
-              href={PRIVACY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
-            >
-              политика обработки персональных данных
-            </a>
-            .
-          </p>
-          <p>
-            Сервис работает на платформе Интеграм (реестр отечественного ПО, запись №30872).
-            Регистрация и биллинг — на{' '}
-            <a href="https://ideav.ru/" className="text-blue-600 hover:underline">
-              ideav.ru
-            </a>
-            .
-          </p>
-          <p>© {new Date().getFullYear()} АО «Интеграм»</p>
-        </div>
-      </footer>
+      <SiteFooter />
 
       {zoomed && <Lightbox screen={zoomed} onClose={() => setZoomed(null)} />}
       {expressPlan && <ExpressModal plan={expressPlan} onClose={closeExpress} />}
