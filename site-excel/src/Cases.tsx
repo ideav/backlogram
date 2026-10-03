@@ -1,104 +1,9 @@
 import { useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import { ArrowRight, ChevronLeft, ChevronRight, FileSpreadsheet, LayoutDashboard, ZoomIn } from 'lucide-react'
+import { CASES, type Case, type Shot } from './content'
+import { SITE_BASE } from './site-base'
 
-// Кейсы — настоящие приложения клиентов Интеграма, собранные в ideav/crm
-// (templates/atex, db13417569248up, xcom, sportzania). Каждый факт на слайде
-// взят из ТЗ, issue или документации того репозитория; цифр эффекта («сэкономили
-// N часов») там нет — и здесь их нет. Скриншоты — только обезличенные: экраны
-// Спортзании сняты с демо-данными (ideav/crm#4126), логотип заменён (issue #613);
-// экраны ПЕТФУДа — на демо-данных, без логинов и ФИО реальных пользователей;
-// Атекс — из ideav/crm/docs/screenshots, XCOM — из блога и статьи на Хабре.
-
-export type Shot = { src: string; alt: string; caption: string }
-
-type Case = {
-  client: string
-  industry: string
-  before: string[]
-  after: string[]
-  facts: string[]
-  screens?: Shot[]
-}
-
-const CASES: Case[] = [
-  {
-    client: 'ПЕТФУД',
-    industry: 'Производство кормов для животных',
-    before: [
-      'Бумажный чек-лист фасовки и Excel «Технология производства» — 13 партий на лист, дальше второй лист',
-      'Время ставили по памяти в конце смены, отклонения всплывали поздно',
-      'Сводок по партиям, простоям и выпуску не было — листы перебирали руками',
-    ],
-    after: [
-      'План смены с итогами, чек-листы и задачи для мастера и оператора',
-      'Время ввода ставится само, скорость помечается «низкая / норма / высокая»',
-      'Отклонение план/факт в процентах и дашборд производства для руководителя',
-    ],
-    facts: ['~15 таблиц', '4 роли', 'в работе с сентября 2026'],
-    screens: [
-      { src: 'img/uc-petfood-1.png', alt: 'План и итоги смен: плановый и фактический выпуск по дневной и ночной смене с процентом выполнения, браком и простоями', caption: 'План и итоги смен' },
-      { src: 'img/uc-petfood-2.png', alt: 'Список сменных заданий с выполнением плана в процентах, числом замесов и простоев', caption: 'Задания и план / факт' },
-      { src: 'img/uc-petfood-3.png', alt: 'Дашборд производства: план-факт выпуска, замесы без отклонений, простои по оборудованию и причинам', caption: 'Дашборд производства' },
-    ],
-  },
-  {
-    client: 'Атекс',
-    industry: 'Производство термопринтерных рулонов из джамбо-роллов',
-    before: [
-      'Пять Excel-файлов: план производства, расчёт резки для менеджеров, остатки сырья, задания на производство',
-      'Перестановки ножей планировали по привычке — к вечеру люди устают и ошибаются',
-      'Оператор получал таблицу цифр вместо понятной схемы резки',
-    ],
-    after: [
-      '12 рабочих мест для 6 ролей — от менеджера и диспетчера до оператора и клиента',
-      'Планировщик резок, карта резки и диаграмма Ганта по станкам',
-      'Пульты операторов на планшетах, учёт сырья по партиям (FIFO), портал клиента',
-    ],
-    facts: ['41 таблица', '15 экранов', '490 типов резки из 681 строки Excel'],
-    screens: [
-      { src: 'img/uc-atex-1.png', alt: 'Диаграмма Ганта производственных заданий по станкам на день: запланировано, в срок, с опозданием', caption: 'Диаграмма Ганта по станкам' },
-      { src: 'img/uc-atex-2.png', alt: 'Карта раскроя ролла шириной 910 мм: ножи под заказ и склад, занятая ширина и остаток', caption: 'Карта резки' },
-      { src: 'img/uc-atex-3.png', alt: 'Пульт оператора слиттера: статус резки, показания счётчиков, брак и списание сырья по партиям FIFO', caption: 'Пульт оператора, сырьё FIFO' },
-    ],
-  },
-  {
-    client: 'XCOM',
-    industry: 'Сопоставление заявок покупателей со своим каталогом',
-    before: [
-      'Два Excel-файла: заявка покупателя и собственный каталог',
-      'ВПР ищет точное совпадение, а в заявках один и тот же товар записан по-разному',
-    ],
-    after: [
-      'Мастер первого запуска: загрузить два Excel — и сразу сопоставлять',
-      'Массовый прогон пачками по 50–100 позиций, решения по парам запоминаются',
-      'Результат выгружается обратно в Excel',
-    ],
-    facts: ['7 таблиц', '6 отчётов', 'стал партнёрским шаблоном'],
-    screens: [
-      { src: 'img/uc-xcom-1.png', alt: 'Загрузка каталога из Excel: настройки импорта, типы полей и предпросмотр 28 233 строк', caption: 'Загрузка каталога из Excel' },
-      { src: 'img/uc-xcom-2.png', alt: 'Массовый подбор SKU пачками по 50 позиций в 5 потоков с кандидатами и точностью совпадения', caption: 'Массовый подбор пачками' },
-      { src: 'img/uc-xcom-3.png', alt: 'Результат сопоставления с точностью подбора и меню выгрузки в XLSX, XLS или CSV', caption: 'Выгрузка результата в Excel' },
-    ],
-  },
-  {
-    client: 'Спортзания',
-    industry: 'Управление компанией: продажи, персонал, бюджет',
-    before: [
-      'Бюджеты и справочники — в Google-таблицах, лиды и сделки — в Битрикс24',
-    ],
-    after: [
-      'Оргструктура, мониторинг задач, рейтинг отделов и вакансии в одной базе',
-      'Дашборд из 13 листов по ролям: инвестор, коммерция, HR, качество',
-      'Лиды и сделки подтягиваются из Битрикс24, Google-таблицы синхронизируются',
-    ],
-    facts: ['13 листов дашборда', 'интеграция с Битрикс24'],
-    screens: [
-      { src: 'img/uc-demo-ceo.png', alt: 'Дашборд руководителя: план, факт и процент выполнения', caption: 'Показатели для CEO: план / факт' },
-      { src: 'img/uc-demo-grafiki.png', alt: 'Графики поступлений и выручки за три года', caption: 'Графики для инвестора' },
-      { src: 'img/uc-demo-klienty.png', alt: 'Таблица клиентов со статусами «Клиент» и «Лид»', caption: 'Клиенты и лиды' },
-    ],
-  },
-]
+export type { Shot } from './content'
 
 const SWIPE_PX = 50
 
@@ -125,7 +30,70 @@ function Column({ tone, title, items }: { tone: 'before' | 'after'; title: strin
   )
 }
 
-/** Слайдер «было → стало»: стрелки, точки, свайп и клавиши ←/→. */
+/**
+ * Один кейс целиком. Используется и в слайдере, и на отдельной странице
+ * кейса (`pages/CasePage.tsx`) — чтобы содержимое не разъехалось.
+ */
+export function CaseBody({ item, onZoom }: { item: Case; onZoom?: (shot: Shot) => void }) {
+  return (
+    <>
+      <div className="mt-6 grid gap-4 md:grid-cols-[1fr_auto_1fr] md:items-stretch">
+        <Column tone="before" title="Было" items={item.before} />
+        <div className="flex items-center justify-center text-blue-600">
+          <ArrowRight size={28} className="rotate-90 md:rotate-0" />
+        </div>
+        <Column tone="after" title="Стало" items={item.after} />
+      </div>
+
+      {item.screens && (
+        <div className="mt-6">
+          <div className="grid gap-3 grid-cols-3">
+            {item.screens.map(shot =>
+              onZoom ? (
+                <button
+                  key={shot.src}
+                  type="button"
+                  onClick={() => onZoom(shot)}
+                  aria-label={`Открыть в полный размер: ${shot.caption}`}
+                  className="group relative block rounded-xl border border-slate-200 overflow-hidden cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+                >
+                  <img src={SITE_BASE + shot.src} alt={shot.alt} loading="lazy" className="w-full h-24 sm:h-32 object-cover object-left-top" />
+                  <span className="absolute top-1.5 right-1.5 p-1 rounded-md bg-slate-900/55 text-white group-hover:bg-slate-900/75 transition-colors">
+                    <ZoomIn size={14} />
+                  </span>
+                </button>
+              ) : (
+                <figure key={shot.src} className="rounded-xl border border-slate-200 overflow-hidden">
+                  <img src={SITE_BASE + shot.src} alt={shot.alt} loading="lazy" className="w-full h-24 sm:h-32 object-cover object-left-top" />
+                  <figcaption className="px-2 py-1.5 text-xs text-slate-500">{shot.caption}</figcaption>
+                </figure>
+              ),
+            )}
+          </div>
+          <p className="mt-2 text-xs text-slate-400">Экраны сняты на демо-данных: клиенты, суммы и логотип заменены.</p>
+        </div>
+      )}
+
+      <ul className="mt-6 flex flex-wrap gap-2">
+        {item.facts.map(fact => (
+          <li key={fact} className="px-3 py-1 rounded-full bg-slate-100 text-xs font-medium text-slate-600">
+            {fact}
+          </li>
+        ))}
+      </ul>
+    </>
+  )
+}
+
+/**
+ * Слайдер «было → стало»: стрелки, точки, свайп и клавиши ←/→.
+ *
+ * Все четыре кейса лежат в разметке всегда, скрытые — через `hidden`
+ * (issue #626). Раньше в DOM попадал только открытый слайд: три кейса из
+ * четырёх — самый содержательный материал сайта — для краулера, который не
+ * листает карусель, не существовали вовсе. Каждый кейс дублируется отдельной
+ * страницей `/keysy/<slug>/`, ссылка на неё — внизу слайда.
+ */
 export function Cases({ onZoom }: { onZoom: (shot: Shot) => void }) {
   const [index, setIndex] = useState(0)
   const startX = useRef<number | null>(null)
@@ -181,46 +149,27 @@ export function Cases({ onZoom }: { onZoom: (shot: Shot) => void }) {
         }}
         className="mt-8 rounded-3xl border border-slate-200 bg-white p-5 sm:p-8 shadow-sm select-none touch-pan-y focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
       >
-        <p className="text-sm font-semibold text-blue-600">{current.client}</p>
-        <h3 className="mt-1 text-xl sm:text-2xl font-bold">{current.industry}</h3>
+        {CASES.map((item, i) => (
+          <article
+            key={item.slug}
+            className={i === index ? undefined : 'hidden'}
+            aria-hidden={i === index ? undefined : true}
+          >
+            <p className="text-sm font-semibold text-blue-600">{item.client}</p>
+            <h3 className="mt-1 text-xl sm:text-2xl font-bold">{item.industry}</h3>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-[1fr_auto_1fr] md:items-stretch">
-          <Column tone="before" title="Было" items={current.before} />
-          <div className="flex items-center justify-center text-blue-600">
-            <ArrowRight size={28} className="rotate-90 md:rotate-0" />
-          </div>
-          <Column tone="after" title="Стало" items={current.after} />
-        </div>
+            <CaseBody item={item} onZoom={onZoom} />
 
-        {current.screens && (
-          <div className="mt-6">
-            <div className="grid gap-3 grid-cols-3">
-              {current.screens.map(shot => (
-                <button
-                  key={shot.src}
-                  type="button"
-                  onClick={() => onZoom(shot)}
-                  aria-label={`Открыть в полный размер: ${shot.caption}`}
-                  className="group relative block rounded-xl border border-slate-200 overflow-hidden cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
-                >
-                  <img src={shot.src} alt={shot.alt} loading="lazy" className="w-full h-24 sm:h-32 object-cover object-left-top" />
-                  <span className="absolute top-1.5 right-1.5 p-1 rounded-md bg-slate-900/55 text-white group-hover:bg-slate-900/75 transition-colors">
-                    <ZoomIn size={14} />
-                  </span>
-                </button>
-              ))}
-            </div>
-            <p className="mt-2 text-xs text-slate-400">Экраны сняты на демо-данных: клиенты, суммы и логотип заменены.</p>
-          </div>
-        )}
-
-        <ul className="mt-6 flex flex-wrap gap-2">
-          {current.facts.map(fact => (
-            <li key={fact} className="px-3 py-1 rounded-full bg-slate-100 text-xs font-medium text-slate-600">
-              {fact}
-            </li>
-          ))}
-        </ul>
+            <p className="mt-6">
+              <a
+                href={`${SITE_BASE}keysy/${item.slug}/`}
+                className="inline-flex items-center gap-1 text-blue-600 font-medium hover:underline"
+              >
+                Кейс целиком: {item.client} <ArrowRight size={16} />
+              </a>
+            </p>
+          </article>
+        ))}
       </div>
 
       <div className="mt-5 flex items-center justify-center gap-3">

@@ -11,121 +11,24 @@ import {
   Star,
   type LucideIcon,
 } from 'lucide-react'
+import { PRICING_GROUPS, type Plan } from './content'
 
-// Цены — по макету владельца в issue #613 (комментарий 5890676651).
-// На ideav.ru те же услуги лежат в src/data/services.mjs и на /excel-to-app.html —
-// при смене цены сверять оба сайта.
+// Сами цены живут в content.ts: оттуда их берут и карточки ниже, и
+// `/pricing.md` с `/llms.txt`, которые собираются при сборке (issue #626).
+// Здесь остаётся разметка и сопоставление имён иконок с компонентами.
 
-/** Тарифы облака Интеграма живут на основном сайте, выбор тарифа — там. */
-export const TARIFFS_URL = 'https://ideav.ru/start.html#tarif'
-
-type Plan = {
-  icon: LucideIcon
-  title: string
-  sub: string
-  price: string
-  unit?: string
-  items: string[]
-  cta: string
-  /** Внешняя ссылка; без неё кнопка открывает форму заявки на этой странице. */
-  href?: string
-  accent?: boolean
-  badge?: string
+const ICONS: Record<string, LucideIcon> = {
+  Cloud,
+  Code2,
+  FileSearch,
+  Package,
+  Rocket,
+  Server,
+  Settings,
 }
-
-type Group = {
-  icon: LucideIcon
-  tag: string
-  title: string
-  lead: string
-  body: string
-  plans: Plan[]
-}
-
-const GROUPS: Group[] = [
-  {
-    icon: Package,
-    tag: 'Фиксированная стоимость',
-    title: 'С чего начать',
-    lead: 'Быстрый вход с понятным результатом',
-    body: 'Оптимальный способ познакомиться с возможностями платформы и получить первые результаты в короткие сроки.',
-    plans: [
-      {
-        icon: FileSearch,
-        title: 'Разбор процесса по приложению, созданному ИИ',
-        sub: 'Глубокий анализ вашего Excel-файла и бизнес-задачи. Результат — техническое задание и план внедрения.',
-        price: '20 000',
-        items: ['Диагностика процесса и задач', 'Модель данных, ролей и прав', 'Критерии приёмки', 'Дорожная карта внедрения'],
-        cta: 'Обсудить разбор',
-      },
-      {
-        icon: Rocket,
-        title: 'Пилотный проект',
-        sub: 'Проверим решение на вашей реальной задаче. Полный цикл разработки и запуск в облаке за 2 недели.',
-        price: 'от 93 750',
-        items: ['Выбор задачи из очереди', 'Полный цикл разработки', 'Развёртывание в облаке', 'Инструкции и документация'],
-        cta: 'Заказать пилот',
-        accent: true,
-        badge: 'Рекомендуем',
-      },
-    ],
-  },
-  {
-    icon: Cloud,
-    tag: 'Подписка / внедрение',
-    title: 'Готовое внедрение',
-    lead: 'Выберите формат эксплуатации',
-    body: 'Запустите решение в подходящем формате: на вашем сервере или в облаке. Гибкие условия и масштабирование под ваши задачи.',
-    plans: [
-      {
-        icon: Server,
-        title: 'Локальная лицензия (on-premise)',
-        sub: 'Полный контроль над данными. Установка на вашем сервере.',
-        price: '590 000',
-        unit: '/ год',
-        items: ['Неограниченное количество записей', 'Полный функционал интеграции', 'Приоритетная поддержка', 'Любые коннекторы'],
-        cta: 'Запросить счёт',
-      },
-      {
-        icon: Cloud,
-        title: 'Облачный хостинг Интеграм',
-        sub: 'Ваши приложения в облаке. Быстрый старт, гибкие тарифы, никаких серверов и администрирования.',
-        price: 'от 1 950',
-        unit: '/ мес',
-        items: [
-          'Тариф «Знакомство» — 0 ₽ / мес',
-          'Тариф «Старт» — 1 950 ₽ / мес',
-          'Тариф «Масштабируемый» — от 4 900 ₽ / мес',
-          'Оплата за реальные действия',
-        ],
-        cta: 'Выбрать тариф',
-        href: TARIFFS_URL,
-        accent: true,
-      },
-    ],
-  },
-  {
-    icon: Code2,
-    tag: 'Почасовая разработка',
-    title: 'Индивидуальная разработка',
-    lead: 'Когда нужно решение под ваши процессы',
-    body: 'Аналитика, проектирование и разработка сложных решений с учётом ваших требований. Оплата по фактически затраченным часам.',
-    plans: [
-      {
-        icon: Settings,
-        title: 'Аналитика и разработка',
-        sub: 'Команда экспертов поможет спроектировать систему, настроить интеграции и интерфейсы, обучить сотрудников.',
-        price: '3 750',
-        unit: '/ час',
-        items: ['Проектирование системы', 'Настройка сложных интеграций', 'Настройка интерфейсов', 'Обучение сотрудников'],
-        cta: 'Заказать разработку',
-      },
-    ],
-  },
-]
 
 function PlanCard({ plan, onOrder }: { plan: Plan; onOrder: (plan: string) => void }) {
-  const { icon: Icon } = plan
+  const Icon = ICONS[plan.icon]
   const button = `mt-6 w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-semibold transition-colors ${
     plan.accent ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-blue-50 hover:bg-blue-100 text-blue-700'
   }`
@@ -187,26 +90,29 @@ export function Pricing({ onOrder }: { onOrder: (plan: string) => void }) {
         Демонстрация на ваших файлах — бесплатно. Дальше — по шагам: каждый заканчивается
         результатом, который остаётся у вас.
       </p>
-      {GROUPS.map(({ icon: Icon, tag, title, lead, body, plans }) => (
-        <div
-          key={title}
-          className="rounded-3xl border border-slate-200 bg-slate-50/70 p-5 sm:p-8 grid gap-6 lg:grid-cols-[1fr_2fr] lg:items-start"
-        >
-          <div>
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100/70 text-blue-700 text-xs font-bold uppercase tracking-wider">
-              <Icon size={14} /> {tag}
-            </span>
-            <h3 className="mt-4 text-2xl sm:text-3xl font-bold">{title}</h3>
-            <p className="mt-2 text-lg text-slate-600">{lead}</p>
-            <p className="mt-3 text-sm text-slate-500 leading-relaxed">{body}</p>
+      {PRICING_GROUPS.map(({ icon, tag, title, lead, body, plans }) => {
+        const Icon = ICONS[icon]
+        return (
+          <div
+            key={title}
+            className="rounded-3xl border border-slate-200 bg-slate-50/70 p-5 sm:p-8 grid gap-6 lg:grid-cols-[1fr_2fr] lg:items-start"
+          >
+            <div>
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100/70 text-blue-700 text-xs font-bold uppercase tracking-wider">
+                <Icon size={14} /> {tag}
+              </span>
+              <h3 className="mt-4 text-2xl sm:text-3xl font-bold">{title}</h3>
+              <p className="mt-2 text-lg text-slate-600">{lead}</p>
+              <p className="mt-3 text-sm text-slate-500 leading-relaxed">{body}</p>
+            </div>
+            <div className={`grid gap-6 ${plans.length > 1 ? 'sm:grid-cols-2' : ''}`}>
+              {plans.map(plan => (
+                <PlanCard key={plan.title} plan={plan} onOrder={onOrder} />
+              ))}
+            </div>
           </div>
-          <div className={`grid gap-6 ${plans.length > 1 ? 'sm:grid-cols-2' : ''}`}>
-            {plans.map(plan => (
-              <PlanCard key={plan.title} plan={plan} onOrder={onOrder} />
-            ))}
-          </div>
-        </div>
-      ))}
+        )
+      })}
     </section>
   )
 }

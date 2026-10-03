@@ -12,6 +12,9 @@ const read = (p) => readFileSync(new URL(p, import.meta.url), 'utf8')
 const landingSource = read('../site-excel/src/Landing.tsx')
 const conversionSource = read('../site-excel/src/conversion.ts')
 const viteSource = read('../site-excel/vite.config.ts')
+// Сниппет счётчика переехал в metrika.ts (issue #626): тот же код ставят
+// и сборка главной, и пререндер страниц кейсов.
+const metrikaSource = read('../site-excel/src/metrika.ts')
 const scriptSource = read('../scripts/direct-create-cpa-campaign.mjs')
 const keywords = JSON.parse(read('../docs/marketing/excel-cpa-campaign.keywords.json'))
 
@@ -54,8 +57,12 @@ test('проверка на человека требует настоящего
 test('без METRIKA_ID счётчик не подключается, без SITE_URL сборка падает', () => {
   // Цель, отправленная в несуществующий счётчик, выглядит в Директе как
   // работающая цель с нулём конверсий — это хуже, чем отсутствие счётчика.
-  assert.match(viteSource, /if \(METRIKA_ID === ''\) return '<!-- METRIKA_ID не задан/)
+  assert.match(metrikaSource, /if \(id === ''\) return '<!-- METRIKA_ID не задан/)
   assert.match(viteSource, /this\.error\('SITE_URL не задан/)
+  // Пререндер спутников тоже обязан падать без SITE_URL и не терять счётчик.
+  const prerenderSource = read('../scripts/prerender-site-excel.mjs')
+  assert.match(prerenderSource, /SITE_URL не задан/)
+  assert.match(prerenderSource, /METRIKA_ID задан, но счётчика нет/)
 })
 
 // ── Кампания ─────────────────────────────────────────────────────────────────

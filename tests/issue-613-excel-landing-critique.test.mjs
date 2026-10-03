@@ -9,14 +9,19 @@ const landing = read('../site-excel/src/Landing.tsx')
 const pricing = read('../site-excel/src/Pricing.tsx')
 const cases = read('../site-excel/src/Cases.tsx')
 const how = read('../site-excel/src/HowItWorks.tsx')
+// С issue #626 цены, кейсы и тексты сравнения переехали в content.ts: их
+// читают ещё отдельные страницы, /llms.txt, /pricing.md и JSON-LD. Разметка
+// осталась в компонентах, поэтому проверяем и то и другое.
+const content = read('../site-excel/src/content.ts')
 
 // Критика в issue #613: на лендинге нет цен, кейсов, объяснения механизма и
 // сравнения с Power Apps / Quickbase. Тесты держат ответ на каждый пункт.
 
 test('цены из макета владельца на месте', () => {
   for (const price of ['20 000', 'от 93 750', '590 000', 'от 1 950', '3 750', '4 900']) {
-    assert.ok(pricing.includes(price), `нет цены «${price}»`)
+    assert.ok(content.includes(price), `нет цены «${price}»`)
   }
+  assert.match(pricing, /PRICING_GROUPS\.map/)
 })
 
 test('цены видны без клика, а целевая кнопка — по-прежнему только в воронке', () => {
@@ -35,15 +40,16 @@ test('price_open уходит один раз и только через про�
 
 test('слайдер «было → стало» — четыре реальных кейса', () => {
   for (const client of ['Атекс', 'ПЕТФУД', 'XCOM', 'Спортзания']) {
-    assert.ok(cases.includes(`client: '${client}'`), `нет кейса ${client}`)
+    assert.ok(content.includes(`client: '${client}'`), `нет кейса ${client}`)
   }
+  assert.match(cases, /CASES\.map\(\(item, i\) =>/)
   assert.match(landing, /<Cases onZoom=\{setZoomed\} \/>/)
 })
 
 test('скриншоты в кейсах — только обезличенные, с заменённым логотипом', () => {
   // Исходники из ideav/crm/screenshots/articles несут логотип клиента; на
   // лендинг идут только перерисованные копии uc-demo-* и демо-экраны uc-petfood-*.
-  const shots = [...cases.matchAll(/src: '(img\/[^']+)'/g)].map(m => m[1])
+  const shots = [...content.matchAll(/src: '(img\/[^']+)'/g)].map(m => m[1])
   assert.deepEqual(shots, [
     'img/uc-petfood-1.png', 'img/uc-petfood-2.png', 'img/uc-petfood-3.png',
     'img/uc-atex-1.png', 'img/uc-atex-2.png', 'img/uc-atex-3.png',
@@ -56,8 +62,9 @@ test('скриншоты в кейсах — только обезличенны
 
 test('механизм и сравнение с конкурентами показаны, со ссылкой на подробности', () => {
   assert.match(how, /Как агент читает вашу структуру/)
-  assert.match(how, /Power Apps/)
-  assert.match(how, /Quickbase/)
-  assert.match(how, /https:\/\/ideav\.ru\/blog\/posts\/excel-v-prilozhenie-za-45-minut/)
+  assert.match(content, /Power Apps/)
+  assert.match(content, /Quickbase/)
+  assert.match(content, /https:\/\/ideav\.ru\/blog\/posts\/excel-v-prilozhenie-za-45-minut/)
+  assert.match(how, /href=\{BLOG_POST_URL\}/)
   assert.match(landing, /<HowItWorks \/>/)
 })
