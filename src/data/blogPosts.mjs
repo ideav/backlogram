@@ -10,6 +10,16 @@ export const BLOG_URL = 'https://ideav.ru/blog'
 
 export const BLOG_POSTS = [
   {
+    slug: 'strategicheskaya-cel-integrama',
+    url: 'https://ideav.ru/blog/posts/strategicheskaya-cel-integrama/',
+    title: 'Куда мы ведём Интеграм',
+    description: 'ИИ живёт внутри данных компании, а не в чате сбоку от них. А настроенный и наполненный Интеграм — это цифровой близнец вашей деловой экспертности.',
+    date: '2026-10-03',
+    dateLabel: '3 октября 2026',
+    category: 'О платформе',
+    image: 'https://ideav.ru/blog/abstract/blog-material-1.svg',
+  },
+  {
     slug: 'ierarhicheskii-oltp-izmeryaem-sleduyushchii-uroven-unifikacii',
     url: 'https://ideav.ru/blog/posts/ierarhicheskii-oltp-izmeryaem-sleduyushchii-uroven-unifikacii/',
     title: 'Иерархический OLTP: измеряем следующий уровень унификации',
@@ -17,7 +27,7 @@ export const BLOG_POSTS = [
     date: '2026-09-10',
     dateLabel: '10 сентября 2026',
     category: 'Технологии',
-    image: 'https://ideav.ru/blog/abstract/blog-material-1.svg',
+    image: 'https://ideav.ru/blog/abstract/blog-material-2.svg',
   },
   {
     slug: 'odin-kontragent-tri-vzglyada',
@@ -77,7 +87,7 @@ export const BLOG_POSTS = [
     date: '2026-07-16',
     dateLabel: '16 июля 2026',
     category: 'О платформе',
-    image: 'https://ideav.ru/blog/abstract/blog-material-1.svg',
+    image: 'https://ideav.ru/blog/abstract/blog-material-2.svg',
   },
   {
     slug: 'integram-fc-chto-poluchilos-razbor-po-ekranam',
@@ -88,15 +98,5 @@ export const BLOG_POSTS = [
     dateLabel: '27 июня 2026',
     category: 'Проекты',
     image: 'https://ideav.ru/blog/uploads/og/integram-fc-dashboard.jpg',
-  },
-  {
-    slug: 'integram-fc-kak-delali-ot-zayavki-do-prilozheniya',
-    url: 'https://ideav.ru/blog/posts/integram-fc-kak-delali-ot-zayavki-do-prilozheniya/',
-    title: 'ИНТЕГРАМ FC: как из одного абзаца заказчика вырос вирусный антитотализатор',
-    description: 'История одного проекта от начала и до конца — как ИИ превратил абзац «сделай игру, которая будет вируситься» в техзадание, а потом в работающее приложение со схемой данных, ролями и тестовыми данными. Часть 1: как делали.',
-    date: '2026-06-27',
-    dateLabel: '27 июня 2026',
-    category: 'Проекты',
-    image: 'https://ideav.ru/blog/uploads/og/integram-fc-tables.jpg',
   },
 ]
