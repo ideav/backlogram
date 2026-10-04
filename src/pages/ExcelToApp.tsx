@@ -874,9 +874,25 @@ export default function ExcelToApp() {
                 </div>
                 <div className="space-y-3">
                   <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-50">
-                    {pendingMsg !== '' ? 'Остался один шаг — подтвердите почту' : 'Заявка принята!'}
+                    Заявка принята!
                   </h2>
                   {pendingMsg !== '' ? (
+                    <>
+                    {/* Без подтверждения сборка не начнётся (crm#5072): это главное, что
+                        человек должен вынести с экрана, поэтому отдельной плашкой. */}
+                    <div className="mx-auto max-w-xl rounded-xl border-2 border-amber-400 bg-amber-50 dark:bg-amber-950/40 px-5 py-4 text-left">
+                      <p className="text-lg font-semibold text-slate-900 dark:text-slate-50">
+                        Теперь подтвердите заявку в почте
+                      </p>
+                      <ol className="mt-2 list-decimal pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                        <li>Откройте почту, которую указали в заявке.</li>
+                        <li>Найдите письмо от ideav.ru о подтверждении заявки.</li>
+                        <li>Нажмите в нём ссылку подтверждения.</li>
+                      </ol>
+                      <p className="mt-2 font-medium text-slate-900 dark:text-slate-50">
+                        Пока заявка не подтверждена, сборка приложения не начнётся.
+                      </p>
+                    </div>
                     <p className="text-slate-500 dark:text-slate-400 text-lg leading-relaxed">
                       {pendingMsg} Сборку запускает ИИ-агент, поэтому мы начинаем её только после
                       перехода по ссылке — так на вашу заявку точно хватит времени. Письма нет в
@@ -891,6 +907,7 @@ export default function ExcelToApp() {
                       </a>
                       .
                     </p>
+                    </>
                   ) : (
                     <p className="text-slate-500 dark:text-slate-400 text-lg leading-relaxed">
                       Мы уже взялись за ваши файлы. Примерно через 45 минут пришлём ссылку на

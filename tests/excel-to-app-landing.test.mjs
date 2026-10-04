@@ -40,6 +40,9 @@ test('the landing validates files, topic and contact before submitting', () => {
 test('the landing shows distinct success and error screens', () => {
   assert.match(pageSource, /formState === 'success'/)
   assert.match(pageSource, /Заявка принята!/)
+  // crm#5072: после «Заявка принята!» — явно, что заявку надо подтвердить в почте.
+  assert.match(pageSource, /Теперь подтвердите заявку в почте/)
+  assert.match(pageSource, /сборка приложения не начнётся/)
   assert.match(pageSource, /formState === 'error'/)
 })
 

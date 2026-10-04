@@ -273,6 +273,14 @@ test('e2e: подтверждённая заявка доходит до сбо�
     assert.equal(claimJson.jobs[0].contact, 'ivan@example.com')
     assert.equal(claimJson.jobs[0].issue_number, 4242, 'сборщик должен получить номер issue заявки')
     assert.equal(claimJson.jobs[0].attachments.length, 1, 'сборщику нужны ссылки на вложения')
+    // crm#5072: репозиторий заявок приватный, ссылки сборщику могут быть
+    // недоступны — файлы должны доставаться и через мост.
+    assert.equal(claimJson.jobs[0].files_via, 'bridge', 'файлы ideav.ru тоже должны браться по мосту')
+    assert.deepEqual(claimJson.jobs[0].file_names, ['orders.csv'])
+    assert.equal(claimJson.jobs[0].files.length, 1)
+    const file = await buildCall(stand.appPort, { action: 'file', request_id: requestId, index: claimJson.jobs[0].files[0].index })
+    assert.equal(file.status, 200)
+    assert.equal(await file.text(), 'col1;col2\n1;2\n', 'мост отдаёт вложение байтами')
 
     // Повторный claim не должен выдать ту же работу второй раз.
     const claim2 = await (await buildCall(stand.appPort, { action: 'claim' })).json()
