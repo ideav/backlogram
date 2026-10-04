@@ -67,8 +67,32 @@ if (!defined('INTAKE_BUILD_LOADED')) {
         return trim((string) ($server['HTTP_X_BUILD_TOKEN'] ?? ''));
     }
 
-    /** Что видит сборщик в ответе claim, если хост не определил своё представление. */
-    function intake_build_default_job(array $record): array {
+    /**
+     * Что видит сборщик в ответе claim, если хост не определил своё представление.
+     *
+     * Вложения отдаются двумя путями: ссылками на GitHub (`attachments`) и
+     * номерами для действия `file` (`files`). Одних ссылок мало: репозиторий
+     * заявок приватный, и сборщик без доступа к нему получал 404 и сообщал
+     * «файлы: не приложены» при приложенных файлах (crm#5072). Копия в очереди
+     * лежит до `deliver`/`fail` — через мост сборщик достаёт её всегда.
+     */
+    function intake_build_default_job(array $record, string $queueDir = ''): array {
+        $files = [];
+        if ($queueDir !== '') {
+            foreach (intake_queue_files($queueDir, (string) $record['id']) as $i => $file) {
+                $files[] = [
+                    'index' => $i + 1,
+                    'name'  => (string) $file['name'],
+                    'size'  => (int) @filesize($file['path']),
+                ];
+            }
+        }
+        // Имена нужны и когда самих файлов уже нет: по ним оператор найдёт их
+        // в чате или в issue.
+        $known = [];
+        foreach ((array) ($record['files'] ?? []) as $file) {
+            $known[] = (string) ($file['name'] ?? '');
+        }
         return [
             'id'           => (string) $record['id'],
             'source'       => (string) ($record['source'] ?? ''),
@@ -81,6 +105,9 @@ if (!defined('INTAKE_BUILD_LOADED')) {
             'issue_url'    => (string) ($record['issue_url'] ?? ''),
             'issue_number' => $record['issue_number'] ?? null,
             'attachments'  => array_values((array) ($record['attachments'] ?? [])),
+            'files'        => $files,
+            'file_names'   => $known,
+            'files_via'    => $files ? 'bridge' : ($known ? 'telegram' : ''),
         ];
     }
 
@@ -121,7 +148,7 @@ if (!defined('INTAKE_BUILD_LOADED')) {
             foreach (intake_queue_claim($queueDir, $limit) as $record) {
                 $jobs[] = function_exists('intake_build_job_view')
                     ? intake_build_job_view($record)
-                    : intake_build_default_job($record);
+                    : intake_build_default_job($record, $queueDir);
             }
             intake_build_respond(200, ['ok' => true, 'jobs' => $jobs, 'count' => count($jobs)]);
         }
