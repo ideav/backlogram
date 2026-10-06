@@ -14,6 +14,14 @@
 
 export const TELEGRAM_BOT_URL = 'https://t.me/Integrammbot'
 export const CONTACT_EMAIL = 'abc@integram.io'
+// Живые контакты компании — те же, что на ideav.ru (issue #5091). Пункт меню
+// «Контакты» (#5085) ведёт в подвал, и там должны быть сами контакты, а не
+// только юридическая справка оператора.
+export const CONTACT_TELEGRAM_URL = 'https://t.me/qdmadept'
+export const CONTACT_PHONE_HREF = 'tel:+79955060167'
+export const CONTACT_PHONE = '+7 (995) 506-01-67'
+/** Часы работы по телефону — по Москве (issue #5091). */
+export const CONTACT_PHONE_HOURS = 'с 9:00 до 21:00 мск'
 // Политика обработки персональных данных живёт на основном сайте (#542) —
 // лендинг на своём домене ведёт на неё абсолютной ссылкой, а не на якорь
 // #privacy: тут своей страницы политики нет, подвал даёт лишь краткую справку.

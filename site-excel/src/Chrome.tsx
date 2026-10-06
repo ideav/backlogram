@@ -1,4 +1,11 @@
-import { CONTACT_EMAIL, PRIVACY_URL } from './content'
+import {
+  CONTACT_EMAIL,
+  CONTACT_PHONE,
+  CONTACT_PHONE_HOURS,
+  CONTACT_PHONE_HREF,
+  CONTACT_TELEGRAM_URL,
+  PRIVACY_URL,
+} from './content'
 import { Logo } from './Logo'
 
 // Шапка и подвал — общие у лендинга и статических страниц кейсов и сравнения
@@ -10,7 +17,8 @@ import { Logo } from './Logo'
 // и только те, что видны до раскрытия воронки — как кейсы, механизм и FAQ
 // (см. README: целевая кнопка на странице одна, меню целевую не дублирует).
 // Набор утвердил владелец: «Цены» не вошли — для нетипичного продукта цена
-// не решающий фактор; «Контакты» ведут в подвал с адресом оператора.
+// не решающий фактор; «Контакты» ведут в подвал — к живым контактам (#5091)
+// и адресу оператора.
 const MENU = [
   { href: '#keysy', label: 'Примеры' },
   { href: '#kak-proishodit', label: 'Как это происходит' },
@@ -74,6 +82,31 @@ export function SiteFooter() {
   return (
     <footer id="kontakty" className="border-t border-slate-200 scroll-mt-16">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 text-sm text-slate-500 space-y-3">
+        {/* Живые контакты (issue #5091) — те же, что на ideav.ru. Почта текстом,
+            без mailto-ссылки: клик по ней — автоцель Метрики «Клик по email»
+            (issue #619). Телеграм открывается в новой вкладке — заполненная
+            форма не должна теряться, как и при переходе к политике. */}
+        <p>
+          Telegram:{' '}
+          <a
+            href={CONTACT_TELEGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline"
+          >
+            @qdmadept
+          </a>
+        </p>
+        <p>
+          Телефон:{' '}
+          <a href={CONTACT_PHONE_HREF} className="text-blue-600 hover:underline whitespace-nowrap">
+            {CONTACT_PHONE}
+          </a>
+          , {CONTACT_PHONE_HOURS}.
+        </p>
+        <p>
+          Почта: <span className="text-slate-700 select-all">{CONTACT_EMAIL}</span>
+        </p>
         <p>
           Оператор персональных данных — АО «Интеграм», ИНН 9716002710, ОГРН 1247700757590.
           Через форму на этой странице мы собираем имя, контакт, описание задачи и приложенные
