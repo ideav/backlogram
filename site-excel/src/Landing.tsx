@@ -559,7 +559,7 @@ export default function Landing() {
         </section>
 
         {/* Как это происходит */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+        <section id="kak-proishodit" className="scroll-mt-16 max-w-5xl mx-auto px-4 sm:px-6 py-12">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
             Как это происходит
           </h2>
