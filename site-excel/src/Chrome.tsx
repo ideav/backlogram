@@ -7,14 +7,14 @@ import { Logo } from './Logo'
 // домена, а не только на главной.
 
 // Верхнее меню (issue #5085, ideav/crm): только якоря на секции главной,
-// и только те, что видны до раскрытия воронки — как цены, кейсы и FAQ
+// и только те, что видны до раскрытия воронки — как кейсы, механизм и FAQ
 // (см. README: целевая кнопка на странице одна, меню целевую не дублирует).
-// «Контакты» отдельным пунктом не нужны: адрес и так стоит в шапке справа,
-// а ссылка на подвал с тем же адресом ничего не добавляет.
+// Набор утвердил владелец: «Цены» не вошли — для нетипичного продукта цена
+// не решающий фактор; «Контакты» ведут в подвал с адресом оператора.
 const MENU = [
   { href: '#keysy', label: 'Примеры' },
   { href: '#kak-proishodit', label: 'Как это происходит' },
-  { href: '#ceny', label: 'Цены' },
+  { href: '#kontakty', label: 'Контакты' },
   { href: '#voprosy', label: 'Вопросы' },
 ]
 
@@ -72,7 +72,7 @@ export function SiteHeader({ homeHref }: { homeHref?: string }) {
 
 export function SiteFooter() {
   return (
-    <footer id="privacy" className="border-t border-slate-200 scroll-mt-6">
+    <footer id="kontakty" className="border-t border-slate-200 scroll-mt-16">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 text-sm text-slate-500 space-y-3">
         <p>
           Оператор персональных данных — АО «Интеграм», ИНН 9716002710, ОГРН 1247700757590.
