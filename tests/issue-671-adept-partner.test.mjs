@@ -41,6 +41,12 @@ test('бизнес-модель: четыре роли и правило ден�
   assert.ok(page.includes('BUSINESS_MODEL.rules.map'))
 })
 
+test('позиционирование: как 1С/Битрикс/Тильда, не самообслуживание (комментарий владельца)', () => {
+  assert.match(model, /1С, Битрикс24, amoCRM и Тильды/)
+  assert.match(model, /не конструктор «сделай сам»/)
+  assert.ok(page.includes('BUSINESS_MODEL.analogy.body.map'))
+})
+
 test('обучение адепта бесплатное, партнёрский процент 15–40%', () => {
   const adept = content.slice(content.indexOf('export const ADEPT'), content.indexOf('export const PARTNER'))
   const partner = content.slice(content.indexOf('export const PARTNER'), content.indexOf('/** Все адреса сайта'))

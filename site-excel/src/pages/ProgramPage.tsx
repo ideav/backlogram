@@ -117,8 +117,14 @@ function ModelSection() {
   return (
     <section id="model" className="scroll-mt-16 mt-12 bg-gradient-to-b from-slate-50 to-blue-50/50 border-y border-slate-200">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-        <h2 className="text-2xl sm:text-3xl font-bold">Кто кому платит</h2>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <h2 className="text-2xl sm:text-3xl font-bold">{BUSINESS_MODEL.analogy.title}</h2>
+        {BUSINESS_MODEL.analogy.body.map(text => (
+          <p key={text} className="mt-4 text-slate-700 leading-relaxed max-w-3xl">
+            {text}
+          </p>
+        ))}
+        <h3 className="mt-10 text-xl sm:text-2xl font-bold">Кто кому платит</h3>
+        <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {BUSINESS_MODEL.roles.map(({ key, title, body }) => {
             const Icon = ROLE_ICONS[key]
             return (
@@ -126,7 +132,7 @@ function ModelSection() {
                 <span className="w-11 h-11 rounded-xl bg-blue-600 text-white flex items-center justify-center">
                   <Icon size={22} />
                 </span>
-                <h3 className="mt-4 font-semibold">{title}</h3>
+                <h4 className="mt-4 font-semibold">{title}</h4>
                 <p className="mt-2 text-slate-600 leading-relaxed text-sm">{body}</p>
               </div>
             )
