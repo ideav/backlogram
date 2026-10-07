@@ -736,6 +736,16 @@ export default function Home() {
               </motion.div>
             ))}
           </div>
+
+          {/* #648: вход в кластер «автоматизация бизнеса с ИИ» — хаб и его разделы */}
+          <div className="mt-12 text-center">
+            <Link
+              to="/avtomatizaciya-biznesa-s-ii.html"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors"
+            >
+              Автоматизация бизнеса с ИИ: 7 вопросов до внедрения <ArrowRight size={16} />
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -1102,6 +1112,7 @@ export default function Home() {
               { title: 'Excel → приложение за ~45 минут', href: '/excel-to-app.html' },
               { title: 'Массовое сопоставление каталогов', href: '/catalog-matching.html' },
               { title: 'Информационная система', href: '/informatsionnaya-sistema.html' },
+              { title: 'Автоматизация бизнеса с ИИ', href: '/avtomatizaciya-biznesa-s-ii.html' },
               { title: 'ИИ и агентские платформы', href: '/agent-platforms.html' },
               { title: 'Токены: как считается стоимость', href: '/tokens.html' },
             ].map((p, i) => (
