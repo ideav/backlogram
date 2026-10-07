@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+import { ArrowUpRight, Check, Copy, Mail, Phone, Send } from 'lucide-react'
 import {
   CONTACT_EMAIL,
   CONTACT_PHONE,
@@ -53,9 +55,17 @@ export function SiteHeader({ homeHref }: { homeHref?: string }) {
               </a>
             ))}
           </nav>
-          {/* Адрес текстом, а не почтовой ссылкой: клик по ней — автоцель Метрики
-              «Клик по email», достижимая кликером с первого экрана (issue #619). */}
-          <span className="text-sm text-slate-500 select-all">{CONTACT_EMAIL}</span>
+          {/* Контакты искали долго (issue #643) — заметная плашка справа ведёт
+              к блоку контактов в подвале. Это якорь, а не tel:/mailto:: клик по
+              ним — автоцели Метрики, достижимые кликером с первого экрана (#619). */}
+          <a
+            href={withBase('#kontakty')}
+            className="shrink-0 inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-brand text-white text-sm font-semibold shadow-md shadow-indigo-500/25 hover:brightness-110 transition"
+          >
+            <Phone size={15} />
+            <span className="hidden sm:inline whitespace-nowrap">{CONTACT_PHONE}</span>
+            <span className="sm:hidden">Контакты</span>
+          </a>
         </div>
       </header>
       {/* Мобильное меню — второй строкой ПОД липкой шапкой, а не внутри неё:
@@ -80,64 +90,133 @@ export function SiteHeader({ homeHref }: { homeHref?: string }) {
   )
 }
 
+/**
+ * Почта с кнопкой «скопировать». Кнопка появляется только после монтирования:
+ * страницы кейсов и сравнения — чистый пререндер без скриптов, и мёртвая
+ * кнопка там хуже, чем никакой.
+ */
+function EmailCopy() {
+  const [mounted, setMounted] = useState(false)
+  const [copied, setCopied] = useState(false)
+  useEffect(() => setMounted(true), [])
+
+  async function copy(): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(CONTACT_EMAIL)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Буфер недоступен (не https, запрет браузера) — адрес выделяется вручную.
+    }
+  }
+
+  return (
+    <span className="flex items-center gap-2">
+      <span className="text-lg font-semibold text-white select-all break-all">{CONTACT_EMAIL}</span>
+      {mounted && (
+        <button
+          type="button"
+          onClick={copy}
+          aria-label="Скопировать адрес почты"
+          className="shrink-0 p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 transition-colors"
+        >
+          {copied ? <Check size={15} className="text-emerald-300" /> : <Copy size={15} />}
+        </button>
+      )}
+    </span>
+  )
+}
+
+const card =
+  'group relative flex flex-col gap-3 rounded-2xl bg-white/[0.06] ring-1 ring-white/10 p-5 sm:p-6 transition hover:bg-white/[0.1] hover:ring-white/20'
+const cardIcon = 'w-11 h-11 rounded-xl bg-gradient-to-br text-white flex items-center justify-center shadow-lg'
+
 export function SiteFooter() {
   return (
-    <footer id="kontakty" className="border-t border-slate-200 bg-slate-50 scroll-mt-16">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 text-sm text-slate-500 space-y-3">
-        {/* Живые контакты (issue #5091) — те же, что на ideav.ru. Почта текстом,
-            без mailto-ссылки: клик по ней — автоцель Метрики «Клик по email»
-            (issue #619). Телеграм открывается в новой вкладке — заполненная
-            форма не должна теряться, как и при переходе к политике. */}
-        <p>
-          Telegram:{' '}
-          <a
-            href={CONTACT_TELEGRAM_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
-          >
-            @qdmadept
+    <footer id="kontakty" className="relative overflow-hidden bg-slate-950 text-slate-400 scroll-mt-16">
+      <div aria-hidden="true" className="absolute -top-40 left-1/4 w-[32rem] h-[32rem] bg-indigo-600/25 blur-[140px] rounded-full pointer-events-none" />
+      <div aria-hidden="true" className="absolute -bottom-40 right-0 w-[28rem] h-[28rem] bg-violet-600/20 blur-[140px] rounded-full pointer-events-none" />
+
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-14 pb-8">
+        {/* Контакты (issue #643): пользователь искал их долго — теперь это
+            первое, что есть в подвале, крупно и карточками. Живые контакты те же,
+            что на ideav.ru (issue #5091). Почта текстом, без mailto-ссылки:
+            клик по ней — автоцель Метрики «Клик по email» (issue #619). Телеграм
+            открывается в новой вкладке — заполненная форма не должна теряться,
+            как и при переходе к политике. */}
+        <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">Контакты</h2>
+        <p className="mt-3 text-slate-300 max-w-xl">
+          Пишите или звоните — расскажем, подойдёт ли ваш Excel, и соберём демонстрацию.
+        </p>
+
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <a href={CONTACT_TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className={card}>
+            <span className={`${cardIcon} from-sky-400 to-blue-600 shadow-sky-500/30`}>
+              <Send size={20} />
+            </span>
+            <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">Telegram</span>
+            <span className="text-lg font-semibold text-white">@qdmadept</span>
+            <span className="inline-flex items-center gap-1 text-sm text-sky-300">
+              Написать <ArrowUpRight size={15} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </span>
           </a>
-        </p>
-        <p>
-          Телефон:{' '}
-          <a href={CONTACT_PHONE_HREF} className="text-blue-600 hover:underline whitespace-nowrap">
-            {CONTACT_PHONE}
+
+          <a href={CONTACT_PHONE_HREF} className={card}>
+            <span className={`${cardIcon} from-emerald-400 to-teal-600 shadow-emerald-500/30`}>
+              <Phone size={20} />
+            </span>
+            <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">Телефон</span>
+            <span className="text-lg font-semibold text-white whitespace-nowrap">{CONTACT_PHONE}</span>
+            <span className="text-sm text-slate-300">{CONTACT_PHONE_HOURS}</span>
           </a>
-          , {CONTACT_PHONE_HOURS}.
-        </p>
-        <p>
-          Почта: <span className="text-slate-700 select-all">{CONTACT_EMAIL}</span>
-        </p>
-        <p>
-          Оператор персональных данных — АО «Интеграм», ИНН 9716002710, ОГРН 1247700757590.
-          Через форму на этой странице мы собираем имя, контакт, описание задачи и приложенные
-          файлы — только чтобы собрать демонстрацию и ответить на заявку. Данные не передаются
-          третьим лицам и хранятся на сервере в России.
-        </p>
-        <p>
-          Отозвать согласие и удалить данные можно письмом на{' '}
-          <span className="text-slate-700 select-all">{CONTACT_EMAIL}</span>
-          . Полный текст —{' '}
-          <a
-            href={PRIVACY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
-          >
-            политика обработки персональных данных
-          </a>
-          .
-        </p>
-        <p>
-          Сервис работает на платформе Интеграм (реестр отечественного ПО, запись №30872).
-          Регистрация и биллинг — на{' '}
-          <a href="https://ideav.ru/" className="text-blue-600 hover:underline">
-            ideav.ru
-          </a>
-          .
-        </p>
-        <p>© {new Date().getFullYear()} АО «Интеграм»</p>
+
+          <div className={card}>
+            <span className={`${cardIcon} from-violet-400 to-fuchsia-600 shadow-violet-500/30`}>
+              <Mail size={20} />
+            </span>
+            <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">Почта</span>
+            <EmailCopy />
+            <span className="text-sm text-slate-300">файлы и ТЗ — тоже сюда</span>
+          </div>
+        </div>
+
+        <div className="mt-12 pt-8 border-t border-white/10 grid gap-8 md:grid-cols-[1.4fr_1fr]">
+          <div>
+            <Logo className="h-7 w-auto text-white" />
+            <p className="mt-4 text-sm leading-relaxed">
+              Сервис работает на платформе Интеграм (реестр отечественного ПО, запись №30872).
+              Регистрация и биллинг — на{' '}
+              <a href="https://ideav.ru/" className="text-slate-200 underline-offset-2 hover:underline">
+                ideav.ru
+              </a>
+              .
+            </p>
+          </div>
+          <div className="text-sm leading-relaxed space-y-3">
+            <p>
+              Оператор персональных данных — АО «Интеграм», ИНН 9716002710, ОГРН 1247700757590.
+              Через форму на этой странице мы собираем имя, контакт, описание задачи и приложенные
+              файлы — только чтобы собрать демонстрацию и ответить на заявку. Данные не передаются
+              третьим лицам и хранятся на сервере в России.
+            </p>
+            <p>
+              Отозвать согласие и удалить данные можно письмом на{' '}
+              <span className="text-slate-200 select-all">{CONTACT_EMAIL}</span>
+              . Полный текст —{' '}
+              <a
+                href={PRIVACY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-slate-200 underline underline-offset-2 hover:text-white"
+              >
+                политика обработки персональных данных
+              </a>
+              .
+            </p>
+          </div>
+        </div>
+
+        <p className="mt-10 text-xs text-slate-500">© {new Date().getFullYear()} АО «Интеграм»</p>
       </div>
     </footer>
   )
