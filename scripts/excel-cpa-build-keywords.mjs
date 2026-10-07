@@ -178,7 +178,7 @@ function call(service, body) {
   return parsed.result
 }
 
-/** Какие из фраз реально что-то ищут. Директ отвечает булевым флагом на фразу. */
+/** Какие из фраз реально что-то ищут. Директ отвечает на фразу флагом YES/NO. */
 export async function withVolume(phrases, chunkSize = 100) {
   const alive = []
   for (let i = 0; i < phrases.length; i += chunkSize) {
@@ -191,7 +191,8 @@ export async function withVolume(phrases, chunkSize = 100) {
       },
     })
     const { HasSearchVolumeResults: results = [] } = call('keywordsresearch', body)
-    for (const row of results) if (row.AllDevices) alive.push(row.Keyword)
+    // Директ отвечает строкой YES/NO, а не булевым: "NO" тоже истинно.
+    for (const row of results) if (row.AllDevices === 'YES') alive.push(row.Keyword)
     process.stdout.write(`  проверено ${Math.min(i + chunkSize, phrases.length)}/${phrases.length}\r`)
   }
   console.log('')
