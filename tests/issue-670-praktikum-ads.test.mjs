@@ -12,7 +12,9 @@ import {
   adsFor,
   campaignsFor,
   groupsFor,
+  negativesFor,
 } from '../scripts/direct-create-cpa-campaign.mjs'
+import { phraseKey } from '../scripts/praktikum-roles-build-keywords.mjs'
 
 const P = PROFILES['praktikum-roles']
 const SITE = 'https://example.ru'
@@ -31,12 +33,32 @@ test('кампании praktikum (#668) не меняются: 2 группы, 4
   assert.equal(adsFor('praktikum-cpa-search-day', SITE, old, groupsFor(old)[0], 0).length, old.ads.length)
 })
 
-test('16 кампаний: на каждую роль поиск/сети × день/ночь, фразы те же 294', () => {
+test('16 кампаний: на каждую роль поиск/сети × день/ночь', () => {
   assert.equal(campaigns.length, 16)
   assert.equal(new Set(campaigns.map(c => c.Name)).size, 16)
   for (const g of groups) assert.deepEqual(campaignsOf(g.slug).map(c => c._index), [0, 1, 2, 3], g.slug)
-  const all = groups.flatMap(g => g.keywords).sort()
-  assert.deepEqual(all, groupsFor(PROFILES.praktikum).flatMap(g => g.keywords).sort())
+})
+
+test('фразы ролей свои: не пересекаются с praktikum-cpa, главной и друг с другом', () => {
+  const owner = new Map()
+  for (const k of [...groupsFor(PROFILES.praktikum), ...groupsFor(PROFILES.excel)].flatMap(g => g.keywords)) {
+    owner.set(phraseKey(k), 'praktikum-cpa/главная')
+  }
+  for (const g of groups) {
+    assert.ok(g.keywords.length >= 30 && g.keywords.length <= 200, `${g.slug}: ${g.keywords.length}`)
+    for (const k of g.keywords) {
+      const key = phraseKey(k)
+      assert.ok(!owner.has(key), `«${k}» (${g.slug}) уже есть у ${owner.get(key)}`)
+      owner.set(key, g.slug)
+    }
+  }
+})
+
+test('минус-слова кампаний не режут фразы ролей', () => {
+  const negatives = negativesFor(P)
+  for (const k of groups.flatMap(g => g.keywords)) {
+    assert.ok(!k.split(/\s+/).some(w => negatives.includes(w)), k)
+  }
 })
 
 test('четыре роли, у каждой 12 своих объявлений — всего 48', () => {
