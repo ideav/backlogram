@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url'
 import { CASES, CONTACT_EMAIL, FAQ, PAGES, PRICING_GROUPS, TELEGRAM_BOT_URL } from './src/content'
 import { metrikaSnippet } from './src/metrika'
 import { jsonLdScript, landingJsonLd } from './src/seo'
+import { loadLandings } from './landings.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -49,6 +50,17 @@ const CANONICAL = ORIGIN + BASE
 // в Директе это выглядит как работающая цель с нулём конверсий.
 const METRIKA_ID = (process.env.METRIKA_ID ?? '').trim().replace(/\D/g, '')
 
+// Все адреса домена: страницы из content.ts и посадочные из landings/*.json
+// (issue #657). Проверяет посадочные пререндер — здесь только список адресов.
+const SITE_PAGES = [
+  ...PAGES,
+  ...loadLandings(path.resolve(__dirname, 'landings')).map(page => ({
+    path: `/${page.slug}/`,
+    title: page.title as string,
+    description: page.description as string,
+  })),
+]
+
 /**
  * Подставляет то, чего Vite не касается: canonical/og:url и счётчик в
  * index.html, robots.txt и sitemap.xml с абсолютными адресами.
@@ -89,7 +101,7 @@ function deploymentMeta(): Plugin {
         source: [
           '<?xml version="1.0" encoding="UTF-8"?>',
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-          ...PAGES.flatMap(page => [
+          ...SITE_PAGES.flatMap(page => [
             '  <url>',
             `    <loc>${absolute(page.path)}</loc>`,
             '    <changefreq>monthly</changefreq>',
@@ -120,7 +132,7 @@ function absolute(sitePath: string): string {
  * по себе отвечать на вопрос: что делаем, почём, какие кейсы, куда писать.
  */
 function llmsTxt(): string {
-  const [home, ...rest] = PAGES
+  const [home, ...rest] = SITE_PAGES
   return [
     '# Интеграм — приложение из Excel-таблицы',
     '',

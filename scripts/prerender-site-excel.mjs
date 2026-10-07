@@ -26,10 +26,11 @@
  * переменных окружения: SITE_URL, SITE_BASE, METRIKA_ID.
  */
 import { build } from 'esbuild'
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
+import { assertLandings, countWords, CTA_LABEL, loadLandings } from '../site-excel/landings.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -77,7 +78,19 @@ await build({
   logLevel: 'error',
 })
 
-const { renderLanding, renderStaticPages } = createRequire(import.meta.url)(entryOut)
+const { PAGES, renderLanding, renderLandingPages, renderStaticPages } = createRequire(import.meta.url)(entryOut)
+
+// ── Посадочные (issue #657): проверка данных до отрисовки ───────────────────
+// Длины и уникальность title/description/H1, строки блока формул, заглушки,
+// запрещённые формулировки, повторы уникальных блоков, ссылки в никуда.
+// Нарушение — сборка падает, страница с браком на хостинг не уезжает.
+let landings
+try {
+  landings = assertLandings(loadLandings(), PAGES)
+} catch (err) {
+  console.error(err.message)
+  process.exit(1)
+}
 
 // ── Главная: статический снимок в #root ─────────────────────────────────────
 const indexPath = resolve(dist, 'index.html')
@@ -145,17 +158,60 @@ function pageHtml(page) {
     ${metrikaBlock}
   </head>
   <body>
-    <div id="page">${page.body}</div>
+    <div id="page">${page.body}</div>${page.landing ? `\n    ${landingScript(page.landing)}` : ''}
   </body>
 </html>
 `
 }
 
-for (const page of renderStaticPages(CANONICAL)) {
+/**
+ * Встроенный скрипт посадочной (issue #657). Внешних скриптов, кроме Метрики,
+ * на страницах нет (раздел 11.4 ТЗ), поэтому две вещи делаются здесь:
+ *   • UTM-метки и yclid из адреса посадочной дописываются к кнопкам CTA —
+ *     форма главной получает и метки, и `from=<slug>`;
+ *   • клик по CTA — цель Метрики `landing_cta` с адресом страницы.
+ */
+function landingScript(slug) {
+  const goal = METRIKA_ID
+    ? `try{ym(${METRIKA_ID},'reachGoal','landing_cta',{page:${JSON.stringify(slug)}})}catch(e){}`
+    : ''
+  return `<script>(function(){var q=new URLSearchParams(location.search),k=[];q.forEach(function(v,n){if(/^utm_|^yclid$/.test(n))k.push([n,v])});document.querySelectorAll('a[data-cta]').forEach(function(a){var u=new URL(a.getAttribute('href'),location.href);k.forEach(function(x){u.searchParams.set(x[0],x[1])});a.href=u.pathname+u.search+u.hash;a.addEventListener('click',function(){${goal}})})})()</script>`
+}
+
+const written = [indexPath]
+const pages = [...renderStaticPages(CANONICAL), ...renderLandingPages(CANONICAL, landings)]
+for (const page of pages) {
   const dir = resolve(dist, page.dir)
   mkdirSync(dir, { recursive: true })
-  writeFileSync(resolve(dir, 'index.html'), pageHtml(page), 'utf8')
-  console.log(`✓ dist-excel/${page.dir}/index.html — ${page.path}`)
+  const file = resolve(dir, 'index.html')
+  const html = pageHtml(page)
+  writeFileSync(file, html, 'utf8')
+  written.push(file)
+  const words = page.landing ? `, ${countWords(page.body)} слов` : ''
+  console.log(`✓ dist-excel/${page.dir}/index.html — ${page.path}${words}`)
+  if (page.landing && !(page.body.includes('data-cta') && page.body.includes(CTA_LABEL))) {
+    console.error(`dist-excel/${page.dir}/index.html: нет текста CTA «${CTA_LABEL}»`)
+    process.exit(1)
+  }
 }
+
+// ── Битые внутренние ссылки (раздел 11.2 ТЗ) ────────────────────────────────
+// Каждый href, начинающийся с пути сайта, должен вести на файл в dist-excel.
+// Якорь и параметры отбрасываются: проверяется сам адрес страницы.
+const broken = []
+for (const file of written) {
+  const html = readFileSync(file, 'utf8')
+  for (const [, href] of html.matchAll(/href="([^"]+)"/g)) {
+    if (!href.startsWith(BASE) || href.startsWith('//')) continue
+    const path = href.slice(BASE.length).replace(/[?#].*$/, '')
+    const target = path === '' || path.endsWith('/') ? resolve(dist, path, 'index.html') : resolve(dist, path)
+    if (!existsSync(target)) broken.push(`${file.slice(dist.length + 1)} → ${href}`)
+  }
+}
+if (broken.length > 0) {
+  console.error(`Битые внутренние ссылки (${broken.length}):\n  - ${broken.join('\n  - ')}`)
+  process.exit(1)
+}
+console.log(`✓ внутренние ссылки: ${written.length} страниц, битых нет`)
 
 rmSync(entryOut, { force: true })

@@ -63,8 +63,10 @@ export function SiteHeader({ homeHref }: { homeHref?: string }) {
             className="shrink-0 inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-brand text-white text-sm font-semibold shadow-md shadow-indigo-500/25 hover:brightness-110 transition"
           >
             <Phone size={15} />
-            <span className="hidden sm:inline whitespace-nowrap">{CONTACT_PHONE}</span>
-            <span className="sm:hidden">Контакты</span>
+            {/* Номер — только с lg: на 768–1023 px он вместе с меню не влезал
+                в строку и давал горизонтальный скролл на спутниках (issue #657). */}
+            <span className="hidden lg:inline whitespace-nowrap">{CONTACT_PHONE}</span>
+            <span className="lg:hidden">Контакты</span>
           </a>
         </div>
       </header>
@@ -186,7 +188,7 @@ export function SiteFooter() {
             <p className="mt-4 text-sm leading-relaxed">
               Сервис работает на платформе Интеграм (реестр отечественного ПО, запись №30872).
               Регистрация и биллинг — на{' '}
-              <a href="https://ideav.ru/" className="text-slate-200 underline-offset-2 hover:underline">
+              <a href="https://ideav.ru/" className="text-slate-200 underline underline-offset-2 hover:text-white">
                 ideav.ru
               </a>
               .
@@ -216,7 +218,7 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <p className="mt-10 text-xs text-slate-500">© {new Date().getFullYear()} АО «Интеграм»</p>
+        <p className="mt-10 text-xs text-slate-400">© {new Date().getFullYear()} АО «Интеграм»</p>
       </div>
     </footer>
   )

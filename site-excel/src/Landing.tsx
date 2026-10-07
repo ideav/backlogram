@@ -204,6 +204,22 @@ function HeroVisual() {
   )
 }
 
+/**
+ * Откуда пришёл человек (issue #657): кнопки посадочных ведут сюда с
+ * `?from=<slug>` и дописывают UTM-метки рекламы. Обе вещи уходят в заявку,
+ * чтобы было видно, какая страница её принесла.
+ */
+function landingSource(): { page: string; utm: string } {
+  if (typeof window === 'undefined') return { page: '', utm: '' }
+  const query = new URLSearchParams(window.location.search)
+  const from = query.get('from') ?? ''
+  const utm = [...query.entries()]
+    .filter(([name]) => name.startsWith('utm_'))
+    .map(([name, value]) => `${name}=${value}`)
+    .join('&')
+  return { page: /^[a-z0-9-]{1,80}$/.test(from) ? from : '', utm: utm.slice(0, 500) }
+}
+
 function formatBytes(n: number): string {
   if (n >= 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} МБ`
   if (n >= 1024) return `${Math.round(n / 1024)} КБ`
@@ -268,6 +284,9 @@ function OrderForm({
     const data = new FormData(form)
     data.set('kind', kind)
     if (plan) data.set('plan', plan)
+    const source = landingSource()
+    if (source.page) data.set('page', source.page)
+    if (source.utm) data.set('utm', source.utm)
     for (const f of files) data.append('files[]', f, f.name)
     setBusy(true)
     setError('')
@@ -283,7 +302,7 @@ function OrderForm({
         setError(payload.error ?? 'Не получилось отправить. Напишите нам в телеграм — так надёжнее.')
         return
       }
-      reachGoal(GOALS.lead, { source: `excel-cpa-landing-${kind}` })
+      reachGoal(GOALS.lead, { source: `excel-cpa-landing-${kind}`, page: source.page || 'main' })
       if (kind === 'express') reachExpressGoal(plan ?? '')
       if (payload.status === 'pending_confirmation') {
         setPending(payload.message ?? 'Мы отправили письмо со ссылкой — перейдите по ней, и мы начнём сборку.')
