@@ -34,8 +34,6 @@ export function SiteHeader({ homeHref }: { homeHref?: string }) {
   return (
     <>
       <header className="border-b border-slate-200/70 bg-white/80 backdrop-blur-md sticky top-0 z-10">
-        {/* Тонкая фирменная полоска сверху (issue #643). */}
-        <div aria-hidden="true" className="h-[3px] bg-brand" />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
           {homeHref ? (
             <a href={homeHref} aria-label="На главную">
