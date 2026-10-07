@@ -18,12 +18,12 @@ import { FAQ } from './content'
  */
 export function Faq() {
   return (
-    <section id="voprosy" className="scroll-mt-16 bg-slate-50 border-y border-slate-200">
+    <section id="voprosy" className="scroll-mt-16 bg-gradient-to-b from-slate-50 to-blue-50/50 border-y border-slate-200">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-        <h2 className="text-2xl sm:text-3xl font-bold">Частые вопросы</h2>
+        <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Частые вопросы</h2>
         <div className="mt-8 grid gap-6 sm:grid-cols-2">
           {FAQ.map(({ q, a }) => (
-            <div key={q} className="rounded-2xl border border-slate-200 bg-white p-5">
+            <div key={q} className="rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-500/10">
               <h3 className="font-semibold">{q}</h3>
               <p className="mt-2 text-slate-600 leading-relaxed text-sm">{a}</p>
             </div>

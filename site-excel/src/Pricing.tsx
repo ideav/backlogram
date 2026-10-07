@@ -30,21 +30,21 @@ const ICONS: Record<string, LucideIcon> = {
 function PlanCard({ plan, onOrder }: { plan: Plan; onOrder: (plan: string) => void }) {
   const Icon = ICONS[plan.icon]
   const button = `mt-6 w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-semibold transition-colors ${
-    plan.accent ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-blue-50 hover:bg-blue-100 text-blue-700'
+    plan.accent ? 'bg-brand text-white shadow-lg shadow-indigo-500/30 hover:brightness-110' : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700'
   }`
   return (
     <div
-      className={`relative flex flex-col rounded-2xl bg-white p-6 ${
-        plan.accent && plan.badge ? 'border-2 border-blue-600 shadow-lg shadow-blue-600/10' : 'border border-slate-200 shadow-sm'
+      className={`relative flex flex-col rounded-2xl bg-white p-6 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/10 ${
+        plan.accent && plan.badge ? 'border-2 border-violet-500 shadow-xl shadow-violet-500/15' : 'border border-slate-200 shadow-sm'
       }`}
     >
       {plan.badge && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 px-3 py-1 rounded-full bg-blue-600 text-white text-xs font-bold uppercase tracking-wide">
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 px-3 py-1 rounded-full bg-brand text-white text-xs font-bold uppercase tracking-wide shadow-md shadow-violet-500/30">
           <Star size={12} fill="currentColor" /> {plan.badge}
         </span>
       )}
       <div className="flex gap-4">
-        <span className="shrink-0 w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+        <span className="shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-violet-500 text-white shadow-md shadow-indigo-500/30 flex items-center justify-center">
           <Icon size={22} />
         </span>
         <div>
@@ -52,13 +52,13 @@ function PlanCard({ plan, onOrder }: { plan: Plan; onOrder: (plan: string) => vo
           <p className="mt-1 text-sm text-slate-500 leading-relaxed">{plan.sub}</p>
         </div>
       </div>
-      <p className="mt-5 text-3xl font-bold tracking-tight">
+      <p className="mt-5 text-3xl font-extrabold tracking-tight">
         {plan.price} <span className="text-lg font-semibold text-slate-400">₽ {plan.unit ?? ''}</span>
       </p>
       <ul className="mt-4 space-y-2 flex-1">
         {plan.items.map(item => (
           <li key={item} className="flex items-start gap-2 text-sm text-slate-700">
-            <CheckCircle2 size={18} className="text-blue-500 shrink-0 mt-px" />
+            <CheckCircle2 size={18} className="text-emerald-500 shrink-0 mt-px" />
             <span>{item}</span>
           </li>
         ))}
@@ -85,7 +85,7 @@ function PlanCard({ plan, onOrder }: { plan: Plan; onOrder: (plan: string) => vo
 export function Pricing({ onOrder }: { onOrder: (plan: string) => void }) {
   return (
     <section id="ceny" className="scroll-mt-16 max-w-6xl mx-auto px-4 sm:px-6 py-12 space-y-6">
-      <h2 className="text-2xl sm:text-3xl font-bold">Сколько стоит</h2>
+      <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Сколько стоит</h2>
       <p className="text-slate-600 max-w-2xl">
         Демонстрация на ваших файлах — бесплатно. Дальше — по шагам: каждый заканчивается
         результатом, который остаётся у вас.
@@ -95,13 +95,13 @@ export function Pricing({ onOrder }: { onOrder: (plan: string) => void }) {
         return (
           <div
             key={title}
-            className="rounded-3xl border border-slate-200 bg-slate-50/70 p-5 sm:p-8 grid gap-6 lg:grid-cols-[1fr_2fr] lg:items-start"
+            className="rounded-3xl border border-indigo-100 bg-gradient-to-br from-slate-50 via-white to-indigo-50/60 p-5 sm:p-8 grid gap-6 lg:grid-cols-[1fr_2fr] lg:items-start"
           >
             <div>
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100/70 text-blue-700 text-xs font-bold uppercase tracking-wider">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-100 text-violet-700 text-xs font-bold uppercase tracking-wider">
                 <Icon size={14} /> {tag}
               </span>
-              <h3 className="mt-4 text-2xl sm:text-3xl font-bold">{title}</h3>
+              <h3 className="mt-4 text-2xl sm:text-3xl font-extrabold tracking-tight">{title}</h3>
               <p className="mt-2 text-lg text-slate-600">{lead}</p>
               <p className="mt-3 text-sm text-slate-500 leading-relaxed">{body}</p>
             </div>
