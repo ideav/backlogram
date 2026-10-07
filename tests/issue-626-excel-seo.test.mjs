@@ -66,8 +66,9 @@ test('у каждого кейса свой адрес, заголовок и о
   const slugs = [...content.matchAll(/^ {4}slug: '([a-z-]+)',$/gm)].map(m => m[1])
   assert.equal(slugs.length, 4, 'кейсов четыре, и у каждого должен быть slug')
   assert.equal(new Set(slugs).size, 4, 'slug кейса обязан быть уникальным — это адрес страницы')
-  assert.equal((content.match(/pageTitle: '/g) ?? []).length, 5, 'четыре кейса и страница сравнения')
-  assert.equal((content.match(/pageDescription:\n?\s+'/g) ?? []).length, 5)
+  // Шестая страница — практикум для новичков (issue #659).
+  assert.equal((content.match(/pageTitle: '/g) ?? []).length, 6, 'четыре кейса, сравнение и практикум')
+  assert.equal((content.match(/pageDescription:\n?\s+'/g) ?? []).length, 6)
 })
 
 test('страницы собираются и попадают в sitemap и перелинковку', () => {
