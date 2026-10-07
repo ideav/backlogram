@@ -564,3 +564,44 @@ export const PAGES: { path: string; title: string; description: string }[] = [
     description: PRAKTIKUM.pageDescription,
   },
 ]
+
+/**
+ * Посадочная страница под рекламу и поиск (issue #657). Данные лежат в
+ * `site-excel/landings/<slug>.json`, проверяет их `site-excel/landings.mjs`,
+ * рисует `pages/LandingPage.tsx`. Поля — блоки раздела 6 ТЗ.
+ */
+export type Landing = {
+  slug: string
+  group: 'main' | 'industry' | 'task' | 'compare' | 'trust'
+  /** Главный запрос страницы; H1 обязан его содержать. */
+  query: string
+  intent?: string
+  order?: number
+  title: string
+  description: string
+  h1: string
+  lead: string
+  /** Имя страницы в хлебных крошках и в списках соседних страниц. */
+  crumb: string
+  was: string[]
+  now: string[]
+  build: { what: string; from: string }[]
+  buildNote?: string
+  formulas: { excel: string; app: string }[]
+  formulasLead?: string
+  roles: { role: string; access: string }[]
+  rolesNote?: string
+  steps?: { title: string; body: string }[]
+  stepsTitle?: string
+  screens?: Shot[]
+  faq: { q: string; a: string }[]
+  /** Адреса соседних страниц: slug посадочной или путь вида `/keysy/atex/`. */
+  related: string[]
+}
+
+// Два общих вопроса каждой посадочной (раздел 6 ТЗ, блок 9): что прислать
+// и сколько стоит. Берутся из FAQ главной, чтобы ответы не разошлись.
+export const LANDING_FAQ_COMMON = [
+  FAQ.find(item => item.q.startsWith('Какие файлы')),
+  FAQ.find(item => item.q === 'Сколько это стоит?'),
+].filter(Boolean) as { q: string; a: string }[]

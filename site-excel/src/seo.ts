@@ -9,7 +9,7 @@
  * `scripts/prerender-site-excel.mjs` (страницы кейсов и сравнения). Поэтому
  * здесь, как и в content.ts, не должно быть ни React, ни браузерных API.
  */
-import { CASES, COMPARE_PAGE, CONTACT_EMAIL, FAQ, PRAKTIKUM, PRICING_GROUPS, type Case } from './content'
+import { CASES, COMPARE_PAGE, CONTACT_EMAIL, FAQ, PRAKTIKUM, PRICING_GROUPS, type Case, type Landing } from './content'
 
 const ORG_NAME = 'АО «Интеграм»'
 const ORG_SITE = 'https://ideav.ru/'
@@ -194,6 +194,45 @@ export function compareJsonLd(canonical: string): Record<string, unknown>[] {
         { name: 'Excel → приложение', item: canonical },
         { name: 'Сравнение платформ', item: url },
       ]),
+    },
+  ]
+}
+
+/**
+ * Посадочная страница (issue #657): WebPage, хлебные крошки и FAQPage из
+ * вопросов именно этой страницы — тех же, что видны в блоке «Вопросы и ответы».
+ */
+export function landingPageJsonLd(
+  canonical: string,
+  page: Landing,
+  faq: { q: string; a: string }[],
+): Record<string, unknown>[] {
+  const url = `${canonical}${page.slug}/`
+  return [
+    organization(canonical),
+    {
+      '@type': 'WebPage',
+      '@id': url,
+      url,
+      name: page.title,
+      description: page.description,
+      inLanguage: 'ru-RU',
+      isPartOf: { '@id': canonical },
+      about: { '@id': `${canonical}#service` },
+      publisher: { '@id': organizationId(canonical) },
+      breadcrumb: breadcrumbs([
+        { name: 'Excel → приложение', item: canonical },
+        { name: page.crumb, item: url },
+      ]),
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${url}#faq`,
+      mainEntity: faq.map(({ q, a }) => ({
+        '@type': 'Question',
+        name: q,
+        acceptedAnswer: { '@type': 'Answer', text: a },
+      })),
     },
   ]
 }

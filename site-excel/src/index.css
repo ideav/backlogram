@@ -40,6 +40,17 @@ body {
   background-image: linear-gradient(120deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%);
 }
 
+/* Фон первого экрана посадочных (issue #657): сетка листа — строки и колонки,
+   а не декоративный градиент (раздел 10.2 ТЗ). Линии бледные, контраст текста
+   поверх них тот же, что на белом. */
+@utility bg-sheet {
+  background-color: #f8fafc;
+  background-image:
+    linear-gradient(to right, rgb(148 163 184 / 0.16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(148 163 184 / 0.16) 1px, transparent 1px);
+  background-size: 112px 36px;
+}
+
 /* Главная кнопка: градиент, мягкое свечение и подъём при наведении. */
 @utility btn-primary {
   display: inline-flex;

@@ -207,6 +207,22 @@ function HeroVisual() {
 }
 
 /**
+ * Откуда пришёл человек (issue #657): кнопки посадочных ведут сюда с
+ * `?from=<slug>` и дописывают UTM-метки рекламы. Обе вещи уходят в заявку,
+ * чтобы было видно, какая страница её принесла.
+ */
+function landingSource(): { page: string; utm: string } {
+  if (typeof window === 'undefined') return { page: '', utm: '' }
+  const query = new URLSearchParams(window.location.search)
+  const from = query.get('from') ?? ''
+  const utm = [...query.entries()]
+    .filter(([name]) => name.startsWith('utm_'))
+    .map(([name, value]) => `${name}=${value}`)
+    .join('&')
+  return { page: /^[a-z0-9-]{1,80}$/.test(from) ? from : '', utm: utm.slice(0, 500) }
+}
+
+/**
  * Формат заявки на демонстрацию (issue #659): просто ссылка на приложение или
  * практикум — тот же собранный агентом проект плюс час разбора с ведущим.
  * Для сборки это одна и та же заявка `demo`, отличается только отметка.
@@ -298,6 +314,9 @@ function OrderForm({
     const data = new FormData(form)
     data.set('kind', kind)
     if (plan) data.set('plan', plan)
+    const source = landingSource()
+    if (source.page) data.set('page', source.page)
+    if (source.utm) data.set('utm', source.utm)
     if (format) data.set('format', format)
     for (const f of files) data.append('files[]', f, f.name)
     setBusy(true)
@@ -315,7 +334,10 @@ function OrderForm({
         return
       }
       const praktikum = format === 'praktikum'
-      reachGoal(GOALS.lead, { source: `excel-cpa-landing-${praktikum ? 'praktikum' : kind}` })
+      reachGoal(GOALS.lead, {
+        source: `excel-cpa-landing-${praktikum ? 'praktikum' : kind}`,
+        page: source.page || 'main',
+      })
       if (praktikum) reachGoal(GOALS.praktikum, { dwell_ms: dwellMs() })
       if (kind === 'express') reachExpressGoal(plan ?? '')
       if (payload.status === 'pending_confirmation') {
