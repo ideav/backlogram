@@ -81,6 +81,10 @@ $kind    = in_array($data['kind'] ?? '', ['demo', 'express'], true) ? $data['kin
 $praktikum = $kind === 'demo' && ($data['format'] ?? '') === 'praktikum';
 // Карточка цен, с которой открыта модальная заявка; только для учёта.
 $plan    = mb_substr(trim(preg_replace('/[\x00-\x1F]+/', ' ', (string) ($data['plan'] ?? ''))), 0, 200);
+// Посадочная, с которой пришла заявка (issue #657): `page` — адрес страницы
+// (`?from=<slug>`), `utm` — метки рекламы. Только для учёта.
+$page    = preg_replace('/[^a-z0-9-]/', '', mb_substr((string) ($data['page'] ?? ''), 0, 80));
+$utm     = mb_substr(trim(preg_replace('/[\x00-\x1F]+/', ' ', (string) ($data['utm'] ?? ''))), 0, 500);
 
 // Honeypot: живой посетитель этого поля не видит, значит заполнить его мог
 // только автомат. Отвечаем успехом, чтобы боту нечего было узнать из ответа.
@@ -176,6 +180,12 @@ $lines = [
 ];
 if ($plan !== '') {
     $lines[] = 'Карточка: ' . $plan;
+}
+if ($page !== '') {
+    $lines[] = 'Страница: /' . $page . '/';
+}
+if ($utm !== '') {
+    $lines[] = 'UTM: ' . $utm;
 }
 if ($praktikum) {
     $lines[] = 'Формат: практикум — собрать приложение и согласовать час разбора';

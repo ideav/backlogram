@@ -304,6 +304,7 @@ function OrderForm({
       }
       if (!next.some(x => x.name === f.name && x.size === f.size)) next.push(f)
     }
+    if (next.length > files.length) reachGoal(GOALS.fileAttach, { count: next.length, page: landingSource().page || 'main' })
     setFiles(next)
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
