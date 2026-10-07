@@ -1,0 +1,438 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="Вход в Интеграм: авторизация в своей базе по имени базы, логину и паролю. Конструктор баз данных и приложений для замены Excel." />
+    <meta name="keywords" content="автоматизация бизнеса,гугл таблицы,создать базу данных,конструктор интеграм,интеграм,российский airtable,аналог airtable,airtable,google-tables,конструктор приложений,приложение без программирования,квинтетная модель данных,no-code,nocode,low code,зерокод,конструктор SQL,замена excel" />
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <title>Интеграм</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous">
+<style>
+body {
+  background: #007bff;
+  background: linear-gradient(to right, #0062E6, #33AEFF);
+}
+.btn-login {
+  font-size: 0.9rem;
+  letter-spacing: 0.05rem;
+  padding: 0.75rem 1rem;
+}
+.btn-google {
+    border: 1px solid lightgray;
+}
+label {
+    color: gray;
+}
+a {
+    cursor: pointer;
+    text-decoration: none;
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div style="background: rgba(0,0,0,.5); height: 100vh;">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-10 col-md-8 col-lg-6 col-xl-5 mx-auto">
+        <div class="card border-0 shadow rounded-3 my-5">
+          <div class="card-body p-4 p-sm-5 shadow-lg localized-stuff" style="display:none;">
+            <div style="position:absolute; top:18px; left:24px;">
+                <a id="tg" href="https://t.me/+U13Y8rQ4BXFjYjcy" target="_blank" rel="nofollow noopener">
+                    <svg class="t-sociallinks__svg" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" fill="gray" xmlns:xlink="http://www.w3.org/1999/xlink" width="28px" height="28px" viewBox="0 0 60 60" xml:space="preserve"><desc>Telegram</desc><path d="M30 0C13.4 0 0 13.4 0 30s13.4 30 30 30 30-13.4 30-30S46.6 0 30 0zm16.9 13.9l-6.7 31.5c-.1.6-.8.9-1.4.6l-10.3-6.9-5.5 5.2c-.5.4-1.2.2-1.4-.4L18 32.7l-9.5-3.9c-.7-.3-.7-1.5 0-1.8l37.1-14.1c.7-.2 1.4.3 1.3 1z"></path><path d="M22.7 40.6l.6-5.8 16.8-16.3-20.2 13.3"></path></svg>
+                </a>
+            </div>
+            <div style="position:absolute; top:15px; right:24px;"><a id="locale" onclick="toggleLocale()"></a></div>
+            <form class="login" method="post" onsubmit="event.returnValue=false;event.preventDefault();logIn()">
+                <input type="hidden" class="form-control" name="uri">
+                <h5 class="card-title text-center mb-3 fw-light fs-4"><t9n>[RU]Вход в Интеграм[EN]Integram Sign&nbsp;in</t9n></h5>
+                <div class="text-center mb-4"><t9n>[RU]<a target="_blank" href="https://integram.io/?main">Перейти на сайт</a>[EN]<a target="_blank" href="https://integram.io/?main">Go to Integram site</a></t9n></div>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control t9n" id="db" name="db" value="" placeholder="<t9n>Database</t9n>">
+                    <label for="db"><t9n>[RU]База[EN]Database</t9n></label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="login" class="form-control t9n" id="login" name="login" placeholder="name@example.com">
+                    <label for="login"><t9n>[RU]Логин[EN]User</t9n></label>
+                    <div class="invalid-feedback">
+                        <t9n>[RU]Введите имя пользователя[EN]Please enter your login</t9n>
+                    </div>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control t9n" id="pwd" name="pwd" placeholder="<t9n>Password</t9n>">
+                    <label for="pwd"><t9n>[RU]Пароль[EN]Password</t9n></label>
+                    <div class="invalid-feedback">
+                        <t9n>[RU]Укажите пароль[EN]Please provide the password</t9n>
+                    </div>
+                </div>
+                <div class="alert alert-danger wrong-pwd" role="alert" style="display:none;">
+                    <t9n>[RU]Неверный логин или пароль[EN]Wrong credentials</t9n>
+                </div>
+                <div class="alert alert-success login-alert mt-3" role="alert" style="display:none;">
+                </div>
+                <div class="d-grid">
+                    <button class="btn btn-primary btn-login" type="submit"><t9n>[RU]Войти[EN]Sign in</t9n></button>
+                </div>
+                <div class="card-title text-center mt-3 fw-light">
+                    <a onclick="$('#reset').val($('#login').val());$('#dbReset').val($('#db').val());toggleReset()" class="float-start"><font color="#0d6efd"><t9n>[RU]Напомнить пароль[EN]Reset password</t9n></font></a>
+                     &nbsp;
+                    <a onclick="toggleHelp()" class="float-end"><font color="#0d6efd"><t9n>[RU]Не могу войти[EN]I can't login</t9n></font></a>
+                </div>
+                <div class="card-title text-center mt-3 fw-light mode-link">
+                    <a><font color="#555"><t9n>[RU]Регистрация[EN]Create an account</t9n></font></a>
+                </div>
+            </form>
+            <form class="reset-pwd" style="display:none;" onsubmit="event.returnValue=false;event.preventDefault();resetPWD()">
+                <h5 class="card-title text-center mb-4 fw-light fs-4"><t9n>[RU]Сброс пароля[EN]Password reset</t9n></h5>
+                <p><t9n>[RU]Введите название базы данных (это поле можно оставить пустым) и имя или email пользователя, а мы пришлем вам новый пароль.[EN]Please enter the instance name (you may leave it blank) and your login or email to let us send you the new password.</t9n></p>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control t9n" id="dbReset" name="db" value="" placeholder="<t9n>Database</t9n>">
+                    <label for="dbReset"><t9n>[RU]База[EN]Database</t9n></label>
+                    <div class="invalid-feedback">
+                        <t9n>[RU]Для сброса пароля ЛК укажите[EN]To reset your private space password set</t9n>
+                            <a onclick="$('#dbReset').val('my').removeClass('is-invalid')" style="border-bottom: 1px dotted;">my</a>
+                    </div>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="login" class="form-control t9n" id="reset" name="login" value="" placeholder="<t9n>[RU]Логин / email[EN]User / Email</t9n>">
+                    <label for="reset"><t9n>[RU]Логин / email[EN]User / Email</t9n></label>
+                    <div class="invalid-feedback">
+                        <t9n>[RU]Введите имя пользователя или email[EN]Please enter your login or email</t9n>
+                    </div>
+                </div>
+                <div class="alert reset-alert mt-3" role="alert" style="display:none;">
+                </div>
+                <div class="d-grid reset-btn">
+                    <button class="btn btn-primary btn-login btn-reset" type="submit"><t9n>[RU]Прислать пароль[EN]Send the password</t9n></button>
+                </div>
+                <div class="card-title text-center mt-4 mb-1 fw-light">
+                    <a onclick="toggleReset()"><font color="#555"><t9n>[RU]Отменить[EN]Cancel</t9n></font></a>
+                </div>
+            </form>
+            <div class="help pt-5" style="display:none;">
+                <center>
+                    <p class="how"><t9n>[RU]Вы регистрировались через Google?[EN]Were you registered using Google?</t9n></p>
+                    <p class="how">
+                        <a class="btn btn-outline-secondary" onclick="$('.how,.nogoogl,.hz').hide();$('.googl').show()"><t9n>[RU]Да[EN]Yes</t9n></a>
+                        &nbsp; <a class="btn btn-outline-secondary" onclick="$('.how,.googl,.hz').hide();$('.nogoogl').show()"><t9n>[RU]Нет[EN]No</t9n></a>
+                        &nbsp; <a class="btn btn-outline-secondary" onclick="$('.how,.googl,.nogoogl').hide();$('.hz').show()"><t9n>[RU]Не помню[EN]No idea</t9n></a></p>
+                    <p class="googl" style="display:none;"><t9n>[RU]Введите вашу почту Google и сбросьте пароль&nbsp;&mdash; он придет на почту
+                        [EN]Enter your email and reset the password&nbsp;&mdash; you will get your new one by mail</t9n></p>
+                    <p class="nogoogl" style="display:none;"><t9n>[RU]При регистрации на&nbsp;вашу почту было выслано письмо со&nbsp;ссылкой на&nbsp;вашу базу. Попробуйте найти его в&nbsp;почте и&nbsp;войти с&nbsp;заданным паролем.<br /><br />Если вы&nbsp;создавали базу из&nbsp;<a target="my" href="/my">личного кабинета</a>, то&nbsp;вы&nbsp;можете получить пароль от&nbsp;неё, введя имя базы в&nbsp;поле имени пользователя&nbsp;&mdash; он&nbsp;совпадают&nbsp;&mdash; и&nbsp;сбросить свой пароль (он&nbsp;придёт на&nbsp;почту).
+                        [EN]Upon registration, an&nbsp;email was sent to&nbsp;you with a&nbsp;link to&nbsp;your database. Try to&nbsp;find it&nbsp;in&nbsp;your mail and log in&nbsp;with the given password.<br /><br />If&nbsp;you created a&nbsp;database from your <a target="my" href="/my">cabinet</a>, then you can get its password by&nbsp;entering the name of&nbsp;the database in&nbsp;the username field&nbsp;&mdash; they do&nbsp;match&nbsp;&mdash; and reset your password (you will receive it&nbsp;by&nbsp;email).</t9n></p>
+                    <p class="hz" style="display:none;"><t9n>[RU]Проще всего попробовать войти через гугл по&nbsp;кнопке ниже. Или приходите к&nbsp;нам в&nbsp;<a href="https://t.me/+U13Y8rQ4BXFjYjcy" target="tg">чат</a>, мы&nbsp;поможем.
+                        [EN]The easiest way is&nbsp;to&nbsp;try to&nbsp;log in&nbsp;using the Google button below. Or&nbsp;visit&nbsp;us in&nbsp;<a href="https://t.me/+U13Y8rQ4BXFjYjcy" target="tg">the chat</a>, we&rsquo;ll help you for sure.</t9n></p>
+                    <p class="pt-4"><a class="back-to-options" onclick="$('.help,.googl,.nogoogl,.hz').hide();$('.login,.how').show()"><t9n>[RU]Вернуться к форме входа[EN]Back to sign in options</t9n></a></p>
+                </center>
+            </div>
+            <form class="reg" style="display:none;" onsubmit="event.returnValue=false;event.preventDefault();signUp()">
+                <h5 class="card-title text-center mb-3 fw-light fs-4"><t9n>[RU]Регистрация <a href="/" target="_blank">Интеграм</a>[EN]Create your <a href="/" target="_blank">Integram</a></t9n></h5>
+                <div class="text-center mb-4"><t9n>[RU]<a target="_blank" href="https://integram.io/?main">Перейти на сайт</a>[EN]<a target="_blank" href="https://integram.io/?main">Go to Integram site</a></t9n></div>
+                <div class="form-floating mb-3">
+                    <input type="email" class="form-control t9n" id="email" name="email" placeholder="name@example.com">
+                    <label for="email"><t9n>[RU]Email[EN]Email</t9n></label>
+                    <div class="invalid-feedback">
+                        <t9n>[RU]Укажите правильный email[EN]Please provide a valid email</t9n>
+                    </div>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control t9n" id="regpwd" name="regpwd" placeholder="<t9n>Password</t9n>">
+                    <label for="regpwd"><t9n>[RU]Пароль[EN]Password</t9n></label>
+                    <div class="invalid-feedback">
+                        <t9n>[RU]Пароль должен быть не короче 6 символов[EN]Password must be 6 chars min</t9n>
+                    </div>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control t9n" id="regpwd1" name="regpwd1" placeholder="<t9n>Repeat the password</t9n>">
+                    <label for="regpwd1"><t9n>[RU]Повторите пароль[EN]Repeat the password</t9n></label>
+                    <div class="invalid-feedback">
+                        <t9n>[RU]Пароли не совпадают[EN]Passwords do not match</t9n>
+                    </div>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="agree" name="agree" value="Ok" checked>
+                    <label class="form-check-label" for="agree">
+                        <t9n>[RU]Я принимаю <a target="_blank" href="https://integram.io/terms.html">Условия обслуживания</a>[EN]I accept the <a target="_offer" href="https://integram.io/terms.html">Offer</a></t9n>
+                    </label>
+                    <div class="invalid-feedback">
+                        <t9n>[RU]Пожалуйста, ознакомьтесь и примите условия[EN]Please read and confirm</t9n>
+                    </div>
+                </div>
+                <div class="d-grid register-btn mt-3">
+                    <button class="btn btn-primary btn-login" id="doSignUp" type="submit"><t9n>[RU]Зарегистрироваться[EN]Register</t9n></button>
+                </div>
+                <div class="alert welcome-alert alert-success mt-3" role="alert" style="display:none;">
+                    <t9n>[RU]Спасибо за регистрацию!<br />Подтвердите ее из письма, присланного на ваш адрес.
+                        [EN]Thank you for joining us!<br />Please confirm the registration following the link in your mail (check SPAM in case you do not see it in Inbox).
+                    </t9n>
+                </div>
+                <div class="alert error-alert alert-danger mt-3" role="alert" style="display:none;">
+                </div>
+                <div class="card-title text-center mt-3 mb-1 fw-light mode-link">
+                    <a><font color="#555"><t9n>[RU]Я уже зарегистрирован[EN]I have my account</t9n></font></a>
+                </div>
+            </form>
+			<!--
+            <div class="d-grid googel">
+                <button class="btn btn-secondary-outline btn-google btn-login mt-3" onclick="googel()">
+                    <i class="fab fa-google me-2"></i> <t9n>[RU]Вход через Google[EN]Sign in using Google</t9n>
+                </button>
+            </div>
+			-->
+            <form class="change" style="display:none;" onsubmit="event.returnValue=false;event.preventDefault();changePwd()">
+                <input type="hidden" class="form-control" name="change" value="1">
+                <h5 class="card-title text-center mb-4 fw-light fs-4"><t9n>[RU]Смена пароля[EN]Password change</t9n></h5>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control t9n" name="db" id="dbc" value="" placeholder="<t9n>Database</t9n>">
+                    <label for="dbc"><t9n>[RU]База[EN]Database</t9n></label>
+                   <div class="invalid-feedback">
+                        <t9n>[RU]Укажите имя базы[EN]Please specify the DB</t9n>
+                    </div>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="login" class="form-control t9n" name="login" id="loginc" placeholder="name@example.com">
+                    <label for="loginc"><t9n>[RU]Логин[EN]User</t9n></label>
+                    <div class="invalid-feedback">
+                        <t9n>[RU]Введите имя пользователя[EN]Please enter your login</t9n>
+                    </div>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control t9n" name="pwd" id="pwdc" placeholder="<t9n>Old password</t9n>">
+                    <label for="pwdc"><t9n>[RU]Текущий пароль[EN]Old password</t9n></label>
+                    <div class="invalid-feedback">
+                        <t9n>[RU]Укажите текущий пароль[EN]Please provide the current password</t9n>
+                    </div>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control t9n" id="npw1" name="npw1" placeholder="<t9n>New password</t9n>">
+                    <label for="npw1"><t9n>[RU]Новый пароль[EN]New password</t9n></label>
+                    <div class="invalid-feedback">
+                        <t9n>[RU]Пароль должен быть не короче 6 символов[EN]Password must be 6 chars min</t9n>
+                    </div>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control t9n" id="npw2" name="npw2" placeholder="<t9n>Repeat the new password</t9n>">
+                    <label for="npw2"><t9n>[RU]Повторите новый пароль[EN]Repeat the new password</t9n></label>
+                    <div class="invalid-feedback">
+                        <t9n>[RU]Пароли не совпадают или не заполнены[EN]Passwords do not match or are invalid</t9n>
+                    </div>
+                </div>
+                <div class="alert change-alert mt-3" role="alert" style="display:none;">
+                </div>
+                <div class="d-grid btn-change">
+                    <button class="btn btn-primary btn-login" type="submit"><t9n>[RU]Отправить[EN]Send</t9n></button>
+                </div>
+                <div class="card-title text-center mt-4 mb-1 fw-light">
+                    <a href="/"><font color="#555"><t9n>[RU]Отменить[EN]Cancel</t9n></font></a>
+                </div>
+                <div class="card-title change-enter text-center mt-4 mb-1 fw-light" style="display:none;">
+                    <a href="/" id="change-enter"><font color="#555"><t9n>[RU]Войти[EN]Enter</t9n></font></a>
+                </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+var db,mode='login';
+if(document.location.hash=='#reg'){
+    $('.reg,.login').toggle();
+    mode='reg';
+}
+else if(document.location.hash=='#change'){
+    $('.reg,.login,.googel').remove();
+    $('.change').show();
+    $('#pwdc').focus();
+}
+function gatherInput(i){
+    var fd=new FormData();
+    $('.'+i+' input').each(function(){
+        fd.append($(this).attr('name'),this.value.trim());
+    });
+    return fd;
+}
+function changePwd(i){
+    $('input').removeClass('is-invalid');
+    $('.change input').each(function(){
+        if(this.value=='')
+            $(this).addClass('is-invalid');
+    });
+    if($('.is-invalid').length>0)
+        return;
+    intApi('POST',$('#dbc').val()+'/auth?JSON','change',gatherInput('change'));
+}
+function resetPWD(){
+    $('input').removeClass('is-invalid');
+    if($('#dbReset').val()=='')
+        $('#dbReset').addClass('is-invalid');
+    if($('#reset').val()=='')
+        $('#reset').addClass('is-invalid');
+    if($('.is-invalid').length>0)
+        return;
+    intApi('POST',$('#dbReset').val()+'/auth?JSON&reset','reset',gatherInput('reset-pwd'));
+    $('.btn-reset').attr('disabled',false);
+}
+function logIn(){
+    $('.wrong-pwd').hide();
+    $('input').removeClass('is-invalid');
+    if($('#login').val()=='')
+        $('#login').addClass('is-invalid');
+    if($('#pwd').val()=='')
+        $('#pwd').addClass('is-invalid');
+    if($('.is-invalid').length>0)
+        return;
+    if(!$('#db').val())
+        $('#db').val('my');
+    db=$('#db').val();
+    intApi('POST',db+'/auth?JSON','auth',gatherInput('login'));
+} 
+function signUp(){
+    $('input').removeClass('is-invalid');
+    if($('#email').val()=='')
+        $('#email').addClass('is-invalid');
+    if($('#regpwd').val().length<6)
+        $('#regpwd').addClass('is-invalid');
+    if($('#regpwd1').val()!==$('#regpwd').val())
+        $('#regpwd1').addClass('is-invalid');
+    if(!$('#agree').prop('checked'))
+        $('#agree').addClass('is-invalid');
+    if($('.is-invalid').length>0)
+        return;
+    $('#doSignUp').prop('disabled',true);
+    intApi('POST','my/register?JSON','signUp',gatherInput('reg'));
+}
+function googel(){
+    if(!$('#agree').prop('checked'))
+        $('#agree').addClass('is-invalid');
+    else{
+        var state=encodeURIComponent(($('#login').is(":visible")?$('#db').val():$('#regdb').val())||'');
+        if(search.uri!==undefined&&search.uri.indexOf('exit')===-1&&state!=='')
+            state=search.uri;
+        state=state===undefined?'':'&state='+state;
+        document.location.href='https://accounts.google.com/o/oauth2/auth?client_id=315358679657-oiaca19e5b44p73a5fl20e4q60sa7q4m.apps.googleusercontent.com'
+            +'&redirect_uri=https://'+document.location.host+'/auth.asp&response_type=code&scope=https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile'+state;
+    }
+}
+function toggleLocale(){
+    document.cookie=(db||'my')+'_locale='+(locale==='[EN]'?'RU':'EN');
+    location.search=location.search.replace(/locale=(en||ru)/,'');
+}
+function toggleReset(){
+    $('.reset-pwd,.login').toggle(300);
+}
+function toggleHelp(){
+    $('.login,.help').toggle(300);
+}
+function formMode(){
+    document.location.hash=mode=mode==='login'?'reg':'login';
+    $('.reg,.login').toggle(300);
+}
+$('.mode-link').click(function(){formMode()});
+function intApi(m,u,b,vars,index){
+    vars=vars||'';
+    var h='',i,j,json,obj=new XMLHttpRequest();
+    obj.open(m,'/'+u,true);
+    obj.onload=function(e){
+        try{
+            json=JSON.parse(this.responseText);
+        }
+        catch(e){
+            console.log(e);
+        }
+        obj.abort();
+        switch(b){
+            
+            case 'auth':
+                $('.alert').hide();
+                if(json!==undefined)
+                    if(json.token!==undefined){
+                        if(search.uri!==undefined&&(search.uri.indexOf('exit')!==-1||document.location.search.indexOf('InvalidToken')!==-1
+                                ||document.location.search.indexOf('InvalidDB')!==-1||document.location.search.indexOf('dBNotExists')!==-1
+                                ||document.location.search.indexOf('/login')!==-1||document.location.search.indexOf('obsolete')!==-1))
+                            search.uri='/'+db;
+                        $('.login').attr('action',search.uri||('/'+(db||'my'))).attr('onsubmit','').submit();
+                        return;
+                    }
+                $('.wrong-pwd').show();
+                break;
+                
+            case 'change':
+                if(json.msg.indexOf("[err")===-1){
+                    $('#change-enter').attr('href','/'+$('#dbc').val());
+                    $('.change-enter').show();
+                    $('.change-alert').addClass('alert-success').removeClass('alert-danger');
+                    $('.change').find('div').not('.alert,.change-enter').remove();
+                }
+                else
+                    $('.change-alert').removeClass('alert-success').addClass('alert-danger');
+                $('.change-alert').html(json.msg.replace(/ ?\[.+\]/,'')).show();
+                break;
+                
+            case 'signUp':
+                if(json!==undefined)
+                    if(json.message==='toConfirm'){
+                        $('.register-btn').remove();
+                        $('.welcome-alert').show();
+                        $('.error-alert').hide();
+                        return;
+                    }
+                $('#doSignUp').prop('disabled',false);
+                $('.error-alert').html(json[0].error.replace(/ ?\[.+\]/,'')).show();
+                break;
+                
+            case 'reset':
+                if(':NEW_PWD:MAIL:SMS:'.indexOf(json.message)===-1){
+                    $('.reset-alert').removeClass('alert-success').addClass('alert-danger');
+                    $('.btn-reset').attr('disabled',false);
+                    $('.reset-alert').html(json.details.replace(/ ?\[.+\]/,'')).show();
+                }
+                else{
+                    $('.reset-alert').addClass('alert-success').removeClass('alert-danger');
+                    $('.login-alert').html(json.details.replace(/ ?\[.+\]/,'')).show();
+                    toggleReset();
+                    $('#pwd').focus().select();
+                }
+                break;
+        }
+    }
+    obj.send(vars);
+}
+</script>
+<script src="/js/js.js"></script>
+<script>
+if(search.r==='reenter')
+    document.location.href='/'+search.db;
+$('#locale').html('<img style="opacity: 75%;" src="/i/'+(locale==='[EN]'?'ru':'en')+'.png">');
+$('#tg').attr('title',t9n('[RU]Помощь в Телеграм[EN]Telegram help chat'));
+localize();
+$('.localized-stuff').show();
+$('.ideav').attr('href','https://integram.io'+(search.aff?'?aff='+search.aff:''))
+var w=document.documentElement.clientWidth,h=document.documentElement.clientHeight;
+$('body').css('background-repeat','no-repeat')
+    .css('background-size','auto')
+    .css('background-image','url(/i/mbg'+(w<641&&h<361?'640':(w<1281&&h<721?'1280':(w<1921&&h<1080?'1920':4608)))+'.jpg)');
+for(var i in search)
+    if(i)
+        $('input[name="'+i+'"]').val(search[i].replace('%40','@'));
+if(search.u)$('#login').val(search.u);
+if($('#login').val())
+    $('#pwd').focus();
+else if($('#db').val())
+    $('#login').focus();
+else
+    $('#db').focus();
+if(search.aff)
+    document.cookie='_aff='+search.aff+';Path=/; max-age=15552000;';
+if(document.location.hash==='#ia')
+    $('.login-alert').html(t9n('[RU]Зарегистрируйтесь по <b>email</b> или через <b>Гугл</b> и пройдите урок[EN]Register by <b>email</b> or via <b>Google</b> and get the lesson')).show();
+</script>
+<!-- Yandex.Metrika counter --> <script type="text/javascript" > (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)}; m[i].l=1*new Date(); for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }} k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}) (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym"); ym(97878045, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true }); </script> <noscript><div><img src="https://mc.yandex.ru/watch/97878045" style="position:absolute; left:-9999px;" alt="" /></div></noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>
