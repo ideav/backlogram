@@ -9,7 +9,7 @@
  * `scripts/prerender-site-excel.mjs` (страницы кейсов и сравнения). Поэтому
  * здесь, как и в content.ts, не должно быть ни React, ни браузерных API.
  */
-import { CASES, COMPARE_PAGE, CONTACT_EMAIL, FAQ, PRAKTIKUM, PRICING_GROUPS, type Case, type Landing } from './content'
+import { ADEPT, CASES, COMPARE_PAGE, CONTACT_EMAIL, FAQ, PARTNER, PRAKTIKUM, PRICING_GROUPS, type Case, type Landing } from './content'
 
 const ORG_NAME = 'АО «Интеграм»'
 const ORG_SITE = 'https://ideav.ru/'
@@ -286,6 +286,32 @@ export function praktikumJsonLd(canonical: string): Record<string, unknown>[] {
       breadcrumb: breadcrumbs([
         { name: 'Excel → приложение', item: canonical },
         { name: 'Практикум', item: url },
+      ]),
+    },
+  ]
+}
+
+/**
+ * Страницы рекрутинга адептов и партнёров (issue #671): простой `WebPage`
+ * с крошками. Ни `Course`, ни `JobPosting` не подходят — дат, ставок и
+ * программы с часами на странице нет.
+ */
+export function programJsonLd(canonical: string, program: typeof ADEPT | typeof PARTNER): Record<string, unknown>[] {
+  const url = `${canonical}${program.slug}/`
+  return [
+    organization(canonical),
+    {
+      '@type': 'WebPage',
+      '@id': url,
+      url,
+      name: program.pageTitle,
+      description: program.pageDescription,
+      inLanguage: 'ru-RU',
+      isPartOf: { '@id': canonical },
+      publisher: { '@id': organizationId(canonical) },
+      breadcrumb: breadcrumbs([
+        { name: 'Excel → приложение', item: canonical },
+        { name: program.crumb, item: url },
       ]),
     },
   ]
