@@ -48,8 +48,10 @@ test('адреса канонические: тот же хост, без яко
 
 test('каждая страница веб-корня попала в карту', () => {
   // Ровно то место, где карта протухает: страницу добавили, карту забыли.
+  // Служебные страницы лежат в корне, но в карту не просятся: вход (#652).
+  const notInSitemap = new Set(['login.html'])
   const pages = readdirSync(resolve(repo, 'integram.io'))
-    .filter((name) => name.endsWith('.html'))
+    .filter((name) => name.endsWith('.html') && !notInSitemap.has(name))
     .map((name) => (name === 'index.html' ? `${HOST}/` : `${HOST}/${name}`))
 
   for (const page of pages) {
