@@ -19,7 +19,7 @@ import {
   X,
   ZoomIn,
 } from 'lucide-react'
-import { GOALS, looksHuman, reachExpressGoal, reachGoal, reachSignupGoal } from './conversion'
+import { GOALS, dwellMs, looksHuman, reachExpressGoal, reachGoal, reachSignupGoal } from './conversion'
 import { Cases, type Shot } from './Cases'
 import { SiteFooter, SiteHeader } from './Chrome'
 import {
@@ -27,12 +27,14 @@ import {
   FILE_ACCEPT,
   MAX_FILES,
   MAX_FILE_BYTES,
+  PRAKTIKUM,
   PRIVACY_URL,
   TELEGRAM_BOT_URL,
 } from './content'
 import { Faq } from './Faq'
 import { HowItWorks } from './HowItWorks'
 import { Pricing } from './Pricing'
+import { SITE_BASE } from './site-base'
 
 const SUBMIT_ENDPOINT = 'order.php'
 
@@ -204,6 +206,29 @@ function HeroVisual() {
   )
 }
 
+/**
+ * Формат заявки на демонстрацию (issue #659): просто ссылка на приложение или
+ * практикум — тот же собранный агентом проект плюс час разбора с ведущим.
+ * Для сборки это одна и та же заявка `demo`, отличается только отметка.
+ */
+type DemoFormat = 'demo' | 'praktikum'
+
+const DEMO_FORMATS: { value: DemoFormat; title: string; body: string }[] = [
+  {
+    value: 'demo',
+    title: 'Только приложение',
+    body: 'Соберём и пришлём ссылку — разберётесь сами.',
+  },
+  {
+    value: 'praktikum',
+    title: 'Практикум: час с ведущим',
+    body: 'Соберём заранее, потом за час онлайн разберём его вместе на ваших данных.',
+  },
+]
+
+/** Адрес, по которому форма на главной открывается с выбранным практикумом. */
+const PRAKTIKUM_HASH = '#praktikum'
+
 function formatBytes(n: number): string {
   if (n >= 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} МБ`
   if (n >= 1024) return `${Math.round(n / 1024)} КБ`
@@ -222,6 +247,8 @@ function OrderForm({
   withFiles,
   taskLabel,
   plan,
+  format,
+  onFormat,
   onSent,
 }: {
   kind: 'demo' | 'razbor' | 'express'
@@ -232,6 +259,9 @@ function OrderForm({
   taskLabel: string
   /** Карточка цен, с которой открыта форма, — уходит в заявку. */
   plan?: string
+  /** Выбор «демонстрация / практикум» — только у формы демонстрации. */
+  format?: DemoFormat
+  onFormat?: (format: DemoFormat) => void
   onSent?: () => void
 }) {
   const [sent, setSent] = useState(false)
@@ -268,6 +298,7 @@ function OrderForm({
     const data = new FormData(form)
     data.set('kind', kind)
     if (plan) data.set('plan', plan)
+    if (format) data.set('format', format)
     for (const f of files) data.append('files[]', f, f.name)
     setBusy(true)
     setError('')
@@ -283,7 +314,9 @@ function OrderForm({
         setError(payload.error ?? 'Не получилось отправить. Напишите нам в телеграм — так надёжнее.')
         return
       }
-      reachGoal(GOALS.lead, { source: `excel-cpa-landing-${kind}` })
+      const praktikum = format === 'praktikum'
+      reachGoal(GOALS.lead, { source: `excel-cpa-landing-${praktikum ? 'praktikum' : kind}` })
+      if (praktikum) reachGoal(GOALS.praktikum, { dwell_ms: dwellMs() })
       if (kind === 'express') reachExpressGoal(plan ?? '')
       if (payload.status === 'pending_confirmation') {
         setPending(payload.message ?? 'Мы отправили письмо со ссылкой — перейдите по ней, и мы начнём сборку.')
@@ -308,7 +341,9 @@ function OrderForm({
         <p className="mt-3 text-slate-700 leading-relaxed">
           {pending
             ? 'Письма нет через пару минут — посмотрите в «Спам». Или напишите нам в '
-            : kind === 'demo'
+            : format === 'praktikum'
+              ? 'Соберём приложение и напишем, чтобы согласовать время практикума. Быстрее всего — в '
+              : kind === 'demo'
               ? 'Вернёмся со ссылкой на готовое приложение. Быстрее всего — в '
               : 'Ответим в течение рабочего дня. Быстрее всего — в '}
           <a
@@ -331,6 +366,42 @@ function OrderForm({
       <p className="mt-2 text-slate-600">{sub}</p>
 
       <div className="mt-6 space-y-4">
+        {format && onFormat && (
+          <fieldset>
+            <legend className="text-sm font-medium text-slate-700">Что вам удобнее</legend>
+            <div className="mt-2 grid gap-3 sm:grid-cols-2">
+              {DEMO_FORMATS.map(option => (
+                <label
+                  key={option.value}
+                  className={`flex items-start gap-3 rounded-xl border p-3 cursor-pointer transition-colors ${
+                    format === option.value ? 'border-blue-500 bg-blue-50/60' : 'border-slate-300 hover:border-blue-400'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="format-choice"
+                    value={option.value}
+                    checked={format === option.value}
+                    onChange={() => onFormat(option.value)}
+                    className="mt-1"
+                  />
+                  <span>
+                    <span className="block font-semibold text-sm">{option.title}</span>
+                    <span className="block text-xs text-slate-500 mt-0.5">{option.body}</span>
+                  </span>
+                </label>
+              ))}
+            </div>
+            <p className="mt-2 text-xs text-slate-500">
+              Что нужно уметь для практикума и как проходит час —{' '}
+              <a href={`${SITE_BASE}${PRAKTIKUM.slug}/`} className="text-blue-600 hover:underline">
+                на странице практикума
+              </a>
+              .
+            </p>
+          </fieldset>
+        )}
+
         <label className="block">
           <span className="text-sm font-medium text-slate-700">Как вас зовут</span>
           <input
@@ -579,6 +650,25 @@ export default function Landing() {
   const [zoomed, setZoomed] = useState<Screen | null>(null)
   const [expressPlan, setExpressPlan] = useState<string | null>(null)
   const closeExpress = useCallback(() => setExpressPlan(null), [])
+  // Форма демонстрации без раскрытия воронки — только по ссылке со страницы
+  // практикума (/#praktikum, issue #659). Блок разбора с целевой кнопкой при
+  // этом остаётся за первым кликом: защита от кликеров не ослабевает.
+  const [demoOpen, setDemoOpen] = useState(false)
+  const [format, setFormat] = useState<DemoFormat>('demo')
+
+  useEffect(() => {
+    function fromHash(): void {
+      if (window.location.hash !== PRAKTIKUM_HASH) return
+      setFormat('praktikum')
+      setDemoOpen(true)
+      requestAnimationFrame(() => {
+        document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      })
+    }
+    fromHash()
+    window.addEventListener('hashchange', fromHash)
+    return () => window.removeEventListener('hashchange', fromHash)
+  }, [])
 
   function openFunnel(): void {
     // price_open — цель одного клика, поэтому только через проверку на
@@ -687,6 +777,14 @@ export default function Landing() {
               </div>
             ))}
           </div>
+          {/* Новичкам — практикум (issue #659): обычная ссылка, не кнопка воронки. */}
+          <p className="mt-6 text-sm text-slate-600">
+            Ни разу не делали проект с ИИ?{' '}
+            <a href={`${SITE_BASE}${PRAKTIKUM.slug}/`} className="text-blue-600 font-medium hover:underline">
+              Бесплатный практикум «{PRAKTIKUM.title}»
+            </a>{' '}
+            — что нужно уметь и как проходит час.
+          </p>
         </section>
 
         {/* Скрины результата */}
@@ -776,7 +874,7 @@ export default function Landing() {
 
         <Faq />
 
-        {funnelOpen && (
+        {(funnelOpen || demoOpen) && (
           <>
             {/* Заявка на демонстрацию */}
             <section id="demo" className="scroll-mt-16 max-w-2xl mx-auto px-4 sm:px-6 py-8">
@@ -787,6 +885,8 @@ export default function Landing() {
                 submitLabel="Отправить на демонстрацию"
                 withFiles
                 taskLabel="Что за процесс и что должно получиться"
+                format={format}
+                onFormat={setFormat}
               />
               <p className="mt-4 text-sm text-slate-500 text-center">
                 Удобнее в мессенджере? Пришлите файл{' '}
@@ -801,7 +901,11 @@ export default function Landing() {
                 — соберём так же бесплатно.
               </p>
             </section>
+          </>
+        )}
 
+        {funnelOpen && (
+          <>
             {/* Следующий шаг: разбор */}
             <section id="price" className="scroll-mt-16 max-w-5xl mx-auto px-4 sm:px-6 py-8">
               <div className="relative overflow-hidden rounded-3xl bg-brand p-6 sm:p-10 text-white shadow-2xl shadow-indigo-600/25">

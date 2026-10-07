@@ -1,9 +1,10 @@
 import { renderToStaticMarkup } from 'react-dom/server'
-import { CASES, COMPARE_PAGE } from './content'
+import { CASES, COMPARE_PAGE, PRAKTIKUM } from './content'
 import Landing from './Landing'
 import { CasePage } from './pages/CasePage'
 import { ComparePage } from './pages/ComparePage'
-import { caseJsonLd, compareJsonLd, jsonLdScript } from './seo'
+import { PraktikumPage } from './pages/PraktikumPage'
+import { caseJsonLd, compareJsonLd, jsonLdScript, praktikumJsonLd } from './seo'
 import { SITE_BASE } from './site-base'
 
 /**
@@ -30,7 +31,7 @@ export function renderLanding(): string {
   return renderToStaticMarkup(<Landing />)
 }
 
-/** Страницы-спутники: четыре кейса и сравнение платформ. */
+/** Страницы-спутники: четыре кейса, сравнение платформ и практикум. */
 export function renderStaticPages(canonical: string): StaticPage[] {
   const pages: StaticPage[] = CASES.map(item => ({
     dir: `keysy/${item.slug}`,
@@ -50,6 +51,17 @@ export function renderStaticPages(canonical: string): StaticPage[] {
     ogImage: `${canonical}og/sravnenie.png`,
     jsonLd: jsonLdScript(compareJsonLd(canonical)),
     body: renderToStaticMarkup(<ComparePage />),
+  })
+
+  // Практикум для новичков (issue #659).
+  pages.push({
+    dir: PRAKTIKUM.slug,
+    path: `${SITE_BASE}${PRAKTIKUM.slug}/`,
+    title: PRAKTIKUM.pageTitle,
+    description: PRAKTIKUM.pageDescription,
+    ogImage: `${canonical}og/praktikum.png`,
+    jsonLd: jsonLdScript(praktikumJsonLd(canonical)),
+    body: renderToStaticMarkup(<PraktikumPage />),
   })
 
   return pages
