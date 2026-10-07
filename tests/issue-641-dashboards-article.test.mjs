@@ -27,7 +27,9 @@ test('в тексте не осталось заметок черновика и
 
 test('CTA статьи ведёт на разбор данных, а не на «Excel → приложение»', () => {
   assert.match(post, /^cta:\n {2}eyebrow: /m)
-  assert.match(post, /href: "https:\/\/t\.me\/Integrammbot"/)
+  // @qdmadept — личный контакт для разбора; @Integrammbot — бот сборки приложений, не сюда
+  assert.match(post, /href: "https:\/\/t\.me\/qdmadept"/)
+  assert.doesNotMatch(post, /Integrammbot/)
   const tpl = read('src/pages/posts/[...slug].astro')
   assert.match(tpl, /post\.data\.cta \?\?/)
   assert.match(read('src/content.config.ts'), /cta: z\s*\.object/)
