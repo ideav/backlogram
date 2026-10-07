@@ -18,12 +18,14 @@
  * тексты, быстрые ссылки, фразы, минус-слова, имена кампаний.
  *   excel      главная, цель signup_click (по умолчанию)
  *   praktikum  /praktikum/, цель praktikum_click (issue #668)
+ *   praktikum-roles  та же посадочная, гипотезы по ролям: на каждую группу
+ *              фраз свои 4 кампании и свои объявления (issue #670)
  *
  * Окружение:
  *   DIRECT_TOKEN     OAuth-токен Директа (обязателен для --apply)
  *   SITE_URL         адрес лендинга, например https://example.ru
  *   METRIKA_ID       счётчик Метрики нового домена
- *   CAMPAIGN_PROFILE excel | praktikum (по умолчанию excel)
+ *   CAMPAIGN_PROFILE excel | praktikum | praktikum-roles (по умолчанию excel)
  *   GOAL_ID          id целевой цели профиля в этом счётчике
  *   CPA_RUB          цена конверсии днём, ₽ (по умолчанию 500)
  *   NIGHT_CPA_RUB    цена конверсии ночью, ₽ (по умолчанию CPA_RUB / 10)
@@ -44,6 +46,8 @@ const REGION_RUSSIA = 225
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const KEYWORDS_FILE = path.resolve(__dirname, '../docs/marketing/excel-cpa-campaign.keywords.json')
 const PRAKTIKUM_KEYWORDS_FILE = path.resolve(__dirname, '../docs/marketing/praktikum-cpa.keywords.json')
+const ROLES_KEYWORDS_FILE = path.resolve(__dirname, '../docs/marketing/praktikum-roles.keywords.json')
+const ROLES_ADS_FILE = path.resolve(__dirname, '../docs/marketing/praktikum-roles.ads.json')
 
 const apply = process.argv.includes('--apply')
 
@@ -131,6 +135,22 @@ export const PROFILES = {
   },
 }
 
+/**
+ * Гипотезы по ролям (issue #670): та же посадочная и цель, но фразы разбиты по
+ * роли, чью работу на практикуме делает ИИ, и у каждой роли свои кампании —
+ * так результат каждой гипотезы виден отдельно. Кампании профиля praktikum
+ * (#668) не трогаются.
+ */
+PROFILES['praktikum-roles'] = {
+  ...PROFILES.praktikum,
+  title: 'Практикум-роль',
+  slug: 'praktikum-role',
+  keywordFiles: [ROLES_KEYWORDS_FILE],
+  // У каждой группы 12 своих объявлений; profile.ads — запасные.
+  adsFile: ROLES_ADS_FILE,
+  campaignPerGroup: true,
+}
+
 export const PROFILE = PROFILES[process.env.CAMPAIGN_PROFILE ?? 'excel']
 
 const cfg = {
@@ -155,9 +175,15 @@ export function configProblems(config = cfg, willApply = apply) {
   return problems
 }
 
-/** Группы фраз профиля. У главной — ручные группы (hot, pain) и коммерческий срез SEO-ядра. */
+/**
+ * Группы фраз профиля. У главной — ручные группы (hot, pain) и коммерческий срез
+ * SEO-ядра. Если у профиля есть adsFile, группа получает свои объявления (`ads`).
+ */
 export function groupsFor(profile = PROFILE) {
-  return profile.keywordFiles.flatMap(file => JSON.parse(readFileSync(file, 'utf8')).groups)
+  const groups = profile.keywordFiles.flatMap(file => JSON.parse(readFileSync(file, 'utf8')).groups)
+  if (!profile.adsFile) return groups
+  const adsByGroup = JSON.parse(readFileSync(profile.adsFile, 'utf8')).groups
+  return groups.map(group => (adsByGroup[group.slug] ? { ...group, ads: adsByGroup[group.slug] } : group))
 }
 
 /** Ограничения Директа на длину полей текстового объявления. */
@@ -182,12 +208,24 @@ export function href(campaignSlug, siteUrl = cfg.siteUrl, profile = PROFILE) {
 }
 
 /**
+ * Больше трёх объявлений в группе Директ не держит: текстовые он теперь создаёт
+ * комбинаторными, а их в группе максимум 3 (ошибка 7001, проверено 07.10.2026).
+ */
+export const ADS_PER_GROUP = 3
+
+/**
  * Три объявления на группу. Тексты рассчитаны на человека, который искал совсем
  * другое и видит объявление боковым зрением, — отсюда короткие заголовки и
  * длина в пределах AD_LIMITS (за превышение Директ отбивает объявление).
+ *
+ * Если у группы свой набор объявлений длиннее трёх, каждая кампания берёт из
+ * него свою тройку по номеру (campaignIndex — порядок campaignsFor): так
+ * 12 объявлений группы расходятся по четырём кампаниям без повторов.
  */
-export function adsFor(campaignSlug, siteUrl = cfg.siteUrl, profile = PROFILE) {
-  return profile.ads.map(ad => ({ ...ad, Href: href(campaignSlug, siteUrl, profile) }))
+export function adsFor(campaignSlug, siteUrl = cfg.siteUrl, profile = PROFILE, group = undefined, campaignIndex = 0) {
+  const pool = group?.ads ?? profile.ads
+  const start = (campaignIndex * ADS_PER_GROUP) % pool.length
+  return pool.slice(start, start + ADS_PER_GROUP).map(ad => ({ ...ad, Href: href(campaignSlug, siteUrl, profile) }))
 }
 
 /** Ограничения Директа на быстрые ссылки и уточнения. */
@@ -274,12 +312,20 @@ export function campaignPayload(name, slug, where, shift = 'day', profile = PROF
   }
 }
 
-/** Четыре кампании профиля: поиск и сети × день и ночь. */
+/**
+ * Четыре кампании профиля: поиск и сети × день и ночь. С campaignPerGroup —
+ * по четыре на каждую группу фраз: в имени кампании роль из имени группы
+ * (до двоеточия), в `_group` — slug группы, в `_index` — номер внутри четвёрки.
+ */
 export function campaignsFor(profile = PROFILE) {
   const where = { search: 'поиск', network: 'сети' }
   const shift = { day: 'день', night: 'ночь' }
-  return Object.keys(where).flatMap(w => Object.keys(shift).map(sh =>
-    campaignPayload(`${profile.title} ${where[w]} ${shift[sh]}`, `${profile.slug}-${w}-${sh}`, w, sh, profile)))
+  const four = (title, slug, extra = {}) => Object.keys(where).flatMap(w => Object.keys(shift).map(sh =>
+    ({ ...campaignPayload(`${title} ${where[w]} ${shift[sh]}`, `${slug}-${w}-${sh}`, w, sh, profile), ...extra })))
+    .map((campaign, _index) => ({ ...campaign, _index }))
+  if (!profile.campaignPerGroup) return four(profile.title, profile.slug)
+  return groupsFor(profile).flatMap(group =>
+    four(`${profile.title} ${group.name.split(':')[0].toLowerCase()}`, `${profile.slug}-${group.slug}`, { _group: group.slug }))
 }
 
 async function call(service, method, params) {
@@ -322,7 +368,7 @@ async function main() {
 
   const groups = groupsFor()
   for (const campaign of campaignsFor()) {
-    const { _slug: slug, _autotargeting: autotargeting, ...payload } = campaign
+    const { _slug: slug, _autotargeting: autotargeting, _group: onlyGroup, _index: campaignIndex, ...payload } = campaign
     console.log(`\n=== ${payload.Name} ===`)
 
     const added = await call('campaigns', 'add', { Campaigns: [payload] })
@@ -335,7 +381,7 @@ async function main() {
     const [sitelinkSetId] = apply ? idsOf(setAdded, 'AddResults') : [`<id ссылок ${slug}>`]
     if (!sitelinkSetId) throw new Error('быстрые ссылки не созданы — см. ошибку выше')
 
-    for (const group of groups) {
+    for (const group of groups.filter(g => !onlyGroup || g.slug === onlyGroup)) {
       const groupPayload = {
         Name: `${group.name}`,
         CampaignId: campaignId,
@@ -354,7 +400,7 @@ async function main() {
       if (apply) idsOf(keywordsAdded, 'AddResults')
 
       const adsAdded = await call('ads', 'add', {
-        Ads: adsFor(slug).map(ad => ({
+        Ads: adsFor(slug, cfg.siteUrl, PROFILE, group, campaignIndex).map(ad => ({
           AdGroupId: groupId,
           TextAd: { ...ad, SitelinkSetId: sitelinkSetId, AdExtensionIds: calloutIds },
         })),
