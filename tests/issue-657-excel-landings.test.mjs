@@ -143,3 +143,25 @@ test('форма главной передаёт в заявку страниц�
   assert.match(landing, /data\.set\('utm', source\.utm\)/)
   assert.match(landing, /page: source\.page \|\| 'main'/)
 })
+
+test('счётчик Метрики стоит в конце страницы, а не в <head> (решение владельца)', () => {
+  const index = read('../site-excel/index.html')
+  assert.ok(index.indexOf('{{METRIKA}}') > index.indexOf('</head>'), 'главная: {{METRIKA}} должен быть в <body>')
+  assert.ok(index.indexOf('{{METRIKA}}') < index.indexOf('</body>'))
+  const pre = read('../scripts/prerender-site-excel.mjs')
+  const head = pre.slice(pre.indexOf('<head>'), pre.indexOf('</head>'))
+  assert.ok(!head.includes('${metrikaBlock}'), 'спутники: счётчик не в <head>')
+  assert.match(pre, /\$\{metrikaBlock\}\n  <\/body>/)
+})
+
+test('order.php пишет в уведомление страницу-источник и UTM', () => {
+  const order = read('../site-excel/public/order.php')
+  assert.match(order, /\$page\s+= preg_replace\('\/\[\^a-z0-9-\]\/'/)
+  assert.match(order, /'Страница: \/' \. \$page \. '\/'/)
+  assert.match(order, /'UTM: ' \. \$utm/)
+})
+
+test('выбор файла в форме — цель file_attach', () => {
+  assert.match(read('../site-excel/src/conversion.ts'), /fileAttach: 'file_attach'/)
+  assert.match(read('../site-excel/src/Landing.tsx'), /reachGoal\(GOALS\.fileAttach/)
+})

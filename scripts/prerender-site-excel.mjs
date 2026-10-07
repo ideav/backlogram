@@ -155,10 +155,10 @@ function pageHtml(page) {
     <title>${escapeAttr(page.title)}</title>
     ${styles.join('\n    ')}
     ${page.jsonLd}
-    ${metrikaBlock}
   </head>
   <body>
     <div id="page">${page.body}</div>${page.landing ? `\n    ${landingScript(page.landing)}` : ''}
+    ${metrikaBlock}
   </body>
 </html>
 `
