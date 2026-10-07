@@ -1,9 +1,11 @@
 # SEO: трекинговые GET-параметры рекламных систем не создают отдельные страницы.
 # Яндекс: https://yandex.ru/support/webmaster/robot-workings/clean-param.html
 # (ideav/backlogram#563 — дубли integram.io/?yd=…&ybaip=1&etext=…)
+# Регистр в имени параметра значим: «yd» не покрывает «Yd» — Вебмастер нашёл
+# дубль integram.io/?Yd=ybiz2 (#644), поэтому оба написания перечислены явно.
 User-agent: *
 Allow: /
-Clean-param: yd&ybaip&etext&from
+Clean-param: yd&Yd&ybaip&etext&from
 
 # Карта сайта (#589): без этой строки поисковик ищет её вслепую.
 Sitemap: https://integram.io/sitemap.xml
