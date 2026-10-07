@@ -41,6 +41,12 @@ export const GOALS = {
   express: 'express_lead',
   /** Та же заявка, но отправитель не прошёл проверку на человека. */
   expressBlocked: 'express_blocked',
+  /**
+   * Принята заявка на демонстрацию с отметкой «практикум» (issue #659).
+   * Уходит вместе с `lead`, чтобы практикум и демонстрацию можно было
+   * считать раздельно, не разбирая параметры визитов.
+   */
+  praktikum: 'praktikum_lead',
 } as const
 
 const MIN_DWELL_MS = 2500

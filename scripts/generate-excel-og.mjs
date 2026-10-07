@@ -3,8 +3,8 @@
  * Карточки Open Graph для excel-to-app.ru (issue #626, находка 3).
  *
  * Ни `og:image`, ни `twitter:card` у домена не было: ссылка в мессенджере и
- * в соцсети приходила без превью. Карточек шесть — главная, четыре кейса и
- * страница сравнения; у каждой свой заголовок, иначе превью у всех
+ * в соцсети приходила без превью. Карточек семь — главная, четыре кейса,
+ * страница сравнения и практикум (#659); у каждой свой заголовок, иначе превью у всех
  * одинаковое и кликать по ним незачем.
  *
  * Путь рендера тот же, что у карточек базы знаний
@@ -41,7 +41,7 @@ const bundle = await build({
   write: false,
   logLevel: 'error',
 })
-const { CASES, COMPARE_PAGE } = await import(
+const { CASES, COMPARE_PAGE, PRAKTIKUM } = await import(
   'data:text/javascript;base64,' + Buffer.from(bundle.outputFiles[0].text).toString('base64')
 )
 
@@ -167,6 +167,15 @@ await render(
   'sravnenie.png',
 )
 
+await render(
+  card({
+    eyebrow: 'Практикум для новичков',
+    title: PRAKTIKUM.title,
+    subtitle: `${PRAKTIKUM.facts.join(' · ')}. Программировать и знать нейросети не нужно.`,
+  }),
+  'praktikum.png',
+)
+
 // Путь к каталогу печатаем явно: карточки надо закоммитить, а не пересобирать
 // на каждой сборке — рендер зависит от шрифтов в scripts/fonts.
-console.log(`\nГотово: ${CASES.length + 2} карточки в ${pathToFileURL(outDir).pathname}`)
+console.log(`\nГотово: ${CASES.length + 3} карточки в ${pathToFileURL(outDir).pathname}`)

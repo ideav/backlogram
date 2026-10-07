@@ -16,17 +16,22 @@ import { SITE_BASE } from '../site-base'
  * первым кликом (см. conversion.ts), и выносить её на страницу-спутник
  * нельзя — она обошла бы защиту от кликеров. Поэтому CTA здесь — обычная
  * ссылка на главную.
+ *
+ * `cta` заменяет нижний блок призыва, когда странице нужен свой: у практикума
+ * (issue #659) кнопка ведёт на ту же форму, но с выбранным «практикумом».
  */
 export function StaticPage({
   breadcrumb,
   h1,
   lead,
   children,
+  cta,
 }: {
   breadcrumb: { href: string; title: string }[]
   h1: string
   lead: string
   children: ReactNode
+  cta?: ReactNode
 }) {
   return (
     <div className="min-h-screen bg-white text-slate-900">
@@ -54,46 +59,48 @@ export function StaticPage({
 
         {children}
 
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-          <div className="rounded-3xl border border-blue-500/30 bg-blue-50/60 p-6 sm:p-10">
-            <h2 className="text-2xl sm:text-3xl font-bold">
-              Пришлите свою таблицу — вернём приложение за 45 минут
-            </h2>
-            <p className="mt-4 text-slate-700 leading-relaxed max-w-2xl">
-              Демонстрация бесплатна: приложение собирается на ваших данных, а не на демо-примере.
-              Дальше можно остановиться или заказать разбор процесса с техническим заданием.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <a
-                href={SITE_BASE}
-                className="inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg shadow-lg shadow-blue-600/20 transition-colors"
-              >
-                Сделать приложение из моего Excel
-                <ArrowRight size={20} />
-              </a>
-              <a
-                href={TELEGRAM_BOT_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-7 py-4 rounded-xl border border-slate-300 bg-white text-slate-700 font-semibold text-lg hover:border-blue-500 hover:text-blue-600 transition-colors"
-              >
-                <MessageSquare size={18} />
-                Прислать файл в телеграм
-              </a>
+        {cta ?? (
+          <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+            <div className="rounded-3xl border border-blue-500/30 bg-blue-50/60 p-6 sm:p-10">
+              <h2 className="text-2xl sm:text-3xl font-bold">
+                Пришлите свою таблицу — вернём приложение за 45 минут
+              </h2>
+              <p className="mt-4 text-slate-700 leading-relaxed max-w-2xl">
+                Демонстрация бесплатна: приложение собирается на ваших данных, а не на демо-примере.
+                Дальше можно остановиться или заказать разбор процесса с техническим заданием.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-4">
+                <a
+                  href={SITE_BASE}
+                  className="inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg shadow-lg shadow-blue-600/20 transition-colors"
+                >
+                  Сделать приложение из моего Excel
+                  <ArrowRight size={20} />
+                </a>
+                <a
+                  href={TELEGRAM_BOT_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-7 py-4 rounded-xl border border-slate-300 bg-white text-slate-700 font-semibold text-lg hover:border-blue-500 hover:text-blue-600 transition-colors"
+                >
+                  <MessageSquare size={18} />
+                  Прислать файл в телеграм
+                </a>
+              </div>
+              <p className="mt-5 text-sm text-slate-500">
+                Цены целиком —{' '}
+                <a href={`${SITE_BASE}#ceny`} className="text-blue-600 hover:underline">
+                  в блоке «Сколько стоит»
+                </a>
+                , частые вопросы —{' '}
+                <a href={`${SITE_BASE}#voprosy`} className="text-blue-600 hover:underline">
+                  там же на главной
+                </a>
+                .
+              </p>
             </div>
-            <p className="mt-5 text-sm text-slate-500">
-              Цены целиком —{' '}
-              <a href={`${SITE_BASE}#ceny`} className="text-blue-600 hover:underline">
-                в блоке «Сколько стоит»
-              </a>
-              , частые вопросы —{' '}
-              <a href={`${SITE_BASE}#voprosy`} className="text-blue-600 hover:underline">
-                там же на главной
-              </a>
-              .
-            </p>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
 
       <SiteFooter />

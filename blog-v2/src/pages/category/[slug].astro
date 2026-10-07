@@ -38,7 +38,7 @@ const display = [...posts].sort(
 
 function formatDate(d: Date): string {
   return d
-    .toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric' })
+    .toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'UTC' })
     .replace(' г.', '')
 }
 

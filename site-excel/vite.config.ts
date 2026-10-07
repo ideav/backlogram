@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { CASES, CONTACT_EMAIL, FAQ, PAGES, PRICING_GROUPS, TELEGRAM_BOT_URL } from './src/content'
+import { CASES, CONTACT_EMAIL, FAQ, PAGES, PRAKTIKUM, PRICING_GROUPS, TELEGRAM_BOT_URL } from './src/content'
 import { metrikaSnippet } from './src/metrika'
 import { jsonLdScript, landingJsonLd } from './src/seo'
 import { loadLandings } from './landings.mjs'
@@ -153,6 +153,7 @@ function llmsTxt(): string {
     '## Цены',
     '',
     'Демонстрация на ваших файлах — 0 ₽.',
+    `Практикум «${PRAKTIKUM.title}» для новичков, час онлайн на вашем файле — ${PRAKTIKUM.price}: ${absolute(`/${PRAKTIKUM.slug}/`)}`,
     ...PRICING_GROUPS.flatMap(group =>
       group.plans.map(plan => `- ${plan.title} — ${plan.price} ₽${plan.unit ? ` ${plan.unit}` : ''}`),
     ),
@@ -185,6 +186,10 @@ function pricingMarkdown(): string {
     '**Демонстрация на ваших файлах — бесплатно.** Присылаете таблицы и описание',
     'задачи, примерно через 45 минут получаете ссылку на работающее приложение',
     'с вашими данными.',
+    '',
+    `**Практикум «${PRAKTIKUM.title}» — ${PRAKTIKUM.price}.** Час онлайн с ведущим`,
+    'на собранном из вашего файла приложении, для новичков в ИИ.',
+    `${PRAKTIKUM.payment} Подробно: ${absolute(`/${PRAKTIKUM.slug}/`)}`,
     '',
   ]
   for (const group of PRICING_GROUPS) {

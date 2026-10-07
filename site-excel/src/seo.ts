@@ -9,7 +9,7 @@
  * `scripts/prerender-site-excel.mjs` (страницы кейсов и сравнения). Поэтому
  * здесь, как и в content.ts, не должно быть ни React, ни браузерных API.
  */
-import { CASES, COMPARE_PAGE, CONTACT_EMAIL, FAQ, PRICING_GROUPS, type Case, type Landing } from './content'
+import { CASES, COMPARE_PAGE, CONTACT_EMAIL, FAQ, PRAKTIKUM, PRICING_GROUPS, type Case, type Landing } from './content'
 
 const ORG_NAME = 'АО «Интеграм»'
 const ORG_SITE = 'https://ideav.ru/'
@@ -233,6 +233,60 @@ export function landingPageJsonLd(
         name: q,
         acceptedAnswer: { '@type': 'Answer', text: a },
       })),
+    },
+  ]
+}
+
+/**
+ * Страница практикума (issue #659). Тип `Course`: у него есть
+ * `coursePrerequisites` — ровно тот «порог вхождения», ради которого страница
+ * и делалась, — и уровень `educationalLevel`. Дат на странице нет, поэтому
+ * `hasCourseInstance` описывает только формат: онлайн, один час.
+ */
+export function praktikumJsonLd(canonical: string): Record<string, unknown>[] {
+  const url = `${canonical}${PRAKTIKUM.slug}/`
+  return [
+    organization(canonical),
+    {
+      '@type': 'Course',
+      '@id': `${url}#course`,
+      name: PRAKTIKUM.title,
+      description: PRAKTIKUM.pageDescription,
+      url,
+      inLanguage: 'ru-RU',
+      educationalLevel: 'Beginner',
+      coursePrerequisites: PRAKTIKUM.skills.map(s => s.title),
+      teaches: PRAKTIKUM.gets,
+      provider: { '@id': organizationId(canonical) },
+      isAccessibleForFree: false,
+      offers: {
+        '@type': 'Offer',
+        category: 'Paid',
+        price: PRAKTIKUM.priceValue,
+        priceCurrency: 'RUB',
+        url,
+        availability: 'https://schema.org/InStock',
+      },
+      hasCourseInstance: {
+        '@type': 'CourseInstance',
+        courseMode: 'Online',
+        courseWorkload: 'PT1H',
+      },
+    },
+    {
+      '@type': 'WebPage',
+      '@id': url,
+      url,
+      name: PRAKTIKUM.pageTitle,
+      description: PRAKTIKUM.pageDescription,
+      inLanguage: 'ru-RU',
+      isPartOf: { '@id': canonical },
+      about: { '@id': `${url}#course` },
+      publisher: { '@id': organizationId(canonical) },
+      breadcrumb: breadcrumbs([
+        { name: 'Excel → приложение', item: canonical },
+        { name: 'Практикум', item: url },
+      ]),
     },
   ]
 }
