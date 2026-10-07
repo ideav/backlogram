@@ -65,3 +65,14 @@ test('страницы ссылаются друг на друга, практи
 test('тема письма кодируется — в mailto не уходит сырая кириллица', () => {
   assert.match(page, /encodeURIComponent\(program\.mailSubject\)/)
 })
+
+test('свой hero в стиле главной: акцент заголовка и визуальная карточка', () => {
+  assert.match(page, /hero=\{<ProgramHero/)
+  assert.match(page, /className="text-gradient">\{program\.titleAccent\}/)
+  assert.match(content, /titleAccent: 'учите других применять ИИ'/)
+  assert.match(content, /titleAccent: '15–40% с выручки'/)
+  // Акцент обязан быть подстрокой заголовка — иначе split не разрежет h1.
+  const pairs = [...content.matchAll(/title: '([^']+)',\n  crumb: '[^']+',\n(?:  \/\*\*[^\n]*\n)?  titleAccent: '([^']+)'/g)]
+  assert.equal(pairs.length, 2, 'обе страницы')
+  for (const [, title, accent] of pairs) assert.ok(title.includes(accent), `${accent} ⊂ ${title}`)
+})
