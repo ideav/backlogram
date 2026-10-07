@@ -44,6 +44,7 @@ const REGION_RUSSIA = 225
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const KEYWORDS_FILE = path.resolve(__dirname, '../docs/marketing/excel-cpa-campaign.keywords.json')
 const PRAKTIKUM_KEYWORDS_FILE = path.resolve(__dirname, '../docs/marketing/praktikum-cpa.keywords.json')
+const PRAKTIKUM_ADS_FILE = path.resolve(__dirname, '../docs/marketing/praktikum-cpa.ads.json')
 
 const apply = process.argv.includes('--apply')
 
@@ -99,6 +100,9 @@ export const PROFILES = {
     // Цена практикума: та же ценность, что у цели praktikum_lead.
     goalValueRub: 4900,
     keywordFiles: [PRAKTIKUM_KEYWORDS_FILE],
+    // У каждой группы фраз свои 12 объявлений (issue #670); profile.ads ниже —
+    // запасные, для групп без своих.
+    adsFile: PRAKTIKUM_ADS_FILE,
     // Практикум — это и есть обучение: человек, который ищет курс или урок
     // по нейросетям, здесь целевой. Остальная «учёба» (школа, ЕГЭ, студент,
     // диплом) по-прежнему минусуется.
@@ -155,9 +159,15 @@ export function configProblems(config = cfg, willApply = apply) {
   return problems
 }
 
-/** Группы фраз профиля. У главной — ручные группы (hot, pain) и коммерческий срез SEO-ядра. */
+/**
+ * Группы фраз профиля. У главной — ручные группы (hot, pain) и коммерческий срез
+ * SEO-ядра. Если у профиля есть adsFile, группа получает свои объявления (`ads`).
+ */
 export function groupsFor(profile = PROFILE) {
-  return profile.keywordFiles.flatMap(file => JSON.parse(readFileSync(file, 'utf8')).groups)
+  const groups = profile.keywordFiles.flatMap(file => JSON.parse(readFileSync(file, 'utf8')).groups)
+  if (!profile.adsFile) return groups
+  const adsByGroup = JSON.parse(readFileSync(profile.adsFile, 'utf8')).groups
+  return groups.map(group => (adsByGroup[group.slug] ? { ...group, ads: adsByGroup[group.slug] } : group))
 }
 
 /** Ограничения Директа на длину полей текстового объявления. */
@@ -182,12 +192,24 @@ export function href(campaignSlug, siteUrl = cfg.siteUrl, profile = PROFILE) {
 }
 
 /**
+ * Больше трёх объявлений в группе Директ не держит: текстовые он теперь создаёт
+ * комбинаторными, а их в группе максимум 3 (ошибка 7001, проверено 07.10.2026).
+ */
+export const ADS_PER_GROUP = 3
+
+/**
  * Три объявления на группу. Тексты рассчитаны на человека, который искал совсем
  * другое и видит объявление боковым зрением, — отсюда короткие заголовки и
  * длина в пределах AD_LIMITS (за превышение Директ отбивает объявление).
+ *
+ * Если у группы свой набор объявлений длиннее трёх, каждая кампания берёт из
+ * него свою тройку по номеру (campaignIndex — порядок campaignsFor): так
+ * 12 объявлений группы расходятся по четырём кампаниям без повторов.
  */
-export function adsFor(campaignSlug, siteUrl = cfg.siteUrl, profile = PROFILE) {
-  return profile.ads.map(ad => ({ ...ad, Href: href(campaignSlug, siteUrl, profile) }))
+export function adsFor(campaignSlug, siteUrl = cfg.siteUrl, profile = PROFILE, group = undefined, campaignIndex = 0) {
+  const pool = group?.ads ?? profile.ads
+  const start = (campaignIndex * ADS_PER_GROUP) % pool.length
+  return pool.slice(start, start + ADS_PER_GROUP).map(ad => ({ ...ad, Href: href(campaignSlug, siteUrl, profile) }))
 }
 
 /** Ограничения Директа на быстрые ссылки и уточнения. */
@@ -321,7 +343,7 @@ async function main() {
   const calloutIds = apply ? idsOf(calloutsAdded, 'AddResults') : ['<id уточнений>']
 
   const groups = groupsFor()
-  for (const campaign of campaignsFor()) {
+  for (const [campaignIndex, campaign] of campaignsFor().entries()) {
     const { _slug: slug, _autotargeting: autotargeting, ...payload } = campaign
     console.log(`\n=== ${payload.Name} ===`)
 
@@ -354,7 +376,7 @@ async function main() {
       if (apply) idsOf(keywordsAdded, 'AddResults')
 
       const adsAdded = await call('ads', 'add', {
-        Ads: adsFor(slug).map(ad => ({
+        Ads: adsFor(slug, cfg.siteUrl, PROFILE, group, campaignIndex).map(ad => ({
           AdGroupId: groupId,
           TextAd: { ...ad, SitelinkSetId: sitelinkSetId, AdExtensionIds: calloutIds },
         })),
