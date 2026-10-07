@@ -322,19 +322,19 @@ function HourBar({ className = '' }: { className?: string }) {
 }
 
 /**
- * Первый экран в стиле главной: цветные пятна, бейдж, градиентный акцент в
- * заголовке, кнопка и иллюстрация справа. Текст заголовка — ровно
- * `PRAKTIKUM.title`, акцент — его часть после двоеточия.
+ * Первый экран: бейдж, градиентный акцент в заголовке, кнопка и иллюстрация
+ * справа — как на главной. Фон свой, по смыслу заголовка (issue #684,
+ * вариант D): слева лист Excel — «на ваших данных», справа кольцо часа —
+ * «за час». Текст заголовка — ровно `PRAKTIKUM.title`, акцент — его часть
+ * после двоеточия.
  */
 function PraktikumHero() {
   // «ИИ-проект» не рвём по дефису: U+2011 — неразрывный дефис
   const [head, accent] = PRAKTIKUM.title.replace(/ИИ-/g, 'ИИ\u2011').split(': ')
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-violet-50/60 to-emerald-50/50">
-      {/* Цветные пятна фона; при «уменьшить движение» замирают (index.css). */}
-      <div className="absolute -top-32 -right-24 w-[28rem] h-[28rem] bg-violet-400/25 blur-[110px] rounded-full pointer-events-none animate-float" />
-      <div className="absolute top-40 -left-32 w-[24rem] h-[24rem] bg-blue-400/25 blur-[110px] rounded-full pointer-events-none animate-float-slow" />
-      <div className="absolute -bottom-24 right-1/3 w-80 h-80 bg-emerald-300/25 blur-[100px] rounded-full pointer-events-none animate-float" />
+    <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white">
+      <SheetBackdrop />
+      <HourDial />
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-16 sm:pb-20">
         <nav aria-label="Хлебные крошки" className="text-sm text-slate-500">
           <ol className="flex flex-wrap items-center gap-2">
@@ -388,6 +388,120 @@ function PraktikumHero() {
         </div>
       </div>
     </section>
+  )
+}
+
+const SHEET_COLUMNS = 'ABCDEFGHIJKLMN'.split('')
+const SHEET_ROWS = 22
+const CELL_W = 112
+const CELL_H = 36
+/** Отступы сетки под строку букв и колонку номеров, как у листа Excel. */
+const SHEET_LEFT = 40
+const SHEET_TOP = 28
+/** Заполненные ячейки листа: [колонка, строка]. */
+const SHEET_FILLED = [[1, 3], [2, 3], [3, 3], [1, 4], [3, 5], [2, 6], [1, 14], [2, 14], [3, 15], [1, 16], [2, 17]]
+/** Выделенная ячейка с маркером заполнения. */
+const SHEET_SELECTED = [4, 15]
+const sheetFade = 'linear-gradient(100deg, #000 0%, rgba(0,0,0,.9) 40%, transparent 78%)'
+
+/**
+ * Фон «лист Excel»: буквы колонок, номера строк, несколько заполненных
+ * ячеек и рамка выделения. К иллюстрации справа лист растворяется —
+ * слева таблица, справа приложение. Сетка видна на всех ширинах, колонка
+ * номеров строк — только от xl: уже она уходит под текст (поле там 16–24px).
+ */
+function SheetBackdrop() {
+  const line = 'rgb(148 163 184 / .22)'
+  const edge = 'rgb(148 163 184 / .35)'
+  return (
+    <div
+      aria-hidden="true"
+      className="absolute inset-0 pointer-events-none select-none"
+      style={{ WebkitMaskImage: sheetFade, maskImage: sheetFade }}
+    >
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `linear-gradient(to right, ${line} 1px, transparent 1px), linear-gradient(to bottom, ${line} 1px, transparent 1px)`,
+          backgroundSize: `${CELL_W}px ${CELL_H}px`,
+          backgroundPosition: `${SHEET_LEFT}px ${SHEET_TOP}px`,
+        }}
+      />
+      <div
+        className="absolute right-0 top-0 flex bg-slate-100/90 text-[11px] font-semibold text-slate-400"
+        style={{ left: SHEET_LEFT, height: SHEET_TOP, borderBottom: `1px solid ${edge}` }}
+      >
+        {SHEET_COLUMNS.map(c => (
+          <span key={c} className="shrink-0 flex items-center justify-center" style={{ width: CELL_W, borderRight: `1px solid ${line}` }}>
+            {c}
+          </span>
+        ))}
+      </div>
+      <div
+        className="hidden xl:block absolute left-0 bottom-0 bg-slate-100/90 text-[11px] font-semibold text-slate-400"
+        style={{ top: SHEET_TOP, width: SHEET_LEFT, borderRight: `1px solid ${edge}` }}
+      >
+        {Array.from({ length: SHEET_ROWS }, (_, i) => (
+          <div key={i} className="flex items-center justify-center" style={{ height: CELL_H, borderBottom: `1px solid ${line}` }}>
+            {i + 1}
+          </div>
+        ))}
+      </div>
+      {SHEET_FILLED.map(([c, r]) => (
+        <span
+          key={`${c}-${r}`}
+          className="absolute h-[7px] rounded bg-emerald-500/20"
+          style={{ left: SHEET_LEFT + c * CELL_W + 10, top: SHEET_TOP + r * CELL_H + 14, width: 40 + ((c * 37 + r * 11) % 50) }}
+        />
+      ))}
+      <span
+        className="absolute border-2 border-emerald-500 bg-emerald-500/5"
+        style={{ left: SHEET_LEFT + SHEET_SELECTED[0] * CELL_W, top: SHEET_TOP + SHEET_SELECTED[1] * CELL_H, width: CELL_W, height: CELL_H }}
+      >
+        <span className="absolute -right-1 -bottom-1 w-[7px] h-[7px] bg-emerald-500 border border-white" />
+      </span>
+    </div>
+  )
+}
+
+/** Кольцо отрезком на блок программы, цвета — как у шкалы часа (SEGMENT_TONES). */
+const DIAL_COLORS = ['#10b981', '#14b8a6', '#3b82f6', '#6366f1', '#8b5cf6', '#d946ef', '#ec4899']
+const ring = (from: number, to: number) =>
+  `radial-gradient(circle, transparent ${from}%, #000 ${from + 0.4}%, #000 ${to}%, transparent ${to + 0.4}%)`
+
+/**
+ * Фон «циферблат часа»: кольцо на 60 минут за окном встречи, отрезки — блоки
+ * программы. Только на широком экране: уже иллюстрации рядом нет, и кольцо
+ * легло бы под текст.
+ */
+function HourDial() {
+  const conic = PRAKTIKUM.program
+    .map((row, i) => {
+      const [from, to] = span(row.minutes)
+      const color = DIAL_COLORS[i % DIAL_COLORS.length]
+      return `${color} ${from * 6}deg ${to * 6 - 1.2}deg, transparent ${to * 6 - 1.2}deg ${to * 6}deg`
+    })
+    .join(', ')
+  return (
+    <div
+      aria-hidden="true"
+      className="hidden lg:block absolute top-1/2 -right-[190px] w-[820px] h-[820px] -translate-y-[46%] pointer-events-none select-none"
+    >
+      <div
+        className="absolute inset-0 rounded-full opacity-55"
+        style={{ background: `conic-gradient(${conic})`, WebkitMask: ring(61, 66), mask: ring(61, 66) }}
+      />
+      {/* Деления: минутные и каждые пять минут */}
+      <div
+        className="absolute inset-0 rounded-full"
+        style={{ background: 'repeating-conic-gradient(rgb(100 116 139 / .45) 0deg .4deg, transparent .4deg 6deg)', WebkitMask: ring(68.5, 71), mask: ring(68.5, 71) }}
+      />
+      <div
+        className="absolute inset-0 rounded-full"
+        style={{ background: 'repeating-conic-gradient(rgb(71 85 105 / .7) 0deg 1deg, transparent 1deg 30deg)', WebkitMask: ring(68.5, 73), mask: ring(68.5, 73) }}
+      />
+      <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgb(139_92_246/.16),transparent_60%)]" />
+    </div>
   )
 }
 
