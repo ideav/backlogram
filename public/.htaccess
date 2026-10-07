@@ -51,6 +51,10 @@ DirectoryIndex index.html
   # front controller'ом в движок Интеграма как имя базы.
   RewriteRule ^kvintety-ili-tablicy/?$ /kvintety-ili-tablicy.html [R=301,L]
 
+  # Кластер «автоматизация бизнеса с ИИ» (issue #642): тот же случай — без
+  # правила безрасширенный путь ушёл бы front controller'ом в движок как имя базы.
+  RewriteRule ^(avtomatizaciya-biznesa-s-ii|ii-agenty-dlya-biznesa|vnedrenie-ii-v-biznes|ii-v-1c-bitrix24-amocrm|lokalnyj-ii-dlya-biznesa|ii-dlya-integratorov)/?$ /$1.html [R=301,L]
+
   # Front controller: real files/dirs served as-is; everything else → index.php.
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d

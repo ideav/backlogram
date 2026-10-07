@@ -45,6 +45,8 @@ const dataUrl =
   'data:text/javascript;base64,' +
   Buffer.from(bundle.outputFiles[0].text).toString('base64')
 const { knowledgeBaseArticles } = await import(dataUrl)
+// #642: кластер «автоматизация бизнеса с ИИ» — plain ESM, импортируется без сборки.
+const { AI_PAGES } = await import('../src/data/aiPages.mjs')
 
 // ── Card template ─────────────────────────────────────────────────────────
 function cardJSX({ eyebrow, title, subtitle }) {
@@ -327,6 +329,8 @@ const landingCards = [
     subtitle:
       'Большинство действий стоит 1 токен, тяжёлые операции дороже. Вы платите за реальную работу, а не за число пользователей и гигабайты места.',
   },
+  // #642: страницы кластера «ИИ для бизнеса» — тексты из src/data/aiPages.mjs.
+  ...AI_PAGES.map((p) => ({ slug: p.slug, eyebrow: p.badge, title: p.ogTitle, subtitle: p.ogDescription })),
 ]
 
 for (const card of landingCards) {

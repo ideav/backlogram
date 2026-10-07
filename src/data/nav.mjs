@@ -41,7 +41,9 @@ export const headerMoreLinks = [
   },
   // Свежий пункт держим последним и помечаем «New»: список «Ещё» читают
   // сверху вниз, и новое заметнее в конце, чем в середине (issue #605).
-  { name: 'Квинтеты или таблицы', href: '/kvintety-ili-tablicy.html', badge: 'New' },
+  { name: 'Квинтеты или таблицы', href: '/kvintety-ili-tablicy.html' },
+  // #642: хаб кластера «автоматизация бизнеса с ИИ».
+  { name: 'Автоматизация бизнеса с ИИ', href: '/avtomatizaciya-biznesa-s-ii.html', badge: 'New' },
 ]
 
 /**
@@ -72,6 +74,8 @@ export const footerNavGroups = [
       { name: 'Интеграм vs Битрикс24 / AmoCRM', href: '/sravnenie-s-bitrix-amocrm.html' },
       { name: 'Интеграции', href: 'https://integram.io/api.html', external: true },
       { name: 'Токены', href: '/tokens.html' },
+      // #642: хаб кластера «автоматизация бизнеса с ИИ».
+      { name: 'Автоматизация бизнеса с ИИ', href: '/avtomatizaciya-biznesa-s-ii.html' },
       // #605: опросник по архитектуре хранения — приложение к меморандуму.
       { name: 'Квинтеты или таблицы', href: '/kvintety-ili-tablicy.html' },
       // Соглашение живёт на ideav.ru: раньше пункт уводил на чужой домен integram.io.
@@ -103,6 +107,12 @@ export const staticExtraLinks = [
   { name: 'Управленческий учёт', href: '/upravlencheskiy-uchet.html' },
   { name: 'Движение ТМЦ и ДС', href: '/dvizhenie-tmc-i-ds.html' },
   { name: 'Алексей Семёнов', href: '/alexey-semenov.html' },
+  // #642: страницы кластера «ИИ для бизнеса» (хаб — в меню «Ещё» и в подвале).
+  { name: 'ИИ-агенты для бизнеса', href: '/ii-agenty-dlya-biznesa.html' },
+  { name: 'Внедрение ИИ в бизнес', href: '/vnedrenie-ii-v-biznes.html' },
+  { name: 'ИИ в 1С, Битрикс24 и amoCRM', href: '/ii-v-1c-bitrix24-amocrm.html' },
+  { name: 'Локальный ИИ для бизнеса', href: '/lokalnyj-ii-dlya-biznesa.html' },
+  { name: 'ИИ для интеграторов', href: '/ii-dlya-integratorov.html' },
 ]
 
 /** Все внутренние ссылки статического блока, без внешних и без дублей. */

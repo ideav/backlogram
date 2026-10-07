@@ -239,12 +239,14 @@ test('колонке «Итог» ничто не мешает прилипат�
   assert.ok(!/\boverflow-/.test(grid), 'overflow на сетке ломает sticky')
 })
 
-test('в меню «Ещё» пункт стоит последним и помечен New', () => {
+test('в меню «Ещё» есть пункт опросника, последний пункт помечен New', () => {
   const more = nav.match(/export const headerMoreLinks = \[([\s\S]*?)\n\]/)
   assert.ok(more, 'в nav.mjs должен быть список headerMoreLinks')
   const entries = more[1].split(/\},?\s*\n/).filter((e) => e.includes('href'))
   const last = entries[entries.length - 1]
-  assert.match(last, /\/kvintety-ili-tablicy\.html/, 'пункт должен быть последним в «Ещё»')
+  // Опросник был последним и с «New», пока в «Ещё» не встал более свежий пункт
+  // (#642): правило nav.mjs — «New» у последнего, свежего пункта.
+  assert.ok(entries.some((e) => e.includes('/kvintety-ili-tablicy.html')), 'опросника нет в «Ещё»')
   assert.match(last, /badge: 'New'/)
   // Метку рисуют оба списка — десктопный выпадающий и мобильный раскрывающийся.
   assert.equal(header.match(/\{link\.badge && <NewBadge \/>\}/g)?.length, 2)

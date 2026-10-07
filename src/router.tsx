@@ -2,6 +2,7 @@ import { lazy } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import Home from './pages/Home'
 import { USE_CASES } from './data/usecases'
+import { AI_PAGES } from './data/aiPages'
 import App from './App'
 
 // Главная и layout грузятся сразу (самый частый вход). Остальные страницы —
@@ -30,6 +31,8 @@ const Privacy = lazy(() => import('./pages/Privacy'))
 const Terms = lazy(() => import('./pages/Terms'))
 // #578: каталог услуг с ценами — коммерческие сигналы для рейтинга в Яндексе.
 const Services = lazy(() => import('./pages/Services'))
+// #642: кластер «автоматизация бизнеса с ИИ» — шесть страниц из src/data/aiPages.mjs.
+const AiLanding = lazy(() => import('./pages/AiLanding'))
 
 export const router = createBrowserRouter([
   {
@@ -170,6 +173,12 @@ export const router = createBrowserRouter([
       ...USE_CASES.flatMap((u) => [
         { path: `${u.slug}.html`, element: <UseCaseLanding slug={u.slug} /> },
         { path: u.slug, element: <UseCaseLanding slug={u.slug} /> },
+      ]),
+      // Кластер «автоматизация бизнеса с ИИ» (issue #642) — из src/data/aiPages.mjs,
+      // того же источника, что у scripts/prerender-ai-pages.mjs.
+      ...AI_PAGES.flatMap((p) => [
+        { path: `${p.slug}.html`, element: <AiLanding slug={p.slug} /> },
+        { path: p.slug, element: <AiLanding slug={p.slug} /> },
       ]),
       {
         path: '*',
