@@ -25,6 +25,20 @@ const posts = defineCollection({
     // Does NOT affect <link rel="canonical"> — see issue #331.
     originalUrl: z.string().url().optional(),
     tags: z.array(z.string()).default([]),
+    // Тематический CTA вместо общего блока «Попробуйте Интеграм» внизу статьи
+    // (issue #641): статье про дашборды кнопка «Excel → приложение» не по теме.
+    // Без поля показывается общий блок.
+    cta: z
+      .object({
+        eyebrow: z.string().default('Попробуйте Интеграм'),
+        title: z.string(),
+        text: z.string(),
+        href: z.string().url(),
+        label: z.string(),
+        secondaryHref: z.string().url().optional(),
+        secondaryLabel: z.string().optional(),
+      })
+      .optional(),
   }),
 })
 
