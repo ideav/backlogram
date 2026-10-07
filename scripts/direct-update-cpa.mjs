@@ -20,6 +20,7 @@ import { fileURLToPath } from 'node:url'
 import { call } from './lib/direct-api.mjs'
 
 const MICRO = 1_000_000
+const UPDATE_BATCH = 10
 
 /** Смена кампании по имени: «… поиск день» → day, «… сети ночь» → night. */
 export function shiftOf(name) {
@@ -100,13 +101,17 @@ async function main() {
   }
   if (!apply || !updates.length) return
 
-  const result = await call('campaigns', 'update', { Campaigns: updates.map(u => u.payload) }, token)
+  // Директ меняет не больше 10 кампаний за запрос, лишнее отклоняет целиком.
   let failed = false
-  for (const item of result.UpdateResults ?? []) {
-    for (const warning of item.Warnings ?? []) console.warn(`  ${item.Id}: предупреждение: ${warning.Message} ${warning.Details ?? ''}`)
-    for (const error of item.Errors ?? []) {
-      failed = true
-      console.error(`  ошибка: ${error.Message} ${error.Details ?? ''}`)
+  for (let i = 0; i < updates.length; i += UPDATE_BATCH) {
+    const batch = updates.slice(i, i + UPDATE_BATCH).map(u => u.payload)
+    const result = await call('campaigns', 'update', { Campaigns: batch }, token)
+    for (const item of result.UpdateResults ?? []) {
+      for (const warning of item.Warnings ?? []) console.warn(`  ${item.Id}: предупреждение: ${warning.Message} ${warning.Details ?? ''}`)
+      for (const error of item.Errors ?? []) {
+        failed = true
+        console.error(`  ошибка: ${error.Message} ${error.Details ?? ''}`)
+      }
     }
   }
   if (failed) process.exit(1)

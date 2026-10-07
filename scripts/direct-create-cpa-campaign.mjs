@@ -198,9 +198,6 @@ PROFILES['praktikum-roles'] = {
   ...PROFILES.praktikum,
   title: 'Практикум-роль',
   slug: 'praktikum-role',
-  // Гипотезы по ролям (#670) созданы по 500/50 ₽; #666 их цены не менял.
-  cpaRub: 500,
-  nightCpaRub: 50,
   keywordFiles: [ROLES_KEYWORDS_FILE],
   // У каждой группы 12 своих объявлений; profile.ads — запасные.
   adsFile: ROLES_ADS_FILE,
