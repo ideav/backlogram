@@ -1,12 +1,17 @@
 import { ArrowRight, Check, FileSpreadsheet, Laptop, MessageSquare, MessagesSquare, X } from 'lucide-react'
+import { renderToStaticMarkup } from 'react-dom/server'
 import { ANALYSIS_PRICE, CONTACT_TELEGRAM_URL, PRAKTIKUM, TARIFFS_URL } from '../content'
 import { SITE_BASE } from '../site-base'
 import { StaticPage } from './StaticPage'
 
 const SKILL_ICONS = [FileSpreadsheet, MessagesSquare, Laptop]
 
-/** Адрес формы на главной с уже выбранным практикумом (см. Landing.tsx). */
-export const PRAKTIKUM_FORM_HREF = `${SITE_BASE}#praktikum`
+/**
+ * Адрес формы на главной с уже выбранным практикумом (см. Landing.tsx).
+ * `from` уходит в заявку строкой «Страница» — так видно, что человек пришёл
+ * со страницы практикума.
+ */
+export const PRAKTIKUM_FORM_HREF = `${SITE_BASE}?from=praktikum#praktikum`
 
 /**
  * Страница практикума для новичков (issue #659).
@@ -18,6 +23,14 @@ export const PRAKTIKUM_FORM_HREF = `${SITE_BASE}#praktikum`
  * Как и остальные спутники, страница статическая: формы здесь нет, кнопка
  * ведёт на главную, где форма демонстрации открывается с выбранным
  * практикумом.
+ *
+ * Кампания на эту страницу платит за конверсию (issue #668), поэтому переход
+ * к заявке — в два шага, как на главной: кнопки «Записаться на практикум»
+ * только раскрывают блок, а целевая ссылка лежит в `<template>` и в разметке
+ * не существует до первого клика. Цель `praktikum_click` шлёт встроенный
+ * скрипт пререндера (scripts/prerender-site-excel.mjs) через ту же проверку
+ * на человека, что и `signup_click`. Без JS кнопок нет — вместо них
+ * `<noscript>` со ссылкой.
  */
 export function PraktikumPage() {
   return (
@@ -35,13 +48,7 @@ export function PraktikumPage() {
             </li>
           ))}
         </ul>
-        <a
-          href={PRAKTIKUM_FORM_HREF}
-          className="mt-6 inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg shadow-lg shadow-blue-600/20 transition-colors"
-        >
-          Записаться на практикум
-          <ArrowRight size={20} />
-        </a>
+        <OpenButton className="mt-6" />
       </section>
 
       {/* Порог вхождения */}
@@ -93,7 +100,7 @@ export function PraktikumPage() {
       </section>
 
       {/* Программа */}
-      <section className="bg-gradient-to-b from-slate-50 to-blue-50/50 border-y border-slate-200">
+      <section id="programma" className="scroll-mt-16 bg-gradient-to-b from-slate-50 to-blue-50/50 border-y border-slate-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
           <h2 className="text-2xl sm:text-3xl font-bold">Программа часа</h2>
           <p className="mt-3 text-slate-600 max-w-3xl leading-relaxed">
@@ -122,7 +129,7 @@ export function PraktikumPage() {
       </section>
 
       {/* Подготовка и шаги */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12 grid gap-10 lg:grid-cols-2">
+      <section id="podgotovka" className="scroll-mt-16 max-w-5xl mx-auto px-4 sm:px-6 py-12 grid gap-10 lg:grid-cols-2">
         <div>
           <h2 className="text-2xl font-bold">Как подготовиться</h2>
           <ul className="mt-6 space-y-3">
@@ -175,9 +182,22 @@ export function PraktikumPage() {
   )
 }
 
+const primaryButton =
+  'inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg shadow-lg shadow-blue-600/20 transition-colors'
+
+/** Первый шаг: раскрывает блок с целевой ссылкой. Без JS скрыта (`hidden`). */
+function OpenButton({ className = '' }: { className?: string }) {
+  return (
+    <button type="button" data-pk-open="" hidden className={`${primaryButton} ${className}`}>
+      Записаться на практикум
+      <ArrowRight size={20} />
+    </button>
+  )
+}
+
 function PraktikumCta() {
   return (
-    <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+    <section id="zapis" className="scroll-mt-16 max-w-5xl mx-auto px-4 sm:px-6 py-12">
       <div className="rounded-3xl border border-blue-500/30 bg-blue-50/60 p-6 sm:p-10">
         <h2 className="text-2xl sm:text-3xl font-bold">Записаться на практикум</h2>
         <p className="mt-4 text-3xl font-extrabold text-slate-900">
@@ -188,13 +208,30 @@ function PraktikumCta() {
           Сейчас ничего платить не нужно. {PRAKTIKUM.payment}
         </p>
         <div className="mt-8 flex flex-wrap gap-4">
-          <a
-            href={PRAKTIKUM_FORM_HREF}
-            className="inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg shadow-lg shadow-blue-600/20 transition-colors"
-          >
-            Оставить заявку
-            <ArrowRight size={20} />
-          </a>
+          <OpenButton />
+          <div id="pk-step2" className="w-full empty:hidden" />
+          <template
+            id="pk-step2-tpl"
+            dangerouslySetInnerHTML={{
+              __html: renderToStaticMarkup(
+                <div className="rounded-2xl border border-blue-200 bg-white p-6">
+                  <p className="text-slate-700 leading-relaxed">
+                    Дальше — форма на главной: практикум в ней уже отмечен, остаётся приложить файл и
+                    оставить контакт. Платить сейчас не нужно.
+                  </p>
+                  <a href={PRAKTIKUM_FORM_HREF} data-pk-go="" className={`mt-5 ${primaryButton}`}>
+                    Перейти к заявке
+                    <ArrowRight size={20} />
+                  </a>
+                </div>,
+              ),
+            }}
+          />
+          <noscript>
+            <a href={PRAKTIKUM_FORM_HREF} className={primaryButton}>
+              Оставить заявку
+            </a>
+          </noscript>
           <a
             href={CONTACT_TELEGRAM_URL}
             target="_blank"

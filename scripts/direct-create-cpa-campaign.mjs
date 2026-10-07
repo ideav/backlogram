@@ -14,15 +14,21 @@
  *   node scripts/direct-create-cpa-campaign.mjs            # сухой прогон
  *   node scripts/direct-create-cpa-campaign.mjs --apply    # создать
  *
+ * Профиль (CAMPAIGN_PROFILE) выбирает посадочную и всё, что от неё зависит:
+ * тексты, быстрые ссылки, фразы, минус-слова, имена кампаний.
+ *   excel      главная, цель signup_click (по умолчанию)
+ *   praktikum  /praktikum/, цель praktikum_click (issue #668)
+ *
  * Окружение:
  *   DIRECT_TOKEN     OAuth-токен Директа (обязателен для --apply)
  *   SITE_URL         адрес лендинга, например https://example.ru
  *   METRIKA_ID       счётчик Метрики нового домена
- *   GOAL_ID          id цели signup_click в этом счётчике
+ *   CAMPAIGN_PROFILE excel | praktikum (по умолчанию excel)
+ *   GOAL_ID          id целевой цели профиля в этом счётчике
  *   CPA_RUB          цена конверсии днём, ₽ (по умолчанию 500)
  *   NIGHT_CPA_RUB    цена конверсии ночью, ₽ (по умолчанию CPA_RUB / 10)
  *   WEEKLY_RUB       недельный лимит расхода, ₽ (по умолчанию 10000)
- *   GOAL_VALUE_RUB   ценность цели для Директа, ₽ (по умолчанию 4000)
+ *   GOAL_VALUE_RUB   ценность цели для Директа, ₽ (по умолчанию — у профиля)
  */
 
 import { readFileSync } from 'node:fs'
@@ -37,8 +43,95 @@ const REGION_RUSSIA = 225
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const KEYWORDS_FILE = path.resolve(__dirname, '../docs/marketing/excel-cpa-campaign.keywords.json')
+const PRAKTIKUM_KEYWORDS_FILE = path.resolve(__dirname, '../docs/marketing/praktikum-cpa.keywords.json')
 
 const apply = process.argv.includes('--apply')
+
+/**
+ * Посадочные, под которые умеет собирать кампании скрипт. Общее у всех —
+ * стратегия, смены день/ночь и раздельные поиск и сети; различается всё,
+ * что видит человек и по чему Директ ищет аудиторию.
+ */
+export const PROFILES = {
+  excel: {
+    title: 'Excel-CPA',
+    slug: 'excel-cpa',
+    path: '/',
+    goalName: 'signup_click',
+    // Ценность цели — не чек разбора, а ожидаемая выручка с одной записи:
+    // 20 000 ₽ при гипотезе «продаётся каждая пятая». Гипотеза не проверена,
+    // см. раздел «Чего в этой схеме нет» в описании кампании.
+    goalValueRub: 4000,
+    keywordFiles: [KEYWORDS_FILE, CORE_FILE],
+    allowedNegatives: [],
+    // Цифры в текстах — ровно те, что на лендинге (site-excel/src/Pricing.tsx,
+    // Landing.tsx): расхождение с посадочной модерация Директа отбивает.
+    ads: [
+      {
+        Title: 'Excel остаётся Excel’ем',
+        Title2: 'Сделаем из него приложение',
+        Text: 'Пришлите таблицу — через 45 минут покажем приложение на ваших данных. Бесплатно.',
+      },
+      {
+        Title: 'Учёт из Excel — в приложение',
+        Title2: 'Демо бесплатно, 45 минут',
+        Text: 'Формы, права доступа и отчёты вместо файла в почте. Облако от 1 950 ₽/мес.',
+      },
+      {
+        Title: 'Из таблиц — в систему учёта',
+        Title2: 'Покажем на ваших файлах',
+        Text: 'Кейсы: корма, рулоны, продажи. Разбор процесса с ТЗ — 20 000 ₽. Сервер в России.',
+      },
+    ],
+    sitelinks: [
+      { Title: 'Сколько стоит', Description: 'Демонстрация бесплатно, облако от 1 950 ₽ в месяц', anchor: 'ceny' },
+      { Title: 'Кейсы клиентов', Description: 'Было в Excel — стало приложением: корма, рулоны, продажи', anchor: 'keysy' },
+      { Title: 'Как это работает', Description: 'Как агент читает структуру ваших таблиц', anchor: 'kak' },
+      { Title: 'Сравнение с Power Apps', Description: 'Чем Интеграм отличается от Power Apps и Quickbase', anchor: 'sravnenie' },
+    ],
+    callouts: ['Демонстрация бесплатно', 'Сервер в России', 'Реестр российского ПО', 'Облако от 1 950 ₽/мес'],
+  },
+  praktikum: {
+    title: 'Практикум-CPA',
+    slug: 'praktikum-cpa',
+    path: '/praktikum/',
+    goalName: 'praktikum_click',
+    // Цена практикума: та же ценность, что у цели praktikum_lead.
+    goalValueRub: 4900,
+    keywordFiles: [PRAKTIKUM_KEYWORDS_FILE],
+    // Практикум — это и есть обучение: человек, который ищет курс или урок
+    // по нейросетям, здесь целевой. Остальная «учёба» (школа, ЕГЭ, студент,
+    // диплом) по-прежнему минусуется.
+    allowedNegatives: ['курс', 'обучение', 'практикум', 'вебинар', 'урок', 'тренинг', 'семинар'],
+    // Цифры — с /praktikum/ (site-excel/src/content.ts, PRAKTIKUM).
+    ads: [
+      {
+        Title: 'Свой первый ИИ-проект за час',
+        Title2: 'На вашем файле Excel',
+        Text: 'ИИ-агент собирает приложение из вашей таблицы, за час разбираем его вместе.',
+      },
+      {
+        Title: 'Практикум по ИИ: 1 час онлайн',
+        Title2: '4 900 ₽, на ваших данных',
+        Text: 'Программировать и писать промпты не нужно. Уходите со ссылкой на приложение.',
+      },
+      {
+        Title: 'Нейросеть и ваш Excel',
+        Title2: 'Практикум для новичков',
+        Text: 'Формы, роли и отчёты из вашей таблицы. Час с ведущим — 4 900 ₽, онлайн.',
+      },
+    ],
+    sitelinks: [
+      { Title: 'Что нужно уметь', Description: 'Хватит Excel на уровне пользователя и видеосвязи', anchor: 'porog' },
+      { Title: 'Программа часа', Description: 'От цели до ссылки на приложение — по минутам', anchor: 'programma' },
+      { Title: 'Как подготовиться', Description: 'Рабочий файл, одна фраза о цели и пара расчётов', anchor: 'podgotovka' },
+      { Title: 'Записаться', Description: 'Час онлайн на вашем файле — 4 900 ₽', anchor: 'zapis' },
+    ],
+    callouts: ['1 час онлайн', 'На вашем файле', 'Без программирования', 'Ссылка на приложение'],
+  },
+}
+
+export const PROFILE = PROFILES[process.env.CAMPAIGN_PROFILE ?? 'excel']
 
 const cfg = {
   token: process.env.DIRECT_TOKEN ?? '',
@@ -48,27 +141,24 @@ const cfg = {
   cpaRub: Number(process.env.CPA_RUB ?? 500),
   nightCpaRub: Number(process.env.NIGHT_CPA_RUB ?? Number(process.env.CPA_RUB ?? 500) / 10),
   weeklyRub: Number(process.env.WEEKLY_RUB ?? 10000),
-  // Ценность цели — не чек разбора, а ожидаемая выручка с одной записи:
-  // 20 000 ₽ при гипотезе «продаётся каждая пятая». Гипотеза не проверена,
-  // см. раздел «Чего в этой схеме нет» в описании кампании.
-  goalValueRub: Number(process.env.GOAL_VALUE_RUB ?? 4000),
+  goalValueRub: Number(process.env.GOAL_VALUE_RUB ?? PROFILE?.goalValueRub ?? 0),
 }
 
 /** Чего не хватает в окружении, чтобы запуск имел смысл. */
 export function configProblems(config = cfg, willApply = apply) {
   const problems = []
+  if (!PROFILE) problems.push(`CAMPAIGN_PROFILE: нет профиля «${process.env.CAMPAIGN_PROFILE}», есть ${Object.keys(PROFILES).join(', ')}`)
   if (!config.siteUrl.startsWith('https://')) problems.push('SITE_URL: нужен адрес лендинга с https')
   if (!config.counterId) problems.push('METRIKA_ID: нужен счётчик нового домена')
-  if (!config.goalId) problems.push('GOAL_ID: нужен id цели signup_click')
+  if (!config.goalId) problems.push(`GOAL_ID: нужен id цели ${PROFILE?.goalName ?? 'профиля'}`)
   if (willApply && !config.token) problems.push('DIRECT_TOKEN: без токена создавать нечем')
   return problems
 }
 
-// Ручные группы (hot, pain) и коммерческий срез SEO-ядра — одним списком.
-const groups = [
-  ...JSON.parse(readFileSync(KEYWORDS_FILE, 'utf8')).groups,
-  ...JSON.parse(readFileSync(CORE_FILE, 'utf8')).groups,
-]
+/** Группы фраз профиля. У главной — ручные группы (hot, pain) и коммерческий срез SEO-ядра. */
+export function groupsFor(profile = PROFILE) {
+  return profile.keywordFiles.flatMap(file => JSON.parse(readFileSync(file, 'utf8')).groups)
+}
 
 /** Ограничения Директа на длину полей текстового объявления. */
 export const AD_LIMITS = { Title: 56, Title2: 30, Text: 81 }
@@ -80,7 +170,7 @@ export const AD_LIMITS = { Title: 56, Title2: 30, Text: 81 }
 export const AD_TITLES_TOTAL = 56
 
 /** Ссылка объявления с UTM; {ad_id}/{keyword} подставляет сам Директ. */
-export function href(campaignSlug, siteUrl = cfg.siteUrl) {
+export function href(campaignSlug, siteUrl = cfg.siteUrl, profile = PROFILE) {
   const utm = [
     'utm_source=yandex',
     'utm_medium=cpc',
@@ -88,7 +178,7 @@ export function href(campaignSlug, siteUrl = cfg.siteUrl) {
     'utm_content={ad_id}',
     'utm_term={keyword}',
   ].join('&')
-  return `${siteUrl}/?${utm}`
+  return `${siteUrl}${profile.path}?${utm}`
 }
 
 /**
@@ -96,26 +186,8 @@ export function href(campaignSlug, siteUrl = cfg.siteUrl) {
  * другое и видит объявление боковым зрением, — отсюда короткие заголовки и
  * длина в пределах AD_LIMITS (за превышение Директ отбивает объявление).
  */
-export function adsFor(campaignSlug, siteUrl = cfg.siteUrl) {
-  // Цифры в текстах — ровно те, что на лендинге (site-excel/src/Pricing.tsx,
-  // Landing.tsx): расхождение с посадочной модерация Директа отбивает.
-  return [
-    {
-      Title: 'Excel остаётся Excel’ем',
-      Title2: 'Сделаем из него приложение',
-      Text: 'Пришлите таблицу — через 45 минут покажем приложение на ваших данных. Бесплатно.',
-    },
-    {
-      Title: 'Учёт из Excel — в приложение',
-      Title2: 'Демо бесплатно, 45 минут',
-      Text: 'Формы, права доступа и отчёты вместо файла в почте. Облако от 1 950 ₽/мес.',
-    },
-    {
-      Title: 'Из таблиц — в систему учёта',
-      Title2: 'Покажем на ваших файлах',
-      Text: 'Кейсы: корма, рулоны, продажи. Разбор процесса с ТЗ — 20 000 ₽. Сервер в России.',
-    },
-  ].map(ad => ({ ...ad, Href: href(campaignSlug, siteUrl) }))
+export function adsFor(campaignSlug, siteUrl = cfg.siteUrl, profile = PROFILE) {
+  return profile.ads.map(ad => ({ ...ad, Href: href(campaignSlug, siteUrl, profile) }))
 }
 
 /** Ограничения Директа на быстрые ссылки и уточнения. */
@@ -123,16 +195,11 @@ export const SITELINK_LIMITS = { Title: 30, Description: 60, TitlesTotal: 66 }
 export const CALLOUT_LIMIT = 25
 
 /** Быстрые ссылки — на якоря разделов, которые есть на странице без клика. */
-export function sitelinksFor(campaignSlug, siteUrl = cfg.siteUrl) {
-  return [
-    { Title: 'Сколько стоит', Description: 'Демонстрация бесплатно, облако от 1 950 ₽ в месяц', anchor: 'ceny' },
-    { Title: 'Кейсы клиентов', Description: 'Было в Excel — стало приложением: корма, рулоны, продажи', anchor: 'keysy' },
-    { Title: 'Как это работает', Description: 'Как агент читает структуру ваших таблиц', anchor: 'kak' },
-    { Title: 'Сравнение с Power Apps', Description: 'Чем Интеграм отличается от Power Apps и Quickbase', anchor: 'sravnenie' },
-  ].map(({ anchor, ...link }) => ({ ...link, Href: `${href(campaignSlug, siteUrl)}#${anchor}` }))
+export function sitelinksFor(campaignSlug, siteUrl = cfg.siteUrl, profile = PROFILE) {
+  return profile.sitelinks.map(({ anchor, ...link }) => ({ ...link, Href: `${href(campaignSlug, siteUrl, profile)}#${anchor}` }))
 }
 
-export const CALLOUTS = ['Демонстрация бесплатно', 'Сервер в России', 'Реестр российского ПО', 'Облако от 1 950 ₽/мес']
+export const CALLOUTS = PROFILE?.callouts ?? []
 
 /**
  * Минус-слова на всю кампанию. Прошлый запуск (714501622, сентябрь) собрал
@@ -140,7 +207,11 @@ export const CALLOUTS = ['Демонстрация бесплатно', 'Сер�
  * скачать»: человек ищет файл, а не систему учёта. Список по категориям —
  * docs/marketing/excel-cpa-negatives.json (там же — что и почему НЕ минусуется).
  */
-export const CAMPAIGN_NEGATIVES = loadNegatives()
+export function negativesFor(profile = PROFILE) {
+  return loadNegatives().filter(word => !profile.allowedNegatives.includes(word))
+}
+
+export const CAMPAIGN_NEGATIVES = PROFILE ? negativesFor(PROFILE) : []
 
 /** Автотаргетинг поиска: только запросы, прямо совпадающие с тем, что мы продаём. */
 export const EXACT_ONLY = ['EXACT', 'ALTERNATIVE', 'COMPETITOR', 'BROADER', 'ACCESSORY']
@@ -175,11 +246,11 @@ export function payForConversion(shift = 'day') {
   }
 }
 
-export function campaignPayload(name, slug, where, shift = 'day') {
+export function campaignPayload(name, slug, where, shift = 'day', profile = PROFILE) {
   return {
     Name: name,
     StartDate: new Date().toISOString().slice(0, 10),
-    NegativeKeywords: { Items: CAMPAIGN_NEGATIVES },
+    NegativeKeywords: { Items: negativesFor(profile) },
     TimeZone: 'Europe/Moscow',
     TimeTargeting: {
       Schedule: { Items: scheduleFor(shift) },
@@ -203,12 +274,13 @@ export function campaignPayload(name, slug, where, shift = 'day') {
   }
 }
 
-const CAMPAIGNS = [
-  campaignPayload('Excel-CPA поиск день', 'excel-cpa-search-day', 'search', 'day'),
-  campaignPayload('Excel-CPA поиск ночь', 'excel-cpa-search-night', 'search', 'night'),
-  campaignPayload('Excel-CPA сети день', 'excel-cpa-network-day', 'network', 'day'),
-  campaignPayload('Excel-CPA сети ночь', 'excel-cpa-network-night', 'network', 'night'),
-]
+/** Четыре кампании профиля: поиск и сети × день и ночь. */
+export function campaignsFor(profile = PROFILE) {
+  const where = { search: 'поиск', network: 'сети' }
+  const shift = { day: 'день', night: 'ночь' }
+  return Object.keys(where).flatMap(w => Object.keys(shift).map(sh =>
+    campaignPayload(`${profile.title} ${where[w]} ${shift[sh]}`, `${profile.slug}-${w}-${sh}`, w, sh, profile)))
+}
 
 async function call(service, method, params) {
   const body = JSON.stringify({ method, params })
@@ -239,7 +311,7 @@ async function main() {
   }
 
   console.log(apply ? 'Создаю кампании в боевом кабинете (всё остановленным).' : 'Сухой прогон: ничего не отправляю.')
-  console.log(`Лендинг: ${cfg.siteUrl} | счётчик: ${cfg.counterId} | цель: ${cfg.goalId}`)
+  console.log(`Лендинг: ${cfg.siteUrl}${PROFILE.path} | счётчик: ${cfg.counterId} | цель: ${cfg.goalId}`)
   console.log(`Цена конверсии: днём ${cfg.cpaRub} ₽, ночью ${cfg.nightCpaRub} ₽ | недельный лимит: ${cfg.weeklyRub} ₽ на кампанию`)
 
   // Уточнения — общие для аккаунта, заводятся один раз на все объявления.
@@ -248,7 +320,8 @@ async function main() {
   })
   const calloutIds = apply ? idsOf(calloutsAdded, 'AddResults') : ['<id уточнений>']
 
-  for (const campaign of CAMPAIGNS) {
+  const groups = groupsFor()
+  for (const campaign of campaignsFor()) {
     const { _slug: slug, _autotargeting: autotargeting, ...payload } = campaign
     console.log(`\n=== ${payload.Name} ===`)
 
@@ -319,7 +392,7 @@ async function main() {
   console.log(
     apply
       ? '\nГотово. Кампании остановлены, объявления — черновики: проверьте в интерфейсе и отправьте на модерацию сами.'
-      : '\nСухой прогон закончен. Повторите с --apply, когда цель signup_click проверена на живом лендинге.',
+      : `\nСухой прогон закончен. Повторите с --apply, когда цель ${PROFILE.goalName} проверена на живой странице.`,
   )
 }
 
