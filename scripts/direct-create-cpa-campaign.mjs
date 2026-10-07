@@ -30,8 +30,8 @@
  *   CAMPAIGN_PROFILE excel | praktikum | praktikum-roles | adept | partner
  *                    (по умолчанию excel)
  *   GOAL_ID          id целевой цели профиля в этом счётчике
- *   CPA_RUB          цена конверсии днём, ₽ (по умолчанию 500)
- *   NIGHT_CPA_RUB    цена конверсии ночью, ₽ (по умолчанию CPA_RUB / 10)
+ *   CPA_RUB          цена конверсии днём, ₽ (по умолчанию — у профиля, иначе 500)
+ *   NIGHT_CPA_RUB    цена конверсии ночью, ₽ (по умолчанию — у профиля, иначе CPA_RUB / 10)
  *   WEEKLY_RUB       недельный лимит расхода, ₽ (по умолчанию 10000)
  *   GOAL_VALUE_RUB   ценность цели для Директа, ₽ (по умолчанию — у профиля)
  *   CAMPAIGN_ONLY    создать только кампании, в slug которых есть эта строка,
@@ -108,6 +108,9 @@ export const PROFILES = {
     goalName: 'praktikum_click',
     // Цена практикума: та же ценность, что у цели praktikum_lead.
     goalValueRub: 4900,
+    // Решение владельца 07.10.2026 (#666): 200 ₽ днём, 10 ₽ ночью.
+    cpaRub: 200,
+    nightCpaRub: 10,
     keywordFiles: [PRAKTIKUM_KEYWORDS_FILE],
     // Практикум — это и есть обучение: человек, который ищет курс или урок
     // по нейросетям, здесь целевой. Остальная «учёба» (школа, ЕГЭ, студент,
@@ -195,6 +198,9 @@ PROFILES['praktikum-roles'] = {
   ...PROFILES.praktikum,
   title: 'Практикум-роль',
   slug: 'praktikum-role',
+  // Гипотезы по ролям (#670) созданы по 500/50 ₽; #666 их цены не менял.
+  cpaRub: 500,
+  nightCpaRub: 50,
   keywordFiles: [ROLES_KEYWORDS_FILE],
   // У каждой группы 12 своих объявлений; profile.ads — запасные.
   adsFile: ROLES_ADS_FILE,
@@ -208,8 +214,8 @@ const cfg = {
   siteUrl: (process.env.SITE_URL ?? '').replace(/\/+$/, ''),
   counterId: Number(process.env.METRIKA_ID ?? 0),
   goalId: Number(process.env.GOAL_ID ?? 0),
-  cpaRub: Number(process.env.CPA_RUB ?? 500),
-  nightCpaRub: Number(process.env.NIGHT_CPA_RUB ?? Number(process.env.CPA_RUB ?? 500) / 10),
+  cpaRub: Number(process.env.CPA_RUB ?? PROFILE?.cpaRub ?? 500),
+  nightCpaRub: Number(process.env.NIGHT_CPA_RUB ?? (process.env.CPA_RUB ? Number(process.env.CPA_RUB) / 10 : PROFILE?.nightCpaRub ?? 50)),
   weeklyRub: Number(process.env.WEEKLY_RUB ?? 10000),
   goalValueRub: Number(process.env.GOAL_VALUE_RUB ?? PROFILE?.goalValueRub ?? 0),
 }
