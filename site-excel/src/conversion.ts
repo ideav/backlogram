@@ -47,6 +47,8 @@ export const GOALS = {
    * считать раздельно, не разбирая параметры визитов.
    */
   praktikum: 'praktikum_lead',
+  /** К заявке прикреплён файл (issue #657). Наблюдение, не оплата. */
+  fileAttach: 'file_attach',
 } as const
 
 const MIN_DWELL_MS = 2500
