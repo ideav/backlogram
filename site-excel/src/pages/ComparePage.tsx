@@ -1,6 +1,5 @@
-import { ArrowRight } from 'lucide-react'
-import { CompareBody } from '../HowItWorks'
-import { BLOG_POST_URL, CASES, COMPARE_PAGE } from '../content'
+import { CompareBody, FormulasNote } from '../HowItWorks'
+import { CASES, COMPARE_PAGE } from '../content'
 import { SITE_BASE } from '../site-base'
 import { StaticPage } from './StaticPage'
 
@@ -45,18 +44,7 @@ export function ComparePage() {
           ))}
         </ul>
 
-        <p className="mt-8 text-sm text-slate-500">
-          Формулы ячеек и макросы ни на одной платформе не переезжают сами — их логика собирается
-          заново из полей, статусов и запросов.{' '}
-          <a
-            href={BLOG_POST_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-blue-600 hover:underline"
-          >
-            Подробно, с границами автоматизации <ArrowRight size={14} />
-          </a>
-        </p>
+        <FormulasNote />
       </section>
     </StaticPage>
   )

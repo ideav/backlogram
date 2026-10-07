@@ -5,10 +5,11 @@ import {
   LayoutDashboard,
   ListTree,
   Minus,
+  Sigma,
   UserCheck,
   type LucideIcon,
 } from 'lucide-react'
-import { BLOG_POST_URL, COMPARE, COMPARE_PAGE, OURS, READING } from './content'
+import { BLOG_POST_URL, COMPARE, COMPARE_PAGE, FORMULAS, OURS, READING } from './content'
 import { SITE_BASE } from './site-base'
 
 // Тексты обоих блоков живут в content.ts: их же читают отдельная страница
@@ -56,6 +57,29 @@ export function CompareBody() {
   )
 }
 
+/** Формулы и макросы как преимущество (issue #655) — и то же на странице сравнения. */
+export function FormulasNote() {
+  return (
+    <div className="mt-8 flex gap-4 rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5">
+      <span className="shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/30 flex items-center justify-center">
+        <Sigma size={20} />
+      </span>
+      <div>
+        <h3 className="font-semibold">{FORMULAS.title}</h3>
+        <p className="mt-1 text-slate-600 leading-relaxed text-sm">{FORMULAS.body}</p>
+        <a
+          href={BLOG_POST_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 inline-flex items-center gap-1 text-sm text-blue-600 hover:underline"
+        >
+          Подробно о том, как агент читает таблицу <ArrowRight size={14} />
+        </a>
+      </div>
+    </div>
+  )
+}
+
 export function HowItWorks() {
   return (
     <>
@@ -82,18 +106,7 @@ export function HowItWorks() {
               )
             })}
           </div>
-          <p className="mt-6 text-sm text-slate-500">
-            Формулы ячеек и макросы сами не переезжают — их логика заново собирается из полей,
-            статусов и запросов.{' '}
-            <a
-              href={BLOG_POST_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-blue-600 hover:underline"
-            >
-              Подробно, с границами автоматизации <ArrowRight size={14} />
-            </a>
-          </p>
+          <FormulasNote />
         </div>
       </section>
 
