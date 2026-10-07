@@ -8,6 +8,8 @@ export interface AiItem {
 export interface AiTable {
   head: string[]
   rows: string[][]
+  /** Окраска шапки по колонкам: 'bad' — красная, 'good' — зелёная (#650). */
+  tones?: ('bad' | 'good' | null)[]
 }
 
 export interface AiSection {

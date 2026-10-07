@@ -122,6 +122,17 @@ test('главная ведёт на хаб: React и пререндер', () =>
   assert.ok(read('scripts/prerender-landing.mjs').includes(`href="/${AI_HUB.slug}.html"`), 'нет в пререндере главной')
 })
 
+// #650: в таблице семи вопросов ответы с ❌/✅, шапки «против/за» окрашены.
+test('семь вопросов: ❌ у типичного проекта, ✅ у Интеграма, цветные шапки', () => {
+  const hub = out[AI_HUB.slug]
+  assert.ok(hub.includes('<th class="ai-th-bad">Типичный «ИИ-проект»</th>'), 'шапка «Типичный» не красная')
+  assert.ok(hub.includes('<th class="ai-th-good">Интеграм</th>'), 'шапка «Интеграм» не зелёная')
+  for (const s of SEVEN_QUESTIONS) {
+    assert.ok(hub.includes(`❌ Нет. ${s.typical}`), `нет ❌ у «${s.q}»`)
+    assert.ok(hub.includes(`✅ Да. ${s.integram}`), `нет ✅ у «${s.q}»`)
+  }
+})
+
 test('цены на странице внедрения берутся из каталога услуг', () => {
   const html = out['vnedrenie-ii-v-biznes']
   for (const id of ['razbor-processa', 'pilot', 'cloud', 'license']) {
