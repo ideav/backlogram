@@ -98,6 +98,30 @@ test('хаб несёт все семь вопросов, каждая стра�
   }
 })
 
+// #648: схема «хаб и разделы» — хаб перечисляет разделы сразу под шапкой,
+// раздел ведёт на хаб наверху, «Ещё по теме» — только соседние разделы.
+test('хаб ↔ разделы: карточки на хабе, ссылка на хаб наверху раздела', () => {
+  const spokes = AI_PAGES.filter((p) => p.slug !== AI_HUB.slug)
+  const hub = out[AI_HUB.slug]
+  const hubNav = hub.slice(hub.indexOf('aria-label="Разделы темы"'), hub.indexOf('</nav>', hub.indexOf('aria-label="Разделы темы"')))
+  assert.ok(hubNav, 'на хабе нет блока «Разделы темы»')
+  assert.ok(hub.indexOf('Разделы темы') < hub.indexOf('<h2>Частые вопросы</h2>'), 'разделы должны стоять выше FAQ')
+  for (const s of spokes) assert.ok(hubNav.includes(`href="/${s.slug}.html"`), `хаб не перечисляет ${s.slug}`)
+  for (const s of spokes) {
+    const html = out[s.slug]
+    const header = html.slice(html.indexOf('<header>'), html.indexOf('</header>'))
+    assert.ok(header.includes(`href="/${AI_HUB.slug}.html"`), `${s.slug}: нет ссылки на хаб наверху`)
+    const more = html.match(/Ещё по теме: (.*?)<\/p>/)[1]
+    assert.ok(!more.includes(AI_HUB.slug), `${s.slug}: хаб дублируется в «Ещё по теме»`)
+  }
+})
+
+test('главная ведёт на хаб: React и пререндер', () => {
+  assert.ok(read('src/pages/Home.tsx').includes(`'/${AI_HUB.slug}.html'`), 'нет в «Все решения и инструменты»')
+  assert.ok(read('src/pages/Home.tsx').includes(`to="/${AI_HUB.slug}.html"`), 'нет кнопки в секции «ИИ»')
+  assert.ok(read('scripts/prerender-landing.mjs').includes(`href="/${AI_HUB.slug}.html"`), 'нет в пререндере главной')
+})
+
 test('цены на странице внедрения берутся из каталога услуг', () => {
   const html = out['vnedrenie-ii-v-biznes']
   for (const id of ['razbor-processa', 'pilot', 'cloud', 'license']) {

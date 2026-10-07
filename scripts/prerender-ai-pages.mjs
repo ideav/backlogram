@@ -44,6 +44,7 @@ const PRERENDER_STYLE = `
     text-align: left; vertical-align: top; line-height: 1.5; }
   #ai-prerender .ai-eyebrow { text-transform: uppercase; letter-spacing: 0.1em;
     font-size: 0.72rem; color: #3b82f6; font-weight: 700; margin: 0; }
+  #ai-prerender .ai-hub-link { font-size: 0.9rem; font-weight: 600; margin: 0 0 0.75rem; }
   #ai-prerender .ai-lead { font-size: 1.1rem; color: #475569; max-width: 50rem; }
   #ai-prerender .ai-footer { margin-top: 3rem; padding-top: 1.5rem;
     border-top: 1px solid #e2e8f0; font-size: 0.92rem; color: #475569; }
@@ -103,19 +104,30 @@ for (const page of AI_PAGES) {
   const canonical = `${SITE}/${page.slug}.html`
   const isHub = page.slug === AI_HUB.slug
   const ogImage = `${SITE}/og/${page.slug}.png`
-  const related = AI_PAGES.filter((p) => p.slug !== page.slug)
+  // #648: хаб → карточки всех разделов; раздел → ссылка на хаб наверху,
+  // «Ещё по теме» — только соседние разделы (как в src/pages/AiLanding.tsx).
+  const spokes = AI_PAGES.filter((p) => p.slug !== AI_HUB.slug)
+  const related = spokes.filter((p) => p.slug !== page.slug)
     .map((p) => `<a href="/${p.slug}.html">${escape(p.navName)}</a>`).join(' · ')
+  const hubLinkHtml = isHub ? ''
+    : `<p class="ai-hub-link"><a href="/${AI_HUB.slug}.html">← ${escape(AI_HUB.navName)}: все разделы темы</a></p>`
+  const spokesHtml = !isHub ? '' : `<nav aria-label="Разделы темы">
+    <h2>Разделы темы</h2>
+    <ul>${spokes.map((p) => `<li><a href="/${p.slug}.html">${escape(p.navName)}</a> — ${escape(p.ogDescription)}</li>`).join('')}</ul>
+  </nav>`
   const faqHtml = page.faq
     .map((f) => `<section><h3>${escape(f.q)}</h3><p>${escape(f.a)}</p></section>`).join('')
 
   const bodyHtml = `
 <article id="ai-prerender">
   <header>
+    ${hubLinkHtml}
     <p class="ai-eyebrow">${escape(page.badge)}</p>
     <h1>${escape(`${page.h1} ${page.h1accent}`)}</h1>
     <p class="ai-lead">${escape(page.lead)}</p>
     <p><a href="${TRY_URL}">Проверить на своём Excel</a> · <a href="/uslugi.html#razbor-processa">Заказать разбор процесса</a></p>
   </header>
+  ${spokesHtml}
   ${page.sections.map(sectionHtml).join('\n  ')}
   <h2>Частые вопросы</h2>
   ${faqHtml}

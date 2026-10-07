@@ -125,13 +125,22 @@ export default function AiLanding({ slug }: { slug: string }) {
   const crumbs = [{ name: 'Интеграм', to: '/' }]
   if (page.slug !== AI_HUB.slug) crumbs.push({ name: AI_HUB.navName, to: `/${AI_HUB.slug}.html` })
   crumbs.push({ name: page.navName, to: `/${page.slug}.html` })
-  const related = AI_PAGES.filter((p) => p.slug !== page.slug)
+  // #648: хаб ведёт на все разделы карточками, раздел — на хаб ссылкой наверху,
+  // а «Ещё по теме» у раздела — только соседние разделы.
+  const isHub = page.slug === AI_HUB.slug
+  const spokes = AI_PAGES.filter((p) => p.slug !== AI_HUB.slug)
+  const related = spokes.filter((p) => p.slug !== page.slug)
 
   return (
     <div className="overflow-hidden">
       <section className="pt-32 pb-6 lg:pt-40">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumbs items={crumbs} />
+          {!isHub && (
+            <Link to={`/${AI_HUB.slug}.html`} className="inline-flex items-center gap-1.5 mb-4 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+              ← {AI_HUB.navName}: все разделы темы
+            </Link>
+          )}
           <p className="uppercase tracking-widest text-xs font-bold text-blue-500 mb-3">{page.badge}</p>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-6">
             {page.h1} <span className="text-blue-600 dark:text-blue-400">{page.h1accent}</span>
@@ -149,6 +158,28 @@ export default function AiLanding({ slug }: { slug: string }) {
       </section>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        {isHub && (
+          <nav className="py-6" aria-label="Разделы темы">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6">Разделы темы</h2>
+            <ul className="grid md:grid-cols-2 gap-4">
+              {spokes.map((p) => (
+                <li key={p.slug}>
+                  <Link
+                    to={`/${p.slug}.html`}
+                    className="group block h-full p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 hover:border-blue-500/40 transition-colors"
+                  >
+                    <span className="flex items-center justify-between gap-3 font-bold text-slate-800 dark:text-slate-100 mb-2">
+                      {p.navName}
+                      <ArrowRight size={16} className="text-slate-300 dark:text-slate-600 group-hover:text-blue-500 flex-shrink-0" />
+                    </span>
+                    <span className="block text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{p.ogDescription}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
+
         {page.sections.map((s) => <Section key={s.h2} s={s} />)}
 
         <section className="py-10">

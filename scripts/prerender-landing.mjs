@@ -210,6 +210,7 @@ const bodyHtml = `
     <nav class="lp-prerender__links" aria-label="Разделы сайта">
       <a href="/excel-to-app.html">Загрузить Excel — получить приложение</a> ·
       <a href="/informatsionnaya-sistema.html">Что такое информационная система</a> ·
+      <a href="/avtomatizaciya-biznesa-s-ii.html">Автоматизация бизнеса с ИИ</a> ·
       <a href="/agent-platforms.html">Интеграм против low-code и ИИ-агентов</a> ·
       <a href="/catalog-matching.html">Сопоставление каталогов и прайсов</a> ·
       <a href="/knowledge-base.html">База знаний</a>
