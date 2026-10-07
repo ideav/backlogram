@@ -157,7 +157,7 @@ function pageHtml(page) {
     ${page.jsonLd}
   </head>
   <body>
-    <div id="page">${page.body}</div>${page.landing ? `\n    ${landingScript(page.landing)}` : ''}${page.praktikum ? `\n    ${praktikumScript()}` : ''}
+    <div id="page">${page.body}</div>${page.landing ? `\n    ${landingScript(page.landing)}` : ''}${page.praktikum ? `\n    ${praktikumScript()}` : ''}${page.program ? `\n    ${programScript(page.program)}` : ''}
     ${metrikaBlock}
   </body>
 </html>
@@ -194,6 +194,20 @@ function praktikumScript() {
     ? `try{ym(${METRIKA_ID},'reachGoal',ok?'praktikum_click':'praktikum_blocked',{dwell_ms:Date.now()-t})}catch(e){}`
     : ''
   return `<script>(function(){var t=Date.now(),h=false;['pointerdown','pointermove','touchstart','keydown','wheel','scroll'].forEach(function(n){addEventListener(n,function(e){if(e.isTrusted)h=true},{passive:true})});var q=new URLSearchParams(location.search),k=[];q.forEach(function(v,n){if(/^utm_|^yclid$/.test(n))k.push([n,v])});var slot=document.getElementById('pk-step2'),tpl=document.getElementById('pk-step2-tpl'),btns=document.querySelectorAll('[data-pk-open]');function open(){if(!slot.firstChild){slot.appendChild(tpl.content.cloneNode(true));var a=slot.querySelector('a[data-pk-go]'),u=new URL(a.getAttribute('href'),location.href);k.forEach(function(x){u.searchParams.set(x[0],x[1])});a.href=u.pathname+u.search+u.hash;a.addEventListener('click',function(){var ok=h&&!navigator.webdriver&&Date.now()-t>=2500;${goal}})}btns.forEach(function(b){b.hidden=true});slot.scrollIntoView({behavior:'smooth',block:'center'})}btns.forEach(function(b){b.hidden=false;b.addEventListener('click',open)})})()</script>`
+}
+
+/**
+ * Цель страниц рекрутинга (issue #674): клик по ссылке заявки [data-program-go]
+ * (телеграм или почта) шлёт `<slug>_click` — за неё платят кампании Директа на
+ * /adept/ и /partner/. Проверка на человека та же, что у `praktikum_click`:
+ * настоящий (isTrusted) жест в сессии, 2,5 с на странице и не webdriver, иначе
+ * уходит `<slug>_blocked`, за которую Директ не платит. Ссылки ведут наружу
+ * (t.me, mailto), поэтому UTM к ним не дописываются — их видно в визите.
+ */
+function programScript(slug) {
+  if (!METRIKA_ID) return ''
+  const goal = JSON.stringify(slug)
+  return `<script>(function(){var t=Date.now(),h=false;['pointerdown','pointermove','touchstart','keydown','wheel','scroll'].forEach(function(n){addEventListener(n,function(e){if(e.isTrusted)h=true},{passive:true})});document.querySelectorAll('a[data-program-go]').forEach(function(a){a.addEventListener('click',function(){var ok=h&&!navigator.webdriver&&Date.now()-t>=2500;try{ym(${METRIKA_ID},'reachGoal',${goal}+(ok?'_click':'_blocked'),{via:a.getAttribute('data-program-go'),dwell_ms:Date.now()-t})}catch(e){}})})})()</script>`
 }
 
 const written = [indexPath]
