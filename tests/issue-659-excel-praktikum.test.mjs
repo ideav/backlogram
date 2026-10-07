@@ -72,3 +72,14 @@ test('order.php помечает заявку на практикум, не ме
   assert.match(order, /\$praktikum = \$kind === 'demo' && \(\$data\['format'\] \?\? ''\) === 'praktikum';/)
   assert.match(order, /Заявка на практикум/)
 })
+
+test('цена на странице и в разметке одна, оплата — после подтверждения заявки', () => {
+  // Комментарий владельца в PR #661: добавить стоимость, ссылку на оплату
+  // присылаем после подтверждения заявки.
+  const price = praktikum.match(/price: '([\d\s]+) ₽'/)[1].replace(/\s/g, '')
+  assert.match(praktikum, new RegExp(`priceValue: ${price},`))
+  assert.match(praktikum, /после подтверждения заявки/)
+  assert.match(seo, /price: PRAKTIKUM\.priceValue/)
+  assert.match(page, /\{PRAKTIKUM\.price\}/)
+  assert.doesNotMatch(praktikum + page, /[Пп]рактикум бесплатный|'бесплатно'/)
+})

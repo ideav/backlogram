@@ -97,8 +97,8 @@ export function PraktikumPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
           <h2 className="text-2xl sm:text-3xl font-bold">Программа часа</h2>
           <p className="mt-3 text-slate-600 max-w-3xl leading-relaxed">
-            Приложение из вашей таблицы ИИ-агент собирает заранее — это та же бесплатная демонстрация
-            за ~45 минут. Сам час целиком уходит на разбор и работу в нём.
+            Приложение из вашей таблицы ИИ-агент собирает заранее — это та же демонстрация за ~45
+            минут, она бесплатна. Сам час целиком уходит на разбор и работу в нём.
           </p>
           <ol className="mt-8 space-y-3">
             {PRAKTIKUM.program.map(row => (
@@ -180,9 +180,12 @@ function PraktikumCta() {
     <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
       <div className="rounded-3xl border border-blue-500/30 bg-blue-50/60 p-6 sm:p-10">
         <h2 className="text-2xl sm:text-3xl font-bold">Записаться на практикум</h2>
+        <p className="mt-4 text-3xl font-extrabold text-slate-900">
+          {PRAKTIKUM.price} <span className="text-base font-medium text-slate-500">за час на вашем файле</span>
+        </p>
         <p className="mt-4 text-slate-700 leading-relaxed max-w-2xl">
           Заявка — та же форма, что и для демонстрации: приложите файл и отметьте «практикум».
-          Дату и время согласуем после заявки. Практикум бесплатный.
+          Сейчас ничего платить не нужно. {PRAKTIKUM.payment}
         </p>
         <div className="mt-8 flex flex-wrap gap-4">
           <a

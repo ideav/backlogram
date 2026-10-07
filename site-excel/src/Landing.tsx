@@ -222,7 +222,7 @@ const DEMO_FORMATS: { value: DemoFormat; title: string; body: string }[] = [
   {
     value: 'praktikum',
     title: 'Практикум: час с ведущим',
-    body: 'Соберём заранее, потом за час онлайн разберём его вместе на ваших данных.',
+    body: `Соберём заранее, потом за час онлайн разберём его вместе на ваших данных. ${PRAKTIKUM.price}, ссылку на оплату пришлём после подтверждения.`,
   },
 ]
 
@@ -781,9 +781,9 @@ export default function Landing() {
           <p className="mt-6 text-sm text-slate-600">
             Ни разу не делали проект с ИИ?{' '}
             <a href={`${SITE_BASE}${PRAKTIKUM.slug}/`} className="text-blue-600 font-medium hover:underline">
-              Бесплатный практикум «{PRAKTIKUM.title}»
+              Практикум «{PRAKTIKUM.title}»
             </a>{' '}
-            — что нужно уметь и как проходит час.
+            за {PRAKTIKUM.price} — что нужно уметь и как проходит час.
           </p>
         </section>
 
