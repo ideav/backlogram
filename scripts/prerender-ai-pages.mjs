@@ -44,6 +44,8 @@ const PRERENDER_STYLE = `
     text-align: left; vertical-align: top; line-height: 1.5; }
   #ai-prerender .ai-eyebrow { text-transform: uppercase; letter-spacing: 0.1em;
     font-size: 0.72rem; color: #3b82f6; font-weight: 700; margin: 0; }
+  #ai-prerender .ai-th-bad  { background: #fef2f2; color: #b91c1c; }
+  #ai-prerender .ai-th-good { background: #ecfdf5; color: #047857; }
   #ai-prerender .ai-hub-link { font-size: 0.9rem; font-weight: 600; margin: 0 0 0.75rem; }
   #ai-prerender .ai-lead { font-size: 1.1rem; color: #475569; max-width: 50rem; }
   #ai-prerender .ai-footer { margin-top: 3rem; padding-top: 1.5rem;
@@ -51,6 +53,8 @@ const PRERENDER_STYLE = `
   /* Dark colours follow the app theme (.dark on <html>) — NOT prefers-color-scheme (issue #325). */
   .dark #ai-prerender { color: #e2e8f0; }
   .dark #ai-prerender th, .dark #ai-prerender td { border-color: #1e293b; }
+  .dark #ai-prerender .ai-th-bad  { background: rgba(69, 10, 10, 0.5); color: #fca5a5; }
+  .dark #ai-prerender .ai-th-good { background: rgba(2, 44, 34, 0.5); color: #6ee7b7; }
   .dark #ai-prerender .ai-lead, .dark #ai-prerender .ai-footer { color: #94a3b8; }
 </style>`
 
@@ -60,7 +64,8 @@ function sectionHtml(s) {
   const parts = [`<h2>${escape(s.h2)}</h2>`]
   if (s.intro) parts.push(`<p>${escape(s.intro)}</p>`)
   if (s.table) {
-    const head = s.table.head.map((h) => `<th>${escape(h)}</th>`).join('')
+    const head = s.table.head
+      .map((h, j) => `<th${s.table.tones?.[j] ? ` class="ai-th-${s.table.tones[j]}"` : ''}>${escape(h)}</th>`).join('')
     const rows = s.table.rows
       .map((r) => `<tr>${r.map((c) => `<td>${escape(c)}</td>`).join('')}</tr>`).join('')
     parts.push(`<table><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table>`)

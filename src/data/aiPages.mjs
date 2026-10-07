@@ -66,7 +66,9 @@ export const SEVEN_QUESTIONS = [
 /** Таблица «семь вопросов» в общем формате секции-таблицы. */
 const sevenQuestionsTable = {
   head: ['Вопрос поставщику', 'Типичный «ИИ-проект»', 'Интеграм'],
-  rows: SEVEN_QUESTIONS.map((s, i) => [`${i + 1}. ${s.q}`, `Нет. ${s.typical}`, `Да. ${s.integram}`]),
+  // #650: шапки «против/за» красятся, ответы начинаются с ❌/✅.
+  tones: [null, 'bad', 'good'],
+  rows: SEVEN_QUESTIONS.map((s, i) => [`${i + 1}. ${s.q}`, `❌ Нет. ${s.typical}`, `✅ Да. ${s.integram}`]),
 }
 
 /** Что внутри платформы — общий список для нескольких страниц. */

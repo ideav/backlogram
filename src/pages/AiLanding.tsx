@@ -22,6 +22,12 @@ const PRICED = PRICED_SERVICE_IDS
   .map((id) => SERVICES.find((s) => s.id === id))
   .filter((s): s is (typeof SERVICES)[number] => Boolean(s))
 
+// #650: цвет шапки колонки по tones таблицы.
+const TH_TONE: Record<string, string> = {
+  bad: 'bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-300',
+  good: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300',
+}
+
 function Section({ s }: { s: AiSection }) {
   return (
     <section className="py-10">
@@ -32,7 +38,7 @@ function Section({ s }: { s: AiSection }) {
         <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 mb-6">
           <table className="w-full text-sm text-left">
             <thead className="bg-slate-50 dark:bg-slate-900/60 text-slate-500 dark:text-slate-400 uppercase text-xs tracking-wider">
-              <tr>{s.table.head.map((h) => <th key={h} className="px-4 py-3 font-semibold">{h}</th>)}</tr>
+              <tr>{s.table.head.map((h, j) => <th key={h} className={`px-4 py-3 font-semibold ${TH_TONE[s.table?.tones?.[j] ?? ''] ?? ''}`}>{h}</th>)}</tr>
             </thead>
             <tbody>
               {s.table.rows.map((row, i) => (
