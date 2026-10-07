@@ -31,7 +31,9 @@ export function SiteHeader({ homeHref }: { homeHref?: string }) {
   const withBase = (href: string) => (homeHref ? `${homeHref}${href}` : href)
   return (
     <>
-      <header className="border-b border-slate-200 bg-white/90 backdrop-blur sticky top-0 z-10">
+      <header className="border-b border-slate-200/70 bg-white/80 backdrop-blur-md sticky top-0 z-10">
+        {/* Тонкая фирменная полоска сверху (issue #643). */}
+        <div aria-hidden="true" className="h-[3px] bg-brand" />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
           {homeHref ? (
             <a href={homeHref} aria-label="На главную">
@@ -45,7 +47,7 @@ export function SiteHeader({ homeHref }: { homeHref?: string }) {
               <a
                 key={href}
                 href={withBase(href)}
-                className="text-slate-600 hover:text-blue-600 transition-colors whitespace-nowrap"
+                className="font-medium text-slate-600 hover:text-violet-700 transition-colors whitespace-nowrap"
               >
                 {label}
               </a>
@@ -80,7 +82,7 @@ export function SiteHeader({ homeHref }: { homeHref?: string }) {
 
 export function SiteFooter() {
   return (
-    <footer id="kontakty" className="border-t border-slate-200 scroll-mt-16">
+    <footer id="kontakty" className="border-t border-slate-200 bg-slate-50 scroll-mt-16">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 text-sm text-slate-500 space-y-3">
         {/* Живые контакты (issue #5091) — те же, что на ideav.ru. Почта текстом,
             без mailto-ссылки: клик по ней — автоцель Метрики «Клик по email»

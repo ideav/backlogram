@@ -1,12 +1,17 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import {
   ArrowRight,
+  BadgeCheck,
   BarChart3,
   CheckCircle2,
   ClipboardList,
+  Clock3,
   FileSpreadsheet,
+  Gift,
+  LayoutDashboard,
   MessageSquare,
   Paperclip,
+  Server,
   ShieldCheck,
   Sparkles,
   Table2,
@@ -115,6 +120,89 @@ const ANALYSIS_INCLUDES = [
   'Оценка стоимости разработки по этому ТЗ — обычно 50–100 тыс. ₽, включая уплаченные 20 тыс. за разбор',
   'ТЗ остаётся у вас — внедрять по нему можно с кем угодно',
 ]
+
+// Только то, что на странице уже подтверждено: срок и цена демо — в герое и
+// ценах, реестр ПО и хранение данных в России — в подвале.
+const TRUST = [
+  { icon: Clock3, label: '≈45 минут до демо', tone: 'bg-blue-100 text-blue-700' },
+  { icon: Gift, label: 'Демонстрация бесплатно', tone: 'bg-violet-100 text-violet-700' },
+  { icon: BadgeCheck, label: 'Реестр отечественного ПО', tone: 'bg-emerald-100 text-emerald-700' },
+  { icon: Server, label: 'Данные хранятся в России', tone: 'bg-amber-100 text-amber-700' },
+]
+
+const STEP_TONES = [
+  'from-emerald-500 to-teal-500 shadow-emerald-500/30',
+  'from-blue-500 to-indigo-500 shadow-blue-500/30',
+  'from-violet-500 to-fuchsia-500 shadow-violet-500/30',
+]
+
+const APP_ROWS = [
+  { name: 'Заказ 1042', status: 'Новый', tone: 'bg-blue-100 text-blue-700' },
+  { name: 'Заказ 1041', status: 'В работе', tone: 'bg-amber-100 text-amber-700' },
+  { name: 'Заказ 1040', status: 'Готово', tone: 'bg-emerald-100 text-emerald-700' },
+]
+
+/**
+ * Иллюстрация героя «таблица → приложение» (issue #643). Чистая разметка без
+ * картинок: ничего не догружается, а в пререндере она такая же, как в браузере.
+ * Для скринридера декорация не несёт смысла — смысл уже сказан заголовком.
+ */
+function HeroVisual() {
+  return (
+    <div aria-hidden="true" className="relative hidden sm:block h-[22rem] lg:h-[26rem] select-none">
+      {/* Excel — сзади, чуть повёрнут */}
+      <div className="absolute left-0 top-2 w-[62%] -rotate-3 rounded-2xl bg-white shadow-xl shadow-slate-900/10 ring-1 ring-slate-200 overflow-hidden">
+        <div className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white text-xs font-semibold">
+          <FileSpreadsheet size={14} /> заказы_итог_v7_ФИНАЛ.xlsx
+        </div>
+        <div className="grid grid-cols-4 text-[10px] text-slate-400">
+          {Array.from({ length: 28 }, (_, i) => (
+            <div key={i} className={`h-6 border-r border-b border-slate-100 px-1.5 flex items-center ${i < 4 ? 'bg-emerald-50 font-semibold text-emerald-800' : ''}`}>
+              {i < 4 ? ['Дата', 'Клиент', 'Сумма', 'Статус'][i] : <span className="h-1.5 rounded bg-slate-200" style={{ width: `${40 + ((i * 37) % 50)}%` }} />}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Переход */}
+      <div className="absolute left-[44%] top-[30%] z-20 -translate-x-1/2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand text-white text-xs font-semibold shadow-lg shadow-violet-600/30">
+        <Sparkles size={13} /> ИИ-агент · 45 мин
+      </div>
+
+      {/* Приложение — спереди */}
+      <div className="absolute right-0 bottom-0 z-10 w-[70%] rounded-2xl bg-white shadow-2xl shadow-indigo-900/20 ring-1 ring-slate-200 overflow-hidden">
+        <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-slate-100">
+          <span className="w-2.5 h-2.5 rounded-full bg-rose-400" />
+          <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+          <span className="ml-3 text-xs font-semibold text-slate-700">Заказы</span>
+        </div>
+        <div className="flex">
+          <div className="w-10 shrink-0 bg-brand flex flex-col items-center gap-3 py-3 text-white/90">
+            <LayoutDashboard size={15} />
+            <Table2 size={15} />
+            <Users size={15} />
+          </div>
+          <div className="flex-1 p-4 space-y-3">
+            <div className="flex items-end gap-1.5 h-16">
+              {[45, 70, 55, 85, 62, 95, 78].map((h, i) => (
+                <span key={i} className="flex-1 rounded-t-md bg-gradient-to-t from-blue-500 to-violet-400" style={{ height: `${h}%` }} />
+              ))}
+            </div>
+            <ul className="space-y-1.5">
+              {APP_ROWS.map(row => (
+                <li key={row.name} className="flex items-center justify-between rounded-lg bg-slate-50 px-2.5 py-1.5 text-[11px]">
+                  <span className="font-medium text-slate-700">{row.name}</span>
+                  <span className={`px-2 py-0.5 rounded-full font-semibold ${row.tone}`}>{row.status}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function formatBytes(n: number): string {
   if (n >= 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} МБ`
@@ -238,7 +326,7 @@ function OrderForm({
   }
 
   return (
-    <form onSubmit={submit} className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
+    <form onSubmit={submit} className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xl shadow-indigo-500/10">
       <h3 className="text-xl font-bold">{title}</h3>
       <p className="mt-2 text-slate-600">{sub}</p>
 
@@ -352,7 +440,7 @@ function OrderForm({
       <button
         type="submit"
         disabled={busy}
-        className="mt-6 w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold transition-colors"
+        className="btn-primary mt-6 w-full sm:w-auto px-7 py-4"
       >
         <MessageSquare size={18} />
         {busy ? 'Отправляю…' : submitLabel}
@@ -518,59 +606,83 @@ export default function Landing() {
 
       <main>
         {/* Hero */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-blue-50 via-white to-white">
-          <div className="absolute -top-24 right-0 w-96 h-96 bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-16 pb-12 sm:pt-24">
-            <p className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 bg-white text-blue-600 text-sm font-medium">
-              <Sparkles size={14} />
-              Бесплатная демонстрация за ~45 минут
-            </p>
-            <h1 className="mt-6 text-4xl sm:text-5xl font-bold tracking-tight leading-tight">
-              Сделайте себе <span className="text-blue-600">полноценное приложение</span>
-              <br className="hidden sm:block" /> из вашего Excel
-            </h1>
-            <p className="mt-6 text-lg text-slate-600 leading-relaxed max-w-2xl">
-              Пришлите ваши таблицы, по которым живёт участок, склад или объект. Если есть, приложите
-              ТЗ в свободной форме. Примерно через 45 минут ИИ-агент Интеграма вернёт работающее
-              веб-приложение с вашими данными: формы, права доступа, отчёты и графики.
-            </p>
+        <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-violet-50/60 to-emerald-50/50">
+          {/* Цветные пятна фона; при «уменьшить движение» замирают (index.css). */}
+          <div className="absolute -top-32 -right-24 w-[28rem] h-[28rem] bg-violet-400/25 blur-[110px] rounded-full pointer-events-none animate-float" />
+          <div className="absolute top-40 -left-32 w-[24rem] h-[24rem] bg-blue-400/25 blur-[110px] rounded-full pointer-events-none animate-float-slow" />
+          <div className="absolute -bottom-24 right-1/3 w-80 h-80 bg-emerald-300/25 blur-[100px] rounded-full pointer-events-none animate-float" />
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-14 pb-16 sm:pt-20 sm:pb-20 grid gap-12 lg:grid-cols-[1.15fr_1fr] lg:items-center">
+            <div>
+              <p className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-violet-500/20 bg-white/80 backdrop-blur text-violet-700 text-sm font-medium shadow-sm">
+                <Sparkles size={14} />
+                Бесплатная демонстрация за ~45 минут
+              </p>
+              <h1 className="mt-6 text-4xl sm:text-5xl lg:text-[3.4rem] font-extrabold tracking-tight leading-[1.08]">
+                Сделайте себе <span className="text-gradient">полноценное приложение</span>
+                <br className="hidden sm:block" /> из вашего Excel
+              </h1>
+              <p className="mt-6 text-lg text-slate-600 leading-relaxed max-w-2xl">
+                Пришлите ваши таблицы, по которым живёт участок, склад или объект. Если есть, приложите
+                ТЗ в свободной форме. Примерно через 45 минут ИИ-агент Интеграма вернёт работающее
+                веб-приложение с вашими данными: формы, права доступа, отчёты и графики.
+              </p>
 
-            <div className="mt-10">
-              {!funnelOpen ? (
-                <button
-                  type="button"
-                  onClick={openFunnel}
-                  className="inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg shadow-lg shadow-blue-600/20 transition-colors"
-                >
-                  Сделать приложение из моего Excel
-                  <ArrowRight size={20} />
-                </button>
-              ) : (
-                <p className="text-slate-500">Ниже — форма: пришлите файлы и опишите задачу.</p>
-              )}
+              <div className="mt-10">
+                {!funnelOpen ? (
+                  <button
+                    type="button"
+                    onClick={openFunnel}
+                    className="btn-primary px-7 py-4 text-lg"
+                  >
+                    Сделать приложение из моего Excel
+                    <ArrowRight size={20} />
+                  </button>
+                ) : (
+                  <p className="text-slate-500">Ниже — форма: пришлите файлы и опишите задачу.</p>
+                )}
+              </div>
+              <p className="mt-5 text-sm text-slate-500">
+                Демонстрация — бесплатно · разбор процесса — {ANALYSIS_PRICE} · облако — от 1 950 ₽/мес.{' '}
+                <a href="#ceny" className="text-blue-600 font-medium hover:underline">
+                  Все цены
+                </a>
+              </p>
+              <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-slate-700">
+                {TRUST.map(({ icon: Icon, label, tone }) => (
+                  <li key={label} className="inline-flex items-center gap-2">
+                    <span className={`w-7 h-7 rounded-lg flex items-center justify-center ${tone}`}>
+                      <Icon size={15} />
+                    </span>
+                    {label}
+                  </li>
+                ))}
+              </ul>
             </div>
-            <p className="mt-5 text-sm text-slate-500">
-              Демонстрация — бесплатно · разбор процесса — {ANALYSIS_PRICE} · облако — от 1 950 ₽/мес.{' '}
-              <a href="#ceny" className="text-blue-600 hover:underline">
-                Все цены
-              </a>
-            </p>
+
+            <HeroVisual />
           </div>
         </section>
 
         {/* Как это происходит */}
         <section id="kak-proishodit" className="scroll-mt-16 max-w-5xl mx-auto px-4 sm:px-6 py-12">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
+          <h2 className="text-sm font-bold uppercase tracking-widest text-gradient">
             Как это происходит
           </h2>
-          <div className="mt-6 grid gap-8 sm:grid-cols-3">
+          <div className="mt-6 grid gap-6 sm:grid-cols-3">
             {STEPS.map(({ icon: Icon, title, body }, i) => (
-              <div key={title} className="relative rounded-2xl border border-slate-200 p-5">
-                <span className="absolute -top-3 left-5 px-2 py-0.5 rounded-full bg-blue-600 text-white text-xs font-bold">
+              <div
+                key={title}
+                className="relative rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/10"
+              >
+                <span className="absolute top-5 right-5 text-4xl font-extrabold text-slate-100">
                   {i + 1}
                 </span>
-                <Icon size={22} className="text-blue-600" />
-                <h3 className="mt-3 font-semibold">{title}</h3>
+                <span
+                  className={`relative w-11 h-11 rounded-xl bg-gradient-to-br text-white flex items-center justify-center shadow-lg ${STEP_TONES[i]}`}
+                >
+                  <Icon size={22} />
+                </span>
+                <h3 className="relative mt-4 font-semibold">{title}</h3>
                 <p className="mt-2 text-slate-600 leading-relaxed text-sm">{body}</p>
               </div>
             ))}
@@ -578,9 +690,9 @@ export default function Landing() {
         </section>
 
         {/* Скрины результата */}
-        <section className="bg-slate-50 border-y border-slate-200">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-            <h2 className="text-2xl sm:text-3xl font-bold">Что вы увидите через 45 минут</h2>
+        <section className="bg-gradient-to-b from-slate-50 to-indigo-50/60 border-y border-slate-200">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-14">
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Что вы увидите через 45 минут</h2>
             <p className="mt-3 text-slate-600 max-w-2xl">
               Не макет и не презентация — работающее приложение на ваших данных. Экраны, таблицы
               и графики, в которые уже можно вносить записи.
@@ -589,7 +701,7 @@ export default function Landing() {
               {SCREENS.map(screen => (
                 <figure
                   key={screen.src}
-                  className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm"
+                  className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/10"
                 >
                   <button
                     type="button"
@@ -619,15 +731,17 @@ export default function Landing() {
         <Cases onZoom={setZoomed} />
 
         {/* Боли и что вместо них */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12 grid gap-12 lg:grid-cols-2">
-          <div>
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12 grid gap-6 lg:grid-cols-2">
+          <div className="rounded-3xl bg-rose-50/70 border border-rose-100 p-6 sm:p-8">
+            <h2 className="text-sm font-bold uppercase tracking-widest text-rose-600">
               Где таблица перестаёт справляться
             </h2>
             <div className="mt-6 space-y-6">
               {PAINS.map(({ icon: Icon, title, body }) => (
                 <div key={title} className="flex gap-4">
-                  <Icon size={22} className="text-slate-400 shrink-0 mt-0.5" />
+                  <span className="shrink-0 w-10 h-10 rounded-xl bg-white text-rose-500 shadow-sm flex items-center justify-center">
+                    <Icon size={20} />
+                  </span>
                   <div>
                     <h3 className="font-semibold">{title}</h3>
                     <p className="mt-1 text-slate-600 leading-relaxed text-sm">{body}</p>
@@ -636,14 +750,16 @@ export default function Landing() {
               ))}
             </div>
           </div>
-          <div>
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
+          <div className="rounded-3xl bg-emerald-50/80 border border-emerald-100 p-6 sm:p-8">
+            <h2 className="text-sm font-bold uppercase tracking-widest text-emerald-700">
               Что будет вместо неё
             </h2>
             <div className="mt-6 space-y-6">
               {GAINS.map(({ icon: Icon, title, body }) => (
                 <div key={title} className="flex gap-4">
-                  <Icon size={22} className="text-blue-600 shrink-0 mt-0.5" />
+                  <span className="shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/30 flex items-center justify-center">
+                    <Icon size={20} />
+                  </span>
                   <div>
                     <h3 className="font-semibold">{title}</h3>
                     <p className="mt-1 text-slate-600 leading-relaxed text-sm">{body}</p>
@@ -688,20 +804,21 @@ export default function Landing() {
 
             {/* Следующий шаг: разбор */}
             <section id="price" className="scroll-mt-16 max-w-5xl mx-auto px-4 sm:px-6 py-8">
-              <div className="rounded-2xl border border-blue-500/30 bg-blue-50/60 p-6 sm:p-10">
-                <h2 className="text-2xl sm:text-3xl font-bold">
+              <div className="relative overflow-hidden rounded-3xl bg-brand p-6 sm:p-10 text-white shadow-2xl shadow-indigo-600/25">
+                <div className="absolute -top-20 -right-16 w-72 h-72 bg-fuchsia-400/30 blur-[90px] rounded-full pointer-events-none" />
+                <h2 className="relative text-2xl sm:text-3xl font-extrabold tracking-tight">
                   Понравилась заготовка? Разберём её и посчитаем разработку — {ANALYSIS_PRICE}
                 </h2>
-                <p className="mt-4 text-slate-700 leading-relaxed max-w-2xl">
+                <p className="relative mt-4 text-blue-50 leading-relaxed max-w-2xl">
                   Демонстрация показывает, что это в принципе реально. Дальше — разбор вашей
                   заготовки: два интервью, полноценное ТЗ с помощью ИИ и понятная цена
                   доведения до рабочей системы.
                 </p>
 
-                <ul className="mt-6 space-y-3">
+                <ul className="relative mt-6 space-y-3">
                   {ANALYSIS_INCLUDES.map(item => (
-                    <li key={item} className="flex items-start gap-3 text-slate-700">
-                      <CheckCircle2 size={20} className="text-blue-600 shrink-0 mt-0.5" />
+                    <li key={item} className="flex items-start gap-3 text-white">
+                      <CheckCircle2 size={20} className="text-emerald-300 shrink-0 mt-0.5" />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -711,7 +828,7 @@ export default function Landing() {
                   <button
                     type="button"
                     onClick={openSignup}
-                    className="mt-8 inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg shadow-lg shadow-blue-600/20 transition-colors"
+                    className="relative mt-8 inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-white text-indigo-700 font-semibold text-lg shadow-lg shadow-indigo-900/30 transition hover:-translate-y-0.5 hover:bg-indigo-50"
                   >
                     Записаться на разбор
                     <ArrowRight size={20} />

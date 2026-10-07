@@ -11,10 +11,10 @@ function Column({ tone, title, items }: { tone: 'before' | 'after'; title: strin
   const before = tone === 'before'
   const Icon = before ? FileSpreadsheet : LayoutDashboard
   return (
-    <div className={`rounded-2xl p-5 sm:p-6 ${before ? 'bg-slate-100' : 'bg-blue-50 border border-blue-500/20'}`}>
+    <div className={`rounded-2xl p-5 sm:p-6 ${before ? 'bg-slate-100' : 'bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-500/20'}`}>
       <h4
         className={`flex items-center gap-2 text-sm font-bold uppercase tracking-wide ${
-          before ? 'text-slate-500' : 'text-blue-700'
+          before ? 'text-slate-500' : 'text-emerald-700'
         }`}
       >
         <Icon size={18} /> {title}
@@ -119,7 +119,7 @@ export function Cases({ onZoom }: { onZoom: (shot: Shot) => void }) {
     <section id="keysy" className="scroll-mt-16 max-w-5xl mx-auto px-4 sm:px-6 py-12">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-bold">Было в Excel → стало приложением</h2>
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Было в Excel → <span className="text-gradient">стало приложением</span></h2>
           <p className="mt-3 text-slate-600 max-w-2xl">
             Реальные внедрения на Интеграме. Все начинались с таблиц.
           </p>
@@ -147,7 +147,7 @@ export function Cases({ onZoom }: { onZoom: (shot: Shot) => void }) {
         onPointerCancel={() => {
           startX.current = null
         }}
-        className="mt-8 rounded-3xl border border-slate-200 bg-white p-5 sm:p-8 shadow-sm select-none touch-pan-y focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+        className="mt-8 rounded-3xl border border-slate-200 bg-white p-5 sm:p-8 shadow-xl shadow-indigo-500/10 select-none touch-pan-y focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
       >
         {CASES.map((item, i) => (
           <article
@@ -155,7 +155,7 @@ export function Cases({ onZoom }: { onZoom: (shot: Shot) => void }) {
             className={i === index ? undefined : 'hidden'}
             aria-hidden={i === index ? undefined : true}
           >
-            <p className="text-sm font-semibold text-blue-600">{item.client}</p>
+            <p className="text-sm font-semibold text-violet-600">{item.client}</p>
             <h3 className="mt-1 text-xl sm:text-2xl font-bold">{item.industry}</h3>
 
             <CaseBody item={item} onZoom={onZoom} />
@@ -183,7 +183,7 @@ export function Cases({ onZoom }: { onZoom: (shot: Shot) => void }) {
             aria-label={`Кейс: ${c.client}`}
             aria-current={i === index}
             onClick={() => setIndex(i)}
-            className={`h-2.5 rounded-full transition-all ${i === index ? 'w-8 bg-blue-600' : 'w-2.5 bg-slate-300 hover:bg-slate-400'}`}
+            className={`h-2.5 rounded-full transition-all ${i === index ? 'w-8 bg-brand' : 'w-2.5 bg-slate-300 hover:bg-slate-400'}`}
           />
         ))}
         <button type="button" aria-label="Следующий кейс" onClick={() => go(index + 1)} className={`sm:hidden ${arrow}`}>
