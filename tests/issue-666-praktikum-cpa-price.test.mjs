@@ -23,11 +23,11 @@ const campaign = (Name, side, cpaRub) => ({
   },
 })
 
-test('профиль praktikum создаёт кампании по 200/10 ₽, гипотезы по ролям остаются 500/50 ₽', () => {
+test('профили praktikum и praktikum-roles создают кампании по 200/10 ₽', () => {
   assert.equal(PROFILES.praktikum.cpaRub, 200)
   assert.equal(PROFILES.praktikum.nightCpaRub, 10)
-  assert.equal(PROFILES['praktikum-roles'].cpaRub, 500)
-  assert.equal(PROFILES['praktikum-roles'].nightCpaRub, 50)
+  assert.equal(PROFILES['praktikum-roles'].cpaRub, 200)
+  assert.equal(PROFILES['praktikum-roles'].nightCpaRub, 10)
 })
 
 test('смена кампании берётся из последнего слова имени', () => {
