@@ -1,6 +1,6 @@
 import { ArrowRight, Check, FileSpreadsheet, Laptop, MessageSquare, MessagesSquare, X } from 'lucide-react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { ANALYSIS_PRICE, CONTACT_TELEGRAM_URL, PRAKTIKUM, TARIFFS_URL } from '../content'
+import { ADEPT, ANALYSIS_PRICE, CONTACT_TELEGRAM_URL, PARTNER, PRAKTIKUM, TARIFFS_URL } from '../content'
 import { SITE_BASE } from '../site-base'
 import { StaticPage } from './StaticPage'
 
@@ -177,6 +177,21 @@ export function PraktikumPage() {
             ))}
           </ul>
         </div>
+      </section>
+
+      {/* Рекрутинг (issue #671): кто хочет сам вести такие часы или приводить заказчиков. */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 pt-8">
+        <p className="rounded-2xl bg-slate-50 border border-slate-200 p-5 text-slate-700 leading-relaxed">
+          Хотите сами вести такие практикумы и учить других применять ИИ?{' '}
+          <a href={`${SITE_BASE}${ADEPT.slug}/`} className="text-blue-600 font-medium hover:underline">
+            Станьте адептом
+          </a>{' '}
+          — обучение бесплатное. Знаете компании, которым это нужно?{' '}
+          <a href={`${SITE_BASE}${PARTNER.slug}/`} className="text-blue-600 font-medium hover:underline">
+            Партнёрская программа
+          </a>{' '}
+          — 15–40% с выручки.
+        </p>
       </section>
     </StaticPage>
   )
