@@ -226,7 +226,8 @@ function ProgramHero({ program, visual }: { program: Program; visual: ReactNode 
             </p>
             <h1 className="mt-6 text-4xl sm:text-5xl font-extrabold tracking-tight leading-[1.1] text-balance">
               {before}
-              <span className="text-gradient">{program.titleAccent}</span>
+              {/* «15–40%» не рвём после тире: U+2060 (word joiner) снимает точку переноса (#675) */}
+              <span className="text-gradient">{program.titleAccent.replace(/(\d)–(?=\d)/g, '$1–⁠')}</span>
               {after}
             </h1>
             <p className="mt-6 text-lg text-slate-600 leading-relaxed max-w-2xl">{program.lead}</p>

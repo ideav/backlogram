@@ -18,6 +18,8 @@
  * тексты, быстрые ссылки, фразы, минус-слова, имена кампаний.
  *   excel      главная, цель signup_click (по умолчанию)
  *   praktikum  /praktikum/, цель praktikum_click (issue #668)
+ *   praktikum-roles  та же посадочная, гипотезы по ролям: на каждую группу
+ *              фраз свои 4 кампании и свои объявления (issue #670)
  *   adept      /adept/, цель adept_click (issue #674)
  *   partner    /partner/, цель partner_click (issue #674)
  *
@@ -25,7 +27,8 @@
  *   DIRECT_TOKEN     OAuth-токен Директа (обязателен для --apply)
  *   SITE_URL         адрес лендинга, например https://example.ru
  *   METRIKA_ID       счётчик Метрики нового домена
- *   CAMPAIGN_PROFILE excel | praktikum | adept | partner (по умолчанию excel)
+ *   CAMPAIGN_PROFILE excel | praktikum | praktikum-roles | adept | partner
+ *                    (по умолчанию excel)
  *   GOAL_ID          id целевой цели профиля в этом счётчике
  *   CPA_RUB          цена конверсии днём, ₽ (по умолчанию 500)
  *   NIGHT_CPA_RUB    цена конверсии ночью, ₽ (по умолчанию CPA_RUB / 10)
@@ -48,7 +51,8 @@ const REGION_RUSSIA = 225
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const KEYWORDS_FILE = path.resolve(__dirname, '../docs/marketing/excel-cpa-campaign.keywords.json')
 const PRAKTIKUM_KEYWORDS_FILE = path.resolve(__dirname, '../docs/marketing/praktikum-cpa.keywords.json')
-const PRAKTIKUM_ADS_FILE = path.resolve(__dirname, '../docs/marketing/praktikum-cpa.ads.json')
+const ROLES_KEYWORDS_FILE = path.resolve(__dirname, '../docs/marketing/praktikum-roles.keywords.json')
+const ROLES_ADS_FILE = path.resolve(__dirname, '../docs/marketing/praktikum-roles.ads.json')
 const marketing = name => path.resolve(__dirname, '../docs/marketing', name)
 
 const apply = process.argv.includes('--apply')
@@ -105,9 +109,6 @@ export const PROFILES = {
     // Цена практикума: та же ценность, что у цели praktikum_lead.
     goalValueRub: 4900,
     keywordFiles: [PRAKTIKUM_KEYWORDS_FILE],
-    // У каждой группы фраз свои 12 объявлений (issue #670); profile.ads ниже —
-    // запасные, для групп без своих.
-    adsFile: PRAKTIKUM_ADS_FILE,
     // Практикум — это и есть обучение: человек, который ищет курс или урок
     // по нейросетям, здесь целевой. Остальная «учёба» (школа, ЕГЭ, студент,
     // диплом) по-прежнему минусуется.
@@ -182,6 +183,22 @@ export const PROFILES = {
     ],
     callouts: ['15–40% с выручки', 'Проект делает адепт', 'Программировать не нужно', 'Процент платит платформа'],
   },
+}
+
+/**
+ * Гипотезы по ролям (issue #670): та же посадочная и цель, но фразы разбиты по
+ * роли, чью работу на практикуме делает ИИ, и у каждой роли свои кампании —
+ * так результат каждой гипотезы виден отдельно. Кампании профиля praktikum
+ * (#668) не трогаются.
+ */
+PROFILES['praktikum-roles'] = {
+  ...PROFILES.praktikum,
+  title: 'Практикум-роль',
+  slug: 'praktikum-role',
+  keywordFiles: [ROLES_KEYWORDS_FILE],
+  // У каждой группы 12 своих объявлений; profile.ads — запасные.
+  adsFile: ROLES_ADS_FILE,
+  campaignPerGroup: true,
 }
 
 export const PROFILE = PROFILES[process.env.CAMPAIGN_PROFILE ?? 'excel']
@@ -345,12 +362,20 @@ export function campaignPayload(name, slug, where, shift = 'day', profile = PROF
   }
 }
 
-/** Четыре кампании профиля: поиск и сети × день и ночь. */
+/**
+ * Четыре кампании профиля: поиск и сети × день и ночь. С campaignPerGroup —
+ * по четыре на каждую группу фраз: в имени кампании роль из имени группы
+ * (до двоеточия), в `_group` — slug группы, в `_index` — номер внутри четвёрки.
+ */
 export function campaignsFor(profile = PROFILE) {
   const where = { search: 'поиск', network: 'сети' }
   const shift = { day: 'день', night: 'ночь' }
-  return Object.keys(where).flatMap(w => Object.keys(shift).map(sh =>
-    campaignPayload(`${profile.title} ${where[w]} ${shift[sh]}`, `${profile.slug}-${w}-${sh}`, w, sh, profile)))
+  const four = (title, slug, extra = {}) => Object.keys(where).flatMap(w => Object.keys(shift).map(sh =>
+    ({ ...campaignPayload(`${title} ${where[w]} ${shift[sh]}`, `${slug}-${w}-${sh}`, w, sh, profile), ...extra })))
+    .map((campaign, _index) => ({ ...campaign, _index }))
+  if (!profile.campaignPerGroup) return four(profile.title, profile.slug)
+  return groupsFor(profile).flatMap(group =>
+    four(`${profile.title} ${group.name.split(':')[0].toLowerCase()}`, `${profile.slug}-${group.slug}`, { _group: group.slug }))
 }
 
 async function call(service, method, params) {
@@ -392,10 +417,8 @@ async function main() {
   const calloutIds = apply ? idsOf(calloutsAdded, 'AddResults') : ['<id уточнений>']
 
   const groups = groupsFor()
-  for (const [campaignIndex, campaign] of campaignsFor().entries()) {
-    const { _slug: slug, _autotargeting: autotargeting, ...payload } = campaign
-    // Номер кампании (тройка объявлений) считается по полному списку, поэтому
-    // досозданная кампания получает те же объявления, что и при полном прогоне.
+  for (const campaign of campaignsFor()) {
+    const { _slug: slug, _autotargeting: autotargeting, _group: onlyGroup, _index: campaignIndex, ...payload } = campaign
     if (process.env.CAMPAIGN_ONLY && !slug.includes(process.env.CAMPAIGN_ONLY)) continue
     console.log(`\n=== ${payload.Name} ===`)
 
@@ -409,7 +432,7 @@ async function main() {
     const [sitelinkSetId] = apply ? idsOf(setAdded, 'AddResults') : [`<id ссылок ${slug}>`]
     if (!sitelinkSetId) throw new Error('быстрые ссылки не созданы — см. ошибку выше')
 
-    for (const group of groups) {
+    for (const group of groups.filter(g => !onlyGroup || g.slug === onlyGroup)) {
       const groupPayload = {
         Name: `${group.name}`,
         CampaignId: campaignId,
