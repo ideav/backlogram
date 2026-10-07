@@ -33,6 +33,11 @@ export type StaticPage = {
   landing?: string
   /** Практикум (issue #668): пререндер добавит двухэтапную целевую кнопку. */
   praktikum?: boolean
+  /**
+   * Рекрутинг (issue #674): пререндер добавит цель `<slug>_click` на ссылки
+   * заявки — за неё платят кампании Директа на /adept/ и /partner/.
+   */
+  program?: string
 }
 
 /** Статический снимок лендинга для `#root`. */
@@ -87,6 +92,7 @@ export function renderStaticPages(canonical: string): StaticPage[] {
       ogImage: `${canonical}og/excel-to-app.png`,
       jsonLd: jsonLdScript(programJsonLd(canonical, program)),
       body: renderToStaticMarkup(<Page />),
+      program: program.slug,
     })
   }
 

@@ -17,6 +17,11 @@ type Program = typeof ADEPT | typeof PARTNER
  * Как и остальные спутники, страницы статические и без формы: заявка — письмом
  * или в телеграм. Форма на главной принимает таблицу для демонстрации и сюда
  * не подходит.
+ *
+ * Кампании Директа на эти страницы платят за конверсию (issue #674): клик по
+ * ссылке заявки [data-program-go] — цель `adept_click` / `partner_click`, её
+ * шлёт встроенный скрипт пререндера (scripts/prerender-site-excel.mjs) с той
+ * же проверкой на человека, что у практикума.
  */
 export function AdeptPage() {
   return (
@@ -156,6 +161,7 @@ function ProgramCta({ program, other, otherNote }: { program: Program; other: Pr
         <div className="mt-8 flex flex-wrap gap-4">
           <a
             href={CONTACT_TELEGRAM_URL}
+            data-program-go="telegram"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg shadow-lg shadow-blue-600/20 transition-colors"
@@ -165,6 +171,7 @@ function ProgramCta({ program, other, otherNote }: { program: Program; other: Pr
           </a>
           <a
             href={mailto}
+            data-program-go="mail"
             className="inline-flex items-center gap-2 px-7 py-4 rounded-xl border border-slate-300 bg-white text-slate-700 font-semibold text-lg hover:border-blue-500 hover:text-blue-600 transition-colors"
           >
             <Mail size={18} />

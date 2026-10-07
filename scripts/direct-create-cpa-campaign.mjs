@@ -20,17 +20,22 @@
  *   praktikum  /praktikum/, цель praktikum_click (issue #668)
  *   praktikum-roles  та же посадочная, гипотезы по ролям: на каждую группу
  *              фраз свои 4 кампании и свои объявления (issue #670)
+ *   adept      /adept/, цель adept_click (issue #674)
+ *   partner    /partner/, цель partner_click (issue #674)
  *
  * Окружение:
  *   DIRECT_TOKEN     OAuth-токен Директа (обязателен для --apply)
  *   SITE_URL         адрес лендинга, например https://example.ru
  *   METRIKA_ID       счётчик Метрики нового домена
- *   CAMPAIGN_PROFILE excel | praktikum | praktikum-roles (по умолчанию excel)
+ *   CAMPAIGN_PROFILE excel | praktikum | praktikum-roles | adept | partner
+ *                    (по умолчанию excel)
  *   GOAL_ID          id целевой цели профиля в этом счётчике
  *   CPA_RUB          цена конверсии днём, ₽ (по умолчанию 500)
  *   NIGHT_CPA_RUB    цена конверсии ночью, ₽ (по умолчанию CPA_RUB / 10)
  *   WEEKLY_RUB       недельный лимит расхода, ₽ (по умолчанию 10000)
  *   GOAL_VALUE_RUB   ценность цели для Директа, ₽ (по умолчанию — у профиля)
+ *   CAMPAIGN_ONLY    создать только кампании, в slug которых есть эта строка,
+ *                    например network — досоздать сети, если Директ оборвал прогон
  */
 
 import { readFileSync } from 'node:fs'
@@ -48,6 +53,7 @@ const KEYWORDS_FILE = path.resolve(__dirname, '../docs/marketing/excel-cpa-campa
 const PRAKTIKUM_KEYWORDS_FILE = path.resolve(__dirname, '../docs/marketing/praktikum-cpa.keywords.json')
 const ROLES_KEYWORDS_FILE = path.resolve(__dirname, '../docs/marketing/praktikum-roles.keywords.json')
 const ROLES_ADS_FILE = path.resolve(__dirname, '../docs/marketing/praktikum-roles.ads.json')
+const marketing = name => path.resolve(__dirname, '../docs/marketing', name)
 
 const apply = process.argv.includes('--apply')
 
@@ -132,6 +138,50 @@ export const PROFILES = {
       { Title: 'Записаться', Description: 'Час онлайн на вашем файле — 4 900 ₽', anchor: 'zapis' },
     ],
     callouts: ['1 час онлайн', 'На вашем файле', 'Без программирования', 'Ссылка на приложение'],
+  },
+  // Рекрутинг (issue #674): адепты и партнёры — две раздельные четвёрки
+  // кампаний, по 4 группы фраз × 12 объявлений, как у практикума (#670).
+  // Денег с заявки сразу нет — ни у адепта, ни у партнёра, — поэтому ценность
+  // цели условная: гипотеза для обучения стратегии, менять решает владелец.
+  adept: {
+    title: 'Адепты-CPA',
+    slug: 'adept-cpa',
+    path: '/adept/',
+    goalName: 'adept_click',
+    goalValueRub: 1000,
+    keywordFiles: [marketing('adept-cpa.keywords.json')],
+    adsFile: marketing('adept-cpa.ads.json'),
+    ads: [],
+    // Адепт ищет подработку, профессию и обучение — общие минус-слова главной
+    // эти запросы бы погасили. Вакансии, резюме, школа и студенты минусуются
+    // по-прежнему: адепт — не найм и не учёба ради диплома.
+    allowedNegatives: ['подработка', 'фриланс', 'фрилансер', 'профессия', 'преподаватель', 'обучение', 'курс', 'вебинар'],
+    sitelinks: [
+      { Title: 'Кого ищем', Description: 'Объясняете просто и уверенно работаете с таблицами', anchor: 'kogo-ishchem' },
+      { Title: 'Что получает адепт', Description: 'Обучение и платформа бесплатно, заказчики от партнёров', anchor: 'chto-poluchite' },
+      { Title: 'Кто кому платит', Description: 'Платформа, адепт, заказчик и партнёр — правило денег', anchor: 'model' },
+      { Title: 'Оставить заявку', Description: 'Пара строк о себе — в телеграм или на почту', anchor: 'zayavka' },
+    ],
+    callouts: ['Обучение бесплатно', 'Платформа бесплатно', 'Оплата вам напрямую', 'Заказчики от партнёров'],
+  },
+  partner: {
+    title: 'Партнёры-CPA',
+    slug: 'partner-cpa',
+    path: '/partner/',
+    goalName: 'partner_click',
+    goalValueRub: 1000,
+    keywordFiles: [marketing('partner-cpa.keywords.json')],
+    adsFile: marketing('partner-cpa.ads.json'),
+    ads: [],
+    // «Процент» у главной минусуется как приём Excel; здесь это суть предложения.
+    allowedNegatives: ['процент'],
+    sitelinks: [
+      { Title: 'Кому подходит', Description: 'Консультантам, бухгалтерам, интеграторам и агентствам', anchor: 'komu-podhodit' },
+      { Title: 'Как это работает', Description: 'Вы знакомите заказчика, адепт делает проект', anchor: 'kak-ustroeno' },
+      { Title: 'Кто кому платит', Description: 'Процент тому, кто привёл заказчика, — всегда', anchor: 'model' },
+      { Title: 'Стать партнёром', Description: 'Напишите — договоримся о проценте от 15 до 40%', anchor: 'zayavka' },
+    ],
+    callouts: ['15–40% с выручки', 'Проект делает адепт', 'Программировать не нужно', 'Процент платит платформа'],
   },
 }
 
@@ -369,6 +419,7 @@ async function main() {
   const groups = groupsFor()
   for (const campaign of campaignsFor()) {
     const { _slug: slug, _autotargeting: autotargeting, _group: onlyGroup, _index: campaignIndex, ...payload } = campaign
+    if (process.env.CAMPAIGN_ONLY && !slug.includes(process.env.CAMPAIGN_ONLY)) continue
     console.log(`\n=== ${payload.Name} ===`)
 
     const added = await call('campaigns', 'add', { Campaigns: [payload] })
