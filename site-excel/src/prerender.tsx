@@ -1,11 +1,12 @@
 import { renderToStaticMarkup } from 'react-dom/server'
-import { CASES, COMPARE_PAGE, LANDING_FAQ_COMMON, PRAKTIKUM, type Landing as LandingData } from './content'
+import { ADEPT, CASES, COMPARE_PAGE, LANDING_FAQ_COMMON, PARTNER, PRAKTIKUM, type Landing as LandingData } from './content'
 import Landing from './Landing'
 import { CasePage } from './pages/CasePage'
 import { ComparePage } from './pages/ComparePage'
 import { LandingPage, type LandingLink } from './pages/LandingPage'
 import { PraktikumPage } from './pages/PraktikumPage'
-import { caseJsonLd, compareJsonLd, jsonLdScript, landingPageJsonLd, praktikumJsonLd } from './seo'
+import { AdeptPage, PartnerPage } from './pages/ProgramPage'
+import { caseJsonLd, compareJsonLd, jsonLdScript, landingPageJsonLd, praktikumJsonLd, programJsonLd } from './seo'
 import { SITE_BASE } from './site-base'
 
 // Существующие страницы домена — пререндер сверяет с ними уникальность посадочных.
@@ -72,6 +73,22 @@ export function renderStaticPages(canonical: string): StaticPage[] {
     body: renderToStaticMarkup(<PraktikumPage />),
     praktikum: true,
   })
+
+  // Рекрутинг адептов и партнёров (issue #671).
+  for (const [program, Page] of [
+    [ADEPT, AdeptPage],
+    [PARTNER, PartnerPage],
+  ] as const) {
+    pages.push({
+      dir: program.slug,
+      path: `${SITE_BASE}${program.slug}/`,
+      title: program.pageTitle,
+      description: program.pageDescription,
+      ogImage: `${canonical}og/excel-to-app.png`,
+      jsonLd: jsonLdScript(programJsonLd(canonical, program)),
+      body: renderToStaticMarkup(<Page />),
+    })
+  }
 
   return pages
 }

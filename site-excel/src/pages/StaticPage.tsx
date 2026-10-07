@@ -26,36 +26,41 @@ export function StaticPage({
   lead,
   children,
   cta,
+  hero,
 }: {
   breadcrumb: { href: string; title: string }[]
   h1: string
   lead: string
   children: ReactNode
   cta?: ReactNode
+  /** Свой hero вместо стандартного (страницы рекрутинга, issue #671). */
+  hero?: ReactNode
 }) {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       <SiteHeader homeHref={SITE_BASE} />
 
       <main>
-        <section className="bg-gradient-to-b from-blue-50 via-white to-white">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-10">
-            <nav aria-label="Хлебные крошки" className="text-sm text-slate-500">
-              <ol className="flex flex-wrap items-center gap-2">
-                {breadcrumb.map((crumb, i) => (
-                  <li key={crumb.href} className="flex items-center gap-2">
-                    {i > 0 && <span aria-hidden="true">/</span>}
-                    <a href={crumb.href} className="hover:text-blue-600 hover:underline">
-                      {crumb.title}
-                    </a>
-                  </li>
-                ))}
-              </ol>
-            </nav>
-            <h1 className="mt-5 text-3xl sm:text-4xl font-bold tracking-tight leading-tight">{h1}</h1>
-            <p className="mt-5 text-lg text-slate-600 leading-relaxed max-w-3xl">{lead}</p>
-          </div>
-        </section>
+        {hero ?? (
+          <section className="bg-gradient-to-b from-blue-50 via-white to-white">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-10">
+              <nav aria-label="Хлебные крошки" className="text-sm text-slate-500">
+                <ol className="flex flex-wrap items-center gap-2">
+                  {breadcrumb.map((crumb, i) => (
+                    <li key={crumb.href} className="flex items-center gap-2">
+                      {i > 0 && <span aria-hidden="true">/</span>}
+                      <a href={crumb.href} className="hover:text-blue-600 hover:underline">
+                        {crumb.title}
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+              <h1 className="mt-5 text-3xl sm:text-4xl font-bold tracking-tight leading-tight">{h1}</h1>
+              <p className="mt-5 text-lg text-slate-600 leading-relaxed max-w-3xl">{lead}</p>
+            </div>
+          </section>
+        )}
 
         {children}
 
