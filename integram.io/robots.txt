@@ -7,5 +7,29 @@ User-agent: *
 Allow: /
 Clean-param: yd&Yd&ybaip&etext&from
 
+# Служебное и постороннее в веб-корне — не страницы сайта: шаблоны движка,
+# редактор, старые копии главной, оплата, утилиты и чужие разделы.
+# Без описаний и с чужим текстом они портят сниппеты (Вебмастер: «отсутствуют
+# или некорректно заполнены метатеги Description»). Файлы остаются на месте.
+Disallow: /templates/
+Disallow: /ace/
+Disallow: /index2.html
+Disallow: /index_bak
+Disallow: /index1.php
+Disallow: /nav.html
+Disallow: /l/
+Disallow: /slava/
+Disallow: /sp/
+Disallow: /include/
+Disallow: /logs/
+Disallow: /cgi-bin/
+Disallow: /success.html
+Disallow: /pay25.html
+Disallow: /pay95.html
+Disallow: /test.php
+Disallow: /check.php
+Disallow: /checkw.php
+Disallow: /i113326ls
+
 # Карта сайта (#589): без этой строки поисковик ищет её вслепую.
 Sitemap: https://integram.io/sitemap.xml
