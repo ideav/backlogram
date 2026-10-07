@@ -30,6 +30,8 @@ export type StaticPage = {
   body: string
   /** Посадочная (issue #657): пререндер добавит скрипт UTM и цели CTA. */
   landing?: string
+  /** Практикум (issue #668): пререндер добавит двухэтапную целевую кнопку. */
+  praktikum?: boolean
 }
 
 /** Статический снимок лендинга для `#root`. */
@@ -68,6 +70,7 @@ export function renderStaticPages(canonical: string): StaticPage[] {
     ogImage: `${canonical}og/praktikum.png`,
     jsonLd: jsonLdScript(praktikumJsonLd(canonical)),
     body: renderToStaticMarkup(<PraktikumPage />),
+    praktikum: true,
   })
 
   return pages

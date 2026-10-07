@@ -157,7 +157,7 @@ function pageHtml(page) {
     ${page.jsonLd}
   </head>
   <body>
-    <div id="page">${page.body}</div>${page.landing ? `\n    ${landingScript(page.landing)}` : ''}
+    <div id="page">${page.body}</div>${page.landing ? `\n    ${landingScript(page.landing)}` : ''}${page.praktikum ? `\n    ${praktikumScript()}` : ''}
     ${metrikaBlock}
   </body>
 </html>
@@ -176,6 +176,24 @@ function landingScript(slug) {
     ? `try{ym(${METRIKA_ID},'reachGoal','landing_cta',{page:${JSON.stringify(slug)}})}catch(e){}`
     : ''
   return `<script>(function(){var q=new URLSearchParams(location.search),k=[];q.forEach(function(v,n){if(/^utm_|^yclid$/.test(n))k.push([n,v])});document.querySelectorAll('a[data-cta]').forEach(function(a){var u=new URL(a.getAttribute('href'),location.href);k.forEach(function(x){u.searchParams.set(x[0],x[1])});a.href=u.pathname+u.search+u.hash;a.addEventListener('click',function(){${goal}})})})()</script>`
+}
+
+/**
+ * Двухэтапная целевая кнопка практикума (issue #668) — та же защита от
+ * скликивания, что у `signup_click` на главной (site-excel/src/conversion.ts):
+ *   • кнопки [data-pk-open] видны только с JS и лишь раскрывают блок;
+ *   • целевая ссылка [data-pk-go] лежит в <template> и появляется в разметке
+ *     только после первого клика;
+ *   • клик по ней шлёт `praktikum_click`, если в сессии был настоящий
+ *     (isTrusted) жест, страница прожила 2,5 с и это не webdriver, иначе —
+ *     `praktikum_blocked`. Директ платит только за первую.
+ * UTM и yclid из адреса страницы дописываются к ссылке, как у посадочных.
+ */
+function praktikumScript() {
+  const goal = METRIKA_ID
+    ? `try{ym(${METRIKA_ID},'reachGoal',ok?'praktikum_click':'praktikum_blocked',{dwell_ms:Date.now()-t})}catch(e){}`
+    : ''
+  return `<script>(function(){var t=Date.now(),h=false;['pointerdown','pointermove','touchstart','keydown','wheel','scroll'].forEach(function(n){addEventListener(n,function(e){if(e.isTrusted)h=true},{passive:true})});var q=new URLSearchParams(location.search),k=[];q.forEach(function(v,n){if(/^utm_|^yclid$/.test(n))k.push([n,v])});var slot=document.getElementById('pk-step2'),tpl=document.getElementById('pk-step2-tpl'),btns=document.querySelectorAll('[data-pk-open]');function open(){if(!slot.firstChild){slot.appendChild(tpl.content.cloneNode(true));var a=slot.querySelector('a[data-pk-go]'),u=new URL(a.getAttribute('href'),location.href);k.forEach(function(x){u.searchParams.set(x[0],x[1])});a.href=u.pathname+u.search+u.hash;a.addEventListener('click',function(){var ok=h&&!navigator.webdriver&&Date.now()-t>=2500;${goal}})}btns.forEach(function(b){b.hidden=true});slot.scrollIntoView({behavior:'smooth',block:'center'})}btns.forEach(function(b){b.hidden=false;b.addEventListener('click',open)})})()</script>`
 }
 
 const written = [indexPath]
