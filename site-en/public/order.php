@@ -1,6 +1,6 @@
 <?php
 /**
- * Contact-form intake for the English site (ideav.pro).
+ * Contact-form intake for the English site (integram-ai.online).
  *
  * Deliberately standalone: it shares no code with the other site's intake
  * endpoints, because those depend on a regional captcha service and on config
@@ -18,7 +18,7 @@
  *   ORDER_EMAIL_FROM    envelope sender                 (default: noreply@<host>)
  *   TELEGRAM_BOT_TOKEN  optional duplicate notification
  *   TELEGRAM_CHAT_ID    optional duplicate notification
- *   ORDER_CONTACT_EMAIL address shown to visitors in errors (default: hello@ideav.pro)
+ *   ORDER_CONTACT_EMAIL address shown to visitors in errors (default: abc@integram-ai.online)
  *
  * Besides the visible fields the form sends `source` (which form), `page` and
  * `utm` (campaign attribution captured on the landing page: utm_*, click ids,
@@ -170,7 +170,7 @@ if ($token !== null && $chatId !== null) {
 if (!$sent) {
     // The message is lost otherwise — say so instead of showing a fake success.
     error_log('order.php: no delivery channel configured or delivery failed');
-    order_respond(500, ['ok' => false, 'error' => 'We could not deliver your message. Please email ' . order_config('ORDER_CONTACT_EMAIL', 'hello@ideav.pro') . ' directly.']);
+    order_respond(500, ['ok' => false, 'error' => 'We could not deliver your message. Please email ' . order_config('ORDER_CONTACT_EMAIL', 'abc@integram-ai.online') . ' directly.']);
 }
 
 order_respond(200, ['ok' => true]);

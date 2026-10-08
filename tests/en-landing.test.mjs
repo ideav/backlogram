@@ -4,7 +4,7 @@ import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-// The English site on ideav.pro must not look like a Russian site with English
+// The English site on integram-ai.online must not look like a Russian site with English
 // text on top: no Cyrillic, no links to .ru hosts, no Yandex services (issue
 // #524). These checks run over the sources, so they do not need a build.
 
@@ -124,7 +124,7 @@ test('the build derives base and origin from the environment', () => {
 })
 
 test('the English build ships its own .htaccess, not a copy of the ideav.ru one', () => {
-  // ideav.pro runs its own engine fork (site-en/engine, issue #694), so site-en/public
+  // integram-ai.online runs its own engine fork (site-en/engine, issue #694), so site-en/public
   // carries an EN .htaccess. It must not be the RU root public/.htaccess (issue #422 is
   // the cautionary tale) and must carry no RU traces.
   const publicFiles = readdirSync(join(siteEn, 'public'))

@@ -8,10 +8,10 @@
 export const BASE: string = import.meta.env.BASE_URL || '/'
 
 /** Scheme + host, no trailing slash. Injected by vite.config.ts. */
-export const ORIGIN: string = (import.meta.env.VITE_SITE_ORIGIN as string) || 'https://ideav.pro'
+export const ORIGIN: string = (import.meta.env.VITE_SITE_ORIGIN as string) || 'https://integram-ai.online'
 
 /** Public contact address. Override with VITE_CONTACT_EMAIL at build time. */
-export const CONTACT_EMAIL: string = (import.meta.env.VITE_CONTACT_EMAIL as string) || 'hello@ideav.pro'
+export const CONTACT_EMAIL: string = (import.meta.env.VITE_CONTACT_EMAIL as string) || 'abc@integram-ai.online'
 
 export const BRAND = 'Integram'
 

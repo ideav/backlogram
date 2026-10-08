@@ -1,4 +1,4 @@
-// Shared content rules for the English site (ideav.pro): used by the build
+// Shared content rules for the English site (integram-ai.online): used by the build
 // guard (tests/en-dist.test.mjs) and by the live audit (scripts/en-release-audit.mjs).
 // Epic #524, issues #535 / #536.
 

@@ -5,7 +5,7 @@
  * declines.
  *
  * Build-time configuration (Vite env, e.g. in site-en/.env.local or the shell):
- *   VITE_PLAUSIBLE_DOMAIN  site id in Plausible       default `ideav.pro`; set to `off` to disable
+ *   VITE_PLAUSIBLE_DOMAIN  site id in Plausible       default `integram-ai.online`; set to `off` to disable
  *   VITE_PLAUSIBLE_SRC     script URL                 default Plausible cloud, tagged-events build
  *
  * Goal: `lead` — fired on a successful contact-form submit and on clicks that
@@ -13,7 +13,7 @@
  * in the Plausible dashboard.
  */
 
-const DOMAIN = ((import.meta.env.VITE_PLAUSIBLE_DOMAIN as string) || 'ideav.pro').trim()
+const DOMAIN = ((import.meta.env.VITE_PLAUSIBLE_DOMAIN as string) || 'integram-ai.online').trim()
 const SRC = ((import.meta.env.VITE_PLAUSIBLE_SRC as string) || 'https://plausible.io/js/script.tagged-events.js').trim()
 
 export const ANALYTICS_ENABLED = DOMAIN !== '' && DOMAIN !== 'off'

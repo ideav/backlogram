@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-// English site (ideav.pro) — a build of its own, deliberately separate from the
+// English site (integram-ai.online) — a build of its own, deliberately separate from the
 // Russian site in the repo root. Nothing is shared: own entry, own components,
 // own output directory. The two sites are not linked and diverge over time
 // (issue #524), so there is no i18n layer and no common content.
@@ -18,10 +18,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 //
 //   SITE_BASE   path under the host          default `/`
 //               examples: `/en/`, `/cn/`, `/pt/`
-//   SITE_URL    scheme + host, no path       default `https://ideav.pro`
+//   SITE_URL    scheme + host, no path       default `https://integram-ai.online`
 //
-//   npm run build:en                                    → https://ideav.pro/
-//   SITE_BASE=/en/ npm run build:en                     → https://ideav.pro/en/
+//   npm run build:en                                    → https://integram-ai.online/
+//   SITE_BASE=/en/ npm run build:en                     → https://integram-ai.online/en/
 //   SITE_BASE=/pt/ SITE_URL=https://example.com npm run build:en
 //
 // Every absolute path in the output derives from these: asset URLs, the favicon,
@@ -29,9 +29,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 // sitemap.xml and llms.txt.
 //
 // Other build-time settings (Vite env, see src/lib/analytics.ts, src/site.ts):
-//   VITE_PLAUSIBLE_DOMAIN  analytics site id (default ideav.pro; `off` disables)
+//   VITE_PLAUSIBLE_DOMAIN  analytics site id (default integram-ai.online; `off` disables)
 //   VITE_PLAUSIBLE_SRC     analytics script URL
-//   VITE_CONTACT_EMAIL     public contact address (default hello@ideav.pro)
+//   VITE_CONTACT_EMAIL     public contact address (default abc@integram-ai.online)
 //
 // SEO decision, keep it: no hreflang and no cross-domain sitemap index. The
 // English site is not a translation of any other site and must not declare
@@ -45,7 +45,7 @@ function normalizeBase(raw: string | undefined): string {
 }
 
 const BASE = normalizeBase(process.env.SITE_BASE)
-const ORIGIN = (process.env.SITE_URL ?? 'https://ideav.pro').trim().replace(/\/+$/, '')
+const ORIGIN = (process.env.SITE_URL ?? 'https://integram-ai.online').trim().replace(/\/+$/, '')
 const CANONICAL = ORIGIN + BASE
 const OUT_DIR = path.resolve(__dirname, '../dist-en')
 const SSR_DIR = path.resolve(__dirname, '../.vite/en-ssr')

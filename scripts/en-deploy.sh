@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Deploy the English site (ideav.pro). Issue #526, epic #524. See docs/en-deploy.md.
+# Deploy the English site (integram-ai.online). Issue #526, epic #524. See docs/en-deploy.md.
 #
-#   EN_DEPLOY_HOST=host EN_DEPLOY_USER=user EN_DEPLOY_PATH=/var/www/ideav.pro \
+#   EN_DEPLOY_HOST=host EN_DEPLOY_USER=user EN_DEPLOY_PATH=/var/www/integram-ai.online \
 #     bash scripts/en-deploy.sh [--dry-run] [--install] [--no-build]
 #
 # Release dir = dist-en/* + site-en/engine/* (without .env, tests, docker files).
@@ -59,7 +59,7 @@ SSH=(ssh -o StrictHostKeyChecking=accept-new)
 
 # Server-side files are kept: no --delete for these, they are also excluded from upload.
 RSYNC=(rsync -rlptvz --delete
-  --exclude='.env' --exclude='.env.*' --exclude='config.local.php' --exclude='config/local*'
+  --exclude='.env' --exclude='.env.*' --exclude='config.local.php' --exclude='config/local*' --exclude='order-config.php'
   --exclude='uploads/' --exclude='storage/' --exclude='logs/' --exclude='*.log'
   -e "${SSH[*]}")
 [ "$DRY" = 1 ] && RSYNC+=(--dry-run)
@@ -75,4 +75,4 @@ if [ "$INSTALL" = 1 ]; then
     "${SSH[@]}" "$EN_DEPLOY_USER@$EN_DEPLOY_HOST" "cd '$EN_DEPLOY_PATH' && ${EN_DEPLOY_PHP:-php} install.php"
   fi
 fi
-echo "==> done. Next: node scripts/en-release-audit.mjs https://ideav.pro"
+echo "==> done. Next: node scripts/en-release-audit.mjs https://integram-ai.online"

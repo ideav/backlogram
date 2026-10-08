@@ -1,4 +1,4 @@
-# Deploying the English site (ideav.pro)
+# Deploying the English site (integram-ai.online)
 
 Issue #526 (epic #524). The web root on the host is the union of two trees:
 
@@ -14,7 +14,7 @@ engine `index.php` (`.htaccess` comes from `site-en/public/.htaccess` into `dist
 ```bash
 export EN_DEPLOY_HOST=host.example.com
 export EN_DEPLOY_USER=deploy
-export EN_DEPLOY_PATH=/var/www/ideav.pro      # the web root
+export EN_DEPLOY_PATH=/var/www/integram-ai.online      # the web root
 # optional: EN_DEPLOY_SSH_PORT, EN_DEPLOY_SSH_KEY, EN_DEPLOY_PHP
 
 bash scripts/en-deploy.sh --dry-run            # show what would change
@@ -28,10 +28,22 @@ What the script does:
 1. `npm run build:en` -> `dist-en/`.
 2. Assembles a temporary release dir = `dist-en/*` + `site-en/engine/*`, excluding `.env*`, `tests/`, `docker-compose*.yml`, `Dockerfile*`, `.git`, `node_modules`.
 3. Scans the release dir with the guard rules (Cyrillic, `*.ru`, Yandex, ...); any hit aborts the deploy.
-4. `rsync -rlptvz --delete` over SSH. Server-side state is never touched or deleted: `.env`, `.env.*`, `config.local.php`, `config/local*`, `uploads/`, `storage/`, `logs/`, `*.log`. Put such files there on the server once; they survive every deploy.
+4. `rsync -rlptvz --delete` over SSH. Server-side state is never touched or deleted: `.env`, `.env.*`, `config.local.php`, `config/local*`, `order-config.php`, `uploads/`, `storage/`, `logs/`, `*.log`. Put such files there on the server once; they survive every deploy.
 5. With `--install`: `ssh ... 'cd $EN_DEPLOY_PATH && php install.php'`.
 
-After deploy run the release gate: `node scripts/en-release-audit.mjs https://ideav.pro` and go through `docs/en-release-checklist.md`.
+After deploy run the release gate: `node scripts/en-release-audit.mjs https://integram-ai.online` and go through `docs/en-release-checklist.md`.
+
+## Production host (integram-ai.online)
+
+The site is a separate ispmanager web domain on the shared server (the one that also runs other sites; never touch their vhosts, roots or DBs):
+
+- Web domain `integram-ai.online` (alias `www.integram-ai.online`), owner `www-root`, PHP 8.3 (CGI, native) with mysqli/curl/mbstring/openssl.
+- Web root: `/var/www/www-root/data/www/integram-ai.online` (`EN_DEPLOY_USER=www-root`, `EN_DEPLOY_PATH` = this path).
+- Extra vhost config: `/etc/apache2/vhosts-resources/integram-ai.online/integram-ai-extra.conf` (www -> bare 301, `AllowOverride All`, `DirectoryIndex index.html index.php`); it is included by the panel-generated vhost and survives panel regeneration.
+- MySQL: database `integram_ai`, user `integram_ai@localhost` (created via the panel, utf8mb4).
+- Server-only config (chmod 600, owner `www-root`, kept by the deploy): `.env` in the web root (engine: DB, salt, SMTP, base URL, OAuth) and `order-config.php` (lead form recipient).
+- Mail: mailbox `abc@integram-ai.online` on the same host (exim/dovecot, ispmanager email domain with DKIM). The engine sends through `localhost:25` with SMTP AUTH as that mailbox (no STARTTLS: the local exim certificate is self-signed and PHP would reject it).
+- TLS: Let's Encrypt via ispmanager (`integram-ai.online_le*`), issued once the A records point to the host.
 
 ## Host requirements (any provider outside the RF)
 
@@ -42,8 +54,8 @@ After deploy run the release gate: `node scripts/en-release-audit.mjs https://id
   ```nginx
   server {
     listen 443 ssl http2;
-    server_name ideav.pro;
-    root /var/www/ideav.pro;
+    server_name integram-ai.online;
+    root /var/www/integram-ai.online;
     index index.html index.php;
     location / { try_files $uri $uri/ /index.php?$query_string; }
     location ~ \.php$ {
@@ -53,24 +65,24 @@ After deploy run the release gate: `node scripts/en-release-audit.mjs https://id
     }
     location ~ /\.(env|git|ht) { deny all; }
   }
-  server { listen 80; server_name ideav.pro www.ideav.pro; return 301 https://ideav.pro$request_uri; }
-  server { listen 443 ssl http2; server_name www.ideav.pro; return 301 https://ideav.pro$request_uri; }
+  server { listen 80; server_name integram-ai.online www.integram-ai.online; return 301 https://integram-ai.online$request_uri; }
+  server { listen 443 ssl http2; server_name www.integram-ai.online; return 301 https://integram-ai.online$request_uri; }
   ```
-- **HTTPS** via Let's Encrypt (`certbot --apache -d ideav.pro -d www.ideav.pro`), auto-renewal timer on; HTTP -> HTTPS and `www` -> bare in one 301; HSTS header recommended.
-- **SMTP** for confirmation mails and the contact form (from `hello@ideav.pro`): relay credentials go into the server `.env`. SPF/DKIM/DMARC as in the checklist.
+- **HTTPS** via Let's Encrypt (`certbot --apache -d integram-ai.online -d www.integram-ai.online`), auto-renewal timer on; HTTP -> HTTPS and `www` -> bare in one 301; HSTS header recommended.
+- **SMTP** for confirmation mails and the contact form (from `abc@integram-ai.online`): relay credentials go into the server `.env`. SPF/DKIM/DMARC as in the checklist.
 - **Cron**: only if the engine stream documents scheduled jobs (mail queue, cleanup); install them with the deploy user's crontab and note them here.
 - **Server `.env`**: DB credentials, SMTP, GitHub/Google OAuth client id/secret, contact email. Created once by hand, never uploaded.
 
 ### DNS records
 | Record | Name | Value |
 |---|---|---|
-| A (and AAAA) | `ideav.pro` | host IP |
-| CNAME or A | `www.ideav.pro` | `ideav.pro` / host IP |
-| MX | `ideav.pro` | mail host (non-RU) |
-| TXT (SPF) | `ideav.pro` | `v=spf1 include:<mail provider> ~all` |
-| TXT (DKIM) | `<selector>._domainkey.ideav.pro` | public key from the mail provider |
-| TXT (DMARC) | `_dmarc.ideav.pro` | `v=DMARC1; p=none; rua=mailto:hello@ideav.pro` |
-| CAA (optional) | `ideav.pro` | `0 issue "letsencrypt.org"` |
+| A (and AAAA) | `integram-ai.online` | host IP |
+| CNAME or A | `www.integram-ai.online` | `integram-ai.online` / host IP |
+| MX | `integram-ai.online` | `10 integram-ai.online.` (mailbox on the web host) |
+| TXT (SPF) | `integram-ai.online` | `v=spf1 ip4:<host IP> a mx ~all` |
+| TXT (DKIM) | `dkim._domainkey.integram-ai.online` | public key from ispmanager (Mail -> Mail domains) |
+| TXT (DMARC) | `_dmarc.integram-ai.online` | `v=DMARC1; p=none; rua=mailto:abc@integram-ai.online` |
+| CAA (optional) | `integram-ai.online` | `0 issue "letsencrypt.org"` |
 
 ## Docker Compose option
 
