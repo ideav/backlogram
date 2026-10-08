@@ -399,7 +399,7 @@ function intApi(m,u,b,vars,index){
                 $('#t30').val(dataByColumn(json,'Phone',0));
                 $('#t41').val(dataByColumn(json,'Email',0));
                 $('#t39').val($('<div />').html(dataByColumn(json,'Notes',0)).text());
-                $('#t280').attr('src',dataByColumn(json,'Picture',0)||'https://ideav.pro/images/tild3366-6237-4630-b561-626231313263__quintet.gif');
+                $('#t280').attr('src',dataByColumn(json,'Picture',0)||'/images/logo.png');
                 $('.plan').html(' &mdash; <a class="text-blue" id="tariff" onclick="activateTab(\'\',\'plan\')">'+(dataByColumn(json,'Plan',0)||'Free')+'</a>');
                 planID=parseInt(dataByColumn(json,'PlanID',0))||1146;
                 var d=new Date();

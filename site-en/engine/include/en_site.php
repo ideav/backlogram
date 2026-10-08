@@ -2,20 +2,48 @@
 # Site-level helpers of the English build: public base URL and bot protection
 # (honeypot, per-IP rate limit, optional Cloudflare Turnstile).
 
-# Public base URL without a trailing slash: INTEGRAM_BASE_URL, or derived from the request.
+# No domain is configured anywhere in the engine: the public base URL (links in mails, OAuth
+# redirect URIs, cookies, the default From address) comes from the current request, so the same
+# code serves any domain. INTEGRAM_ALLOWED_HOSTS (comma-separated, optional) pins the accepted
+# hosts: a request for any other Host header gets the first allowed host instead, so a forged
+# Host cannot end up in password-reset or confirmation links. Without a request (CLI), the
+# optional INTEGRAM_BASE_URL is used.
+function enAllowedHosts(){
+    $list = array();
+    foreach(explode(',', (string)integram_env('INTEGRAM_ALLOWED_HOSTS', '')) as $h){
+        $h = strtolower(trim($h));
+        if($h !== '')
+            $list[] = $h;
+    }
+    return $list;
+}
+
+# Host (with the port, if any) of the current request, checked against INTEGRAM_ALLOWED_HOSTS;
+# '' outside of a web request.
+function enRequestHost(){
+    $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : (isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '');
+    $host = strtolower(preg_replace('/[^A-Za-z0-9.:\-\[\]]/', '', (string)$host));
+    $allowed = enAllowedHosts();
+    if(count($allowed) && !in_array($host, $allowed, TRUE)
+        && !in_array(preg_replace('/:\d+$/', '', $host), $allowed, TRUE))
+        return $allowed[0];
+    return $host;
+}
+
+# Public base URL without a trailing slash.
 function enBaseUrl(){
-    $base = rtrim(integram_env('INTEGRAM_BASE_URL', ''), '/');
-    if($base !== '')
-        return $base;
+    $host = enRequestHost();
+    if($host === ''){
+        $base = rtrim((string)integram_env('INTEGRAM_BASE_URL', ''), '/');
+        return $base !== '' ? $base : 'http://localhost';
+    }
     $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
         || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
-    $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : (isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : 'localhost');
-    $host = preg_replace('/[^A-Za-z0-9.:\-\[\]]/', '', $host);
     return ($https ? 'https' : 'http').'://'.$host;
 }
 
 function enHost(){
-    return parse_url(enBaseUrl(), PHP_URL_HOST);
+    return (string)parse_url(enBaseUrl(), PHP_URL_HOST);
 }
 
 function enIsHttps(){
@@ -103,7 +131,7 @@ function enBotDie($msg, $code){
 }
 
 # Workspace names share the URL space with the marketing pages and the engine folders
-# (ideav.pro/<workspace>), so these names are never given to a workspace.
+# (<your-domain>/<workspace>), so these names are never given to a workspace.
 function enReservedName($db){
     $db = strtolower((string)$db);
     $reserved = array('my', 'en', 'start', 'auth', 'pricing', 'ai', 'compare', 'use', 'usecases', 'knowledge',
@@ -163,6 +191,10 @@ function enStarterForOwner($z, $userId){
     Exec_sql("UPDATE $z SET val=CAST(val AS SIGNED) + ".($days * 86400)." WHERE t=453 AND val REGEXP '^[0-9]+$'",
         "Shift the demo due dates");
 }
+
+# Default sender: no-reply@<current host> unless INTEGRAM_SMTP_FROM_EMAIL is set.
+if(isset($mail_config) && $mail_config['smtp_from_email'] === '')
+    $mail_config['smtp_from_email'] = 'no-reply@'.(enHost() !== '' ? enHost() : 'localhost');
 
 # Exposed to templates as {_global_.max_workspaces}.
 $GLOBALS["GLOBAL_VARS"]["max_workspaces"] = enMaxWorkspaces();

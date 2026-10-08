@@ -1,5 +1,5 @@
 import type { Block } from '../content/types'
-import { CONTACT_EMAIL } from '../site'
+import { CONTACT_EMAIL, HOST } from '../site'
 
 /**
  * Legal texts for the English site (issue #531): Terms of Service, Privacy
@@ -125,7 +125,7 @@ export const LEGAL: LegalDoc[] = [
     blocks: [
       {
         type: 'p',
-        text: `This policy explains how ${ENTITY}, [Registered address] ("Integram", "we") handles personal data when you visit integram-ai.online, contact us, or use the Integram service. We are the controller for the data described here. For data that our customers store in their own workspaces, we act as a processor on their behalf; their privacy notices apply to it.`,
+        text: `This policy explains how ${ENTITY}, [Registered address] ("Integram", "we") handles personal data when you visit ${HOST}, contact us, or use the Integram service. We are the controller for the data described here. For data that our customers store in their own workspaces, we act as a processor on their behalf; their privacy notices apply to it.`,
       },
       { type: 'h2', text: 'What we collect and why' },
       { type: 'h3', text: 'Contact and demo requests' },

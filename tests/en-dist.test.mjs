@@ -11,7 +11,7 @@ import { scanText, isAllowed, looksLikeText } from '../scripts/lib/en-guard-rule
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const DIST_EN = path.join(ROOT, 'dist-en')
 const ENGINE = path.join(ROOT, 'site-en', 'engine')
-const SITE_URL = (process.env.SITE_URL ?? 'https://integram-ai.online').trim().replace(/\/+$/, '')
+const SITE_URL = (process.env.SITE_URL || 'https://example.com').trim().replace(/\/+$/, '')
 const SITE_BASE = (() => {
   const t = (process.env.SITE_BASE ?? '').trim().replace(/^\/+|\/+$/g, '')
   return t ? `/${t}/` : '/'

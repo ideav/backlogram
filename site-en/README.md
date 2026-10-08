@@ -1,4 +1,4 @@
-# site-en — English site (integram-ai.online)
+# site-en — English site
 
 Отдельная сборка английского сайта. С русским сайтом (`ideav.ru`, корень репозитория) не связана: свой вход, свои компоненты, свой `dist-en/`, взаимных ссылок между сайтами нет — по условию [issue #524](https://github.com/ideav/backlogram/issues/524). Это не локализация, общего i18n-слоя нет, контент расходится.
 
@@ -28,11 +28,12 @@ npm run build:en   # сборка в dist-en/ под корень сайта
 | Переменная | Что это | По умолчанию |
 | --- | --- | --- |
 | `SITE_BASE` | путь на хосте: `/en/`, `/cn/`, `/pt/` | `/` |
-| `SITE_URL` | схема и хост, без пути | `https://integram-ai.online` |
+| `SITE_URL` | схема и хост, без пути (домен нигде в коде не зашит) | `https://example.com` |
+| `VITE_CONTACT_EMAIL` | публичный адрес для связи | `hello@<хост SITE_URL>` |
 
 ```bash
-npm run build:en                                     # https://integram-ai.online/
-SITE_BASE=/en/ npm run build:en                      # https://integram-ai.online/en/
+SITE_URL=https://example.com npm run build:en        # https://example.com/
+SITE_BASE=/en/ SITE_URL=https://example.com npm run build:en  # https://example.com/en/
 SITE_BASE=/pt/ SITE_URL=https://example.com npm run build:en
 ```
 

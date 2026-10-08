@@ -8875,6 +8875,8 @@ function server_parse($socket, $response, $line = __LINE__) {
 }
 function mysendmail($to,$subj,$msg){
     global $mail_config;
+    if(trim((string)$to) === "") # e.g. INTEGRAM_ADMIN_EMAIL not set: no admin notifications
+        return "";
     wlog("===== ".date("d.m.y H:m:s ")."\nTo $to\nSubj: $subj\nMsg: $msg", "log");
     $res = "id:".smtpmail($to, $to, $subj, $msg);
     wlog("\nResult: ".($res ? " Ok" : " Failed")."\n=====\n", "log");
@@ -9179,10 +9181,9 @@ function aiAgentRawInput(){
 function aiAgentCallbackUrl($db){
     $base = aiConfigValue(array("AI_AGENT_CALLBACK_BASE_URL", "INTEGRAM_AGENT_CALLBACK_BASE_URL"));
     if($base === ""){
-        $host = isset($_SERVER["HTTP_HOST"]) ? preg_replace('/[^a-z0-9.\-:]/i', '', (string)$_SERVER["HTTP_HOST"]) : "";
-        if($host === "")
+        if(enRequestHost() === "")
             return "";
-        $base = "https://".$host;
+        $base = enBaseUrl();
     }
     $base = rtrim($base, "/");
     return $base."/".rawurlencode((string)$db)."/ai/agent/callback";
