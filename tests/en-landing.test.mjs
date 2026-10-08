@@ -81,7 +81,7 @@ test('every contract route is routed and prerendered with its own meta', () => {
 
 test('content modules follow the shared contract', () => {
   const types = readFileSync(join(siteEn, 'src/content/types.ts'), 'utf8')
-  for (const name of ['Block', 'KbArticle', 'UseCase']) assert.match(types, new RegExp(`interface ${name}\\b`))
+  for (const name of ['Block', 'KbArticle', 'UseCase']) assert.match(types, new RegExp(`(?:interface|type) ${name}\\b`))
   assert.match(readFileSync(join(siteEn, 'src/content/kb/index.ts'), 'utf8'), /export const articles: KbArticle\[\]/)
   assert.match(readFileSync(join(siteEn, 'src/content/usecases/index.ts'), 'utf8'), /export const useCases: UseCase\[\]/)
   const blocks = readFileSync(join(siteEn, 'src/components/Blocks.tsx'), 'utf8')
