@@ -5,7 +5,7 @@ import { App, type PageComponent } from './App'
 import { matchPath, toSitePath, type PageKey } from './match'
 import { BASE } from './site'
 import { installLeadClickTracking, loadAnalytics } from './lib/analytics'
-import { captureUtm } from './lib/utm'
+import { captureUtm, installUtmOnConsent } from './lib/utm'
 
 // One chunk per page: a visitor downloads the code for the page they opened.
 const loaders: Record<PageKey, () => Promise<{ default: PageComponent }>> = {
@@ -22,7 +22,8 @@ const loaders: Record<PageKey, () => Promise<{ default: PageComponent }>> = {
   legal: () => import('./pages/Legal'),
 }
 
-captureUtm()
+captureUtm() // no-op without analytics consent
+installUtmOnConsent()
 installLeadClickTracking()
 loadAnalytics() // no-op unless the visitor has already granted consent
 

@@ -3,7 +3,13 @@
  * sessionStorage (first touch within the session wins) so a visitor who lands
  * on /excel-to-app?utm_source=... and submits the form from /contact still
  * carries the campaign into the lead payload. No cookies are set.
+ *
+ * Attribution is analytics, so it is stored only with consent (Cookie Policy):
+ * captureUtm() does nothing until the visitor accepts analytics, and runs again
+ * on the page where they accept, so the landing parameters are not lost.
  */
+
+import { readConsent } from './analytics'
 
 const KEY = 'integram-utm'
 const PARAMS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'fbclid', 'msclkid']
@@ -11,6 +17,7 @@ const PARAMS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_con
 export type Attribution = Record<string, string>
 
 export function captureUtm(): void {
+  if (readConsent() !== 'granted') return
   try {
     const q = new URLSearchParams(window.location.search)
     const found: Attribution = {}
@@ -36,4 +43,11 @@ export function readUtm(): Attribution {
   } catch {
     return {}
   }
+}
+
+/** Captures attribution on the page where the visitor grants consent. */
+export function installUtmOnConsent(): void {
+  window.addEventListener('integram-consent', (e) => {
+    if ((e as CustomEvent).detail === 'granted') captureUtm()
+  })
 }

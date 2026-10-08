@@ -70,7 +70,7 @@ test('every contract route is routed and prerendered with its own meta', () => {
     assert.ok(routes.includes(`path: '${p}'`), `routes.ts must describe ${p}`)
   }
   assert.match(match, /compare\\\/\(airtable\|smartsheet\|notion\)/)
-  assert.match(match, /\(terms\|privacy\|cookies\)/)
+  assert.match(match, /\(terms\|privacy\|cookies\|dpa\|subprocessors\|acceptable-use\|copyright\|security\)/)
   // Dynamic routes come from the content modules, so new articles/use cases
   // automatically get a page and a sitemap entry.
   assert.match(routes, /articles\.map/)
@@ -102,7 +102,7 @@ test('analytics loads only after opt-in consent and records leads with UTM', () 
 })
 
 test('legal pages leave the operating entity as explicit placeholders', () => {
-  const legal = readFileSync(join(siteEn, 'src/data/legal.ts'), 'utf8')
+  const legal = readFileSync(join(siteEn, 'src/data/legal/config.ts'), 'utf8')
   assert.match(legal, /\[Legal entity name\]/)
   assert.match(legal, /\[Governing law\]/)
 })

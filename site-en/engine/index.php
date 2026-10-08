@@ -538,7 +538,7 @@ function newDb($db, $template, $name, $email, $pwd){
 	
     mysendmail(ADMINEMAIL, "New workspace on ".enHost().": $z"
             , "Email: ".$email."\n".enBaseUrl()."/$z/object/".USER);
-	setcookie($z."_locale", $locale, time() + 2592000000, "/"); # Forever
+	setcookie($z."_locale", $locale, time() + 31536000, "/"); # 12 months (Cookie Policy)
     $z = $oldz;
 }
 # Insert new user and their data into CRM

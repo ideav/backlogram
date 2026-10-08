@@ -29,9 +29,26 @@ declare global {
   interface Window {
     plausible?: PlausibleFn
   }
+  interface Navigator {
+    globalPrivacyControl?: boolean
+  }
+}
+
+/**
+ * Global Privacy Control (issue #531, Privacy Policy and Cookie Policy): a
+ * browser that sends GPC has declined analytics. The banner is not shown, the
+ * script never loads, and a stored "granted" is ignored.
+ */
+export function gpcEnabled(): boolean {
+  try {
+    return typeof navigator !== 'undefined' && navigator.globalPrivacyControl === true
+  } catch {
+    return false
+  }
 }
 
 export function readConsent(): Consent | null {
+  if (gpcEnabled()) return 'denied'
   try {
     const v = window.localStorage.getItem(CONSENT_KEY)
     return v === 'granted' || v === 'denied' ? v : null
@@ -41,6 +58,7 @@ export function readConsent(): Consent | null {
 }
 
 export function writeConsent(value: Consent): void {
+  if (gpcEnabled()) value = 'denied'
   try {
     window.localStorage.setItem(CONSENT_KEY, value)
   } catch {
