@@ -1078,7 +1078,7 @@ function showConfirmModal(message, onConfirm) {
 // ============================================================
 // API Functions
 // ============================================================
-function apiRequest(method, endpoint, data, callback) {
+function apiRequest(method, endpoint, data, callback, retried) {
     const xhr = new XMLHttpRequest();
     xhr.open(method, '/' + FormConstructor.db + '/' + endpoint, true);
     xhr.setRequestHeader('X-Authorization', FormConstructor.token);
@@ -1099,6 +1099,12 @@ function apiRequest(method, endpoint, data, callback) {
     };
 
     xhr.onerror = function() {
+        // #717: a transient network error used to leave a just-added panel as "Type: Not set"
+        // until the page was refreshed. A GET is safe to repeat once; a POST is not.
+        if (method === 'GET' && !retried) {
+            setTimeout(function() { apiRequest(method, endpoint, data, callback, true); }, 500);
+            return;
+        }
         console.error('API Request failed');
         if (callback) callback(null);
     };

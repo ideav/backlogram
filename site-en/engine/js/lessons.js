@@ -260,8 +260,7 @@
                   } },
                 { on: ['forms'], title: 'A panel to add users',
                   html: '<p>A form consists of panels. Each panel shows a table or a query in a certain way.</p>'
-                      + '<p>Press <b>Add panel</b>, enter the title <b>Users</b> and choose the <b>Data entry form</b> type. Set <i>Data source</i> to <b>Table (object)</b>, pick <b>User</b> and press <b>Add</b>. Users can now be added right on the form.</p>'
-                      + '<p>If the new panel says <i>Set up a data source</i>, refresh the page.</p>',
+                      + '<p>Press <b>Add panel</b>, enter the title <b>Users</b> and choose the <b>Data entry form</b> type. Set <i>Data source</i> to <b>Table (object)</b>, pick <b>User</b> and press <b>Add</b>. Users can now be added right on the form.</p>',
                   check: function () {
                       if (!state.vars.form) return Promise.resolve(false);
                       return records(138, state.vars.form).then(function (r) { return r.length >= 1; });
