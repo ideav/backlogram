@@ -873,8 +873,9 @@ function myApi(m,u,b,vars,index){
                         alias[json[b].rep_col_list[i].id]=json[b].rep_col_list[i].name.split(' -> ').pop();
                     }
                     $('#table').html(h);
-                    // Request the report data
-                    myApi('GET','report/{_global_.id}?LIMIT=25&JSON','ShowReport');
+                    // Request the report data (a new query has no columns yet - nothing to run)
+                    if(json[b].object&&json[b].object.length)
+                        myApi('GET','report/{_global_.id}?LIMIT=25&JSON','ShowReport');
                     // Listeners to auto-save the changed control line values
                     $('.save-input').focusout(function(){ // Text input fields
                         updateValue(this);
