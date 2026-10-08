@@ -2972,7 +2972,7 @@ function dashBuildAreaChartOptions(fieldMap) {
 function dashEnsureChartJs(cb) {
     if (window.Chart) { cb(); return; }
     var s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js';
+    s.src = '/js/chart-4.4.1.umd.min.js';
     s.onload = cb;
     document.head.appendChild(s);
 }
@@ -3006,20 +3006,20 @@ function dashEnsurePivotJs(cb) {
         var lnk = document.createElement('link');
         lnk.id = 'pivottable-css';
         lnk.rel = 'stylesheet';
-        lnk.href = 'https://cdn.jsdelivr.net/npm/pivottable@2/dist/pivot.min.css';
+        lnk.href = '/css/pivot.min.css';
         document.head.appendChild(lnk);
     }
     function loadPivot() {
         if (window.jQuery && window.jQuery.fn && window.jQuery.fn.pivotUI) { cb(); return; }
-        dashLoadScriptOnce('pivottable-js', 'https://cdn.jsdelivr.net/npm/pivottable@2/dist/pivot.min.js', cb);
+        dashLoadScriptOnce('pivottable-js', '/js/pivot.min.js', cb);
     }
     function loadJqueryUi() {
         if (window.jQuery && window.jQuery.fn && window.jQuery.fn.sortable) { loadPivot(); return; }
-        dashLoadScriptOnce('jquery-ui-js', 'https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.js', loadPivot);
+        dashLoadScriptOnce('jquery-ui-js', '/js/jquery-ui1.12.1.min.js', loadPivot);
     }
     // PivotTable UI requires jQuery and jQuery UI sortable.
     if (!window.jQuery) {
-        dashLoadScriptOnce('jquery-js', 'https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js', loadJqueryUi);
+        dashLoadScriptOnce('jquery-js', '/js/jquery-3.6.0.min.js', loadJqueryUi);
     } else {
         loadJqueryUi();
     }
