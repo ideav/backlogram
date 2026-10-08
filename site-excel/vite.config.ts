@@ -44,6 +44,8 @@ function normalizeBase(raw: string | undefined): string {
 const BASE = normalizeBase(process.env.SITE_BASE)
 const ORIGIN = (process.env.SITE_URL ?? '').trim().replace(/\/+$/, '')
 const CANONICAL = ORIGIN + BASE
+// Домен, на котором счётчику разрешено стартовать (issue #703).
+const SITE_HOST = (() => { try { return new URL(ORIGIN).hostname } catch { return '' } })()
 
 // Счётчик — строка цифр или пусто. Пустой счётчик означает «не подключать»:
 // слать цели в несуществующий счётчик хуже, чем не слать вовсе, потому что
@@ -79,7 +81,7 @@ function deploymentMeta(): Plugin {
       return html
         .replaceAll('{{CANONICAL}}', CANONICAL)
         .replace('{{JSONLD}}', jsonLdScript(landingJsonLd(CANONICAL)))
-        .replace('{{METRIKA}}', metrikaSnippet(METRIKA_ID))
+        .replace('{{METRIKA}}', metrikaSnippet(METRIKA_ID, SITE_HOST))
     },
     generateBundle() {
       this.emitFile({
