@@ -7,7 +7,7 @@
     <!-- Tab bar -->
     <div class="info-tabs" id="info-tabs">
         <button class="info-tab" id="tab-intro" data-tab="intro">Getting started</button>
-        
+        <button class="info-tab" id="tab-lessons" data-tab="lessons">Lessons</button>
         <button class="info-tab" id="tab-forms" data-tab="forms">Forms and reports</button>
     </div>
 
@@ -19,6 +19,18 @@
         </div>
 
         <div class="info-actions" id="info-actions">
+            <div class="info-action-item" data-action="lessons">
+                <div class="info-action-header">
+                    <span class="info-action-icon info-action-icon-accent"><i class="pi pi-play"></i></span>
+                    <span class="info-action-title">Take the interactive lessons</span>
+                    <span class="info-action-toggle"><i class="pi pi-chevron-down"></i></span>
+                </div>
+                <div class="info-action-body">
+                    <p>Five short hands-on lessons, about an hour in total: a tour of the system, data import, queries, forms and data structures. A guide window shows what to do on each page and checks your progress.</p>
+                    <a href="#" class="info-action-link" onclick="infoSwitchTab('lessons'); return false;"><i class="pi pi-arrow-right"></i> Open the lessons</a>
+                </div>
+            </div>
+
             <div class="info-action-item" data-action="where-am-i">
                 <div class="info-action-header">
                     <span class="info-action-icon"><i class="pi pi-map-marker"></i></span>
@@ -128,9 +140,53 @@
         </div>
     </div>
 
-    
+    <div class="info-tab-content" id="content-lessons" style="display:none">
+        <div class="info-welcome">
+            <h2 class="info-welcome-title">Interactive lessons</h2>
+            <p class="info-welcome-text">Learn to build apps like the ones in our use cases. Take the lessons in this order: some of them use the data created in the previous ones. A guide window will show you what to do and mark the elements to click in gold.</p>
+        </div>
+        <div class="lsn-cards">
+            <div class="lsn-card" data-lesson="overview">
+                <div class="lsn-card-num">1</div>
+                <h4>Overview</h4>
+                <div class="lsn-card-time">5–10 min</div>
+                <p>A quick tour of the workplaces: tables, users, queries, forms and structure.</p>
+                <div class="lsn-card-foot"><button class="info-hint-btn" onclick="IntegramLessons.start('overview')">Start</button><span class="lsn-status"></span></div>
+            </div>
+            <div class="lsn-card" data-lesson="upload">
+                <div class="lsn-card-num">2</div>
+                <h4>Data import</h4>
+                <div class="lsn-card-time">5–10 min</div>
+                <p>Create linked tables from a file of 1000 movies in a few clicks.</p>
+                <div class="lsn-card-foot"><button class="info-hint-btn" onclick="IntegramLessons.start('upload')">Start</button><span class="lsn-status"></span></div>
+            </div>
+            <div class="lsn-card" data-lesson="queries">
+                <div class="lsn-card-num">3</div>
+                <h4>Queries</h4>
+                <div class="lsn-card-time">10 min</div>
+                <p>The query builder: select data from several tables, group, sort, filter and calculate totals.</p>
+                <div class="lsn-needs">Uses the movies from lesson 2.</div>
+                <div class="lsn-card-foot"><button class="info-hint-btn" onclick="IntegramLessons.start('queries')">Start</button><span class="lsn-status"></span></div>
+            </div>
+            <div class="lsn-card" data-lesson="forms">
+                <div class="lsn-card-num">4</div>
+                <h4>Forms</h4>
+                <div class="lsn-card-time">8–10 min</div>
+                <p>The form builder: panels with tables and charts, dashboards and data entry.</p>
+                <div class="lsn-needs">Uses the query from lesson 3.</div>
+                <div class="lsn-card-foot"><button class="info-hint-btn" onclick="IntegramLessons.start('forms')">Start</button><span class="lsn-status"></span></div>
+            </div>
+            <div class="lsn-card" data-lesson="structure">
+                <div class="lsn-card-num">5</div>
+                <h4>Data structures</h4>
+                <div class="lsn-card-time">15 min</div>
+                <p>Design a reading list app: linked tables, lookups and references, then fill it with data.</p>
+                <div class="lsn-card-foot"><button class="info-hint-btn" onclick="IntegramLessons.start('structure')">Start</button><span class="lsn-status"></span></div>
+            </div>
+        </div>
+        <p class="info-welcome-text">Something went wrong in a lesson? Refresh the page — it often helps, and the lesson continues from the same step. After the lessons, read the <a href="/knowledge-base" target="_blank" class="info-action-link">knowledge base</a> or <a href="/contact" target="_blank" class="info-action-link">book a training session</a>.</p>
+    </div>
 
-    
     <div class="info-tab-content" id="content-forms" style="display:none">
         <div class="info-forms-description" id="forms-description">
             <p class="info-forms-description-text">This tab shows the most relevant reports and forms for your daily work.</p>

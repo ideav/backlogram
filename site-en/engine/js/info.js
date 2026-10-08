@@ -71,7 +71,7 @@
 
     // ── Tab switching ────────────────────────────────────────────────────────
 
-    var TAB_ORDER = ['intro', 'quicklinks', 'forms'];
+    var TAB_ORDER = ['intro', 'lessons', 'quicklinks', 'forms'];
 
     function getActiveTab() {
         var saved = getCookie(COOKIE_ACTIVE_TAB);
@@ -115,7 +115,7 @@
         // Non-owners cannot see the intro tab content; fall back to forms
         if (tabId === 'intro' && !isOwner()) tabId = 'forms';
 
-        ['intro', 'quicklinks', 'forms'].forEach(function(id) {
+        TAB_ORDER.forEach(function(id) {
             var el = document.getElementById('content-' + id);
             if (el) el.style.display = (id === tabId) ? '' : 'none';
         });
