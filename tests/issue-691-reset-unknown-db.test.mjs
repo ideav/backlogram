@@ -54,3 +54,19 @@ test('#691: поле базы в сбросе необязательное, пу
   assert.match(html, /localStorage\.setItem\(WANTED_DB_KEY/);
   assert.match(html, /WANTED_DB_KEY='integram_wanted_db'/);
 });
+
+test('#712: ошибка регистрации не роняет обработчик при любом виде ответа', () => {
+  const ctx = { t9n: (s) => s.replace(/^\[RU\](.*?)\[EN\].*$/s, '$1') };
+  vm.createContext(ctx);
+  vm.runInContext(extractFunction('signUpError'), ctx);
+  const { signUpError } = ctx;
+  // Массив ошибок — обычный путь
+  assert.equal(signUpError([{ error: 'Этот email уже зарегистрирован. [errMailExists]' }]), 'Этот email уже зарегистрирован.');
+  // Объект с details/message
+  assert.equal(signUpError({ details: 'Пустой пароль [x]' }), 'Пустой пароль');
+  assert.equal(signUpError({ message: 'toConfirm' }), 'toConfirm');
+  // Не-JSON (сервер подмешал отладку) → json undefined: не падаем, даём общий текст
+  assert.equal(signUpError(undefined), 'Регистрация временно недоступна, попробуйте позже');
+  // Пустой массив тоже не роняет
+  assert.equal(signUpError([]), '');
+});
