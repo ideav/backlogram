@@ -19,7 +19,7 @@ export function hero() {
   let s = rect(0, 0, W, H, { fill: 'url(#gsoft)' })
   s += circle(1380, 120, 260, '#307fe2', 'opacity="0.10"') + circle(160, 900, 300, '#7c3aed', 'opacity="0.08"')
   const wx = 150, wy = 110, ww = 1000, wh = 740
-  const win = windowChrome(wx, wy, ww, wh, 'app.ideav.pro/acme/orders')
+  const win = windowChrome(wx, wy, ww, wh, 'app.integram-ai.online/acme/orders')
   s += win.head
   // mini sidebar
   s += rect(wx, wy + 48, 190, wh - 48, { fill: C.white }) + line(wx + 190, wy + 48, wx + 190, wy + wh)
@@ -145,7 +145,7 @@ export function excelToApp() {
 
   // App window
   const ax = 880, ay = 110, aw = 620, ah = 790
-  const win = windowChrome(ax, ay, aw, ah, 'app.ideav.pro/clients')
+  const win = windowChrome(ax, ay, aw, ah, 'app.integram-ai.online/clients')
   s += win.head
   s += text(ax + 28, ay + 92, 'Clients', { size: 24, weight: 700, fill: C.ink }) + button(ax + aw - 28 - 112, ay + 66, '+ Add client', { w: 112, h: 36, size: 13.5 })
   const kw = (aw - 56 - 20) / 2
@@ -286,7 +286,7 @@ export function ogCard(key) {
   lines.forEach((l, i) => { s += text(64, 316 + i * (size * 1.14), l, { size, weight: 700, fill: '#fff' }) })
   const sy = 316 + lines.length * size * 1.14 + 8
   wrap(sub, 26, 620).slice(0, 3).forEach((l, i) => { s += text(64, sy + 20 + i * 36, l, { size: 26, fill: '#94a3b8' }) })
-  s += text(64, 586, 'ideav.pro', { size: 22, weight: 700, fill: '#64748b' })
+  s += text(64, 586, 'integram-ai.online', { size: 22, weight: 700, fill: '#64748b' })
   // right decorative motif
   const mx = motif === 'm3' ? 740 : 770, my = 150
   const r = (x, y, w, h, o) => rect(mx + x, my + y, w, h, o)

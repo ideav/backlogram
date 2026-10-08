@@ -3,7 +3,7 @@
 // Audits a LIVE domain for "traces of the RF" and prints a Markdown report to
 // stdout (suitable for an issue comment). Exit code 1 if any check FAILs.
 //
-//   node scripts/en-release-audit.mjs [https://ideav.pro] [--max-pages=300]
+//   node scripts/en-release-audit.mjs [https://integram-ai.online] [--max-pages=300]
 //
 // All network I/O goes through `curl` (and a raw TLS socket), not Node's fetch,
 // because on some dev machines DNS is faked by a proxifier: DNS is resolved via
@@ -20,7 +20,7 @@ import { scanText, isAllowed } from './lib/en-guard-rules.mjs'
 const run = promisify(execFile)
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const args = process.argv.slice(2)
-const origin = new URL(args.find((a) => !a.startsWith('--')) ?? 'https://ideav.pro').origin
+const origin = new URL(args.find((a) => !a.startsWith('--')) ?? 'https://integram-ai.online').origin
 const host = new URL(origin).hostname
 const maxPages = Number((args.find((a) => a.startsWith('--max-pages=')) ?? '--max-pages=300').split('=')[1])
 const allowlist = JSON.parse(fs.readFileSync(path.join(ROOT, 'tests', 'en-guard-allowlist.json'), 'utf8'))

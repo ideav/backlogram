@@ -1,4 +1,4 @@
-# Integram EN — positioning, offer and pricing (ideav.pro)
+# Integram EN — positioning, offer and pricing (integram-ai.online)
 
 Source of truth for every English page, ad and article. Written for issue #527 (epic #524).
 The English site is not a translation of the Russian one: different market, different pains,
@@ -9,7 +9,7 @@ Product facts come from the existing product and the Russian site; anything not 
 
 ## 1. Brand and one-liner
 
-- Brand: **Integram**. Domain: **ideav.pro**. Contact: `hello@ideav.pro`.
+- Brand: **Integram**. Domain: **integram-ai.online**. Contact: `abc@integram-ai.online`.
 - One-liner: **Turn spreadsheets into web apps your AI agents can run.**
 - Elevator pitch: Upload an Excel file and get a multi-user web app with linked tables, forms,
   roles and reports. Connect Claude or any MCP-compatible agent to build and change it by asking.
@@ -132,7 +132,7 @@ Open for the owner: annual discount, nonprofit pricing, payment provider.
 
 ## 10. Stop-list
 
-Never on ideav.pro: Russia or any specific country as our location; Russian legal references
+Never on integram-ai.online: Russia or any specific country as our location; Russian legal references
 (152-FZ, software registry No. 30872 or any registry number); Russian company names or client
 cases (anonymize: "a regional food distributor"); ₽ or ruble prices; RUTUBE, VK, Telegram channel
 links, Yandex anything (Metrika, SmartCaptcha, OAuth, Direct, Webmaster); +7 phone numbers; links
