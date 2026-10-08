@@ -304,6 +304,15 @@ function replyText(json){
     var msg=Array.isArray(json)?(json[0]&&json[0].error):json.details;
     return String(msg||json.message||'').replace(/ ?\[.+\]/,'');
 }
+// Текст ошибки регистрации. Ответ бывает массивом [{error}], объектом или,
+// если сервер подмешал в тело отладку (не-JSON) — undefined; ни один из случаев
+// не должен ронять обработчик, иначе страница регистрации молча зависает (#712).
+function signUpError(json){
+    if(json===undefined)
+        return t9n('[RU]Регистрация временно недоступна, попробуйте позже[EN]Registration is temporarily unavailable, please try again later');
+    var msg=Array.isArray(json)?(json[0]&&json[0].error):(json.error||json.details||json.message);
+    return String(msg||'').replace(/ ?\[.+\]/,'');
+}
 function logIn(){
     $('.wrong-pwd').hide();
     $('input').removeClass('is-invalid');
@@ -409,7 +418,7 @@ function intApi(m,u,b,vars,index){
                         return;
                     }
                 $('#doSignUp').prop('disabled',false);
-                $('.error-alert').html(json[0].error.replace(/ ?\[.+\]/,'')).show();
+                $('.error-alert').html(signUpError(json)).show();
                 break;
                 
             case 'reset':
