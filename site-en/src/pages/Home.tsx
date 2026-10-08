@@ -122,7 +122,6 @@ export default function Home() {
           </div>
           <Img
             src="/img/hero.png"
-            alt="A spreadsheet on the left turning into an Integram web app with linked tables and an AI agent panel on the right"
             eager
           />
         </Container>

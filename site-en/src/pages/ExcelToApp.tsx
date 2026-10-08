@@ -49,7 +49,7 @@ export default function ExcelToApp() {
             </div>
             <p className="mt-4 text-sm text-slate-500">Works with .xlsx and CSV. Google Sheets: download as .xlsx first.</p>
           </div>
-          <Img src="/img/excel-to-app.png" alt="An Excel workbook converted into a web app with linked tables, a form and a report" eager />
+          <Img src="/img/excel-to-app.png" eager />
         </Container>
       </section>
 

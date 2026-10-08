@@ -35,7 +35,7 @@ export default function UseCase({ slug }: { slug?: string }) {
                 </Button>
               </div>
             </div>
-            <Img src={uc.image} alt={`${uc.title} built with Integram`} eager />
+            <Img src={uc.image} eager />
           </div>
         </Container>
       </section>
