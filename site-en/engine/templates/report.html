@@ -17,7 +17,7 @@
     })();
 </script>
 <script>
-    var db='{_global_.z}';
+    var db='{_global_.z}', user='{_global_.user}';
 </script>
 <script src="/js/jquery-3.5.1.slim.min.js"></script>
 <script src="/js/js.js"></script>
@@ -268,17 +268,10 @@ document.addEventListener('DOMContentLoaded', function() {
         workspace: 'report',
         steps: 3,
         onInit: function(api) {
-            var filterInputs = document.querySelectorAll('input[type="search"], input[type="text"].filter, .filter-input, th input');
-            filterInputs.forEach(function(inp) {
-                inp.addEventListener('input', function() { api.advance(2); }, { once: true });
-            });
-            var exportBtns = document.querySelectorAll('button, .btn, a');
-            exportBtns.forEach(function(btn) {
-                var txt = btn.textContent || btn.innerText || '';
-                if (txt.toLowerCase().indexOf('html') !== -1 || txt.toLowerCase().indexOf('xls') !== -1 || txt.toLowerCase().indexOf('export') !== -1) {
-                    btn.addEventListener('click', function() { api.advance(2); }, { once: true });
-                }
-            });
+            // Step 1 (filtering) -> 2 (export) -> 3 (refresh and reset)
+            api.on('input', '#report_table input', 1, 2);
+            api.on('click', 'th, a[onclick^="toggle_filter"]', 1, 2);
+            api.on('click', 'a', 2, 3, api.label(/^\.(HTML|XLS)$/));
         }
     });
 });
