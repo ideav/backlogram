@@ -15,6 +15,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { isPublished } from './published.mjs'
 import { tagSlug } from './tag-slug.mjs'
 
 // fileURLToPath, а не url.pathname: на Windows pathname даёт «/C:/…»,
@@ -67,11 +68,14 @@ export function readPosts() {
       return {
         slug: file.replace(/\.md$/, ''),
         draft: fm.draft === 'true',
+        pubDate: fm.pubDate ?? '',
         lastmod: fm.updatedDate ?? fm.pubDate ?? null,
         tags: Array.isArray(fm.tags) ? fm.tags : [],
       }
     })
-    .filter((p) => !p.draft)
+    // То же правило, что у страниц: статья «из будущего» не должна ни попасть
+    // в карту, ни добавить веса тегу (issue #726).
+    .filter((p) => isPublished(p))
 }
 
 /** Слаги тегов, у которых статей меньше порога: {@link isThinTag}. */

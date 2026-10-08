@@ -70,7 +70,8 @@ test('blog exposes an llms.txt route with the published post index', () => {
 
   const routeSource = readFileSync(llmsRoute, 'utf8')
   assert.match(routeSource, /getCollection\('posts'/)
-  assert.match(routeSource, /!data\.draft/)
+  // Черновики и статьи с будущей датой не попадают в индекс (issue #726).
+  assert.match(routeSource, /isPublished\(data\)/)
   // Блог переехал в подпапку основного домена (issue #522).
   assert.match(routeSource, /https:\/\/ideav\.ru['"]/)
   assert.match(routeSource, /withBase/)

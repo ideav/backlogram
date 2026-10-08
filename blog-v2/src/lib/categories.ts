@@ -1,4 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content'
+import { isPublished } from './published.mjs'
 import { tagSlug } from './tags'
 
 export interface CategoryInfo {
@@ -8,7 +9,7 @@ export interface CategoryInfo {
 }
 
 export async function getAllCategories(): Promise<CategoryInfo[]> {
-  const posts = await getCollection('posts', ({ data }) => !data.draft)
+  const posts = await getCollection('posts', ({ data }) => isPublished(data))
   const counts = new Map<string, number>()
   for (const post of posts) {
     const c = post.data.category
@@ -22,7 +23,7 @@ export async function getAllCategories(): Promise<CategoryInfo[]> {
 export async function getPostsByCategorySlug(
   slug: string
 ): Promise<CollectionEntry<'posts'>[]> {
-  const posts = await getCollection('posts', ({ data }) => !data.draft)
+  const posts = await getCollection('posts', ({ data }) => isPublished(data))
   return posts.filter((p) => tagSlug(p.data.category) === slug)
 }
 

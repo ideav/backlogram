@@ -5,6 +5,7 @@ import {
   getPostsByCategorySlug,
 } from '../../lib/categories'
 import { getCollection } from 'astro:content'
+import { isPublished } from '../../lib/published.mjs'
 import { absoluteWithBase, withBase } from '../../lib/url'
 import { collectionGraph } from '../../lib/jsonld'
 
@@ -23,7 +24,7 @@ export async function getStaticPaths() {
 
 const { name, count, posts } = Astro.props
 
-const allPosts = await getCollection('posts', ({ data }) => !data.draft)
+const allPosts = await getCollection('posts', ({ data }) => isPublished(data))
 const ascending = [...allPosts].sort(
   (a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf()
 )

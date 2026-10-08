@@ -17,6 +17,7 @@
 import { readdirSync, readFileSync, existsSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { dayOf, isPublished, publishDay } from '../../blog-v2/src/lib/published.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '..', '..')
@@ -98,12 +99,16 @@ function coverImage(data, body, index) {
 /**
  * Свежие статьи блога, от новой к старой.
  *
- * Порядок и фильтр — как на самом блоге: скрываем только `draft: true`
- * (посты «из будущего» блог тоже показывает), сортируем по `pubDate`, а
- * совпадающие даты оставляем в алфавитном порядке файлов — сортировка
- * стабильная, значит слайдер и главная блога идут в одном порядке.
+ * Порядок и фильтр — как на самом блоге: черновики не берём, сортируем по
+ * `pubDate`, а совпадающие даты оставляем в алфавитном порядке файлов —
+ * сортировка стабильная, значит слайдер и главная блога идут в одном порядке.
+ *
+ * Отложенные статьи (issue #726): в список идут `limit` статей, уже вышедших к
+ * дню `today`, и все статьи с датой позже него. Слайдер показывает только
+ * наступившие (`visibleBlogPosts` в src/data/blogPosts.mjs), поэтому статья
+ * появляется на главной в свой день сама, без пересборки сайта.
  */
-export function readBlogPosts(limit = SLIDER_LIMIT) {
+export function readBlogPosts(limit = SLIDER_LIMIT, { today = publishDay() } = {}) {
   const files = readdirSync(POSTS_DIR)
     .filter((name) => name.endsWith('.md'))
     .sort()
@@ -120,16 +125,18 @@ export function readBlogPosts(limit = SLIDER_LIMIT) {
       slug: file.replace(/\.md$/, ''),
       title: data.title,
       description: data.description ?? '',
-      date: data.pubDate,
+      date: dayOf(data.pubDate),
       category: data.category ?? 'Без категории',
       image: data.image ?? '',
       body: source.slice(source.indexOf('\n---', 3) + 4),
     })
   }
 
-  return posts
-    .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
-    .slice(0, limit)
+  posts.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
+  const upcoming = posts.filter((post) => !isPublished({ pubDate: post.date }, today))
+  const published = posts.filter((post) => isPublished({ pubDate: post.date }, today))
+
+  return [...upcoming, ...published.slice(0, limit)]
     .map((post, index) => ({
       slug: post.slug,
       url: `${BLOG_URL}/posts/${post.slug}/`,

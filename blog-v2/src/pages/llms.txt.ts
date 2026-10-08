@@ -1,4 +1,5 @@
 import { getCollection } from 'astro:content'
+import { isPublished } from '../lib/published.mjs'
 import type { APIContext } from 'astro'
 import { withBase } from '../lib/url'
 
@@ -33,7 +34,7 @@ function absoluteURL(path: string, site: URL): string {
 
 export async function GET(context: APIContext) {
   const site = context.site ?? new URL(SITE_URL)
-  const posts = await getCollection('posts', ({ data }) => !data.draft)
+  const posts = await getCollection('posts', ({ data }) => isPublished(data))
   const sorted = posts.sort(
     (a, b) =>
       b.data.pubDate.valueOf() - a.data.pubDate.valueOf() || a.id.localeCompare(b.id),
