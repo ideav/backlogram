@@ -1,0 +1,71 @@
+<link rel="stylesheet" href="/css/dash.css?{_global_.version}.1">
+<link rel="stylesheet" href="/css/dash-import.css?{_global_.version}.1">
+
+<div id="dash-import"
+     class="m-3"
+     data-db="{_global_.z}"
+     data-xsrf="{_global_.xsrf}"
+     data-user="{_global_.user}">
+
+    <h5 class="mb-3">Excel → dashboard model converter</h5>
+
+    
+    <div class="di-step">
+        <label class="di-file-box" for="di-file">
+            <input type="file" id="di-file" accept=".xlsx,.xlsm,.xls" hidden>
+            <span class="di-file-btn">Choose Excel file</span>
+            <span id="di-file-name" class="di-file-name">no file chosen</span>
+        </label>
+        <div class="di-hint">
+            The model name is the file name. A sheet with the same name in an existing model is appended to, not
+            recreated.
+        </div>
+    </div>
+
+    
+    <div class="di-step" id="di-preview-step" hidden>
+        <h6>What was recognized</h6>
+        <div id="di-summary" class="di-summary"></div>
+        <div id="di-preview" class="di-preview"></div>
+    </div>
+
+    
+    <div class="di-step" id="di-journal-step" hidden>
+        <h6>Not imported <span id="di-journal-count" class="di-badge"></span></h6>
+        <div class="di-hint">
+            Ready to paste into a repository issue: sheet, cell address, original content and reason.
+        </div>
+        <textarea id="di-journal-text" class="di-journal" rows="10" readonly></textarea>
+        <button type="button" id="di-journal-copy" class="dash-apply-btn dash-btn-secondary">
+            Copy as issue
+        </button>
+    </div>
+
+    
+    <div class="di-step" id="di-create-step" hidden>
+        <button type="button" id="di-create" class="dash-apply-btn dash-btn-primary">Create model</button>
+        <span id="di-target" class="di-hint"></span>
+    </div>
+
+    
+    <div class="di-step" id="di-debug-step" hidden>
+        <h6>Debug <span id="di-debug-count" class="di-badge"></span></h6>
+        <div class="di-hint">
+            Every step and request: address, status, id of the created record. The screen shows the start
+            of the trace and all errors; the downloaded file contains all of it.
+        </div>
+        <textarea id="di-debug-text" class="di-journal" rows="12" readonly></textarea>
+        <button type="button" id="di-debug-download" class="dash-apply-btn dash-btn-secondary">
+            Download JSON
+        </button>
+        <button type="button" id="di-debug-copy" class="dash-apply-btn dash-btn-secondary">
+            Copy
+        </button>
+    </div>
+
+    <div id="di-status" class="di-status" aria-live="polite"></div>
+</div>
+
+<script src="/js/integram-batch.js?{_global_.version}.1"></script>
+<script src="/js/import-journal.js?{_global_.version}.1"></script>
+<script src="/js/dash-import.js?{_global_.version}.3"></script>

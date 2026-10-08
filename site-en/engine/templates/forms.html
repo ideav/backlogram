@@ -1,0 +1,2906 @@
+<!--
+    Form Constructor / Forms Builder
+    templates/forms.html
+
+    Two modes:
+    1. Edit mode (GET parameter EDIT) - configure panels, add/remove elements
+    2. Display mode - render configured panels with data
+
+    Panel types:
+    - Charts: XYChart (line), PieChart, Histogram, Bubble
+    - Report tables with configurable columns
+    - Pivot tables
+    - Data entry forms
+
+    Data sources: Tables (objects) or Reports (queries)
+    Form metadata: table 137
+    Panel metadata: table 138
+-->
+<style>
+/* Form Constructor Styles */
+.forms-constructor {
+    /* padding: 20px; */
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.forms-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.forms-title {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: 0.15px;
+    margin: 0;
+}
+
+.forms-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn {
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: var(--button-primary);
+    color: white;
+    border-color: var(--button-primary);
+}
+
+.btn-primary:hover {
+    background: var(--button-primary-hover);
+}
+
+.btn-secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+    background: var(--border-color);
+}
+
+.btn-danger {
+    background: var(--color-danger);
+    color: white;
+    border-color: var(--color-danger);
+}
+
+.btn-danger:hover {
+    background: var(--color-danger-hover);
+}
+
+.btn-sm {
+    padding: 4px 10px;
+    font-size: 12px;
+}
+
+/* Form List */
+.forms-list {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.forms-list h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+.form-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.form-item:last-child {
+    border-bottom: none;
+}
+
+.form-item-name {
+    flex: 1;
+    font-weight: 500;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.form-item-name:hover {
+    text-decoration: underline;
+    color: var(--link-color);
+}
+
+.form-item-name-input {
+    flex: 1;
+    font-weight: 500;
+    padding: 2px 6px;
+    border: 1px solid var(--button-primary);
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+    background: var(--input-bg);
+    color: var(--text-primary);
+}
+
+.form-item-actions {
+    display: flex;
+    gap: 5px;
+}
+
+/* Panels Container - Adaptive non-proportional flex layout */
+.panels-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-start; /* Panels align at top, not stretch to equal height */
+}
+
+/* Panel Group - for grouping panels vertically */
+.panel-group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    /* Adaptive: fit content width, don't grow proportionally */
+    flex: 0 1 auto;
+    min-width: 200px;
+    max-width: 100%;
+    width: fit-content;
+}
+
+/* Panel Card - Adaptive sizing based on content */
+.panel-card {
+    background: var(--card-bg);
+    border: none;
+    border-radius: 8px;
+    padding: 15px;
+    min-width: 200px;
+    /* Adaptive: fit content, don't grow proportionally */
+    flex: 0 1 auto;
+    max-width: 100%;
+    position: relative;
+    overflow: hidden;
+    width: fit-content;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* When panel is inside a group, take full width of group */
+.panel-group .panel-card {
+    width: 100%;
+}
+
+/* Overflow Mode: Scroll - panel has fixed height based on viewport, scrollable */
+.panel-card.overflow-scroll {
+    max-height: calc(100vh - 100px); /* Viewport height minus header/padding */
+}
+
+.panel-card.overflow-scroll .panel-content {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+/* Overflow Mode: Stretch - panel grows beyond viewport if needed */
+.panel-card.overflow-stretch {
+    max-height: none;
+}
+
+.panel-card.overflow-stretch .panel-content {
+    max-height: none;
+    overflow-y: visible;
+}
+
+.panel-card.editing {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.panel-title {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.panel-actions {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.panel-group-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--text-secondary);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 11px;
+    margin-right: 5px;
+}
+
+.panel-content {
+    min-height: 50px; /* Reduced from 200px for adaptive sizing */
+    overflow-x: auto;
+}
+
+.panel-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Chart Container */
+.chart-container {
+    width: 100%;
+    min-height: 300px;
+}
+
+/* Table Report */
+.report-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.report-table th,
+.report-table td {
+    padding: 8px 12px;
+    text-align: left;
+    border: 1px solid var(--border-color);
+}
+
+.report-table th {
+    background: var(--bg-secondary);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.report-table tr:hover {
+    background: var(--bg-secondary);
+}
+
+/* Data Entry Form */
+.data-entry-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.form-field label {
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+    padding: 8px 12px;
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+    font-size: 14px;
+    background: var(--input-bg);
+    color: var(--text-primary);
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+    outline: none;
+    border-color: var(--button-primary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+/* Add Panel Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 0;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: var(--text-primary);
+}
+
+.modal-body {
+    margin-bottom: 20px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* Panel Type Selection */
+.panel-type-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.panel-type-option {
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-primary);
+}
+
+.panel-type-option:hover {
+    border-color: var(--button-primary);
+    background: var(--bg-secondary);
+}
+
+.panel-type-option.selected {
+    border-color: var(--button-primary);
+    background: var(--bg-secondary);
+}
+
+.panel-type-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.panel-type-name {
+    font-weight: 500;
+}
+
+/* Pivot Table Styles */
+.pivot-container {
+    overflow-x: auto;
+}
+
+/* Loading State */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    color: var(--text-secondary);
+}
+
+.loading::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color);
+    border-top-color: var(--button-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-secondary);
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+/* Panel Buttons */
+.panel-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.panel-button-edit-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px dashed var(--border-color);
+    border-radius: 4px;
+    padding: 2px 4px;
+}
+
+.panel-button-edit-btn {
+    opacity: 0.6;
+    padding: 2px 6px !important;
+    font-size: 11px !important;
+}
+
+.panel-button-edit-btn:hover {
+    opacity: 1;
+}
+
+/* Hidden utility */
+.hidden {
+    display: none !important;
+}
+
+/* Report Header */
+.report-header {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Column Config UI */
+.column-config-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 8px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+}
+
+.column-config-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.column-config-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-bottom: 5px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    cursor: grab;
+}
+
+.column-config-item:hover {
+    background: var(--bg-secondary);
+}
+
+.column-config-item.dragging {
+    opacity: 0.5;
+    background: var(--bg-secondary);
+}
+
+.column-config-item input[type="checkbox"] {
+    margin: 0;
+}
+
+.column-config-item .drag-handle {
+    color: var(--text-secondary);
+    cursor: grab;
+}
+
+.column-config-item .column-name {
+    flex: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .forms-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .panel-card {
+        min-width: 100%;
+        width: 100%;
+    }
+
+    .panel-group {
+        min-width: 100%;
+        width: 100%;
+    }
+
+    .panel-type-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<!-- Include required libraries -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="/js/jquery-ui1.12.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="/css/pivot.min.css" crossorigin="anonymous" />
+<script src="/js/pivot.min.js" crossorigin="anonymous"></script>
+<script src="/js/plotly.min.js"></script>
+<script src="/js/plotly_renderers.min.js" crossorigin="anonymous"></script>
+<script src="/js/js.js"></script>
+
+<!-- Main Constructor Container -->
+<div class="forms-constructor" id="formsConstructor">
+    <!-- Header -->
+    <div class="forms-header">
+        <h1 class="forms-title" id="formTitle">
+            Form builder
+        </h1>
+        <div class="forms-actions">
+            <button class="btn btn-secondary hidden" id="toggleEditBtn" onclick="toggleEditMode()">
+                <i class="pi pi-pencil"></i>
+                Edit
+            </button>
+            <button class="btn btn-primary hidden" id="addPanelBtn" onclick="showAddPanelModal()">
+                <i class="pi pi-plus"></i>
+                Add panel
+            </button>
+        </div>
+    </div>
+
+    <!-- Form Selection (shown when no form selected) -->
+    <div class="forms-list" id="formsListContainer">
+        <h3>Select a form or create a new one</h3>
+        <div id="formsList">
+            <!-- Forms will be loaded here -->
+            <div class="loading" id="formsLoading">
+                Loading forms...
+            </div>
+        </div>
+        <div style="margin-top: 15px;">
+            <form id="createFormForm" onsubmit="return createNewForm(event)">
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="newFormName" placeholder="New form name"
+                           class="form-control" style="flex: 1; padding: 8px 12px; border-radius: 4px;">
+                    <button type="submit" class="btn btn-primary">
+                        Create form
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Panels Container (shown when form selected) -->
+    <div class="panels-container hidden" id="panelsContainer">
+        <!-- Panels will be rendered here -->
+    </div>
+
+    <!-- Empty State (shown when form has no panels) -->
+    <div class="empty-state hidden" id="emptyState">
+        <div class="empty-state-icon"><i class="pi pi-th-large"></i></div>
+        <p>This form is empty. Add a panel to get started.</p>
+    </div>
+</div>
+
+<!-- Add Panel Modal -->
+<div class="modal-overlay hidden" id="addPanelModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Add panel</h3>
+            <button class="modal-close" onclick="hideAddPanelModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-field">
+                <label>Panel title</label>
+                <input type="text" id="panelName" placeholder="Enter a title">
+            </div>
+
+            <div class="form-field" style="margin-top: 15px;">
+                <label>Panel type</label>
+                <div class="panel-type-grid" id="panelTypeGrid">
+                    <div class="panel-type-option" data-type="XYChart" onclick="selectPanelType(this)">
+                        <div class="panel-type-icon"><i class="pi pi-chart-line"></i></div>
+                        <div class="panel-type-name">Line chart</div>
+                    </div>
+                    <div class="panel-type-option" data-type="PieChart" onclick="selectPanelType(this)">
+                        <div class="panel-type-icon"><i class="pi pi-chart-pie"></i></div>
+                        <div class="panel-type-name">Pie chart</div>
+                    </div>
+                    <div class="panel-type-option" data-type="Histogram" onclick="selectPanelType(this)">
+                        <div class="panel-type-icon"><i class="pi pi-chart-bar"></i></div>
+                        <div class="panel-type-name">Histogram</div>
+                    </div>
+                    <div class="panel-type-option" data-type="Pivot" onclick="selectPanelType(this)">
+                        <div class="panel-type-icon"><i class="pi pi-table"></i></div>
+                        <div class="panel-type-name">Pivot table</div>
+                    </div>
+                    <div class="panel-type-option" data-type="Report" onclick="selectPanelType(this)">
+                        <div class="panel-type-icon"><i class="pi pi-list"></i></div>
+                        <div class="panel-type-name">Report (table)</div>
+                    </div>
+                    <div class="panel-type-option" data-type="DataEntry" onclick="selectPanelType(this)">
+                        <div class="panel-type-icon"><i class="pi pi-file-edit"></i></div>
+                        <div class="panel-type-name">Data entry form</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-field" style="margin-top: 15px;">
+                <label>Data source</label>
+                <select id="dataSourceType" onchange="toggleDataSourceFields()">
+                    <option value="">Select a type</option>
+                    <option value="table">Table (object)</option>
+                    <option value="report">Query (report)</option>
+                </select>
+            </div>
+
+            <div class="form-field hidden" id="tableSourceField" style="margin-top: 10px;">
+                <label>Select a table</label>
+                <select id="tableSource">
+                    <option value="">Loading...</option>
+                </select>
+            </div>
+
+            <div class="form-field hidden" id="reportSourceField" style="margin-top: 10px;">
+                <label>Select a query</label>
+                <select id="reportSource">
+                    <option value="">Loading...</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="addPanel()">
+                Add
+            </button>
+            <button class="btn btn-secondary" onclick="hideAddPanelModal()">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Panel Modal -->
+<div class="modal-overlay hidden" id="editPanelModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Panel settings</h3>
+            <button class="modal-close" onclick="hideEditPanelModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="editPanelId">
+            <div class="form-field">
+                <label>Panel title</label>
+                <input type="text" id="editPanelName">
+            </div>
+            <div class="form-field" style="margin-top: 15px;">
+                <label>Font color</label>
+                <input type="color" id="editPanelColor" value="#333333">
+            </div>
+            <div class="form-field" style="margin-top: 15px;">
+                <label>Background color</label>
+                <input type="color" id="editPanelBgColor" value="#ffffff">
+            </div>
+            <div class="form-field" style="margin-top: 15px;">
+                <label>Group</label>
+                <input type="number" id="editPanelGroup" placeholder="Group number (panels in the same group are stacked vertically)" min="0">
+            </div>
+            <div class="form-field" style="margin-top: 15px;">
+                <label>Filter</label>
+                <input type="text" id="editPanelFilter" placeholder="For example: FR_Date=1.1&TO_Date=31.1">
+            </div>
+            <div class="form-field" style="margin-top: 15px;">
+                <label>Action after submit</label>
+                <input type="text" id="editPanelNextAction" placeholder="URL or action">
+            </div>
+            <div class="form-field" style="margin-top: 15px;">
+                <label>Content display mode</label>
+                <select id="editPanelOverflowMode">
+                    <option value="">Default</option>
+                    <option value="scroll">Scroll (fixed height)</option>
+                    <option value="stretch">Stretch (fit content)</option>
+                </select>
+            </div>
+            <div class="form-field" style="margin-top: 15px;">
+                <label>Panel type</label>
+                <select id="editPanelType" onchange="toggleEditPanelSourceFields()">
+                    <option value="">Keep current</option>
+                    <option value="XYChart">Line chart</option>
+                    <option value="PieChart">Pie chart</option>
+                    <option value="Histogram">Histogram</option>
+                    <option value="Pivot">Pivot table</option>
+                    <option value="Report">Report (table)</option>
+                    <option value="DataEntry">Data entry form</option>
+                </select>
+            </div>
+            <div class="form-field" style="margin-top: 15px;" id="editPanelTableSourceField">
+                <label>Table (object)</label>
+                <select id="editPanelTableSource">
+                    <option value="">Keep current</option>
+                </select>
+            </div>
+            <div class="form-field" style="margin-top: 15px;" id="editPanelReportSourceField">
+                <label>Query (report)</label>
+                <select id="editPanelReportSource">
+                    <option value="">Keep current</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-danger" onclick="deletePanel()">
+                Delete
+            </button>
+            <button class="btn btn-primary" onclick="savePanel()">
+                Save
+            </button>
+            <button class="btn btn-secondary" onclick="hideEditPanelModal()">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Button Modal -->
+<div class="modal-overlay hidden" id="addButtonModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Add button</h3>
+            <button class="modal-close" onclick="hideAddButtonModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="buttonPanelId">
+            <div class="form-field">
+                <label>Button text</label>
+                <input type="text" id="buttonText">
+            </div>
+            <div class="form-field" style="margin-top: 15px;">
+                <label>Action</label>
+                <select id="buttonActionType" onchange="toggleButtonActionFields()">
+                    <option value="js">Call a JS function</option>
+                    <option value="link">Open a link</option>
+                </select>
+            </div>
+            <div class="form-field" id="jsActionField" style="margin-top: 10px;">
+                <label>Function name</label>
+                <input type="text" id="buttonJsFunction" placeholder="For example: myFunction()">
+            </div>
+            <div class="form-field hidden" id="linkActionField" style="margin-top: 10px;">
+                <label>Link URL</label>
+                <input type="text" id="buttonLinkUrl" placeholder="For example: /workplace?param=value">
+            </div>
+            <div class="form-field" style="margin-top: 15px;">
+                <label>Button CSS class</label>
+                <input type="text" id="buttonClass" value="btn btn-primary" placeholder="btn btn-primary">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="addButtonToPanel()">
+                Add
+            </button>
+            <button class="btn btn-secondary" onclick="hideAddButtonModal()">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Button Modal -->
+<div class="modal-overlay hidden" id="editButtonModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit button</h3>
+            <button class="modal-close" onclick="hideEditButtonModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="editButtonId">
+            <div class="form-field">
+                <label>Button text</label>
+                <input type="text" id="editButtonText">
+            </div>
+            <div class="form-field" style="margin-top: 15px;">
+                <label>Action</label>
+                <select id="editButtonActionType" onchange="toggleEditButtonActionFields()">
+                    <option value="js">Call a JS function</option>
+                    <option value="link">Open a link</option>
+                </select>
+            </div>
+            <div class="form-field" id="editJsActionField" style="margin-top: 10px;">
+                <label>Function name</label>
+                <input type="text" id="editButtonJsFunction" placeholder="For example: myFunction()">
+            </div>
+            <div class="form-field hidden" id="editLinkActionField" style="margin-top: 10px;">
+                <label>Link URL</label>
+                <input type="text" id="editButtonLinkUrl" placeholder="For example: /workplace?param=value">
+            </div>
+            <div class="form-field" style="margin-top: 15px;">
+                <label>Button CSS class</label>
+                <input type="text" id="editButtonClass" placeholder="btn btn-primary">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="saveButton()">
+                Save
+            </button>
+            <button class="btn btn-secondary" onclick="hideEditButtonModal()">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Column Config Modal -->
+<div class="modal-overlay hidden" id="columnConfigModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Report column settings</h3>
+            <button class="modal-close" onclick="hideColumnConfigModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="columnConfigPanelId">
+            <p style="margin-bottom: 15px; color: var(--text-secondary);">
+                Check the visible columns and drag to reorder
+            </p>
+            <div class="column-config-list" id="columnConfigList">
+                <!-- Column items will be added here -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="saveColumnConfig()">
+                Save
+            </button>
+            <button class="btn btn-secondary" onclick="hideColumnConfigModal()">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// Form Constructor - Global State
+// ============================================================
+const FormConstructor = {
+    version: '2026-03-08-debug-tracing',  // Version for cache debugging
+    editMode: false,
+    debugMode: false,  // Set to true to enable value tracing (see console)
+    currentFormId: null,
+    forms: [],
+    panels: [],
+    reports: [],
+    tables: [],
+    charts: {},
+    metadataCache: {},  // Cache for table metadata (metadata/tableId?JSON responses)
+    db: '{_global_.z}',
+    xsrf: '{_global_.xsrf}',
+    token: '{_global_.token}',
+
+    // Panel type definitions
+    panelTypes: {
+        'XYChart': { name: 'Line chart', chartType: 'line' },
+        'PieChart': { name: 'Pie chart', chartType: 'pie' },
+        'Histogram': { name: 'Histogram', chartType: 'bar' },
+        'Pivot': { name: 'Pivot table' },
+        'Report': { name: 'Report' },
+        'DataEntry': { name: 'Data entry form' }
+    }
+};
+
+// ============================================================
+// Debug Logging - traces value transformation from JSON to table
+// Enable via URL parameter ?DEBUG or by setting FormConstructor.debugMode = true in console
+// ============================================================
+function debugLog(context, data) {
+    if (!FormConstructor.debugMode) return;
+    console.log('[FormConstructor Debug]', context, data);
+}
+
+function debugLogValue(stage, colName, rawValue, transformedValue) {
+    if (!FormConstructor.debugMode) return;
+    console.log('[Value Trace]', {
+        stage: stage,
+        column: colName,
+        rawValue: rawValue,
+        rawType: typeof rawValue,
+        rawIsUndefined: rawValue === undefined,
+        rawIsNull: rawValue === null,
+        rawIsEmpty: rawValue === '',
+        transformedValue: transformedValue,
+        transformedType: typeof transformedValue
+    });
+}
+
+// ============================================================
+// Initialization
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+    // Check for EDIT parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    FormConstructor.editMode = urlParams.has('EDIT') || urlParams.has('edit');
+
+    // Check for DEBUG parameter to enable value tracing
+    FormConstructor.debugMode = urlParams.has('DEBUG') || urlParams.has('debug');
+
+    // Get form ID from URL
+    const pathParts = window.location.pathname.split('/');
+    const formIdIndex = pathParts.indexOf('forms') + 1;
+    if (formIdIndex > 0 && pathParts[formIdIndex]) {
+        FormConstructor.currentFormId = pathParts[formIdIndex];
+    }
+
+    // Also check for id in URL parameter
+    if ('{_global_.id}' && '{_global_.id}' !== '') {
+        FormConstructor.currentFormId = '{_global_.id}';
+    }
+
+    // Log debug mode status and version (always log version in debug mode)
+    if (FormConstructor.debugMode) {
+        console.log('%c[FormConstructor Debug Mode ENABLED]', 'background: #ffcc00; color: #000; padding: 4px 8px; font-weight: bold;');
+        console.log('Version:', FormConstructor.version);
+        console.log('Value tracing will log how data flows from JSON to table cells.');
+        console.log('Look for [Value Trace] entries to see: rawValue → getDisplayValue → escapeHtml → cell');
+        console.log('To disable: remove ?DEBUG from URL');
+    }
+
+    // Initialize UI
+    updateEditModeUI();
+
+    // Load data
+    loadForms();
+    loadReports();
+    loadTables();
+
+    // If form ID is set, load that form
+    if (FormConstructor.currentFormId) {
+        loadFormPanels(FormConstructor.currentFormId);
+    }
+
+    // Localize
+    if (typeof localize === 'function') {
+        localize();
+    }
+});
+
+// ============================================================
+// Notification Utilities
+// ============================================================
+function showNotification(message, type) {
+    type = type || 'info';
+    var existing = document.querySelectorAll('.integram-toast');
+    existing.forEach(function(t) { t.remove(); });
+
+    var toast = document.createElement('div');
+    toast.className = 'integram-toast integram-toast-' + type;
+    toast.textContent = message;
+    var style = getComputedStyle(document.documentElement);
+    var errorColor = style.getPropertyValue('--color-danger').trim() || '#dc3545';
+    var successColor = style.getPropertyValue('--color-success').trim() || '#28a745';
+    var infoColor = '#17a2b8';
+    var bgColor = type === 'error' ? errorColor : type === 'success' ? successColor : infoColor;
+    toast.style.cssText = 'position:fixed;top:20px;right:20px;padding:12px 24px;border-radius:4px;color:white;z-index:10000;font-family:sans-serif;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.2);cursor:pointer;background-color:' + bgColor + ';';
+    document.body.appendChild(toast);
+
+    var remove = function() { if (toast.parentNode) toast.remove(); };
+    setTimeout(remove, 5000);
+    toast.addEventListener('click', remove);
+}
+
+function showConfirmModal(message, onConfirm) {
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10001;display:flex;align-items:center;justify-content:center;';
+
+    var modal = document.createElement('div');
+    modal.style.cssText = 'background:var(--card-bg,#fff);color:var(--text-primary,#212529);border-radius:8px;padding:24px;max-width:400px;width:90%;box-shadow:0 4px 16px rgba(0,0,0,0.2);';
+    modal.innerHTML = '<p style="margin:0 0 20px 0;">' + message + '</p><div style="display:flex;gap:8px;justify-content:flex-end;"><button class="btn-cancel" style="padding:8px 16px;border:1px solid var(--border-color,#dee2e6);border-radius:4px;background:transparent;color:var(--text-primary,#212529);cursor:pointer;">Cancel</button><button class="btn-confirm" style="padding:8px 16px;border:none;border-radius:4px;background:var(--color-danger,#dc3545);color:white;cursor:pointer;">Delete</button></div>';
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    var cleanup = function() { overlay.remove(); };
+
+    modal.querySelector('.btn-cancel').addEventListener('click', cleanup);
+    modal.querySelector('.btn-confirm').addEventListener('click', function() {
+        cleanup();
+        onConfirm();
+    });
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) cleanup();
+    });
+}
+
+// ============================================================
+// API Functions
+// ============================================================
+function apiRequest(method, endpoint, data, callback) {
+    const xhr = new XMLHttpRequest();
+    xhr.open(method, '/' + FormConstructor.db + '/' + endpoint, true);
+    xhr.setRequestHeader('X-Authorization', FormConstructor.token);
+
+    if (method === 'POST') {
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    }
+
+    xhr.onload = function() {
+        try {
+            const json = JSON.parse(this.responseText);
+            debugLog('apiRequest response', { endpoint: endpoint, json: json });
+            if (callback) callback(json);
+        } catch (e) {
+            console.error('API Error:', e, this.responseText);
+            if (callback) callback(null);
+        }
+    };
+
+    xhr.onerror = function() {
+        console.error('API Request failed');
+        if (callback) callback(null);
+    };
+
+    if (method === 'POST' && data) {
+        let params = '_xsrf=' + encodeURIComponent(FormConstructor.xsrf);
+        for (const key in data) {
+            params += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
+        }
+        xhr.send(params);
+    } else {
+        xhr.send();
+    }
+}
+
+// ============================================================
+// Load Forms List
+// ============================================================
+function loadForms() {
+    apiRequest('GET', 'object/137?JSON_OBJ&LIMIT=1000', null, function(json) {
+        const container = document.getElementById('formsList');
+        const loading = document.getElementById('formsLoading');
+
+        if (loading) loading.classList.add('hidden');
+
+        // JSON_OBJ returns array format: [{i: id, u: parent, o: order, r: [val1, val2, ...]}, ...]
+        if (!json || !Array.isArray(json) || json.length === 0) {
+            container.innerHTML = '<p>' + 'No forms' + '</p>';
+            return;
+        }
+
+        // Transform JSON_OBJ format to standard format for internal use
+        FormConstructor.forms = json.map(function(item) {
+            return {
+                id: item.i,
+                val: item.r ? item.r[0] : '',  // First column contains the name
+                parent: item.u,
+                order: item.o
+            };
+        });
+
+        let html = '';
+        FormConstructor.forms.forEach(function(form) {
+            const rawName = getDisplayValue(form.val) || 'Form ' + form.id;
+            const displayName = escapeHtml(rawName);
+            html += '<div class="form-item">';
+            // Form name as hyperlink to open the form
+            html += '<a href="/' + FormConstructor.db + '/forms/' + form.id + '" class="form-item-name">' + displayName + '</a>';
+            html += '<div class="form-item-actions">';
+            // Inline editable name input (hidden by default)
+            html += '<input type="text" class="form-item-name-input hidden" id="form-name-input-' + form.id + '" value="' + displayName + '" onblur="saveFormName(' + form.id + ')" onkeydown="handleFormNameKey(event, ' + form.id + ')">';
+            // Edit name button (pencil icon)
+            html += '<button class="btn btn-sm btn-secondary" onclick="startEditFormName(' + form.id + ')" title="' + 'Rename' + '"><i class="pi pi-pencil"></i></button>';
+            // Edit (settings) button - icon only, links to edit mode
+            html += '<a href="/' + FormConstructor.db + '/forms/' + form.id + '?EDIT" class="btn btn-sm btn-primary" title="' + 'Edit' + '"><i class="pi pi-cog"></i></a>';
+            html += '</div>';
+            html += '</div>';
+        });
+
+        container.innerHTML = html;
+
+        // If we have a current form, hide the list
+        if (FormConstructor.currentFormId) {
+            document.getElementById('formsListContainer').classList.add('hidden');
+        }
+    });
+}
+
+// ============================================================
+// Load Reports (Queries) List
+// ============================================================
+function loadReports() {
+    apiRequest('GET', 'object/22?JSON_OBJ&LIMIT=1000', null, function(json) {
+        const select = document.getElementById('reportSource');
+
+        // JSON_OBJ returns array format: [{i: id, u: parent, o: order, r: [val1, val2, ...]}, ...]
+        if (!json || !Array.isArray(json) || json.length === 0) {
+            select.innerHTML = '<option value="">' + 'No queries' + '</option>';
+            return;
+        }
+
+        // Transform JSON_OBJ format to standard format for internal use
+        FormConstructor.reports = json.map(function(item) {
+            return {
+                id: item.i,
+                val: item.r ? item.r[0] : '',  // First column contains the name
+                parent: item.u,
+                order: item.o
+            };
+        });
+
+        let html = '<option value="">' + 'Select a query' + '</option>';
+        FormConstructor.reports.forEach(function(report) {
+            // For reference fields (id:name format), display only the name
+            html += '<option value="' + report.id + '">' + escapeHtml(getDisplayValue(report.val) || 'Report ' + report.id) + '</option>';
+        });
+
+        select.innerHTML = html;
+    });
+}
+
+// ============================================================
+// Load Tables List
+// ============================================================
+function loadTables() {
+    // Load all types that have requisites (can be used as data sources)
+    apiRequest('GET', 'metadata?JSON', null, function(json) {
+        const select = document.getElementById('tableSource');
+
+        if (!json || !Array.isArray(json)) {
+            select.innerHTML = '<option value="">' + 'No tables' + '</option>';
+            return;
+        }
+
+        FormConstructor.tables = json;
+
+        let html = '<option value="">' + 'Select a table' + '</option>';
+        json.forEach(function(table) {
+            // For reference fields (id:name format), display only the name
+            html += '<option value="' + table.id + '">' + escapeHtml(getDisplayValue(table.val) || 'Table ' + table.id) + '</option>';
+        });
+
+        select.innerHTML = html;
+    });
+}
+
+// ============================================================
+// Load Form Panels
+// ============================================================
+function loadFormPanels(formId) {
+    document.getElementById('formsListContainer').classList.add('hidden');
+    document.getElementById('panelsContainer').classList.remove('hidden');
+
+    apiRequest('GET', 'object/138?F_U=' + formId + '&JSON_OBJ', null, function(json) {
+        const container = document.getElementById('panelsContainer');
+        const emptyState = document.getElementById('emptyState');
+
+        // Get form name - JSON_OBJ returns array format
+        apiRequest('GET', 'object/137/' + formId + '?JSON_OBJ', null, function(formJson) {
+            // JSON_OBJ returns array format: [{i: id, u: parent, o: order, r: [val1, val2, ...]}, ...]
+            if (formJson && Array.isArray(formJson) && formJson.length > 0) {
+                const form = formJson[0];
+                // For reference fields (id:name format), display only the name
+                document.getElementById('formTitle').textContent = getDisplayValue(form.r ? form.r[0] : '') || 'Form';
+            }
+        });
+
+        // JSON_OBJ returns array format: [{i: id, u: parent, o: order, r: [val1, val2, ...]}, ...]
+        if (!json || !Array.isArray(json) || json.length === 0) {
+            container.innerHTML = '';
+            emptyState.classList.remove('hidden');
+
+            // Show add panel button in edit mode
+            if (FormConstructor.editMode) {
+                document.getElementById('addPanelBtn').classList.remove('hidden');
+            }
+            return;
+        }
+
+        // Transform JSON_OBJ format to standard format for internal use
+        // For panels, we need to fetch metadata to map r[index] to requisite IDs
+        loadPanelMetadataAndRender(json, container, emptyState);
+    });
+}
+
+// ============================================================
+// Load Panel Metadata and Render
+// ============================================================
+function loadPanelMetadataAndRender(panelsData, container, emptyState) {
+    // Fetch metadata for table 138 (panels) using cache
+    getMetadata(138, function(metadata) {
+        const panels = [];
+        const reqs = {};
+
+        // Build mapping from requisite index to requisite ID
+        const reqMapping = [];
+        if (metadata && metadata.reqs) {
+            metadata.reqs.forEach(function(req, index) {
+                reqMapping.push(req.id);
+            });
+        }
+
+        // Transform each panel from JSON_OBJ format
+        panelsData.forEach(function(item) {
+            const panelId = item.i;
+            panels.push({
+                id: panelId,
+                val: item.r ? item.r[0] : '',  // First column contains the panel name
+                parent: item.u,
+                order: item.o
+            });
+
+            // Map r[index+1] values to requisite IDs
+            const panelReqs = {};
+            if (item.r && reqMapping.length > 0) {
+                for (let i = 0; i < reqMapping.length && (i + 1) < item.r.length; i++) {
+                    const reqId = reqMapping[i];
+                    const value = item.r[i + 1];  // r[0] is the name, requisites start at r[1]
+                    if (value !== '' && value !== null && value !== undefined) {
+                        panelReqs[reqId] = value;
+                        // For reference fields (id:name format), also store parsed ref
+                        const ref = parseReferenceValue(value);
+                        if (ref) {
+                            panelReqs['ref_' + reqId] = value;  // Keep original for editing
+                        }
+                    }
+                }
+            }
+            reqs[panelId] = panelReqs;
+        });
+
+        FormConstructor.panels = panels;
+        FormConstructor.panelReqs = reqs;  // Store panel requisites for editing
+        emptyState.classList.add('hidden');
+
+        // Show add panel button in edit mode
+        if (FormConstructor.editMode) {
+            document.getElementById('addPanelBtn').classList.remove('hidden');
+        }
+
+        // Render panels
+        renderPanels(panels, reqs);
+    });
+}
+
+// ============================================================
+// Render Panels
+// ============================================================
+function renderPanels(panels, reqs) {
+    const container = document.getElementById('panelsContainer');
+    container.innerHTML = '';
+
+    // Group panels by their group value (256)
+    // Panels with the same group are displayed vertically in the same div
+    const groupedPanels = {};
+    const ungroupedPanels = [];
+
+    panels.forEach(function(panel) {
+        const panelReqs = reqs[panel.id] || {};
+        const group = panelReqs[256] || panelReqs['256'] || '';
+
+        if (group !== '' && group !== null && group !== undefined) {
+            if (!groupedPanels[group]) {
+                groupedPanels[group] = [];
+            }
+            groupedPanels[group].push({ panel: panel, reqs: panelReqs });
+        } else {
+            ungroupedPanels.push({ panel: panel, reqs: panelReqs });
+        }
+    });
+
+    // Track which groups have been rendered (to maintain panel order)
+    const renderedGroups = new Set();
+
+    // Render panels in original order, but group panels with same group value
+    panels.forEach(function(panel) {
+        const panelReqs = reqs[panel.id] || {};
+        const group = panelReqs[256] || panelReqs['256'] || '';
+
+        if (group !== '' && group !== null && group !== undefined) {
+            // Check if this group has already been rendered
+            if (renderedGroups.has(group)) {
+                return; // Skip, already rendered as part of the group
+            }
+
+            // Mark this group as rendered
+            renderedGroups.add(group);
+
+            // Create a group container div for panels with the same group
+            const groupDiv = document.createElement('div');
+            groupDiv.className = 'panel-group';
+            groupDiv.setAttribute('data-group', group);
+
+            // Add all panels in this group to the group container
+            groupedPanels[group].forEach(function(item) {
+                const panelEl = createPanelElement(item.panel, item.reqs);
+                groupDiv.appendChild(panelEl);
+            });
+
+            container.appendChild(groupDiv);
+
+            // Load data for all panels in this group
+            groupedPanels[group].forEach(function(item) {
+                loadPanelData(item.panel.id, item.reqs);
+            });
+        } else {
+            // Ungrouped panel - render directly
+            const panelEl = createPanelElement(panel, panelReqs);
+            container.appendChild(panelEl);
+            loadPanelData(panel.id, panelReqs);
+        }
+    });
+}
+
+// ============================================================
+// Create Panel Element
+// ============================================================
+function createPanelElement(panel, panelReqs) {
+    const div = document.createElement('div');
+    div.className = 'panel-card' + (FormConstructor.editMode ? ' editing' : '');
+    div.id = 'panel-' + panel.id;
+    div.setAttribute('data-panel-id', panel.id);
+
+    // Get panel config
+    const panelType = panelReqs[184] || panelReqs['184'] || ''; // Object type or chart type
+    const reportId = panelReqs[161] || panelReqs['161'] || ''; // Report ID
+    const fontColor = panelReqs[254] || panelReqs['254'] || '#333333';
+    const bgColor = panelReqs[255] || panelReqs['255'] || '#ffffff';
+    const group = panelReqs[256] || panelReqs['256'] || ''; // Group number
+    const config = panelReqs[225] || panelReqs['225'] || '{}';
+    const overflowMode = panelReqs[258] || panelReqs['258'] || ''; // Overflow mode (scroll/stretch)
+
+    // Apply colors
+    if (fontColor) div.style.color = fontColor;
+    if (bgColor) div.style.backgroundColor = bgColor;
+
+    // Apply overflow mode
+    if (overflowMode === 'scroll') {
+        div.classList.add('overflow-scroll');
+    } else if (overflowMode === 'stretch') {
+        div.classList.add('overflow-stretch');
+    }
+
+    // Panel header
+    let headerHtml = '<div class="panel-header">';
+    // For reference fields (id:name format), display only the name
+    headerHtml += '<span class="panel-title">' + escapeHtml(getDisplayValue(panel.val) || panel.name || 'Panel ' + panel.id) + '</span>';
+
+    if (FormConstructor.editMode) {
+        headerHtml += '<div class="panel-actions">';
+        // Display group badge if group is set
+        if (group !== '' && group !== null && group !== undefined) {
+            headerHtml += '<span class="panel-group-badge" title="' + 'Group' + '">' + escapeHtml(group) + '</span>';
+        }
+        headerHtml += '<button class="btn btn-sm btn-secondary" onclick="movePanel(' + panel.id + ', -1)" title="' + 'Up' + '"><i class="pi pi-arrow-up"></i></button>';
+        headerHtml += '<button class="btn btn-sm btn-secondary" onclick="movePanel(' + panel.id + ', 1)" title="' + 'Down' + '"><i class="pi pi-arrow-down"></i></button>';
+        headerHtml += '<button class="btn btn-sm btn-secondary" onclick="showEditPanelModal(' + panel.id + ')" title="' + 'Settings' + '"><i class="pi pi-cog"></i></button>';
+        headerHtml += '<button class="btn btn-sm btn-secondary" onclick="showAddButtonModal(' + panel.id + ')" title="' + 'Add button' + '"><i class="pi pi-plus"></i></button>';
+        headerHtml += '</div>';
+    }
+    headerHtml += '</div>';
+
+    // Panel buttons container
+    headerHtml += '<div class="panel-buttons" id="panel-buttons-' + panel.id + '"></div>';
+
+    // Panel content
+    headerHtml += '<div class="panel-content" id="panel-content-' + panel.id + '">';
+    headerHtml += '<div class="loading">' + 'Loading...' + '</div>';
+    headerHtml += '</div>';
+
+    // Panel meta (edit mode)
+    if (FormConstructor.editMode) {
+        headerHtml += '<div class="panel-meta">';
+        headerHtml += 'Type: ' + escapeHtml(getPanelTypeName(getDisplayValue(panelType)));
+        if (reportId) {
+            headerHtml += ' | Query: ' + escapeHtml(getDisplayValue(reportId));
+        }
+        headerHtml += '</div>';
+    }
+
+    div.innerHTML = headerHtml;
+    return div;
+}
+
+// ============================================================
+// Get Panel Type Name
+// ============================================================
+function getPanelTypeName(typeId) {
+    if (FormConstructor.panelTypes[typeId]) {
+        return FormConstructor.panelTypes[typeId].name;
+    }
+    // Try to find in tables
+    const table = FormConstructor.tables.find(t => t.id == typeId);
+    if (table) {
+        return table.val || 'Table ' + typeId;
+    }
+    return typeId || 'Not set';
+}
+
+// ============================================================
+// Load Panel Data
+// ============================================================
+function loadPanelData(panelId, panelReqs) {
+    const contentEl = document.getElementById('panel-content-' + panelId);
+    const buttonsEl = document.getElementById('panel-buttons-' + panelId);
+
+    const panelType = panelReqs[184] || panelReqs['184'] || '';
+    // Extract report ID - prefer numeric ID over name for API calls
+    // We should use the ID (169) for API calls, not the name
+    const reportRefValue = panelReqs['ref_161'] || panelReqs[161] || panelReqs['161'] || '';
+    const reportRef = parseReferenceValue(reportRefValue);
+    const reportId = reportRef ? reportRef.id : reportRefValue;
+    const filter = panelReqs[181] || panelReqs['181'] || '';
+    const config = panelReqs[225] || panelReqs['225'] || '{}';
+
+    // Load buttons
+    loadPanelButtons(panelId, buttonsEl);
+
+    // Parse config to check for explicit panel type
+    let configJson = {};
+    try {
+        configJson = typeof config === 'string' ? JSON.parse(config) : config;
+    } catch (e) {
+        configJson = {};
+    }
+    const explicitPanelType = configJson.panelType;
+
+    // Determine panel type and render accordingly
+    if (panelType === 'Pivot' && reportId) {
+        renderPivotTable(panelId, reportId, filter, config, contentEl);
+    } else if (['XYChart', 'PieChart', 'Histogram', 'Bubble'].includes(panelType) && reportId) {
+        renderChart(panelId, panelType, reportId, filter, config, contentEl);
+    } else if (panelType === 'Report' || (!panelType && reportId)) {
+        renderReportTable(panelId, reportId, filter, config, contentEl);
+    } else if (explicitPanelType === 'Report' && parseInt(panelType)) {
+        // Report panel with table/object data source - render table data as report
+        renderTableAsReport(panelId, panelType, filter, config, contentEl);
+    } else if (parseInt(panelType)) {
+        // It's a table/object type - render data entry form
+        renderDataEntryForm(panelId, panelType, reportId, filter, contentEl);
+    } else if (reportId) {
+        // Default to report table
+        renderReportTable(panelId, reportId, filter, config, contentEl);
+    } else {
+        contentEl.innerHTML = '<div class="empty-state"><p>' + 'Set up a data source for this panel' + '</p></div>';
+    }
+}
+
+// ============================================================
+// Load Panel Buttons
+// ============================================================
+function loadPanelButtons(panelId, container) {
+    apiRequest('GET', 'object/150?F_U=' + panelId + '&JSON', null, function(json) {
+        if (!json || !json['&main.a.&uni_obj.&uni_obj_all']) {
+            return;
+        }
+
+        const buttons = json['&main.a.&uni_obj.&uni_obj_all'];
+        const buttonReqs = json['&object_reqs'] || {};
+
+        let html = '';
+        for (let i in buttons.id) {
+            const btnId = buttons.id[i];
+            const btnName = buttons.val[i];
+            const btnReqs = buttonReqs[btnId] || [];
+            const btnAction = btnReqs[0] || '';
+            const btnClass = btnReqs[1] || 'btn btn-secondary';
+
+            if (FormConstructor.editMode) {
+                // Store button data for edit modal
+                FormConstructor.buttonData = FormConstructor.buttonData || {};
+                FormConstructor.buttonData[btnId] = { name: btnName, action: btnAction, cls: btnClass };
+                html += '<span class="panel-button-edit-wrap">';
+                html += '<span class="' + escapeHtml(btnClass) + '">' + escapeHtml(btnName) + '</span>';
+                html += '<button class="btn btn-sm btn-secondary panel-button-edit-btn" onclick="showEditButtonModal(' + btnId + ')" title="' + 'Edit button' + '"><i class="pi pi-pencil"></i></button>';
+                html += '<button class="btn btn-sm btn-danger panel-button-edit-btn" onclick="deleteButton(' + btnId + ')" title="' + 'Delete button' + '"><i class="pi pi-trash"></i></button>';
+                html += '</span>';
+            } else if (btnAction.indexOf('javascript:') === 0 || btnAction.indexOf('(') > 0) {
+                html += '<button class="' + escapeHtml(btnClass) + '" onclick="' + escapeHtml(btnAction.replace('javascript:', '')) + '">' + escapeHtml(btnName) + '</button>';
+            } else {
+                html += '<a href="/' + FormConstructor.db + '/' + escapeHtml(btnAction) + '" class="' + escapeHtml(btnClass) + '">' + escapeHtml(btnName) + '</a>';
+            }
+        }
+
+        container.innerHTML = html;
+        if (html) {
+            container.style.display = 'flex';
+        }
+    });
+}
+
+// ============================================================
+// Render Chart (using Chart.js)
+// ============================================================
+function renderChart(panelId, chartType, reportId, filter, config, container) {
+    // Build URL with correct parameter separator
+    // If filter exists: report/id?filter_params&JSON
+    // If no filter: report/id?JSON
+    const filterParam = filter ? decodeHtmlEntities(filter) + '&' : '';
+    const url = 'report/' + reportId + '?' + filterParam + 'JSON';
+
+    apiRequest('GET', url, null, function(json) {
+        if (!json || !json.data || !json.columns) {
+            container.innerHTML = '<div class="empty-state"><p>' + 'No data' + '</p></div>';
+            return;
+        }
+
+        // Prepare chart data
+        // For reference fields (id:name format), display only the name in labels
+        const labels = (json.data[0] || []).map(function(val) {
+            return getDisplayValue(val);
+        });
+        const datasets = [];
+
+        for (let i = 1; i < json.columns.length; i++) {
+            const colors = generateColors(labels.length);
+            datasets.push({
+                label: json.columns[i].name,
+                data: json.data[i] || [],
+                backgroundColor: colors.background,
+                borderColor: colors.border,
+                borderWidth: 1
+            });
+        }
+
+        // Create canvas
+        const canvasId = 'chart-' + panelId;
+        container.innerHTML = '<div class="chart-container"><canvas id="' + canvasId + '"></canvas></div>';
+
+        const ctx = document.getElementById(canvasId).getContext('2d');
+
+        // Map panel type to Chart.js type
+        let chartJsType = 'line';
+        if (chartType === 'PieChart') chartJsType = 'pie';
+        else if (chartType === 'Histogram') chartJsType = 'bar';
+        else if (chartType === 'Bubble') chartJsType = 'bubble';
+
+        // Create chart
+        FormConstructor.charts[panelId] = new Chart(ctx, {
+            type: chartJsType,
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+    });
+}
+
+// ============================================================
+// Generate Chart Colors
+// ============================================================
+function generateColors(count) {
+    const colors = [
+        'rgba(54, 162, 235, 0.6)',
+        'rgba(255, 99, 132, 0.6)',
+        'rgba(255, 206, 86, 0.6)',
+        'rgba(75, 192, 192, 0.6)',
+        'rgba(153, 102, 255, 0.6)',
+        'rgba(255, 159, 64, 0.6)',
+        'rgba(199, 199, 199, 0.6)',
+        'rgba(83, 102, 255, 0.6)',
+        'rgba(255, 99, 255, 0.6)',
+        'rgba(99, 255, 132, 0.6)'
+    ];
+
+    const borderColors = colors.map(c => c.replace('0.6', '1'));
+
+    const background = [];
+    const border = [];
+    for (let i = 0; i < count; i++) {
+        background.push(colors[i % colors.length]);
+        border.push(borderColors[i % borderColors.length]);
+    }
+
+    return { background, border };
+}
+
+// ============================================================
+// Render Pivot Table
+// ============================================================
+function renderPivotTable(panelId, reportId, filter, config, container) {
+    // Build URL with correct parameter separator
+    // If filter exists: report/id?filter_params&JSON
+    // If no filter: report/id?JSON
+    const filterParam = filter ? decodeHtmlEntities(filter) + '&' : '';
+    const url = 'report/' + reportId + '?' + filterParam + 'JSON';
+
+    apiRequest('GET', url, null, function(json) {
+        if (!json || !json.data || !json.columns) {
+            container.innerHTML = '<div class="empty-state"><p>' + 'No data' + '</p></div>';
+            return;
+        }
+
+        // Transform data for pivot
+        const pivotData = [];
+        const headers = json.columns.map(c => c.name);
+        pivotData.push(headers);
+
+        const rowCount = json.data[0] ? json.data[0].length : 0;
+        debugLog('renderPivotTable - data structure', { columns: json.columns, dataArraysCount: json.data ? json.data.length : 0, rowCount: rowCount });
+        for (let i = 0; i < rowCount; i++) {
+            const row = [];
+            for (let j = 0; j < json.columns.length; j++) {
+                // Ensure we handle undefined/null values from array access
+                const dataCol = json.data[j];
+                const rawVal = dataCol ? dataCol[i] : undefined;
+                let val = (rawVal !== undefined && rawVal !== null) ? rawVal : '';
+                if (i === 0) debugLogValue('1-arrayAccess', headers[j] + ' (col:' + j + ')', rawVal, val);
+                // For reference fields (id:name format), display only the name
+                const beforeDisplayVal = val;
+                val = getDisplayValue(val);
+                if (i === 0) debugLogValue('2-getDisplayValue', headers[j], beforeDisplayVal, val);
+                // Strip HTML tags, ensure empty string for undefined/null
+                const beforeStripVal = val || '';
+                val = String(beforeStripVal).replace(/<[^>]*>/g, '');
+                if (i === 0) debugLogValue('3-stripHtml', headers[j], beforeStripVal, val);
+                row.push(val);
+            }
+            pivotData.push(row);
+        }
+
+        // Create pivot container
+        const pivotId = 'pivot-' + panelId;
+        container.innerHTML = '<div class="pivot-container" id="' + pivotId + '"></div>';
+
+        // Parse config
+        let pivotConfig = {};
+        try {
+            pivotConfig = config ? JSON.parse(config) : {};
+        } catch (e) {
+            pivotConfig = {};
+        }
+
+        // Store original config for merging when saving
+        // This preserves settings like panelType that aren't part of pivot configuration
+        FormConstructor.pivotOriginalConfig = FormConstructor.pivotOriginalConfig || {};
+        FormConstructor.pivotOriginalConfig[panelId] = pivotConfig;
+
+        // Initialize pivot
+        if (typeof $ !== 'undefined' && $.fn.pivotUI) {
+            const renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.plotly_renderers || {});
+            pivotConfig.renderers = renderers;
+
+            $('#' + pivotId).pivotUI(pivotData, pivotConfig, true);
+
+            // Add save button in edit mode
+            if (FormConstructor.editMode) {
+                const saveBtn = document.createElement('button');
+                saveBtn.className = 'btn btn-sm btn-primary';
+                saveBtn.style.marginTop = '10px';
+                saveBtn.textContent = 'Save pivot settings';
+                saveBtn.onclick = function() {
+                    savePivotConfig(panelId, pivotId);
+                };
+                container.appendChild(saveBtn);
+            }
+        } else {
+            container.innerHTML = '<div class="empty-state"><p>' + 'Pivot library not loaded' + '</p></div>';
+        }
+    });
+}
+
+// ============================================================
+// Save Pivot Config
+// ============================================================
+function savePivotConfig(panelId, pivotId) {
+    if (typeof $ === 'undefined' || !$.fn.pivotUI) return;
+
+    const pivotOptions = JSON.parse(JSON.stringify($('#' + pivotId).data('pivotUIOptions')));
+    delete pivotOptions.aggregators;
+    delete pivotOptions.renderers;
+
+    // Merge pivot settings with existing config to preserve other settings (e.g., panelType)
+    const originalConfig = (FormConstructor.pivotOriginalConfig && FormConstructor.pivotOriginalConfig[panelId]) || {};
+    const config = Object.assign({}, originalConfig, pivotOptions);
+
+    apiRequest('POST', '_m_set/' + panelId + '?JSON', { 't225': JSON.stringify(config) }, function(json) {
+        showNotification('Settings saved', 'success');
+    });
+}
+
+// ============================================================
+// Render Report Table
+// ============================================================
+function renderReportTable(panelId, reportId, filter, config, container) {
+    // Build URL with correct parameter separator
+    // If filter exists: report/id?filter_params&JSON
+    // If no filter: report/id?JSON
+    const filterParam = filter ? decodeHtmlEntities(filter) + '&' : '';
+    const url = 'report/' + reportId + '?' + filterParam + 'JSON';
+
+    apiRequest('GET', url, null, function(json) {
+        if (!json || !json.data || !json.columns) {
+            container.innerHTML = '<div class="empty-state"><p>' + 'No data' + '</p></div>';
+            return;
+        }
+
+        // Parse config for column visibility and order
+        let reportConfig = {};
+        try {
+            reportConfig = config ? JSON.parse(config) : {};
+        } catch (e) {
+            reportConfig = {};
+        }
+
+        // Get column order (o) and visible columns (v) from config
+        // If not set, use all columns in original order
+        const allColumns = json.columns;
+        let columnOrder = reportConfig.o || allColumns.map(c => c.id);
+        let visibleColumns = reportConfig.v || allColumns.map(c => c.id);
+
+        // Ensure all columns are accounted for (new columns may have been added)
+        const currentColumnIds = new Set(allColumns.map(c => c.id));
+        const configColumnIds = new Set(columnOrder);
+
+        // Add any new columns to the end
+        allColumns.forEach(function(col) {
+            if (!configColumnIds.has(col.id)) {
+                columnOrder.push(col.id);
+                visibleColumns.push(col.id);
+            }
+        });
+
+        // Filter out deleted columns from order
+        columnOrder = columnOrder.filter(function(id) {
+            return currentColumnIds.has(id);
+        });
+        visibleColumns = visibleColumns.filter(function(id) {
+            return currentColumnIds.has(id);
+        });
+
+        // Build ordered visible columns array
+        const orderedVisibleColumns = columnOrder
+            .filter(function(id) {
+                return visibleColumns.includes(id);
+            })
+            .map(function(id) {
+                return allColumns.find(function(c) { return c.id === id; });
+            })
+            .filter(Boolean);
+
+        // Build column index map for data access
+        const columnIndexMap = {};
+        allColumns.forEach(function(col, idx) {
+            columnIndexMap[col.id] = idx;
+        });
+
+        let html = '';
+
+        // Update panel title with report header (source name) only if no custom panel name is configured
+        const panelForReportTitle = FormConstructor.panels && FormConstructor.panels.find(function(p) { return p.id == panelId; });
+        if (json.header && (!panelForReportTitle || !getDisplayValue(panelForReportTitle.val))) {
+            updatePanelTitle(panelId, json.header);
+        }
+
+        // In edit mode, show column configuration button
+        if (FormConstructor.editMode) {
+            html += '<div class="column-config-bar">';
+            html += '<button class="btn btn-sm btn-secondary" onclick="showColumnConfigModal(' + panelId + ')">';
+            html += '<i class="pi pi-cog"></i> ' + 'Column settings';
+            html += '</button>';
+            html += '</div>';
+        }
+
+        // Store column data for configuration modal
+        // Also store the original config to preserve other settings when saving
+        FormConstructor.reportColumns = FormConstructor.reportColumns || {};
+        FormConstructor.reportColumns[panelId] = {
+            all: allColumns,
+            order: columnOrder,
+            visible: visibleColumns,
+            indexMap: columnIndexMap,
+            originalConfig: reportConfig  // Preserve original config for merging
+        };
+
+        html += '<table class="report-table">';
+
+        // Header
+        html += '<thead><tr>';
+        orderedVisibleColumns.forEach(function(col) {
+            html += '<th>' + escapeHtml(col.name) + '</th>';
+        });
+        html += '</tr></thead>';
+
+        // Body
+        html += '<tbody>';
+        const rowCount = json.data[0] ? json.data[0].length : 0;
+        debugLog('renderReportTable - data structure', { columns: json.columns, dataArraysCount: json.data ? json.data.length : 0, rowCount: rowCount });
+        for (let i = 0; i < rowCount; i++) {
+            if (i === 0) debugLog('renderReportTable - first row raw data', json.data.map(function(col, idx) { return { colIdx: idx, value: col ? col[0] : 'no column' }; }));
+            html += '<tr>';
+            orderedVisibleColumns.forEach(function(col) {
+                const dataIdx = columnIndexMap[col.id];
+                // Ensure we handle undefined/null values from array access
+                const dataCol = json.data[dataIdx];
+                const rawVal = dataCol ? dataCol[i] : undefined;
+                let val = (rawVal !== undefined && rawVal !== null) ? rawVal : '';
+                debugLogValue('1-arrayAccess', col.name + ' (dataIdx:' + dataIdx + ', row:' + i + ')', rawVal, val);
+                // For reference fields (id:name format), display only the name
+                const beforeDisplayVal = val;
+                val = getDisplayValue(val);
+                debugLogValue('2-getDisplayValue', col.name, beforeDisplayVal, val);
+                html += '<td>' + (val || '') + '</td>'; // Keep HTML for links etc, handle undefined/null
+            });
+            html += '</tr>';
+        }
+        html += '</tbody>';
+
+        // Totals
+        if (orderedVisibleColumns.some(c => c.totals !== undefined)) {
+            html += '<tfoot><tr>';
+            orderedVisibleColumns.forEach(function(col) {
+                html += '<td><strong>' + (col.totals || '') + '</strong></td>';
+            });
+            html += '</tr></tfoot>';
+        }
+
+        html += '</table>';
+        container.innerHTML = html;
+    });
+}
+
+// ============================================================
+// Render Table Data as Report
+// This renders object/table data in a report table format
+// (unlike DataEntry which renders as a form)
+// ============================================================
+function renderTableAsReport(panelId, tableId, filter, config, container) {
+    // First, get table metadata to know the columns
+    getMetadata(tableId, function(metadata) {
+        if (!metadata || !metadata.reqs) {
+            container.innerHTML = '<div class="empty-state"><p>' + 'Could not load the table structure' + '</p></div>';
+            return;
+        }
+
+        // Build URL for fetching table data
+        const filterParam = filter ? decodeHtmlEntities(filter) + '&' : '';
+        const url = 'object/' + tableId + '?' + filterParam + 'JSON_OBJ&LIMIT=1000';
+
+        apiRequest('GET', url, null, function(json) {
+            if (!json || !Array.isArray(json) || json.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>' + 'No data' + '</p></div>';
+                return;
+            }
+
+            // Parse config for column visibility and order
+            let reportConfig = {};
+            try {
+                reportConfig = config && typeof config === 'string' ? JSON.parse(config) : (config || {});
+            } catch (e) {
+                reportConfig = {};
+            }
+
+            // Build columns from metadata
+            // First column is always the object name (r[0])
+            const allColumns = [{ id: 'name', name: metadata.val || 'Name' }];
+            debugLog('renderTableAsReport - metadata', { tableId: tableId, tableName: metadata.val, reqsCount: metadata.reqs ? metadata.reqs.length : 0, reqs: metadata.reqs });
+            metadata.reqs.forEach(function(req, index) {
+                allColumns.push({
+                    id: 'req_' + req.id,
+                    name: req.val || 'Field ' + req.id,
+                    reqIndex: index
+                });
+                debugLog('renderTableAsReport - column mapping', { reqId: req.id, reqName: req.val, metadataIndex: index, dataArrayIndex: index + 1 });
+            });
+
+            // Get column order (o) and visible columns (v) from config
+            let columnOrder = reportConfig.o || allColumns.map(function(c) { return c.id; });
+            let visibleColumns = reportConfig.v || allColumns.map(function(c) { return c.id; });
+
+            // Ensure all columns are accounted for (new columns may have been added)
+            const currentColumnIds = new Set(allColumns.map(function(c) { return c.id; }));
+            const configColumnIds = new Set(columnOrder);
+
+            // Add any new columns to the end
+            allColumns.forEach(function(col) {
+                if (!configColumnIds.has(col.id)) {
+                    columnOrder.push(col.id);
+                    visibleColumns.push(col.id);
+                }
+            });
+
+            // Filter out deleted columns from order
+            columnOrder = columnOrder.filter(function(id) {
+                return currentColumnIds.has(id);
+            });
+            visibleColumns = visibleColumns.filter(function(id) {
+                return currentColumnIds.has(id);
+            });
+
+            // Build ordered visible columns array
+            const orderedVisibleColumns = columnOrder
+                .filter(function(id) {
+                    return visibleColumns.includes(id);
+                })
+                .map(function(id) {
+                    return allColumns.find(function(c) { return c.id === id; });
+                })
+                .filter(Boolean);
+
+            let html = '';
+
+            // Update panel title with table name (source name) only if no custom panel name is configured
+            const panelForTitle = FormConstructor.panels && FormConstructor.panels.find(function(p) { return p.id == panelId; });
+            if (metadata.val && (!panelForTitle || !getDisplayValue(panelForTitle.val))) {
+                updatePanelTitle(panelId, getDisplayValue(metadata.val));
+            }
+
+            // In edit mode, show column configuration button
+            if (FormConstructor.editMode) {
+                html += '<div class="column-config-bar">';
+                html += '<button class="btn btn-sm btn-secondary" onclick="showColumnConfigModalForTable(' + panelId + ')">';
+                html += '<i class="pi pi-cog"></i> ' + 'Column settings';
+                html += '</button>';
+                html += '</div>';
+            }
+
+            // Store column data for configuration modal
+            // Also store the original config to preserve other settings when saving
+            FormConstructor.reportColumns = FormConstructor.reportColumns || {};
+            FormConstructor.reportColumns[panelId] = {
+                all: allColumns,
+                order: columnOrder,
+                visible: visibleColumns,
+                isTableSource: true,
+                originalConfig: reportConfig  // Preserve original config for merging
+            };
+
+            html += '<table class="report-table">';
+
+            // Header
+            html += '<thead><tr>';
+            orderedVisibleColumns.forEach(function(col) {
+                html += '<th>' + escapeHtml(col.name) + '</th>';
+            });
+            html += '</tr></thead>';
+
+            // Body - JSON_OBJ format: [{i: id, u: parent, o: order, r: [val1, val2, ...]}, ...]
+            html += '<tbody>';
+            debugLog('renderTableAsReport - columns', { allColumns: allColumns, orderedVisibleColumns: orderedVisibleColumns });
+            json.forEach(function(row, rowIdx) {
+                debugLog('renderTableAsReport - row ' + rowIdx, { rowId: row.i, rArray: row.r, rLength: row.r ? row.r.length : 'no r array' });
+                html += '<tr>';
+                orderedVisibleColumns.forEach(function(col) {
+                    let rawVal;
+                    let arrayIdx;
+                    if (col.id === 'name') {
+                        // First column is the object name (r[0])
+                        arrayIdx = 0;
+                        rawVal = row.r ? row.r[0] : undefined;
+                    } else if (col.reqIndex !== undefined) {
+                        // Requisite value (r[reqIndex + 1], since r[0] is the name)
+                        arrayIdx = col.reqIndex + 1;
+                        rawVal = row.r ? row.r[arrayIdx] : undefined;
+                    } else {
+                        arrayIdx = 'N/A';
+                        rawVal = undefined;
+                    }
+                    // Ensure we handle undefined/null values from array access
+                    let val = (rawVal !== undefined && rawVal !== null) ? rawVal : '';
+                    debugLogValue('1-arrayAccess', col.name + ' (idx:' + arrayIdx + ')', rawVal, val);
+                    // For reference fields (id:name format), display only the name
+                    const beforeDisplayVal = val;
+                    val = getDisplayValue(val);
+                    debugLogValue('2-getDisplayValue', col.name, beforeDisplayVal, val);
+                    const beforeEscapeVal = val || '';
+                    const afterEscapeVal = escapeHtml(beforeEscapeVal);
+                    debugLogValue('3-escapeHtml', col.name, beforeEscapeVal, afterEscapeVal);
+                    html += '<td>' + afterEscapeVal + '</td>';
+                });
+                html += '</tr>';
+            });
+            html += '</tbody>';
+
+            html += '</table>';
+            container.innerHTML = html;
+        });
+    });
+}
+
+// ============================================================
+// Show Column Config Modal for Table-based Report
+// ============================================================
+function showColumnConfigModalForTable(panelId) {
+    // Reuse the existing column config modal
+    showColumnConfigModal(panelId);
+}
+
+// ============================================================
+// Render Data Entry Form
+// ============================================================
+function renderDataEntryForm(panelId, tableType, reportId, filter, container) {
+    // Get table metadata to build form (using cache)
+    getMetadata(tableType, function(json) {
+        if (!json || !json.reqs) {
+            container.innerHTML = '<div class="empty-state"><p>' + 'Could not load the table structure' + '</p></div>';
+            return;
+        }
+
+        let html = '<form class="data-entry-form" id="form-' + panelId + '" onsubmit="return submitDataEntryForm(event, ' + panelId + ', ' + tableType + ')">';
+
+        json.reqs.forEach(function(req) {
+            html += '<div class="form-field">';
+            html += '<label>' + escapeHtml(req.val || 'Field ' + req.id) + '</label>';
+
+            // Determine field type
+            if (req.type == 11 || req.type === 'boolean') {
+                html += '<input type="checkbox" name="t' + req.id + '" value="1">';
+            } else if (req.type == 12 || req.type === 'memo') {
+                html += '<textarea name="t' + req.id + '" rows="3"></textarea>';
+            } else if (req.type == 9 || req.type === 'date') {
+                html += '<input type="date" name="t' + req.id + '">';
+            } else if (req.type == 4 || req.type === 'datetime') {
+                html += '<input type="datetime-local" name="t' + req.id + '">';
+            } else if (req.type == 13 || req.type == 14 || req.type === 'number') {
+                html += '<input type="number" name="t' + req.id + '">';
+            } else if (req.ref) {
+                // Reference field - would need to load options
+                html += '<select name="t' + req.id + '"><option value="">-- ' + 'Select' + ' --</option></select>';
+            } else {
+                html += '<input type="text" name="t' + req.id + '">';
+            }
+
+            html += '</div>';
+        });
+
+        html += '<div class="form-field">';
+        html += '<button type="submit" class="btn btn-primary">' + 'Save' + '</button>';
+        html += '</div>';
+        html += '</form>';
+
+        container.innerHTML = html;
+    });
+}
+
+// ============================================================
+// Submit Data Entry Form
+// ============================================================
+function submitDataEntryForm(event, panelId, tableType) {
+    event.preventDefault();
+
+    const form = document.getElementById('form-' + panelId);
+    const formData = new FormData(form);
+    const data = {};
+
+    formData.forEach(function(value, key) {
+        data[key] = value;
+    });
+
+    apiRequest('POST', '_m_new/' + tableType + '?up=1&JSON', data, function(json) {
+        if (json && json.obj) {
+            showNotification('Record created', 'success');
+            form.reset();
+        } else {
+            showNotification('Save error', 'error');
+        }
+    });
+
+    return false;
+}
+
+// ============================================================
+// Edit Mode Functions
+// ============================================================
+function updateEditModeUI() {
+    const toggleBtn = document.getElementById('toggleEditBtn');
+    const addBtn = document.getElementById('addPanelBtn');
+
+    if (FormConstructor.editMode && FormConstructor.currentFormId) {
+        addBtn.classList.remove('hidden');
+    } else {
+        addBtn.classList.add('hidden');
+        if (FormConstructor.currentFormId) {
+            toggleBtn.classList.remove('hidden');
+        }
+    }
+}
+
+function toggleEditMode() {
+    const url = new URL(window.location);
+    if (FormConstructor.editMode) {
+        url.searchParams.delete('EDIT');
+        url.searchParams.delete('edit');
+    } else {
+        url.searchParams.set('EDIT', '1');
+    }
+}
+
+// ============================================================
+// Panel Type Selection
+// ============================================================
+var selectedPanelType = null;
+
+function selectPanelType(el) {
+    document.querySelectorAll('.panel-type-option').forEach(function(opt) {
+        opt.classList.remove('selected');
+    });
+    el.classList.add('selected');
+    selectedPanelType = el.getAttribute('data-type');
+}
+
+function toggleDataSourceFields() {
+    const sourceType = document.getElementById('dataSourceType').value;
+    document.getElementById('tableSourceField').classList.toggle('hidden', sourceType !== 'table');
+    document.getElementById('reportSourceField').classList.toggle('hidden', sourceType !== 'report');
+}
+
+function toggleButtonActionFields() {
+    const actionType = document.getElementById('buttonActionType').value;
+    document.getElementById('jsActionField').classList.toggle('hidden', actionType !== 'js');
+    document.getElementById('linkActionField').classList.toggle('hidden', actionType !== 'link');
+}
+
+// ============================================================
+// Modal Functions
+// ============================================================
+function showAddPanelModal() {
+    selectedPanelType = null;
+    document.querySelectorAll('.panel-type-option').forEach(function(opt) {
+        opt.classList.remove('selected');
+    });
+    document.getElementById('panelName').value = '';
+    document.getElementById('dataSourceType').value = '';
+    document.getElementById('tableSourceField').classList.add('hidden');
+    document.getElementById('reportSourceField').classList.add('hidden');
+    document.getElementById('addPanelModal').classList.remove('hidden');
+}
+
+function hideAddPanelModal() {
+    document.getElementById('addPanelModal').classList.add('hidden');
+}
+
+function showEditPanelModal(panelId) {
+    const panel = FormConstructor.panels.find(p => p.id == panelId);
+    if (!panel) return;
+
+    const panelReqs = (FormConstructor.panelReqs && FormConstructor.panelReqs[panelId]) || {};
+
+    document.getElementById('editPanelId').value = panelId;
+    document.getElementById('editPanelName').value = panel.val || panel.name || '';
+
+    // Load panel settings from requisites
+    document.getElementById('editPanelColor').value = panelReqs[254] || panelReqs['254'] || '#333333';
+    document.getElementById('editPanelBgColor').value = panelReqs[255] || panelReqs['255'] || '#ffffff';
+    document.getElementById('editPanelFilter').value = panelReqs[181] || panelReqs['181'] || '';
+    document.getElementById('editPanelNextAction').value = panelReqs[257] || panelReqs['257'] || '';
+    document.getElementById('editPanelOverflowMode').value = panelReqs[258] || panelReqs['258'] || '';
+    document.getElementById('editPanelGroup').value = panelReqs[256] || panelReqs['256'] || '';
+
+    // Populate type and source fields
+    const currentType = panelReqs[184] || panelReqs['184'] || '';
+    const chartTypes = ['XYChart', 'PieChart', 'Histogram', 'Pivot', 'Bubble'];
+    if (chartTypes.includes(currentType) || currentType === 'Report') {
+        document.getElementById('editPanelType').value = currentType;
+    } else if (currentType) {
+        // It's a table ID (DataEntry or Report from table)
+        document.getElementById('editPanelType').value = 'DataEntry';
+    } else {
+        document.getElementById('editPanelType').value = '';
+    }
+
+    // Populate table source select
+    const tableSelect = document.getElementById('editPanelTableSource');
+    tableSelect.innerHTML = '<option value="">' + 'Keep current' + '</option>';
+    FormConstructor.tables.forEach(function(table) {
+        const opt = document.createElement('option');
+        opt.value = table.id;
+        opt.textContent = getDisplayValue(table.val) || 'Table ' + table.id;
+        if (String(table.id) === String(currentType)) opt.selected = true;
+        tableSelect.appendChild(opt);
+    });
+
+    // Populate report source select
+    const reportRef = parseReferenceValue(panelReqs['ref_161'] || panelReqs[161] || panelReqs['161'] || '');
+    const currentReportId = reportRef ? reportRef.id : (panelReqs[161] || panelReqs['161'] || '');
+    const reportSelect = document.getElementById('editPanelReportSource');
+    reportSelect.innerHTML = '<option value="">' + 'Keep current' + '</option>';
+    FormConstructor.reports.forEach(function(report) {
+        const opt = document.createElement('option');
+        opt.value = report.id;
+        opt.textContent = getDisplayValue(report.val) || 'Report ' + report.id;
+        if (String(report.id) === String(currentReportId)) opt.selected = true;
+        reportSelect.appendChild(opt);
+    });
+
+    toggleEditPanelSourceFields();
+    document.getElementById('editPanelModal').classList.remove('hidden');
+}
+
+function toggleEditPanelSourceFields() {
+    const type = document.getElementById('editPanelType').value;
+    const tableField = document.getElementById('editPanelTableSourceField');
+    const reportField = document.getElementById('editPanelReportSourceField');
+    // Show table source for DataEntry
+    tableField.style.display = (type === 'DataEntry' || type === 'Report') ? '' : 'none';
+    // Show report source for chart types, Pivot, Report
+    const needsReport = ['XYChart', 'PieChart', 'Histogram', 'Pivot', 'Bubble', 'Report'].includes(type);
+    reportField.style.display = needsReport ? '' : 'none';
+}
+
+function hideEditPanelModal() {
+    document.getElementById('editPanelModal').classList.add('hidden');
+}
+
+function showAddButtonModal(panelId) {
+    document.getElementById('buttonPanelId').value = panelId;
+    document.getElementById('buttonText').value = '';
+    document.getElementById('buttonActionType').value = 'js';
+    document.getElementById('buttonJsFunction').value = '';
+    document.getElementById('buttonLinkUrl').value = '';
+    document.getElementById('buttonClass').value = 'btn btn-primary';
+    document.getElementById('jsActionField').classList.remove('hidden');
+    document.getElementById('linkActionField').classList.add('hidden');
+    document.getElementById('addButtonModal').classList.remove('hidden');
+}
+
+function hideAddButtonModal() {
+    document.getElementById('addButtonModal').classList.add('hidden');
+}
+
+// ============================================================
+// CRUD Operations
+// ============================================================
+function startEditFormName(formId) {
+    const nameLink = document.querySelector('#formsList a.form-item-name[href*="/forms/' + formId + '"]');
+    const nameInput = document.getElementById('form-name-input-' + formId);
+    if (!nameLink || !nameInput) return;
+    // Use textContent (plain text) as value for the input
+    nameInput.value = nameLink.textContent;
+    nameLink.classList.add('hidden');
+    nameInput.classList.remove('hidden');
+    nameInput.focus();
+    nameInput.select();
+}
+
+function saveFormName(formId) {
+    const nameLink = document.querySelector('#formsList a.form-item-name[href*="/forms/' + formId + '"]');
+    const nameInput = document.getElementById('form-name-input-' + formId);
+    if (!nameLink || !nameInput) return;
+    const newName = nameInput.value.trim();
+    if (newName && newName !== nameLink.textContent) {
+        apiRequest('POST', '_m_set/' + formId + '?JSON', { 't137': newName }, function(json) {
+            nameLink.textContent = newName;
+        });
+    }
+    nameInput.classList.add('hidden');
+    nameLink.classList.remove('hidden');
+}
+
+function handleFormNameKey(event, formId) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        saveFormName(formId);
+    } else if (event.key === 'Escape') {
+        const nameLink = document.querySelector('#formsList a.form-item-name[href*="/forms/' + formId + '"]');
+        const nameInput = document.getElementById('form-name-input-' + formId);
+        if (nameInput) nameInput.classList.add('hidden');
+        if (nameLink) nameLink.classList.remove('hidden');
+    }
+}
+
+function createNewForm(event) {
+    event.preventDefault();
+
+    const name = document.getElementById('newFormName').value.trim();
+    if (!name) {
+        showNotification('Enter a form name', 'error');
+        return false;
+    }
+
+    apiRequest('POST', '_m_new/137?up=1&JSON', { 't137': name }, function(json) {
+        if (json && json.obj) {
+            window.location.href = '/' + FormConstructor.db + '/forms/' + json.obj + '?EDIT';
+        } else {
+            showNotification('Error creating form', 'error');
+        }
+    });
+
+    return false;
+}
+
+function addPanel() {
+    if (!selectedPanelType) {
+        showNotification('Select a panel type', 'error');
+        return;
+    }
+
+    const name = document.getElementById('panelName').value.trim() || getPanelTypeName(selectedPanelType);
+    const sourceType = document.getElementById('dataSourceType').value;
+    const tableId = document.getElementById('tableSource').value;
+    const reportId = document.getElementById('reportSource').value;
+
+    // Prepare data
+    const data = {
+        't138': name
+    };
+
+    // Set panel type (object ID or chart type)
+    if (['XYChart', 'PieChart', 'Histogram', 'Pivot', 'Bubble'].includes(selectedPanelType)) {
+        data['t184'] = selectedPanelType;
+    } else if (selectedPanelType === 'DataEntry' && tableId) {
+        data['t184'] = tableId;
+    } else if (selectedPanelType === 'Report') {
+        // Report panel type: if table is selected as data source, save tableId to t184
+        // and store the explicit panel type in config to distinguish from DataEntry
+        if (tableId && !reportId) {
+            data['t184'] = tableId;
+            data['t225'] = JSON.stringify({ panelType: 'Report' });
+        }
+    }
+
+    // Set report
+    if (reportId) {
+        data['t161'] = reportId;
+    }
+
+    apiRequest('POST', '_m_new/138?up=' + FormConstructor.currentFormId + '&JSON', data, function(json) {
+        if (json && json.obj) {
+            hideAddPanelModal();
+            loadFormPanels(FormConstructor.currentFormId);
+        } else {
+            showNotification('Error adding panel', 'error');
+        }
+    });
+}
+
+function savePanel() {
+    const panelId = document.getElementById('editPanelId').value;
+    const name = document.getElementById('editPanelName').value;
+    const color = document.getElementById('editPanelColor').value;
+    const bgColor = document.getElementById('editPanelBgColor').value;
+    const group = document.getElementById('editPanelGroup').value;
+    const filter = document.getElementById('editPanelFilter').value;
+    const nextAction = document.getElementById('editPanelNextAction').value;
+    const overflowMode = document.getElementById('editPanelOverflowMode').value;
+    const panelType = document.getElementById('editPanelType').value;
+    const tableSourceId = document.getElementById('editPanelTableSource').value;
+    const reportSourceId = document.getElementById('editPanelReportSource').value;
+
+    const data = {
+        't138': name,
+        't254': color,
+        't255': bgColor,
+        't256': group,
+        't181': filter,
+        't257': nextAction,
+        't258': overflowMode
+    };
+
+    // Update panel type if changed
+    if (panelType) {
+        if (['XYChart', 'PieChart', 'Histogram', 'Pivot', 'Bubble'].includes(panelType)) {
+            data['t184'] = panelType;
+        } else if (panelType === 'DataEntry' && tableSourceId) {
+            data['t184'] = tableSourceId;
+        } else if (panelType === 'Report') {
+            if (tableSourceId) {
+                data['t184'] = tableSourceId;
+            } else {
+                data['t184'] = panelType;
+            }
+        }
+    }
+
+    // Update report source if changed
+    if (reportSourceId) {
+        data['t161'] = reportSourceId;
+    }
+
+    apiRequest('POST', '_m_set/' + panelId + '?JSON', data, function(json) {
+        hideEditPanelModal();
+        loadFormPanels(FormConstructor.currentFormId);
+    });
+}
+
+function deletePanel() {
+    const panelId = document.getElementById('editPanelId').value;
+
+    showConfirmModal('Delete this panel?', function() {
+        apiRequest('POST', '_m_del/' + panelId + '?JSON', {}, function(json) {
+            hideEditPanelModal();
+            loadFormPanels(FormConstructor.currentFormId);
+        });
+    });
+}
+
+function movePanel(panelId, direction) {
+    const endpoint = direction < 0 ? '_m_up/' : '_m_down/';
+    apiRequest('POST', endpoint + panelId + '?JSON', {}, function(json) {
+        loadFormPanels(FormConstructor.currentFormId);
+    });
+}
+
+function addButtonToPanel() {
+    const panelId = document.getElementById('buttonPanelId').value;
+    const text = document.getElementById('buttonText').value;
+    const actionType = document.getElementById('buttonActionType').value;
+    const jsFunction = document.getElementById('buttonJsFunction').value;
+    const linkUrl = document.getElementById('buttonLinkUrl').value;
+    const btnClass = document.getElementById('buttonClass').value;
+
+    if (!text) {
+        showNotification('Enter the button text', 'error');
+        return;
+    }
+
+    const action = actionType === 'js' ? jsFunction : linkUrl;
+
+    // Button is stored in table 150
+    const data = {
+        't150': text,
+        't216': action, // Action field
+        't218': btnClass // Class field
+    };
+
+    apiRequest('POST', '_m_new/150?up=' + panelId + '&JSON', data, function(json) {
+        if (json && json.obj) {
+            hideAddButtonModal();
+            loadFormPanels(FormConstructor.currentFormId);
+        } else {
+            showNotification('Error adding button', 'error');
+        }
+    });
+}
+
+function showEditButtonModal(btnId) {
+    const data = (FormConstructor.buttonData || {})[btnId] || {};
+    const btnName = data.name || '';
+    const btnAction = data.action || '';
+    const btnClass = data.cls || 'btn btn-secondary';
+
+    document.getElementById('editButtonId').value = btnId;
+    document.getElementById('editButtonText').value = btnName;
+    document.getElementById('editButtonClass').value = btnClass;
+
+    const isJs = btnAction && (btnAction.indexOf('javascript:') === 0 || btnAction.indexOf('(') > 0);
+    document.getElementById('editButtonActionType').value = isJs ? 'js' : 'link';
+    if (isJs) {
+        document.getElementById('editButtonJsFunction').value = btnAction.replace('javascript:', '');
+        document.getElementById('editButtonLinkUrl').value = '';
+    } else {
+        document.getElementById('editButtonJsFunction').value = '';
+        document.getElementById('editButtonLinkUrl').value = btnAction || '';
+    }
+    toggleEditButtonActionFields();
+    document.getElementById('editButtonModal').classList.remove('hidden');
+}
+
+function hideEditButtonModal() {
+    document.getElementById('editButtonModal').classList.add('hidden');
+}
+
+function toggleEditButtonActionFields() {
+    const actionType = document.getElementById('editButtonActionType').value;
+    document.getElementById('editJsActionField').classList.toggle('hidden', actionType !== 'js');
+    document.getElementById('editLinkActionField').classList.toggle('hidden', actionType !== 'link');
+}
+
+function saveButton() {
+    const btnId = document.getElementById('editButtonId').value;
+    const text = document.getElementById('editButtonText').value;
+    const actionType = document.getElementById('editButtonActionType').value;
+    const jsFunction = document.getElementById('editButtonJsFunction').value;
+    const linkUrl = document.getElementById('editButtonLinkUrl').value;
+    const btnClass = document.getElementById('editButtonClass').value;
+
+    if (!text) {
+        showNotification('Enter the button text', 'error');
+        return;
+    }
+
+    const action = actionType === 'js' ? jsFunction : linkUrl;
+
+    const data = {
+        't150': text,
+        't216': action,
+        't218': btnClass
+    };
+
+    apiRequest('POST', '_m_set/' + btnId + '?JSON', data, function(json) {
+        hideEditButtonModal();
+        loadFormPanels(FormConstructor.currentFormId);
+    });
+}
+
+function deleteButton(btnId) {
+    showConfirmModal('Delete this button?', function() {
+        apiRequest('POST', '_m_del/' + btnId + '?JSON', {}, function(json) {
+            loadFormPanels(FormConstructor.currentFormId);
+        });
+    });
+}
+
+// ============================================================
+// Utility Functions
+// ============================================================
+
+function decodeHtmlEntities(str) {
+    if (!str) return '';
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = str;
+    return textarea.value;
+}
+
+// ============================================================
+// Parse Reference Field Value
+// Returns { id: string, name: string } or null if not a reference
+// ============================================================
+function parseReferenceValue(value) {
+    if (!value || typeof value !== 'string') return null;
+    const colonIndex = value.indexOf(':');
+    if (colonIndex <= 0) return null;
+    const id = value.substring(0, colonIndex);
+    const name = value.substring(colonIndex + 1);
+    // Only treat as reference if id part is numeric
+    if (!/^\d+$/.test(id)) return null;
+    return { id: id, name: name };
+}
+
+// ============================================================
+// Get Display Value for Reference Field
+// Shows only the name part for reference fields (id:name -> name)
+// Also handles multi-select format: "id1,id2,...:name1,name2,..." -> "name1,name2,..."
+// Returns empty string for null, undefined, or empty values
+// ============================================================
+function getDisplayValue(value) {
+    // Handle null, undefined, and empty values - return empty string
+    if (value === null || value === undefined || value === '') {
+        return '';
+    }
+    const ref = parseReferenceValue(value);
+    if (ref) return ref.name;
+    // The id part is comma-separated digits, followed by colon, then comma-separated names
+    const colonIndex = value.indexOf(':');
+    if (colonIndex > 0) {
+        const idPart = value.substring(0, colonIndex);
+        if (/^[\d,]+$/.test(idPart)) {
+            return value.substring(colonIndex + 1);
+        }
+    }
+    return value;
+}
+
+// ============================================================
+// Get Metadata with Caching
+// Fetches metadata for a table, using cache if available
+// ============================================================
+function getMetadata(tableId, callback) {
+    // Check cache first
+    if (FormConstructor.metadataCache[tableId]) {
+        callback(FormConstructor.metadataCache[tableId]);
+        return;
+    }
+
+    // Fetch and cache
+    apiRequest('GET', 'metadata/' + tableId + '?JSON', null, function(json) {
+        if (json) {
+            FormConstructor.metadataCache[tableId] = json;
+        }
+        callback(json);
+    });
+}
+
+// ============================================================
+// Update Panel Title with Data Source Name
+// ============================================================
+function updatePanelTitle(panelId, sourceName) {
+    const panelEl = document.getElementById('panel-' + panelId);
+    if (!panelEl) return;
+
+    const titleEl = panelEl.querySelector('.panel-title');
+    if (titleEl && sourceName) {
+        titleEl.textContent = sourceName;
+    }
+}
+
+// ============================================================
+// Column Configuration Modal Functions
+// ============================================================
+function showColumnConfigModal(panelId) {
+    const columnData = FormConstructor.reportColumns && FormConstructor.reportColumns[panelId];
+    if (!columnData) {
+        showNotification('Column data not found', 'error');
+        return;
+    }
+
+    document.getElementById('columnConfigPanelId').value = panelId;
+
+    // Build column list based on current order
+    const listContainer = document.getElementById('columnConfigList');
+    let html = '';
+
+    columnData.order.forEach(function(colId, index) {
+        const column = columnData.all.find(function(c) { return c.id === colId; });
+        if (!column) return;
+
+        const isVisible = columnData.visible.includes(colId);
+        html += '<div class="column-config-item" data-column-id="' + colId + '" draggable="true">';
+        html += '<span class="drag-handle"><i class="pi pi-bars"></i></span>';
+        html += '<input type="checkbox" ' + (isVisible ? 'checked' : '') + ' onchange="toggleColumnVisibility(this, \'' + colId + '\')">';
+        html += '<span class="column-name">' + escapeHtml(column.name) + '</span>';
+        html += '</div>';
+    });
+
+    listContainer.innerHTML = html;
+
+    // Initialize drag and drop
+    initColumnDragAndDrop();
+
+    document.getElementById('columnConfigModal').classList.remove('hidden');
+}
+
+function hideColumnConfigModal() {
+    document.getElementById('columnConfigModal').classList.add('hidden');
+}
+
+function toggleColumnVisibility(checkbox, colId) {
+    const panelId = document.getElementById('columnConfigPanelId').value;
+    const columnData = FormConstructor.reportColumns[panelId];
+    if (!columnData) return;
+
+    if (checkbox.checked) {
+        if (!columnData.visible.includes(colId)) {
+            columnData.visible.push(colId);
+        }
+    } else {
+        columnData.visible = columnData.visible.filter(function(id) { return id !== colId; });
+    }
+}
+
+function initColumnDragAndDrop() {
+    const container = document.getElementById('columnConfigList');
+    const items = container.querySelectorAll('.column-config-item');
+    let draggedItem = null;
+
+    items.forEach(function(item) {
+        item.addEventListener('dragstart', function(e) {
+            draggedItem = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        });
+
+        item.addEventListener('dragend', function() {
+            this.classList.remove('dragging');
+            draggedItem = null;
+        });
+
+        item.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+
+            if (draggedItem && draggedItem !== this) {
+                const rect = this.getBoundingClientRect();
+                const midY = rect.top + rect.height / 2;
+                if (e.clientY < midY) {
+                    container.insertBefore(draggedItem, this);
+                } else {
+                    container.insertBefore(draggedItem, this.nextSibling);
+                }
+            }
+        });
+    });
+}
+
+function saveColumnConfig() {
+    const panelId = document.getElementById('columnConfigPanelId').value;
+    const columnData = FormConstructor.reportColumns[panelId];
+    if (!columnData) return;
+
+    // Get new column order from DOM
+    const container = document.getElementById('columnConfigList');
+    const items = container.querySelectorAll('.column-config-item');
+    const newOrder = [];
+
+    items.forEach(function(item) {
+        newOrder.push(item.getAttribute('data-column-id'));
+    });
+
+    // Update the stored order
+    columnData.order = newOrder;
+
+    // Merge column settings with existing config to preserve other settings (e.g., panelType)
+    // Start with the original config to preserve all existing settings
+    const existingConfig = columnData.originalConfig || {};
+    const config = Object.assign({}, existingConfig, {
+        o: newOrder,
+        v: columnData.visible
+    });
+
+    // Save to panel using t225 (config field)
+    apiRequest('POST', '_m_set/' + panelId + '?JSON', { 't225': JSON.stringify(config) }, function(json) {
+        hideColumnConfigModal();
+        loadFormPanels(FormConstructor.currentFormId);
+    });
+}
+</script>
+
+<!-- Include main.js for localization -->
+<script src="/js/main.js"></script>
+<script>
+localize();
+</script>
+<script src="/js/hints.js"></script>
+<!-- Workspace hints -->
+<style>
+:root {
+    --forms-hint-shadow: 0 8px 40px rgba(0,0,0,0.28);
+    --forms-hint-btn-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+[data-theme="dark"] {
+    --forms-hint-shadow: 0 8px 40px rgba(0,0,0,0.55);
+    --forms-hint-btn-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+#forms-hint-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 420px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.25rem 1.25rem 1rem;
+    box-shadow: var(--forms-hint-shadow);
+    z-index: 2000;
+    display: none;
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+}
+#forms-hint-box .hint-drag-handle {
+    position: absolute;
+    top: 6px;
+    left: 0;
+    right: 12px;
+    height: 2rem;
+    cursor: grab;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+#forms-hint-box .hint-drag-handle:active { cursor: grabbing; }
+#forms-hint-box .hint-drag-handle .hint-drag-icon {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    pointer-events: none;
+    line-height: 1;
+    letter-spacing: 2px;
+}
+#forms-hint-mobile-toggle {
+    display: none;
+    position: fixed;
+    right: 1rem;
+    z-index: 2001;
+    background: var(--button-primary);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 2.4rem;
+    height: 2.4rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: var(--forms-hint-btn-shadow);
+    align-items: center;
+    justify-content: center;
+}
+@media (max-width: 767px) {
+    #forms-hint-box { width: calc(100% - 2rem); max-width: none; }
+    #forms-hint-mobile-toggle { display: flex; }
+}
+</style>
+<div id="forms-hint-box">
+    <div class="hint-drag-handle" id="forms-hint-drag-handle" title="You can drag this window around the screen"><span class="hint-drag-icon">⠿⠿</span></div>
+    <div id="forms-hint-1" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Creating forms</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Here you create simple forms with tables and charts. A form consists of panels — each panel is a block with data or a visualization.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="formsHintClose()" style="padding:0.35rem 0.9rem; border:1px solid var(--border-color); border-radius:6px; background:none; color:var(--text-secondary); cursor:pointer; font-size:0.85rem;">Close</button>
+        </div>
+    </div>
+    <div id="forms-hint-2" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Chart types and data sources</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Choose a type for each panel: table, XYChart, PieChart, histogram and more. Set a query or a table as the data source. Configure axes and grouping to get the view you need.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="formsHintClose()" style="padding:0.35rem 0.9rem; border:1px solid var(--border-color); border-radius:6px; background:none; color:var(--text-secondary); cursor:pointer; font-size:0.85rem;">Close</button>
+        </div>
+    </div>
+    <div id="forms-hint-3" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Edit and view modes</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Switch between “Edit” mode (configuring the structure) and “View” mode (the final result for users). In view mode, panels look exactly as users will see them.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="formsHintClose()" style="padding:0.35rem 0.9rem; border:none; border-radius:6px; background:var(--button-primary,#0d6efd); color:#fff; cursor:pointer; font-size:0.85rem;">Got it</button>
+        </div>
+    </div>
+</div>
+<button id="forms-hint-mobile-toggle" title="Move hint" aria-label="Move hint up/down" style="bottom:5rem;"></button>
+<script>
+// Workspace-specific hint configuration for 'forms'.
+// Texts and steps are defined here; the display mechanism is in /js/hints.js.
+document.addEventListener('DOMContentLoaded', function() {
+    window.initHints({
+        workspace: 'forms',
+        steps: 3,
+        onInit: function(api) {
+            var btns = document.querySelectorAll('button, .btn, [role="button"]');
+            btns.forEach(function(btn) {
+                var txt = btn.textContent || btn.innerText || '';
+                if (txt.toLowerCase().indexOf('create') !== -1 || txt.toLowerCase().indexOf('new') !== -1 || txt.toLowerCase().indexOf('edit') !== -1 || txt.toLowerCase().indexOf('edit') !== -1) {
+                    btn.addEventListener('click', function() { api.advance(2); });
+                }
+            });
+        }
+    });
+});
+</script>

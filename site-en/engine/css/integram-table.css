@@ -1,0 +1,4246 @@
+/**
+ * IntegramTable Component Styles
+ * Standalone CSS module for table component with Material Design styling
+ */
+
+/* Material Design Variables */
+:root {
+    --md-primary: var(--button-primary, #3b82f6);
+    --md-primary-dark: var(--button-primary-hover, #2563eb);
+    --md-primary-light: #60a5fa;
+    --md-accent: #ff4081;
+    --md-text-primary: var(--text-primary, rgba(0, 0, 0, 0.87));
+    --md-text-secondary: var(--text-secondary, #6c757d);
+    --md-text-hint: rgba(0, 0, 0, 0.38);
+    --md-divider: var(--border-color, rgba(0, 0, 0, 0.12));
+    --md-background: var(--bg-secondary, #f8f9fa);
+    --md-surface: var(--card-bg, #ffffff);
+    --md-hover: rgba(0, 0, 0, 0.04);
+    --md-selected: rgba(59, 130, 246, 0.08);
+    --md-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    --md-elevation-2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    --md-elevation-3: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+    --md-elevation-4: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    --md-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Table component styles */
+.integram-table-wrapper {
+    position: relative;
+    /* margin: 20px 0; */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    padding-bottom: 60px; /* Leave space for fixed .scroll-counter at bottom (issue #1925) */
+}
+
+#form-settings-btn {
+    font-size: 1rem;
+}
+
+.integram-table-container {
+    overflow-x: auto;
+    /* overflow-y: auto so the container is the vertical scroll context for the table.
+       JS sets max-height dynamically via updateContainerHeight() so the header row
+       (position:sticky; top:0) sticks within this container (issue #2083).
+       Note: overflow-y:clip degrades to hidden when overflow-x is non-visible (CSS spec),
+       which made the earlier clip-based fix ineffective (issue #2079, #2083). */
+    overflow-y: auto;
+    width: 100%;
+    /* border-radius: 4px; */
+}
+
+/* Sticky horizontal scrollbar */
+.integram-table-sticky-scrollbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    z-index: 99;
+    background: var(--card-bg, rgba(255, 255, 255, 0.95));
+    border-top: 1px solid var(--border-color, #dee2e6);
+    display: none;
+}
+
+.integram-table-sticky-scrollbar-content {
+    height: 1px;
+}
+
+.integram-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+    padding: 12px 12px 0;
+    overflow: hidden;
+}
+
+/* Title area wrapper with create button (issue #693) */
+.integram-table-title-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.integram-table-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--md-text-primary);
+    letter-spacing: 0.15px;
+}
+
+/* Create button displayed inline next to table title (issue #693) */
+.title-create-btn {
+    position: static !important;
+    transform: none !important;
+    display: flex !important;
+    flex-shrink: 0;
+}
+
+.title-create-btn:active {
+    transform: scale(0.95) !important;
+}
+
+/* Parent info links in title (issue #571) */
+.integram-title-link {
+    color: var(--md-primary);
+    text-decoration: none;
+    transition: var(--md-transition);
+}
+
+.integram-title-link:hover {
+    text-decoration: underline;
+    color: var(--md-primary-dark, #1565c0);
+}
+
+/* Table name (first .integram-title-link as span) shown as plain black text (issue #1345) */
+span.integram-title-link:not(.integram-parent-record-link) {
+    color: var(--text-primary, #212121);
+    cursor: default;
+}
+
+span.integram-title-link:not(.integram-parent-record-link):hover {
+    text-decoration: none;
+    color: var(--text-primary, #212121);
+}
+
+.integram-table-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-shrink: 1;
+    min-width: 0;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+.integram-table-controls::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+
+.integram-table-settings {
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--text-secondary, #6c757d);
+    background: transparent;
+    border: 1px solid var(--border-color, #dee2e6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.integram-table-ajax-spinner {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    color: var(--md-primary, #1976d2);
+    flex-shrink: 0;
+    font-size: 1rem;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.integram-table-ajax-spinner.active {
+    display: inline-flex;
+}
+
+.integram-table-ajax-spinner-counter {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+.integram-table-settings-refresh{
+    border: none !important;
+}
+.integram-table-settings .btn-label {
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.integram-table-settings:hover {
+    background-color: var(--bg-secondary, #f8f9fa);
+    border-color: var(--text-secondary, #6c757d);
+    color: var(--text-primary, #212529);
+}
+
+.integram-table-settings:active {
+    background-color: var(--bg-secondary, #f8f9fa);
+}
+
+.integram-table-settings.active {
+    background-color: var(--md-selected, #e3f2fd);
+    color: var(--md-primary, #1976d2);
+    border-color: var(--md-primary, #1976d2);
+}
+
+.integram-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--md-surface);
+    box-shadow: var(--md-elevation-1);
+    /* border-radius: 4px; */
+    overflow: overlay;
+}
+.btn-outline-secondary {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.integram-table-controls .btn-outline-secondary {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    padding: 7px !important;
+    border-radius: 4px !important;
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--bg-secondary, #f3f3f3) !important;
+    color: var(--text-secondary, #6c757d) !important;
+}
+
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Standalone btn-link styles (issue #660) - works without Bootstrap */
+.btn-link {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+    line-height: inherit;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-link:hover {
+    text-decoration: none;
+    background-color: var(--md-hover);
+}
+
+.btn-link:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Standalone text-dark style (issue #660) - works without Bootstrap */
+.text-dark {
+    color: var(--md-text-primary);
+}
+
+/* Combined btn-link text-dark for table controls (issue #660) */
+.integram-table-controls .btn-link.text-dark {
+    color: var(--text-secondary, #6c757d);
+    background-color: transparent;
+    border: 1px solid var(--border-color, #dee2e6);
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    font-weight: 500;
+    font-size: 0.8125rem;
+    cursor: pointer;
+}
+
+.integram-table-controls .btn-link.text-dark:hover {
+    background-color: var(--bg-secondary, #f8f9fa);
+    border-color: var(--text-secondary, #6c757d);
+    color: var(--text-primary, #212529);
+    text-decoration: none;
+}
+
+.integram-table-controls .btn-link.text-dark:active {
+    background-color: var(--bg-secondary, #f8f9fa);
+}
+
+.integram-table th {
+    background-color: var(--bg-secondary, #f5f5f5);
+    padding: 10px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.75rem;
+    /* letter-spacing: 0.4px;
+    text-transform: uppercase; */
+    color: var(--md-text-secondary);
+    border-bottom: 1px solid var(--md-divider);
+    border-left: none;
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    cursor: move;
+    user-select: none;
+}
+
+.integram-table th:first-child {
+    border-left: none;
+    padding-left: 10px;
+}
+
+.integram-table th:last-child {
+    padding-right: 6px;
+}
+
+.integram-table th.dragging {
+    opacity: 0.6;
+    background: var(--md-selected);
+    box-shadow: var(--md-elevation-2);
+}
+
+.integram-table th.drag-over {
+    border-left: 3px solid var(--md-primary);
+}
+
+/* Column resize handle */
+.column-resize-handle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 100%;
+    cursor: col-resize;
+    user-select: none;
+    z-index: 10;
+}
+
+.column-resize-handle:hover {
+    background: rgba(0, 123, 255, 0.3);
+}
+
+.column-header-content {
+    display: inline-block;
+    position: relative;
+    padding-right: 10px;
+    white-space: nowrap;
+}
+
+/* Column header add button */
+.column-add-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--md-primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    line-height: 1;
+    padding: 0;
+    box-shadow: var(--md-elevation-1);
+    transition: var(--md-transition);
+    z-index: 1;
+}
+
+.integram-table th:hover .column-add-btn {
+    display: flex;
+}
+
+.column-add-btn:hover {
+    background: var(--md-primary-dark);
+    box-shadow: var(--md-elevation-2);
+}
+
+.column-add-btn:active {
+    background: var(--md-primary-dark);
+    box-shadow: var(--md-elevation-1);
+    transform: translateY(-50%) scale(0.95);
+}
+
+/* Reference icon link for list/lookup columns (issue #1668, #1674, #1676) */
+.column-ref-link {
+    position: absolute; /* out of inline flow so it does not affect th height (issue #1676) */
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: none; /* absolutely positioned so display:none causes no layout shift (issue #1672, #1674) */
+    color: var(--md-on-surface-variant, #666);
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    font-size: 0.75rem;
+    text-decoration: none;
+    opacity: 0.7;
+    transition: var(--md-transition);
+    z-index: 1;
+}
+
+.integram-table th:hover .column-ref-link {
+    display: flex;
+}
+
+/* When both ref icon and add button are present, shift ref icon left so they don't overlap (issue #1682) */
+.integram-table th:hover .column-ref-link:has(~ .column-add-btn) {
+    right: 36px;
+}
+
+.column-ref-link:hover {
+    opacity: 1;
+    color: var(--md-primary, #1976d2);
+}
+
+/* Quick add column header cell (issue #1230) */
+.add-column-header-cell {
+    width: 36px;
+    min-width: 36px;
+    text-align: center !important;
+    cursor: pointer !important;
+    color: var(--md-on-surface-variant, #666);
+    transition: var(--md-transition);
+    padding: 0 !important;
+}
+
+.add-column-header-cell:hover {
+    background: var(--md-primary-container, #e8f0fe);
+    color: var(--md-primary, #1a73e8);
+}
+
+.add-column-filter-cell {
+    width: 36px;
+    min-width: 36px;
+    padding: 0 !important;
+}
+
+/* Smart header group cells (issue #1540) */
+.integram-table th.smart-header-group {
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 0;
+    cursor: default;
+    draggable: false;
+}
+
+/* Compact mode */
+.integram-table.compact th {
+    padding: 8px 5px;
+}
+
+.integram-table.compact td {
+    padding: 3px 5px;
+}
+
+.integram-table td {
+    position: relative;
+    padding: 10px;
+    border-bottom: 1px solid var(--md-divider);
+    border-left: none;
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
+    color: var(--md-text-primary);
+    font-size: 0.8125rem;
+    letter-spacing: 0.25px;
+}
+
+.integram-table td:first-child {
+    border-left: none;
+    padding-left: 10px;
+}
+
+.integram-table td:last-child {
+    padding-right: 6px;
+}
+
+.integram-table tbody tr {
+    transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.integram-table tbody tr:hover {
+    background-color: var(--md-hover);
+}
+
+
+.integram-table .number-cell {
+    text-align: right;
+}
+
+.integram-table .boolean-cell {
+    text-align: center;
+}
+
+/* Boolean checkbox icon styles */
+.boolean-check {
+    color: #4caf50;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.boolean-uncheck {
+    color: #9e9e9e;
+    font-size: 0.875rem;
+}
+
+/* Subordinate table boolean styles */
+.subordinate-table .boolean-check {
+    color: #4caf50;
+    font-weight: bold;
+    font-size: 0.875rem;
+}
+
+.subordinate-table .boolean-uncheck {
+    color: #9e9e9e;
+    font-size: 0.75rem;
+}
+
+.integram-table .date-cell,
+.integram-table .datetime-cell {
+    white-space: nowrap;
+}
+
+.integram-table .memo-cell {
+    max-width: 300px;
+    white-space: pre-wrap;
+}
+
+.integram-table .pwd-cell {
+    font-family: monospace;
+}
+
+.filter-row td {
+    padding: 0 !important;
+    background: var(--md-background);
+    border-bottom: 1px solid var(--md-divider);
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
+    position: sticky;
+    /* top is set dynamically by updateFilterRowStickyTop() (issue #2079) */
+    z-index: 9;
+    vertical-align: middle;
+}
+
+/* Old filter cell styles - kept for backwards compatibility */
+.filter-cell {
+    display: flex;
+    align-items: center;
+}
+
+.filter-type {
+    padding: 6px 12px;
+    margin-right: 8px;
+    cursor: pointer;
+    background: var(--md-surface);
+    border: 1px solid var(--md-divider);
+    border-radius: 4px;
+    font-size: 0.875rem;
+    min-width: 32px;
+    text-align: center;
+    font-weight: 500;
+    color: var(--md-text-primary);
+    transition: var(--md-transition);
+}
+
+.filter-type:hover {
+    background: var(--md-hover);
+    border-color: var(--md-primary);
+}
+
+.filter-type:active {
+    background: var(--md-selected);
+}
+
+.filter-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--md-divider);
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: var(--md-text-primary);
+    background: var(--md-surface);
+    transition: var(--md-transition);
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.12);
+}
+
+.filter-input::placeholder {
+    color: var(--md-text-hint);
+}
+
+/* New filter cell with icon inside input */
+.filter-cell-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    height: 100%;
+    /* min-height: 40px; */
+}
+
+.filter-icon-inside {
+    position: absolute;
+    left: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--md-text-secondary);
+    background: var(--md-surface);
+    padding: 2px;
+    border-radius: 4px;
+    z-index: 1;
+    min-width: 16px;
+    text-align: center;
+    line-height: 1;
+    transition: var(--md-transition);
+}
+
+.filter-icon-inside:hover {
+    color: var(--md-primary);
+    background: var(--md-hover);
+}
+
+.filter-input-with-icon {
+    flex: 1;
+    padding: 4px 0px 4px 23px;  /* Extra left padding for icon */
+    border: none; /* 1px solid var(--md-divider); */
+    /* border-radius: 4px; */
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: var(--md-text-primary);
+    background: var(--md-surface);
+    width: 100%;
+    height: 32px;
+    box-sizing: border-box;
+    transition: var(--md-transition);
+}
+
+.filter-input-with-icon:focus {
+    outline: none;
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.12);
+}
+
+.filter-input-with-icon::placeholder {
+    color: var(--md-text-hint);
+}
+
+/* Date/datetime filter picker (issue #1008) */
+.filter-date-picker {
+    cursor: pointer;
+    min-width: 120px;
+}
+
+.filter-date-picker::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.filter-date-picker::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+
+.filter-date-picker:not([value])::-webkit-datetime-edit,
+.filter-date-picker[value=""]::-webkit-datetime-edit {
+    color: var(--md-text-hint);
+}
+
+/* Range filter: two from/to fields side by side instead of one comma input (issue #3542) */
+.filter-range-wrapper .filter-range-input {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+}
+/* The right ("to") field has no icon, so it doesn't need the icon's left padding */
+.filter-range-wrapper .filter-range-input[data-range-part="to"] {
+    padding-left: 4px;
+}
+.filter-range-sep {
+    flex: 0 0 auto;
+    padding: 0 4px;
+    color: var(--md-text-secondary);
+    font-size: 0.875rem;
+}
+
+/* Reference field filter dropdown trigger button (issue #795, #797) */
+.filter-ref-trigger {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 8px 4px 23px;  /* Extra left padding for icon */
+    border: none;
+    font-size: 0.8125rem;
+    font-family: inherit;
+    color: var(--md-text-primary);
+    background: var(--md-surface);
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+    height: 32px;
+    text-align: left;
+    min-width: 80px;
+}
+
+.filter-ref-trigger:hover {
+    background: var(--md-hover);
+}
+
+.filter-ref-trigger:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.12);
+}
+
+.filter-ref-trigger-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--md-text-primary);
+}
+
+.filter-ref-trigger-text--placeholder {
+    color: var(--md-text-hint);
+}
+
+.filter-ref-trigger-arrow {
+    flex-shrink: 0;
+    font-size: 0.625rem;
+    color: var(--md-text-hint);
+    margin-left: 4px;
+}
+
+/* Reference field filter floating dropdown overlay (issue #797) */
+.filter-ref-dropdown-overlay {
+    background: var(--md-surface);
+    border-radius: 4px;
+    box-shadow: var(--md-elevation-3);
+    display: flex;
+    flex-direction: column;
+    font-family: inherit;
+    overflow: hidden;
+    min-width: 200px;
+    max-width: 350px;
+}
+
+.filter-ref-dropdown-header {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid var(--md-divider);
+    gap: 8px;
+}
+
+.filter-ref-search {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--md-divider);
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: var(--md-text-primary);
+    background: var(--md-surface);
+    outline: none;
+}
+
+.filter-ref-search:focus {
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.12);
+}
+
+.filter-ref-search::placeholder {
+    color: var(--md-text-hint);
+}
+
+.filter-ref-clear {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: var(--md-text-secondary);
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.filter-ref-clear:hover {
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+}
+
+.filter-ref-options {
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 4px 0;
+}
+
+.filter-ref-option {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: var(--md-text-primary);
+}
+
+.filter-ref-option:hover {
+    background: var(--md-hover);
+}
+
+.filter-ref-option input[type="checkbox"] {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--md-primary);
+}
+
+.filter-ref-option-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.filter-ref-empty {
+    padding: 16px;
+    text-align: center;
+    color: var(--md-text-secondary);
+    font-style: italic;
+}
+
+/* Scroll counter (replaces pagination) */
+.scroll-counter {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    padding: 8px 16px;
+    background: var(--md-surface);
+    border: none;
+    border-radius: 4px;
+    box-shadow: var(--md-elevation-2);
+    color: var(--md-text-secondary);
+    font-size: 0.75rem;
+    font-weight: 500;
+    font-family: inherit;
+    z-index: 100;
+    letter-spacing: 0.25px;
+    transition: opacity 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+
+.scroll-counter-total {
+    margin-left: 0.25em;
+}
+
+/* Make semi-transparent when table rows are beneath it (issue #1922) */
+.scroll-counter.rows-beneath {
+    opacity: 0.7;
+}
+
+.scroll-counter.rows-beneath:hover {
+    opacity: 1;
+}
+
+.total-count-unknown {
+    cursor: pointer;
+    color: var(--md-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--md-transition);
+}
+
+.total-count-unknown:hover {
+    color: var(--md-primary-dark);
+    text-decoration: underline;
+}
+
+/* Clicking the known total re-requests the count (issue #2795) */
+.total-count-known {
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--md-transition);
+}
+
+.total-count-known:hover {
+    color: var(--md-primary);
+    text-decoration: underline;
+}
+
+/* Small non-clickable spinner shown in place of the number while recounting (issue #2795) */
+.total-count-loading {
+    display: inline-flex;
+    align-items: center;
+    color: var(--md-primary);
+    cursor: default;
+    user-select: none;
+}
+
+.total-count-loading .pi-spinner {
+    font-size: 0.75rem;
+}
+
+/* Old pagination controls - kept for backwards compatibility */
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding: 10px 0;
+}
+
+.pagination-controls button {
+    padding: 8px 16px;
+    margin: 0 4px;
+    border: 1px solid var(--md-divider);
+    background: var(--md-surface);
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: var(--md-text-primary);
+    transition: var(--md-transition);
+}
+
+.pagination-controls button:hover:not(:disabled) {
+    background: var(--md-hover);
+    border-color: var(--md-primary);
+}
+
+.pagination-controls button:active:not(:disabled) {
+    background: var(--md-selected);
+}
+
+.pagination-controls button:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+    color: var(--md-text-hint);
+}
+
+/* Column settings modal header with help icon (issue #968) */
+.column-settings-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.column-settings-header h3 {
+    margin: 0;
+    flex: 1;
+}
+
+.btn-col-settings-help {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--md-text-secondary, #888);
+    background: none;
+    color: var(--md-text-secondary, #888);
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    flex-shrink: 0;
+    transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+}
+
+.btn-col-settings-help:hover {
+    border-color: var(--md-primary, #1976d2);
+    color: var(--md-primary, #1976d2);
+    background-color: rgba(25, 118, 210, 0.08);
+}
+
+.column-settings-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--md-surface);
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: var(--md-elevation-4);
+    z-index: 1000;
+    max-width: 800px;
+    width: 90%;
+    font-family: inherit;
+}
+
+.column-settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.32);
+    z-index: 999;
+    backdrop-filter: blur(1px);
+}
+
+.column-settings-list {
+    max-height: 400px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 8px 0;
+}
+
+.column-settings-item {
+    padding: 12px 24px;
+    border-bottom: none;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.column-settings-item:hover {
+    background-color: var(--md-hover);
+}
+
+.column-settings-item label {
+    margin: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    font-size: 0.8125rem;
+    color: var(--md-text-primary);
+    letter-spacing: 0.25px;
+}
+
+.column-settings-item input[type="checkbox"] {
+    margin-right: 16px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* Column settings modal buttons - prevent Bootstrap 5.3 from stretching buttons (issue #569) */
+.column-settings-modal .btn {
+    flex: 0 0 auto;
+    width: auto;
+}
+
+/* Add column modal buttons - prevent Bootstrap 5.3 from stretching buttons (issue #569) */
+.add-column-modal .btn {
+    flex: 0 0 auto;
+    width: auto;
+}
+
+/* Column edit button in column settings list (issue #937) */
+.btn-col-edit {
+    background: none;
+    border: none;
+    padding: 4px 6px;
+    cursor: pointer;
+    color: var(--md-text-secondary, #666);
+    border-radius: 4px;
+    flex: 0 0 auto;
+    line-height: 1;
+    opacity: 0.5;
+    transition: opacity 0.15s, background-color 0.15s;
+}
+
+.column-settings-item:hover .btn-col-edit {
+    opacity: 1;
+}
+
+.btn-col-edit:hover {
+    background-color: var(--md-hover, rgba(0,0,0,0.08));
+    opacity: 1;
+}
+
+/* Drag-and-drop for column settings list (issue #953) */
+.col-settings-drag-handle {
+    margin-right: 8px;
+    color: var(--md-text-secondary, #666);
+    cursor: grab;
+    font-size: 0.875rem;
+    user-select: none;
+    opacity: 0.5;
+}
+
+.column-settings-item:hover .col-settings-drag-handle {
+    opacity: 1;
+}
+
+.column-settings-item.dragging {
+    opacity: 0.4;
+}
+
+.column-settings-item.drag-over {
+    border-top: 2px solid var(--md-primary, #1976d2);
+}
+
+/* Fixed (first) column in settings list — not draggable, locked icon (issue #962) */
+.column-settings-item--fixed {
+    cursor: default;
+    background-color: var(--md-surface-variant, rgba(0,0,0,0.03));
+}
+
+.col-settings-drag-handle.col-settings-fixed {
+    cursor: default;
+    opacity: 0.5;
+    filter: grayscale(1);
+}
+
+/* Keep lock icon grey on hover to indicate it's inactive (issue #964) */
+.column-settings-item:hover .col-settings-drag-handle.col-settings-fixed {
+    opacity: 0.5;
+    filter: grayscale(1);
+}
+
+/* Order number badge for draggable columns in settings list (issue #962) */
+.col-settings-order-num {
+    display: inline-block;
+    min-width: 18px;
+    height: 18px;
+    line-height: 18px;
+    text-align: center;
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: var(--md-text-secondary, #666);
+    background-color: var(--md-surface-variant, rgba(0,0,0,0.07));
+    border-radius: 9px;
+    margin-right: 6px;
+    padding: 0 4px;
+    user-select: none;
+    opacity: 0.7;
+}
+
+/* Required / multi / uniqueness badges in column settings list (issue #937, #2495) */
+.col-required-badge {
+    color: var(--color-error, #d32f2f);
+    font-weight: bold;
+    margin-left: 4px;
+    font-size: 0.875rem;
+}
+
+.col-multi-badge {
+    color: var(--md-primary, #1976d2);
+    margin-left: 4px;
+    font-size: 1.3rem;
+}
+
+.col-key-badge {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-warning, #b7791f);
+    margin-left: 4px;
+    font-size: 0.95rem;
+}
+
+/* Column type icon and original name display in column settings list (issue #945) */
+.col-type-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    margin-right: 8px;
+    color: var(--md-text-secondary, #666);
+    flex: 0 0 auto;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    opacity: 0.65;
+}
+
+.col-original-name {
+    color: var(--md-text-secondary, #888);
+    font-size: 0.75rem;
+    margin-left: 3px;
+}
+
+/* Column edit modal (issue #937) */
+.col-edit-modal {
+    max-width: 480px;
+}
+
+.col-edit-section {
+    margin-bottom: 16px;
+}
+
+.col-edit-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.col-edit-label {
+    min-width: 130px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    margin: 0;
+    color: var(--md-text-secondary, #555);
+}
+
+.col-edit-check-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    margin: 0;
+    cursor: pointer;
+}
+
+.col-edit-select,
+.col-edit-input {
+    flex: 1;
+    font-size: 0.8125rem;
+}
+
+.col-edit-value {
+    font-size: 0.8125rem;
+    color: var(--md-text-secondary, #666);
+    font-style: italic;
+}
+
+.col-edit-go-dict-row {
+    margin-top: 12px;
+}
+
+.col-edit-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.col-edit-go-dict-link {
+    font-size: 0.8125rem;
+    color: var(--md-primary, #1976d2);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.col-edit-go-dict-link:hover {
+    text-decoration: underline;
+    color: var(--md-primary-dark, #1565c0);
+}
+
+/* Shared modal action buttons for column edit modal (mirrors main-app.css .menu-modal-btn) */
+.col-edit-modal .menu-modal-btn {
+    padding: 0.625rem 1.25rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.col-edit-modal .menu-modal-btn.cancel {
+    background: none;
+    border: 1px solid var(--border-color, #dee2e6);
+    color: var(--text-primary, #212529);
+}
+
+.col-edit-modal .menu-modal-btn.cancel:hover {
+    background-color: var(--bg-secondary, #f8f9fa);
+}
+
+.col-edit-modal .menu-modal-btn.save {
+    background-color: var(--button-primary, #1976d2);
+    color: white;
+}
+
+.col-edit-modal .menu-modal-btn.save:hover {
+    background-color: var(--button-primary-hover, #1565c0);
+}
+
+.col-edit-modal .menu-modal-btn.delete {
+    background-color: var(--color-danger, #dc3545);
+    color: white;
+    margin-right: auto;
+}
+
+.col-edit-modal .menu-modal-btn.delete:hover {
+    background-color: var(--color-danger-dark-hover, #bb2d3b);
+}
+
+.col-edit-del-confirm {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    background: var(--color-error-bg, #fff3f3);
+    border-radius: 4px;
+    padding: 8px 12px;
+    flex-wrap: wrap;
+}
+
+.col-edit-del-warn {
+    font-size: 0.8125rem;
+    color: var(--color-error, #b71c1c);
+    flex: 1;
+}
+
+.col-edit-status {
+    margin-top: 10px;
+    font-size: 0.8125rem;
+    padding: 6px 10px;
+    border-radius: 4px;
+}
+
+.col-edit-status-ok {
+    background: var(--color-success-bg, #e8f5e9);
+    color: var(--color-success, #2e7d32);
+}
+
+.col-edit-status-error {
+    background: var(--color-error-bg, #ffebee);
+    color: var(--color-error, #b71c1c);
+}
+
+.table-settings-item {
+    padding: 12px 12px 12px 0;
+    border-bottom: 1px solid var(--border-color, #f0f0f0);
+}
+
+.table-settings-item:has(input[type="checkbox"]) {
+    border-bottom: none;
+    padding-top: 12px;
+    padding-bottom: 0;
+}
+
+.table-settings-item > label:first-child {
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.table-settings-item input[type="radio"] {
+    margin-right: 5px;
+}
+
+.show-full-value {
+    color: var(--link-color, #007bff);
+    text-decoration: none;
+    margin-left: 2px;
+    font-weight: bold;
+}
+
+.show-full-value:hover {
+    text-decoration: underline;
+}
+
+/* Copy button in Full Value modal - issue #1465 */
+.full-value-copy-btn {
+    background: none;
+    border: 1px solid var(--border-color, #dee2e6);
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    color: var(--text-secondary, #6c757d);
+    font-size: 0.875rem;
+    line-height: 1;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.full-value-copy-btn:hover {
+    color: var(--link-color, #007bff);
+    border-color: var(--link-color, #007bff);
+}
+
+.full-value-content:hover {
+    background: var(--bg-secondary, #e9ecef) !important;
+}
+
+.filter-type-menu {
+    position: absolute;
+    background: var(--md-surface);
+    border: none;
+    border-radius: 4px;
+    box-shadow: var(--md-elevation-3);
+    z-index: 100;
+    min-width: 220px;
+    font-family: inherit;
+    overflow: hidden;
+}
+
+.filter-type-option {
+    padding: 9px 16px;
+    cursor: pointer;
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
+    transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.8125rem;
+    color: var(--md-text-primary);
+}
+
+.filter-type-option:hover {
+    background: var(--md-hover);
+}
+
+.filter-type-option:active {
+    background: var(--md-selected);
+}
+
+.filter-type-option .symbol {
+    font-weight: 500;
+    margin-right: 16px;
+    min-width: 24px;
+    text-align: center;
+    color: var(--md-primary);
+}
+
+/* Editable cell styles */
+.editable-cell {
+    position: relative;
+    cursor: pointer;
+}
+
+.cell-content-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.edit-icon {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    opacity: 0;
+    transition: var(--md-transition);
+    cursor: pointer;
+    padding: 4px;
+    background: var(--card-bg, rgba(255, 255, 255, 0.95));
+    border-radius: 50%;
+    color: var(--md-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.subordinate-row-number {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    display: inline-flex;
+    /* align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px; */
+    color: lightgray;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: 1;
+    pointer-events: none;
+    transition: var(--md-transition);
+}
+
+.editable-cell:hover .edit-icon {
+    opacity: 1;
+}
+
+.edit-icon:hover {
+    background: var(--md-primary);
+    color: white;
+    box-shadow: var(--md-elevation-2);
+}
+
+/* Mobile: show icon on click */
+@media (max-width: 768px) {
+    .editable-cell .edit-icon {
+        opacity: 1;
+        position: static;
+        margin-left: 5px;
+        display: inline-flex;
+    }
+
+    .editable-cell .subordinate-row-number-with-edit-icon {
+        display: none;
+    }
+}
+
+/* Edit Form Modal */
+/* z-index is set dynamically in JavaScript for proper stacking of nested modals */
+.edit-form-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.32);
+    backdrop-filter: blur(1px);
+}
+
+.edit-form-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--md-surface);
+    border-radius: 4px;
+    box-shadow: var(--md-elevation-4);
+    /* width: 90%;
+    max-width: 600px; */
+    min-width: 600px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    font-family: inherit;
+    transition: max-width 0.3s ease, max-height 0.3s ease;
+}
+
+/* Expanded modal for subordinate tables */
+.edit-form-modal.expanded {
+    max-width: 93%;
+    max-height: 93vh;
+}
+
+.edit-form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--md-divider);
+}
+
+.edit-form-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--md-text-primary);
+    letter-spacing: 0.15px;
+}
+
+.edit-form-header-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.edit-form-parent-subtitle {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--md-text-secondary);
+    letter-spacing: 0.1px;
+}
+
+.edit-form-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--md-text-secondary);
+    cursor: pointer;
+    padding: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: var(--md-transition);
+}
+
+.edit-form-close:hover {
+    color: var(--md-text-primary);
+    background: var(--md-hover);
+}
+
+/* Edit form header title row with record ID and table link (issue #563) */
+.edit-form-header-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.edit-form-record-id {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--text-secondary, #999);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.edit-form-record-id:hover {
+    color: var(--text-primary, #666);
+}
+
+.edit-form-table-link {
+    color: var(--text-secondary, #999);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 4px;
+    transition: color 0.2s ease, background-color 0.2s ease;
+    text-decoration: none;
+}
+
+.edit-form-table-link:hover {
+    color: var(--text-primary, #666);
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.edit-form-table-link svg {
+    display: block;
+}
+
+.edit-form-body {
+    padding: 12px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-form .form-group {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.edit-form .form-group label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: var(--text-primary, rgba(0, 0, 0, 0.87));
+}
+
+.edit-form .form-group .required {
+    color: var(--color-error, #d32f2f);
+}
+
+.edit-form .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--md-divider);
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: var(--md-text-primary);
+    background: var(--md-surface);
+    transition: var(--md-transition);
+}
+
+.edit-form .form-control:focus {
+    outline: none;
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.12);
+}
+
+.edit-form .form-control::placeholder {
+    color: var(--md-text-hint);
+}
+
+/* Date and DateTime pickers */
+.edit-form .date-picker,
+.edit-form .datetime-picker {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--input-border, #ced4da);
+    border-radius: 4px;
+    font-size: 0.875rem;
+    background-color: var(--input-bg, white);
+    color: var(--text-primary, inherit);
+    cursor: pointer;
+}
+
+.edit-form .date-picker:focus,
+.edit-form .datetime-picker:focus {
+    outline: none;
+    border-color: var(--button-primary, #007bff);
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+}
+
+/* Style for calendar icon in date/datetime inputs */
+.edit-form .date-picker::-webkit-calendar-picker-indicator,
+.edit-form .datetime-picker::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.edit-form .date-picker::-webkit-calendar-picker-indicator:hover,
+.edit-form .datetime-picker::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+.edit-form .memo-field {
+    min-height: 100px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+
+.edit-form-footer .btn {
+    padding: 10px 22px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--md-transition);
+    font-family: inherit;
+    min-height: 40px;
+    line-height: 1.4;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-form-footer .btn-primary {
+    background-color: var(--button-primary, #3b82f6);
+    color: white;
+}
+
+.edit-form-footer .btn-primary:hover {
+    background-color: var(--button-primary-hover, #2563eb);
+}
+
+.edit-form-footer .btn-primary:active {
+    transform: translateY(1px);
+}
+
+.edit-form-footer .btn-secondary {
+    background-color: var(--bg-secondary, #f5f5f5);
+    color: var(--text-primary, #333);
+    border: 1px solid var(--border-color, #ddd);
+}
+
+.edit-form-footer .btn-secondary:hover {
+    background-color: var(--border-color, #ddd);
+}
+
+.edit-form-footer .btn-secondary:active {
+    background-color: var(--border-color, #ddd);
+}
+
+.edit-form-footer .btn-danger {
+    background-color: var(--color-danger, #dc3545);
+    color: white;
+}
+
+.edit-form-footer .btn-danger:hover {
+    background-color: var(--color-danger-hover, #c82333);
+}
+
+.edit-form-footer .btn-danger:active {
+    transform: translateY(1px);
+}
+
+.edit-form-footer .btn:disabled,
+.edit-form-footer .btn.disabled,
+.form-field-settings-footer .btn:disabled,
+.form-field-settings-footer .btn.disabled,
+.integram-modal-footer .btn:disabled,
+.integram-modal-footer .btn.disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+    box-shadow: none;
+}
+
+.edit-form-footer .btn-primary:disabled,
+.edit-form-footer .btn-primary.disabled,
+.form-field-settings-footer .btn-primary:disabled,
+.form-field-settings-footer .btn-primary.disabled,
+.integram-modal-footer .btn-primary:disabled,
+.integram-modal-footer .btn-primary.disabled {
+    background-color: var(--text-secondary, #6c757d);
+    color: #fff;
+}
+
+.edit-form-footer .btn-secondary:disabled,
+.edit-form-footer .btn-secondary.disabled,
+.form-field-settings-footer .btn-secondary:disabled,
+.form-field-settings-footer .btn-secondary.disabled,
+.integram-modal-footer .btn-secondary:disabled,
+.integram-modal-footer .btn-secondary.disabled {
+    background-color: var(--bg-secondary, #f5f5f5);
+    color: var(--text-secondary, #6c757d);
+    border-color: var(--border-color, #ddd);
+}
+
+.edit-form-footer .btn-danger:disabled,
+.edit-form-footer .btn-danger.disabled,
+.integram-modal-footer .btn-danger:disabled,
+.integram-modal-footer .btn-danger.disabled {
+    background-color: var(--text-secondary, #6c757d);
+    color: #fff;
+}
+
+/* Read-only form fields (issue #1508) */
+.edit-form .form-field-readonly input,
+.edit-form .form-field-readonly textarea,
+.edit-form .form-field-readonly select {
+    background-color: var(--bg-secondary, #f0f0f0);
+    color: var(--text-secondary, #888);
+    pointer-events: none;
+}
+
+.edit-form .form-field-readonly .form-reference-editor {
+    background-color: var(--bg-secondary, #f0f0f0);
+    pointer-events: none;
+    opacity: 0.65;
+}
+
+/* Subordinate table indicator */
+.subordinate-table-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--bg-secondary, #f8f9fa);
+    border: 1px solid var(--border-color, #dee2e6);
+    border-radius: 4px;
+    color: var(--text-secondary, #6c757d);
+}
+
+.subordinate-table-indicator svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Toast notifications */
+.integram-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 16px 24px;
+    border-radius: 4px;
+    box-shadow: var(--md-elevation-3);
+    z-index: 3000;
+    min-width: 300px;
+    max-width: 500px;
+    font-size: 0.875rem;
+    font-family: inherit;
+    letter-spacing: 0.25px;
+    animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.integram-toast.fade-out {
+    animation: fadeOut 0.3s ease-out;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.integram-toast-success {
+    background: var(--color-success-bg, #e8f5e9);
+    color: var(--color-success, #2e7d32);
+    border-left: 4px solid #4caf50;
+}
+
+.integram-toast-error {
+    background: var(--color-error-bg, #ffebee);
+    color: var(--color-error, #c62828);
+    border-left: 4px solid #f44336;
+}
+
+.integram-toast-info {
+    background: #e3f2fd;
+    color: var(--md-primary-dark, var(--button-primary-hover));
+    border-left: 4px solid #2196f3;
+}
+
+.integram-toast-warning {
+    background: #fff8e1;
+    color: #f57f17;
+    border-left: 4px solid #ffc107;
+}
+
+/* Searchable select (dropdown with search) */
+.searchable-select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.searchable-select-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--md-divider);
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: var(--md-text-primary);
+    background: var(--md-surface);
+    cursor: pointer;
+    transition: var(--md-transition);
+}
+
+.searchable-select-input:focus {
+    outline: none;
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.12);
+}
+
+.searchable-select-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    background: var(--md-surface);
+    border: none;
+    border-radius: 0 0 4px 4px;
+    box-shadow: var(--md-elevation-3);
+    z-index: 1000;
+    display: none;
+    margin-top: 4px;
+}
+
+.searchable-select-option {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    border-bottom: none;
+    color: var(--md-text-primary);
+    font-size: 0.875rem;
+}
+
+.searchable-select-option:last-child {
+    border-bottom: none;
+}
+
+.searchable-select-option:hover {
+    background-color: var(--md-hover);
+}
+
+.searchable-select-option.selected {
+    background-color: var(--md-selected);
+    color: var(--md-primary);
+    font-weight: 500;
+}
+
+.searchable-select-loading,
+.searchable-select-error,
+.searchable-select-no-results {
+    padding: 12px 16px;
+    color: var(--md-text-secondary);
+    text-align: center;
+    font-style: italic;
+    font-size: 0.875rem;
+}
+
+.searchable-select-error {
+    color: var(--color-error, #d32f2f);
+}
+
+/* Form field settings */
+.edit-form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 20px;
+    border-top: 1px solid var(--border-color, #dee2e6);
+}
+
+.edit-form-footer-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--md-text-secondary);
+    border-radius: 50%;
+    transition: var(--md-transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.btn-icon:hover {
+    background-color: var(--md-hover);
+    color: var(--md-primary);
+}
+
+.btn-icon:active {
+    background-color: var(--md-selected);
+}
+
+.btn-icon svg {
+    display: block;
+}
+
+/* Form field settings modal */
+.form-field-settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.32);
+    z-index: 10001;
+    backdrop-filter: blur(1px);
+}
+
+.form-field-settings-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--md-surface);
+    border-radius: 4px;
+    box-shadow: var(--md-elevation-4);
+    z-index: 10002;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    font-family: inherit;
+}
+
+.form-field-settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--md-divider);
+}
+
+.form-field-settings-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--md-text-primary);
+    letter-spacing: 0.15px;
+}
+
+.form-field-settings-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--md-text-secondary);
+    cursor: pointer;
+    padding: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: var(--md-transition);
+}
+
+.form-field-settings-close:hover {
+    color: var(--md-text-primary);
+    background: var(--md-hover);
+}
+
+.form-field-settings-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.form-field-settings-info {
+    margin-bottom: 15px;
+    color: var(--text-secondary, #6c757d);
+    font-size: 0.875rem;
+}
+
+.form-field-settings-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.form-field-settings-item {
+    padding: 12px 24px;
+    border-bottom: none;
+    transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-field-settings-item:last-child {
+    border-bottom: none;
+}
+
+.form-field-settings-item label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin: 0;
+    user-select: none;
+    font-size: 0.875rem;
+    color: var(--md-text-primary);
+    letter-spacing: 0.25px;
+}
+
+.form-field-settings-item input[type="checkbox"] {
+    margin-right: 16px;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+.form-field-settings-item:hover {
+    background-color: var(--md-hover);
+}
+
+.form-field-settings-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 15px 20px;
+    border-top: 1px solid var(--border-color, #dee2e6);
+}
+
+.form-field-settings-footer .btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--md-transition);
+    font-family: inherit;
+    min-height: 40px;
+    line-height: 1.4;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Prevent Bootstrap 5.3 from stretching buttons (issue #612) */
+    flex: 0 0 auto;
+    width: auto;
+}
+
+.form-field-settings-footer .btn-primary {
+    background-color: var(--button-primary, #3b82f6);
+    color: white;
+}
+
+.form-field-settings-footer .btn-primary:hover {
+    background-color: var(--button-primary-hover, #2563eb);
+}
+
+.form-field-settings-footer .btn-primary:active {
+    transform: translateY(1px);
+}
+
+.form-field-settings-footer .btn-secondary {
+    background-color: var(--bg-secondary, #f5f5f5);
+    color: var(--text-primary, #333);
+    border: 1px solid var(--border-color, #ddd);
+}
+
+.form-field-settings-footer .btn-secondary:hover {
+    background-color: var(--border-color, #ddd);
+}
+
+.form-field-settings-footer .btn-secondary:active {
+    background-color: var(--border-color, #ddd);
+}
+
+.form-field-settings-item {
+    cursor: grab;
+}
+
+.form-field-settings-item.dragging {
+    opacity: 0.4;
+}
+
+.form-field-settings-item.drag-over {
+    border-top: 2px solid var(--md-primary, #1976d2);
+}
+
+.form-field-settings-item .drag-handle {
+    margin-right: 8px;
+    color: var(--md-text-secondary, #666);
+    cursor: grab;
+    font-size: 0.875rem;
+    user-select: none;
+}
+
+.form-field-settings-extra {
+    padding: 12px 24px;
+    border-top: 1px solid var(--md-divider, #e0e0e0);
+}
+
+.form-field-settings-extra label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--md-text-primary);
+    user-select: none;
+}
+
+.form-field-settings-extra input[type="checkbox"] {
+    margin-right: 16px;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+/* ========================================
+   Edit Form Tabs (Subordinate Tables)
+   ======================================== */
+
+.edit-form-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--md-divider);
+    background-color: var(--md-surface);
+    padding: 0 16px;
+    overflow-x: auto;
+    flex-shrink: 0;
+}
+
+.edit-form-tab {
+    padding: 12px 24px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--md-text-secondary);
+    border-bottom: 2px solid transparent;
+    transition: var(--md-transition);
+    white-space: nowrap;
+    user-select: none;
+}
+
+.edit-form-tab:hover {
+    color: var(--md-primary);
+    background-color: var(--md-hover);
+}
+
+.edit-form-tab.active {
+    color: var(--md-primary);
+    border-bottom-color: var(--md-primary);
+}
+
+.edit-form-tab-content {
+    display: none;
+}
+
+.edit-form-tab-content.active {
+    display: block;
+}
+
+/* ========================================
+   Subordinate Table Styles
+   ======================================== */
+
+.subordinate-table-loading,
+.subordinate-table-error,
+.subordinate-table-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--md-text-secondary);
+    font-size: 0.875rem;
+}
+
+.subordinate-table-error {
+    color: var(--color-error, #d32f2f);
+    background-color: var(--color-error-bg, #ffebee);
+    border-radius: 4px;
+    margin: 16px;
+}
+
+/* Refresh overlay: dim existing content, show spinner (issue #2580) */
+.subordinate-refresh-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+.subordinate-refresh-overlay::after {
+    content: '';
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--color-border, #e0e0e0);
+    border-top-color: var(--color-primary, #1976d2);
+    border-radius: 50%;
+    animation: subordinate-spin 0.7s linear infinite;
+}
+@keyframes subordinate-spin {
+    to { transform: rotate(360deg); }
+}
+
+.subordinate-table-toolbar {
+    padding: 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Group copy and table-link icons together on the right (issue #1790) */
+.subordinate-table-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+}
+
+/* Make icons inside .subordinate-table-actions larger (issue #1792) */
+.subordinate-table-actions .pi,
+.subordinate-table-actions i {
+    font-size: 1.125rem;
+}
+
+/* Unified icon color for all actions inside .subordinate-table-actions (issue #2570) */
+.subordinate-table-actions .subordinate-refresh-btn,
+.subordinate-table-actions .subordinate-copy-buffer-btn,
+.subordinate-table-actions .subordinate-paste-buffer-btn,
+.subordinate-table-actions .subordinate-table-link {
+    color: var(--md-primary);
+}
+
+.subordinate-table-actions .subordinate-refresh-btn:hover,
+.subordinate-table-actions .subordinate-copy-buffer-btn:hover,
+.subordinate-table-actions .subordinate-paste-buffer-btn:hover,
+.subordinate-table-actions .subordinate-table-link:hover {
+    color: var(--md-primary-dark);
+    background-color: rgba(25, 118, 210, 0.08);
+}
+
+/* Subordinate refresh button - icon only, no background (issue #2574) */
+.subordinate-refresh-btn {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+/* Subordinate copy-buffer button - icon only, no background (issue #1792) */
+.subordinate-copy-buffer-btn {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+/* Subordinate paste-buffer link - icon only, no underline (issue #2570) */
+.subordinate-table-actions .subordinate-paste-buffer-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+/* Subordinate table add button - blue icon button (issue #1792) */
+.subordinate-add-btn {
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 1rem;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+/* Subordinate table link icon - positioned on the right side (issue #589, #1790) */
+.subordinate-table-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 4px;
+    transition: color 0.2s ease, background-color 0.2s ease;
+    text-decoration: none;
+}
+
+.subordinate-table-link svg {
+    display: block;
+}
+
+.subordinate-table-wrapper {
+    overflow-x: auto;
+    margin-top: 12px;
+}
+
+.subordinate-table {
+    width: auto;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+}
+
+.subordinate-table th {
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 500;
+    color: var(--md-text-secondary);
+    background-color: var(--md-background);
+    border-bottom: 2px solid var(--md-divider);
+    white-space: nowrap;
+}
+
+.subordinate-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--md-divider);
+    color: var(--md-text-primary);
+    vertical-align: top;
+}
+
+.subordinate-table tbody tr:hover {
+    background-color: var(--md-hover);
+}
+
+.subordinate-cell-clickable {
+    cursor: pointer;
+    color: var(--md-primary);
+    font-weight: 500;
+}
+
+.subordinate-cell-clickable:hover {
+    text-decoration: underline;
+}
+
+.subordinate-cell-with-row-number {
+    position: relative;
+}
+
+.subordinate-nested-count {
+    /* Issue #737: Use same center alignment as .subordinate-link-cell */
+    text-align: center;
+    padding: 10px 3px !important;
+    white-space: nowrap;
+}
+
+/* Subordinate table link in main table cells */
+.subordinate-link-cell {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.subordinate-table-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--md-primary);
+    text-decoration: none !important;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: var(--md-transition);
+}
+
+.subordinate-table-link:hover {
+    background-color: rgba(25, 118, 210, 0.08);
+    color: var(--md-primary-dark);
+}
+
+.subordinate-table-link .table-icon {
+    font-size: 1rem;
+}
+
+.subordinate-table-link .subordinate-count {
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+/* Table icon link - opens subordinate table in new window (issue #729, #733) */
+.subordinate-table-icon-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 4px;
+    color: var(--md-primary);
+    text-decoration: none !important;
+    transition: var(--md-transition);
+    vertical-align: middle;
+    font-size: 1rem;
+}
+
+.subordinate-table-icon-link:hover {
+    background-color: rgba(25, 118, 210, 0.08);
+    color: var(--md-primary-dark);
+}
+
+/* Count link - opens subordinate table in modal (issue #733) */
+.subordinate-count-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px;
+    border-radius: 4px;
+    color: var(--md-primary);
+    text-decoration: none !important;
+    transition: var(--md-transition);
+    vertical-align: middle;
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.subordinate-count-link:hover {
+    background-color: rgba(25, 118, 210, 0.08);
+    color: var(--md-primary-dark);
+}
+
+/* Subordinate modal opened from main table */
+.subordinate-modal {
+    max-width: 800px;
+}
+
+.subordinate-modal.expanded {
+    width: fit-content;
+    max-width: 93vw;
+}
+
+.subordinate-modal .subordinate-table-container {
+    min-height: 200px;
+}
+
+/* Infinite scroll spinner shown at the bottom of the subordinate table (issue #1640) */
+.subordinate-infinite-spinner {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 0;
+}
+
+.subordinate-infinite-spinner-icon {
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--md-divider, #e0e0e0);
+    border-top-color: var(--md-primary, #1976d2);
+    border-radius: 50%;
+    animation: subordinate-spin 0.7s linear infinite;
+}
+
+@keyframes subordinate-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Subordinate form modal (stacked on top of main modal) */
+/* z-index is set dynamically in JavaScript for proper stacking */
+.subordinate-form-modal {
+    max-width: 500px;
+}
+
+/* ========================================
+   Subordinate Table Sorting and Search
+   ======================================== */
+
+/* Sortable column headers */
+.subordinate-sortable-header {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s ease;
+}
+
+.subordinate-sortable-header:hover {
+    background-color: var(--md-hover);
+}
+
+.subordinate-sort-priority {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-left: 4px;
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: white;
+    background-color: var(--md-primary);
+    border-radius: 50%;
+    vertical-align: middle;
+}
+
+/* Quick search input wrapper */
+.subordinate-search-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    flex: 1;
+    max-width: 250px;
+    height: 32px;
+}
+
+.subordinate-search-input {
+    width: 100%;
+    padding: 6px 32px 6px 12px;
+    border: 1px solid var(--md-divider);
+    border-radius: 4px;
+    font-size: 0.8125rem;
+    font-family: inherit;
+    color: var(--md-text-primary);
+    background: var(--md-surface);
+    transition: var(--md-transition);
+    height: 32px;
+    box-sizing: border-box;
+}
+
+.subordinate-search-input:focus {
+    outline: none;
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.12);
+}
+
+.subordinate-search-input::placeholder {
+    color: var(--md-text-hint);
+}
+
+.subordinate-search-clear {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: transparent;
+    color: var(--md-text-secondary);
+    font-size: 1.125rem;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.subordinate-search-clear:hover {
+    background-color: var(--md-hover);
+    color: var(--md-text-primary);
+}
+
+/* Search highlight */
+.subordinate-search-highlight {
+    background-color: #ffeb3b;
+    color: inherit;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+/* ========================================
+   Subordinate Table Row Drag-and-Drop (issue #1617)
+   ======================================== */
+
+/* Header cell for drag handle column */
+.subordinate-drag-handle-th {
+    width: 24px;
+    padding: 0 !important;
+}
+
+/* Cell containing the drag handle */
+.subordinate-drag-handle-td {
+    width: 24px;
+    padding: 0 4px !important;
+    text-align: center;
+    vertical-align: middle;
+    position: relative;
+}
+
+.subordinate-drag-handle-td .subordinate-row-number {
+    inset: 0;
+    margin: auto;
+    min-width: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+/* The drag handle icon */
+.subordinate-drag-handle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    color: var(--md-text-hint, #aaa);
+    cursor: grab;
+    border-radius: 3px;
+    transition: color 0.15s ease, background-color 0.15s ease;
+    font-size: 0.875rem;
+    opacity: 0;
+}
+
+.subordinate-table tbody tr:hover .subordinate-drag-handle {
+    opacity: 1;
+}
+
+.subordinate-table tbody tr:hover .subordinate-drag-handle-td .subordinate-row-number {
+    opacity: 0;
+}
+
+.subordinate-drag-handle:hover {
+    color: var(--md-text-secondary, #555);
+    background-color: var(--md-hover);
+}
+
+.subordinate-drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Disabled state while _m_ord is in flight */
+.subordinate-drag-handle-disabled {
+    cursor: not-allowed !important;
+    opacity: 0.3 !important;
+    pointer-events: none;
+}
+
+/* Row being dragged */
+.subordinate-row-dragging {
+    opacity: 0.4;
+}
+
+/* Drop target indicator */
+.subordinate-row-drag-over {
+    border-top: 2px solid var(--md-primary, #1976d2) !important;
+}
+
+/* ========================================
+   Inline Cell Editing Styles
+   ======================================== */
+
+/* Highlight required fields (attrs contains :!NULL:) when row is in edit mode (issue #779) */
+.required-field-editing {
+    background-color: rgba(211, 47, 47, 0.08) !important;
+}
+
+/* Make cells with inline editing capability visually distinct on hover */
+.inline-editable {
+    cursor: text;
+    position: relative;
+}
+
+.inline-editable:hover {
+    background-color: rgba(25, 118, 210, 0.04) !important;
+}
+
+/* Inline editor input styles */
+.inline-editor {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0; /* prevent input's intrinsic size from expanding the column (issue #2244) */
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: var(--md-text-primary);
+    background: transparent;
+    box-shadow: none;
+    transition: var(--md-transition);
+    outline: none;
+    box-sizing: border-box;
+}
+
+.inline-editor:focus {
+    box-shadow: none;
+}
+
+/* Specific styles for different editor types */
+.inline-editor-number,
+.inline-editor-text {
+    /* no min-height — keep row at its natural height */
+}
+
+/* Remove spinner arrows from number inputs */
+.inline-editor-number::-webkit-outer-spin-button,
+.inline-editor-number::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.inline-editor-number {
+    -moz-appearance: textfield;
+}
+
+.inline-editor-date,
+.inline-editor-datetime {
+    cursor: pointer;
+}
+
+.inline-editor-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin: 0 auto;
+    display: block;
+}
+
+.inline-editor-memo {
+    min-height: 60px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* Style for calendar icon in inline date/datetime inputs */
+.inline-editor-date::-webkit-calendar-picker-indicator,
+.inline-editor-datetime::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.inline-editor-date::-webkit-calendar-picker-indicator:hover,
+.inline-editor-datetime::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+/* Visual feedback for inline editing active state — keep original padding to prevent layout shift (issue #2240) */
+td:has(.inline-editor) {
+    background-color: rgba(25, 118, 210, 0.08) !important;
+    overflow: hidden;
+}
+
+/* Visual feedback for cells that are being saved (issue #1431) */
+td.cell-saving {
+    background-color: rgba(255, 182, 193, 0.45) !important;
+    transition: background-color 0.2s ease;
+}
+
+/* Compact mode: inline editor inherits cell padding, no override needed (issue #2240) */
+
+/* Inline select editor for GRANT and REPORT_COLUMN types (issue #601) */
+.inline-editor-select {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M2 4l4 4 4-4z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+}
+
+.inline-editor-select:focus {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231976d2' d='M2 4l4 4 4-4z'/%3E%3C/svg%3E");
+}
+
+/* ========================================
+   Inline Reference Editor Styles (ref:1)
+   ======================================== */
+
+.inline-editor-loading {
+    padding: 8px 12px;
+    font-size: 0.875rem;
+    color: var(--md-text-secondary);
+    font-style: italic;
+}
+
+.inline-editor-reference {
+    width: 100%;
+    position: relative;
+    background: var(--md-surface);
+    /* border: 2px solid var(--md-primary); */
+    border-radius: 4px;
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.15);
+}
+
+.inline-editor-reference-header {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--md-divider);
+    position: relative;
+}
+
+.inline-editor-reference-search {
+    flex: 1;
+    padding: 8px 12px;
+    padding-right: 36px;
+    border: none;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: var(--md-text-primary);
+    background: var(--md-surface);
+    outline: none;
+    box-sizing: border-box;
+}
+
+.inline-editor-reference-clear {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: transparent;
+    color: var(--md-text-secondary);
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0;
+    font-weight: 300;
+}
+
+.inline-editor-reference-clear:hover {
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+}
+
+.inline-editor-reference-clear:active {
+    transform: translateY(-50%) scale(0.9);
+}
+
+.inline-editor-reference-add {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    background: #4caf50;
+    color: white;
+    font-size: 1.125rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0;
+    font-weight: 300;
+}
+
+.inline-editor-reference-add:hover {
+    background: #45a049;
+    box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+}
+
+.inline-editor-reference-add:active {
+    transform: translateY(-50%) scale(0.9);
+    background: #3d8b40;
+}
+
+.inline-editor-reference-search::placeholder {
+    color: var(--md-text-hint);
+}
+
+/* Issue #1804: "link to any record" editor — clear + table-picker buttons in flex row */
+.form-any-ref-editor .inline-editor-reference-header {
+    padding-right: 4px;
+}
+
+.form-any-ref-editor .inline-editor-reference-search {
+    padding-right: 8px;
+}
+
+.form-any-ref-editor .inline-editor-reference-clear {
+    position: static;
+    transform: none;
+    flex-shrink: 0;
+    margin: 0 2px;
+}
+
+.form-any-ref-editor .inline-editor-reference-clear:active {
+    transform: scale(0.9);
+}
+
+.form-any-ref-table-btn {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    color: var(--md-text-secondary);
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0;
+    margin-right: 2px;
+}
+
+.inline-editor-any-ref-table-btn {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: transparent;
+    color: var(--md-text-secondary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0;
+    margin-right: 2px;
+}
+
+.inline-editor-any-ref-table-btn:hover {
+    background: var(--md-hover);
+    color: var(--md-primary);
+}
+
+/* Override clear button absolute position for any-ref inline editor (issue #1806) */
+.inline-editor-any-ref .inline-editor-reference-clear {
+    position: static;
+    transform: none;
+    flex-shrink: 0;
+}
+
+.inline-editor-any-ref .inline-editor-reference-clear:active {
+    transform: scale(0.9);
+}
+
+.inline-editor-any-ref .inline-editor-reference-search {
+    padding-right: 8px;
+}
+
+.form-any-ref-table-btn:hover {
+    background: var(--md-hover);
+    color: var(--md-primary);
+}
+
+/* Issue #1384: dropdown is moved to document.body by JS (_attachFixedDropdown) so it
+   escapes the table's overflow clipping. position/top/left/width are set via JS. */
+.inline-editor-reference-dropdown {
+    max-height: 200px;
+    overflow-y: auto;
+    background: var(--md-surface);
+    /* border: 2px solid var(--md-primary); */
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+}
+
+.inline-editor-reference-option {
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--md-text-primary);
+    font-size: 0.875rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.inline-editor-reference-option:last-child {
+    border-bottom: none;
+}
+
+.inline-editor-reference-option:hover,
+.inline-editor-reference-option:focus {
+    background-color: var(--md-hover);
+    outline: none;
+}
+
+.inline-editor-reference-option:active {
+    background-color: var(--md-selected);
+}
+
+.inline-editor-reference-empty {
+    padding: 20px 12px;
+    text-align: center;
+    color: var(--md-text-secondary);
+    font-size: 0.875rem;
+    font-style: italic;
+}
+
+/* Visual feedback for reference editing active state */
+/* vertical-align: top ensures the editor sits at the top of a tall (multi-line) row
+   so the fixed-position dropdown is placed directly below the search input (issue #1433) */
+td:has(.inline-editor-reference) {
+    background-color: rgba(25, 118, 210, 0.08) !important;
+    padding: 4px !important;
+    vertical-align: top !important;
+}
+
+/* ========================================
+   Form Reference Editor Styles
+   (identical look to inline table cell reference editor)
+   ======================================== */
+
+.form-reference-editor {
+    position: relative;
+    width: 100%;
+}
+
+.form-ref-editor-box {
+    position: relative;
+}
+
+/* Remove blue border from form reference editors (keep it only for inline table cell editors) */
+.form-ref-editor-box.inline-editor-reference {
+    border: 1px solid var(--md-divider);
+    box-shadow: none;
+}
+
+/* Also update dropdown border to match */
+.form-ref-editor-box .inline-editor-reference-dropdown {
+    border: 1px solid var(--md-divider);
+}
+
+.form-ref-editor-box .inline-editor-reference-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: auto;
+    width: 100%;
+    max-height: 200px;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    display: none;
+    z-index: 1000;
+}
+
+/* ========================================
+   Multi-Select Reference Field Styles (issue #853)
+   Tags-based editor for fields with :MULTI: in attrs
+   ======================================== */
+
+.inline-editor-multi-reference .multi-ref-tags-container,
+.form-multi-ref-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 6px 8px;
+    min-height: 36px;
+    border-bottom: 1px solid var(--md-divider);
+}
+
+.multi-ref-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px 2px 10px;
+    background-color: rgba(25, 118, 210, 0.12);
+    color: var(--md-primary);
+    border-radius: 14px;
+    font-size: 0.8125rem;
+    font-family: inherit;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.multi-ref-tag:hover {
+    background-color: rgba(25, 118, 210, 0.22);
+}
+
+.multi-ref-tag-remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--md-primary);
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+    font-size: 0.6875rem;
+}
+
+.multi-ref-tag-remove:hover {
+    opacity: 1;
+    color: #f44336;
+}
+
+.multi-ref-tags-placeholder {
+    font-size: 0.8125rem;
+    color: var(--md-text-hint);
+    font-style: italic;
+    line-height: 24px;
+}
+
+/* ========================================
+<<<<<<< issue-360-9f1a1d78c81c
+   File Upload Styles (Inline and Form)
+   ======================================== */
+
+/* Inline editor file upload */
+.inline-editor-file {
+    padding: 8px;
+    min-width: 250px;
+}
+
+/* Form file upload container */
+.form-file-upload {
+    position: relative;
+    width: 100%;
+}
+
+/* File dropzone */
+.file-dropzone {
+    border: 2px dashed var(--md-divider);
+    border-radius: 4px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--md-transition);
+    background-color: var(--md-background);
+}
+
+.file-dropzone:hover {
+    border-color: var(--md-primary);
+    background-color: rgba(25, 118, 210, 0.04);
+}
+
+.file-dropzone.drag-over {
+    border-color: var(--md-primary);
+    background-color: rgba(25, 118, 210, 0.08);
+}
+
+.file-dropzone-text {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--md-text-secondary);
+    font-size: 0.875rem;
+}
+
+.file-select-btn {
+    background-color: var(--md-primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--md-transition);
+}
+
+.file-select-btn:hover {
+    background-color: var(--md-primary-dark);
+}
+
+.file-select-btn:active {
+    background-color: var(--md-primary-dark);
+    transform: scale(0.98);
+}
+
+/* File preview */
+.file-preview {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background-color: var(--md-background);
+    border: 1px solid var(--md-divider);
+    border-radius: 4px;
+    gap: 10px;
+}
+
+.file-name {
+    flex: 1;
+    color: var(--md-text-primary);
+    font-size: 0.875rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-remove-btn {
+    background-color: transparent;
+    color: var(--md-text-secondary);
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: var(--md-transition);
+}
+
+.file-remove-btn:hover {
+    background-color: var(--md-hover);
+    color: var(--md-text-primary);
+}
+
+.file-remove-btn:active {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+/* File cell link */
+.file-cell {
+    color: var(--md-text-primary);
+}
+
+.file-link {
+    color: var(--md-primary);
+    text-decoration: none;
+    transition: var(--md-transition);
+}
+
+.file-link:hover {
+    color: var(--md-primary-dark);
+    text-decoration: underline;
+}
+
+/* Reference field hyperlinks (issue #1404) */
+.ref-value-link {
+    color: var(--md-primary);
+    text-decoration: none;
+    transition: var(--md-transition);
+}
+
+.ref-value-link:hover {
+    color: var(--md-primary-dark);
+    text-decoration: underline;
+}
+
+/* Any-record links — match ref-value-link styling (issue #1887) */
+.any-record-link {
+    color: var(--md-primary);
+    text-decoration: none;
+    transition: var(--md-transition);
+}
+
+.any-record-link:hover {
+    color: var(--md-primary-dark);
+    text-decoration: underline;
+}
+
+/* Hyperlinks in text cells (issue #947) */
+.cell-hyperlink {
+    color: var(--md-primary);
+    text-decoration: none;
+    transition: var(--md-transition);
+    word-break: break-all;
+}
+
+.cell-hyperlink:hover {
+    color: var(--md-primary-dark);
+    text-decoration: underline;
+}
+
+/* Visual feedback for file editing active state */
+td:has(.inline-editor-file) {
+    background-color: rgba(25, 118, 210, 0.08) !important;
+    padding: 4px !important;
+}
+/* =======
+   Export Menu Styles
+   ======================================== */
+
+/* Export button and dropdown styles */
+.integram-table-export-container {
+    position: relative;
+    display: inline-block;
+}
+
+/* Issue #1652: position/top/left are set via JS (toggleExportMenu) after the element
+   is appended to document.body, so it escapes the overflow:hidden clipping of
+   .integram-table-header / .integram-table-controls. */
+.integram-export-menu {
+    position: fixed;
+    background: var(--card-bg, white);
+    border: 1px solid var(--border-color, #dee2e6);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    z-index: 10050;
+    min-width: 200px;
+    font-size: 0.8125rem;
+    color: var(--text-primary, inherit);
+}
+
+.export-menu-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.export-menu-item:hover {
+    background-color: var(--bg-secondary, #f8f9fa);
+}
+
+.export-menu-item:first-child {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+.export-menu-item:last-child {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.export-icon {
+    margin-right: 10px;
+    font-size: 1rem;
+}
+
+/* Checkbox selection mode */
+.integram-table-checkbox-toggle {
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 1rem;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.2s;
+    color: var(--text-secondary, #6c757d);
+}
+
+.integram-table-checkbox-toggle:hover {
+    background-color: var(--md-hover);
+}
+
+.integram-table-checkbox-toggle.active {
+    background-color: var(--md-selected);
+    color: var(--md-primary);
+}
+
+.checkbox-column-header,
+.checkbox-column-cell,
+.checkbox-column-filter {
+    width: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    text-align: center !important;
+    padding: 4px !important;
+}
+
+.checkbox-column-header input[type="checkbox"],
+.checkbox-column-cell input[type="checkbox"] {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
+
+tr.row-selected {
+    background-color: var(--md-selected) !important;
+}
+
+.integram-bulk-delete-btn {
+    margin-left: 4px;
+    font-size: 0.75rem;
+}
+
+.bulk-delete-confirm {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 8px;
+    padding: 4px 8px;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    font-size: 0.8125rem;
+}
+
+.bulk-delete-confirm-btn {
+    font-size: 0.75rem !important;
+}
+
+.bulk-delete-cancel-btn {
+    font-size: 0.75rem !important;
+}
+
+.filter-delete-confirm {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 8px;
+    padding: 4px 8px;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    font-size: 0.8125rem;
+}
+
+.filter-delete-confirm-btn {
+    font-size: 0.75rem !important;
+}
+
+.filter-delete-cancel-btn {
+    font-size: 0.75rem !important;
+}
+
+/* Bulk delete progress */
+.bulk-delete-progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background: var(--bg-secondary, #e0e0e0);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.bulk-delete-progress-bar {
+    height: 100%;
+    background: var(--md-primary, #1976d2);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.bulk-delete-progress-text {
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--md-text-secondary);
+}
+
+/* ========================================
+   Warning Modal Styles (integram-modal-overlay)
+   ======================================== */
+
+.integram-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.integram-modal {
+    background: var(--md-surface, white);
+    border-radius: 4px;
+    box-shadow: var(--md-elevation-4, 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22));
+    max-width: 500px;
+    width: 90%;
+    font-family: inherit;
+}
+
+.integram-modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--md-divider, #e5e5e5);
+}
+
+.integram-modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--md-text-primary, rgba(0, 0, 0, 0.87));
+    letter-spacing: 0.15px;
+}
+
+.integram-modal-body {
+    padding: 24px;
+}
+
+.integram-modal-footer {
+    padding: 16px 24px;
+    text-align: right;
+    border-top: 1px solid var(--md-divider, #e5e5e5);
+}
+
+/* Warning modal link to existing record */
+.integram-modal-link {
+    display: block;
+    margin-top: 12px;
+    color: var(--md-primary, #1976d2);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--md-transition, all 0.3s cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.integram-modal-link:hover {
+    color: var(--md-primary-dark, #1565c0);
+    text-decoration: underline;
+}
+
+/* ========================================
+   Grouping Mode Styles (issue #502)
+   ======================================== */
+
+/* Grouping settings modal */
+.grouping-settings-modal {
+    max-width: 500px;
+}
+
+.grouping-columns-list {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.grouping-column-item {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.grouping-column-item:hover {
+    background-color: var(--md-hover, rgba(0, 0, 0, 0.04));
+}
+
+/* Order badge in grouping settings */
+.grouping-order-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+    background-color: var(--md-primary, #1976d2);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* Group header styles */
+.integram-table th.group-header {
+    background-color: rgba(25, 118, 210, 0.08);
+    border-bottom-color: var(--md-primary, #1976d2);
+}
+
+/* Grouping header badge (order indicator in table header) */
+.grouping-header-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: white;
+    background-color: var(--md-primary, #1976d2);
+    border-radius: 50%;
+    vertical-align: middle;
+}
+
+/* Group cell styles (merged cells on the left)
+ * Issue #531: Group cells use BLUE borders to visually distinguish
+ * grouping columns from regular data columns (which have gray borders).
+ * This visual distinction helps users understand which columns are
+ * being used for data grouping at a glance.
+ */
+.group-cell {
+    background-color: rgba(25, 118, 210, 0.04);
+    font-weight: 500;
+    color: var(--md-text-primary, rgba(0, 0, 0, 0.87));
+    vertical-align: top;
+    border-right: 2px solid var(--md-primary, #1976d2);  /* Blue right border for grouping columns */
+    padding: 12px 16px;
+    position: relative;
+}
+
+/* First group cell has thicker left border
+ * This creates a visual "bracket" effect showing the grouping hierarchy
+ */
+.group-cell:first-child,
+.integram-table td.group-cell:first-of-type {
+    border-left: 3px solid var(--md-primary, #1976d2);  /* Blue left border for grouping columns */
+}
+
+/* Nested grouping levels get slightly different shading */
+.group-cell[data-group-level="1"] {
+    background-color: rgba(25, 118, 210, 0.06);
+}
+
+.group-cell[data-group-level="2"] {
+    background-color: rgba(25, 118, 210, 0.08);
+}
+
+.group-cell[data-group-level="3"] {
+    background-color: rgba(25, 118, 210, 0.10);
+}
+
+/* Ensure proper alignment for grouped rows */
+.integram-table tbody tr:has(.group-cell) {
+    border-top: 1px solid var(--md-divider, rgba(0, 0, 0, 0.12));
+}
+
+/* Sticky group cells for horizontal scrolling */
+.group-cell {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+}
+
+/* Second group cell offset for sticky positioning */
+.group-cell + .group-cell {
+    position: sticky;
+    z-index: 1;
+}
+
+/* Scroll counter in grouping mode */
+.scroll-counter.grouping-mode {
+    background-color: rgba(25, 118, 210, 0.08);
+    border-left: 3px solid var(--md-primary, #1976d2);
+}
+
+/* Compact mode adjustments for grouping */
+.integram-table.compact .group-cell {
+    padding: 6px 10px;
+}
+
+/* Hover state for grouped rows */
+.integram-table tbody tr:has(.group-cell):hover .group-cell {
+    background-color: rgba(25, 118, 210, 0.12);
+}
+
+/* Issue #543: Add button for grouped cells (create record with prefilled grouping attributes) */
+.group-cell {
+    position: relative;
+}
+
+.group-cell-content {
+    display: inline;
+}
+
+.group-cell-add-btn {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--md-primary, #1976d2);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    width: 20px;
+    height: 20px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: bold;
+    line-height: 1;
+    padding: 0;
+    box-shadow: var(--md-elevation-1, 0 1px 3px rgba(0,0,0,0.12));
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    z-index: 3;
+}
+
+.group-cell:hover .group-cell-add-btn {
+    display: flex;
+}
+
+.group-cell-add-btn:hover {
+    background: var(--md-primary-dark, #1565c0);
+    box-shadow: var(--md-elevation-2, 0 2px 6px rgba(0,0,0,0.16));
+}
+
+.group-cell-add-btn:active {
+    background: var(--md-primary-dark, #1565c0);
+    box-shadow: var(--md-elevation-1, 0 1px 3px rgba(0,0,0,0.12));
+    transform: translateY(-50%) scale(0.95);
+}
+
+/* Hidden filter badges container (issue #547)
+ * Displays filters for columns that are not visible in the table
+ */
+.hidden-filter-badges-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 12px;
+    background-color: rgba(255, 193, 7, 0.1);
+    border-bottom: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+/* Individual hidden filter badge */
+.hidden-filter-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    background-color: rgba(255, 193, 7, 0.2);
+    border: 1px solid rgba(255, 193, 7, 0.5);
+    border-radius: 4px;
+    font-size: 0.8125rem;
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.hidden-filter-badge-name {
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.hidden-filter-badge-value {
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: rgba(0, 0, 0, 0.87);
+    background-color: rgba(255, 255, 255, 0.5);
+    padding: 1px 4px;
+    border-radius: 2px;
+}
+
+.hidden-filter-badge-remove {
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.5);
+    line-height: 1;
+    padding: 0 2px;
+    margin-left: 2px;
+    border-radius: 2px;
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.hidden-filter-badge-remove:hover {
+    color: var(--color-error, #d32f2f);
+    background-color: rgba(211, 47, 47, 0.1);
+}
+
+/* ========================================
+   Mobile Responsive Styles (issue #695, #859)
+   Edit form modal doesn't fit on mobile devices
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Edit form modal - remove min-width and use full width on mobile */
+    .edit-form-modal {
+        min-width: auto;
+        width: calc(100% - 16px);
+        max-width: none;
+        left: 8px !important;
+        right: 8px;
+        transform: translateY(-50%) !important;
+        max-height: 90vh;
+    }
+
+    /* Expanded modal on mobile - use full width */
+    .edit-form-modal.expanded {
+        max-width: none;
+        width: calc(100% - 16px);
+    }
+
+    /* Edit form header - smaller padding on mobile */
+    .edit-form-header {
+        padding: 16px;
+    }
+
+    /* Edit form header title - smaller font on mobile */
+    .edit-form-header h3 {
+        font-size: 1.125rem;
+    }
+
+    /* Edit form header title row - wrap on mobile */
+    .edit-form-header-title-row {
+        gap: 8px;
+    }
+
+    /* Edit form body - smaller padding on mobile */
+    .edit-form-body {
+        padding: 8px;
+    }
+
+    /* Edit form footer - adjust layout for mobile */
+    .edit-form-footer {
+        padding: 12px 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    /* Edit form footer buttons - smaller padding on mobile */
+    .edit-form-footer .btn {
+        padding: 8px 16px;
+        font-size: 0.8125rem;
+        min-height: 36px;
+    }
+
+    /* Form field settings modal - full width on mobile */
+    .form-field-settings-modal {
+        width: calc(100% - 16px);
+        max-width: none;
+        left: 8px;
+        right: 8px;
+        transform: translateY(-50%);
+    }
+
+    /* Subordinate form modal - full width on mobile */
+    .subordinate-form-modal {
+        max-width: none;
+        width: calc(100% - 16px);
+    }
+
+    /* Column settings modal - full width on mobile */
+    .column-settings-modal {
+        width: calc(100% - 16px);
+        max-width: none;
+    }
+
+    /* Grouping settings modal - full width on mobile */
+    .grouping-settings-modal {
+        max-width: none;
+        width: calc(100% - 16px);
+    }
+}
+
+/* ========================================
+   Add New Row Button and Styles (issue #807)
+   ======================================== */
+
+/* Add row button in scroll counter area */
+.add-row-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 22px;
+    margin-right: 8px;
+    padding: 0 8px;
+    border: none;
+    border-radius: 4px;
+    background: var(--button-primary, #3b82f6);
+    color: white;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    vertical-align: middle;
+}
+
+.add-row-btn:hover {
+    background: var(--button-primary-hover, #2563eb);
+}
+
+.add-row-btn:active {
+    background: var(--button-primary-hover, #2563eb);
+    transform: scale(0.98);
+}
+
+.add-row-btn i {
+    font-size: 0.75rem;
+}
+
+/* Paste data button in scroll counter area (issue #1608) */
+.paste-data-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 22px;
+    margin-right: 8px;
+    padding: 0 8px;
+    border: 1px solid var(--button-secondary, #6b7280);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--button-secondary, #6b7280);
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    vertical-align: middle;
+}
+
+.paste-data-btn:hover {
+    background: rgba(107, 114, 128, 0.1);
+    border-color: var(--button-secondary-hover, #4b5563);
+    color: var(--button-secondary-hover, #4b5563);
+}
+
+.paste-data-btn:active {
+    background: rgba(107, 114, 128, 0.15);
+    border-color: var(--button-secondary-hover, #4b5563);
+    color: var(--button-secondary-hover, #4b5563);
+    transform: scale(0.98);
+}
+
+.paste-data-btn i {
+    font-size: 0.75rem;
+}
+#paste-data-textarea {
+    padding: 3px;
+}
+
+/* Preview button in paste data dialog (issue #1684) */
+.btn-preview {
+    background-color: #f97316;
+    border: 1px solid #f97316;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 4px 12px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-preview:hover {
+    background-color: #ea6d0e;
+    border-color: #ea6d0e;
+}
+
+.btn-preview:active {
+    background-color: #c75d0b;
+    border-color: #c75d0b;
+    transform: scale(0.98);
+}
+
+/* Preview modal wider to show table (issue #1684) */
+.paste-data-preview-modal {
+    min-width: 700px;
+    max-width: 95vw;
+}
+
+.paste-data-preview-body {
+    overflow: auto;
+    max-height: 60vh;
+}
+
+/* Paste data preview table (issue #1684) */
+.paste-data-preview-table-wrap {
+    overflow-x: auto;
+}
+
+.paste-data-preview-table {
+    border-collapse: collapse;
+    width: auto;
+    font-size: 0.85rem;
+}
+
+.paste-data-preview-table thead th {
+    background-color: var(--md-surface-variant, #f3f4f6);
+    border: 1px solid var(--md-outline, #d1d5db);
+    font-weight: 600;
+    padding: 5px 8px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.paste-data-preview-table tbody td {
+    border: 1px solid var(--md-outline, #d1d5db);
+    padding: 2px 4px;
+}
+
+.paste-preview-cell {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 0.85rem;
+    min-width: 80px;
+    outline: none;
+    padding: 2px 4px;
+    width: 100%;
+}
+
+.paste-preview-cell:focus {
+    background: var(--md-surface, #fff);
+    border-color: var(--md-primary, #1976d2);
+}
+
+/* New row editing state */
+.new-row-editing {
+    background-color: rgba(25, 118, 210, 0.04);
+}
+
+/* Required fields in new row (pale background) */
+.required-field-new-row {
+    background-color: rgba(211, 47, 47, 0.08) !important;
+}
+
+/* Disabled cells in new row (non-first columns before save) */
+.new-row-cell-disabled {
+    background-color: rgba(0, 0, 0, 0.02);
+    color: var(--md-text-hint);
+    cursor: not-allowed;
+}
+
+.new-row-cell-disabled:hover {
+    background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* ========================================
+   Dark Theme Overrides for IntegramTable
+   ======================================== */
+
+[data-theme="dark"] {
+    /* Override Material Design variables for dark theme */
+    --md-text-hint: rgba(255, 255, 255, 0.38);
+    --md-hover: rgba(255, 255, 255, 0.06);
+    --md-selected: rgba(96, 165, 250, 0.15);
+}
+
+/* Boolean check/uncheck icons */
+[data-theme="dark"] .boolean-check,
+[data-theme="dark"] .subordinate-table .boolean-check {
+    color: #4ade80;
+}
+
+[data-theme="dark"] .boolean-uncheck,
+[data-theme="dark"] .subordinate-table .boolean-uncheck {
+    color: #6b7280;
+}
+
+/* Toast info - needs dark override since light blue isn't themed via variables */
+[data-theme="dark"] .integram-toast-info {
+    background: #1e3a5f;
+    color: #93c5fd;
+    border-left-color: #3b82f6;
+}
+
+/* Bulk delete warning confirmation */
+[data-theme="dark"] .bulk-delete-confirm {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.5);
+    color: var(--text-primary, #e9ecef);
+}
+
+[data-theme="dark"] .filter-delete-confirm {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.5);
+    color: var(--text-primary, #e9ecef);
+}
+
+/* Hidden filter badge warning (unsaved-changes) */
+[data-theme="dark"] .hidden-filter-badge-warning {
+    background-color: rgba(255, 193, 7, 0.2);
+    border: 1px solid rgba(255, 193, 7, 0.5);
+}
+
+[data-theme="dark"] .hidden-filter-badge-warning .hidden-filter-col-name,
+[data-theme="dark"] .hidden-filter-badge-warning .hidden-filter-value {
+    color: var(--text-primary, #e9ecef);
+}
+
+[data-theme="dark"] .hidden-filter-badge-warning .hidden-filter-remove {
+    color: var(--color-error, #f87171);
+}
+
+/* Delete row confirmation area */
+[data-theme="dark"] td.delete-confirm-cell {
+    background: rgba(244, 67, 54, 0.15);
+    color: var(--color-error, #f87171);
+}
+
+/* Quick add column header hover */
+[data-theme="dark"] .add-column-header-cell:hover {
+    background: rgba(96, 165, 250, 0.15);
+    color: var(--md-primary, #60a5fa);
+}
+
+/* Filter clear button hover */
+[data-theme="dark"] .filter-ref-clear:hover {
+    background: rgba(248, 113, 113, 0.15);
+    color: #f87171;
+}
+
+/* Hidden filter badges - text colors need override since they use rgba(0,0,0,...) */
+[data-theme="dark"] .hidden-filter-badge {
+    color: var(--text-primary, #e9ecef);
+}
+
+[data-theme="dark"] .hidden-filter-badge-name {
+    color: var(--text-primary, #e9ecef);
+}
+
+[data-theme="dark"] .hidden-filter-badge-value {
+    color: var(--text-primary, #e9ecef);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .hidden-filter-badge-remove {
+    color: var(--text-secondary, #adb5bd);
+}
+
+[data-theme="dark"] .hidden-filter-badge-remove:hover {
+    color: var(--color-error, #f87171);
+    background-color: rgba(248, 113, 113, 0.15);
+}
+
+/* Table header (th) — explicit dark background override (issue #1593) */
+[data-theme="dark"] .integram-table th {
+    background-color: var(--bg-secondary, #2d2d2d);
+    border-right-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Filter row — fix column separator color on dark background (issue #1593) */
+[data-theme="dark"] .filter-row td {
+    border-right-color: rgba(255, 255, 255, 0.06);
+}

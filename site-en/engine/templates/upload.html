@@ -1,0 +1,1734 @@
+<link rel="stylesheet" href="/css/bootstrap4.5.2.min.css">
+<h3 class="mt-2" style="font-size: 20px; font-weight: 500; color: var(--md-text-primary); letter-spacing: 0.15px;">Universal file upload</h3>
+<style>
+#choice {
+	margin-top: 1.5rem;
+}
+.dict {
+    display: inline-block;
+    padding: 5px 5px;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    margin-bottom: 5px;
+    margin-right: -1px;
+    font-size: small;
+}
+.base-type {
+    color: var(--text-secondary);
+}
+.has-formula {
+    border-bottom: 5px solid green;
+}
+.du {
+    border-bottom: 1px dotted currentColor;
+    text-decoration: none;
+}
+.search-results{
+    border: 1px solid var(--border-color);
+    position: absolute;
+    padding: .5rem 0;
+    background-color: var(--bg-primary);
+    display: none;
+    z-index: 2;
+}
+.auto-parent{
+    width: 70px;
+}
+.auto-parent{
+    -moz-appearance:textfield;
+}
+.auto-parent::-webkit-outer-spin-button,
+.auto-parent::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+input[type="checkbox"] {
+    accent-color: var(--button-primary);
+}
+.upload-file-label {
+    display: inline-block;
+    padding: .375rem .75rem;
+    cursor: pointer;
+}
+.cell-error {
+    background-color: var(--cell-error-bg, var(--color-warning-bg, #ffc107));
+}
+.cell-success {
+    background-color: var(--cell-success-bg, var(--color-success-bg, #d4edda));
+}
+.cell-empty {
+    background-color: var(--bg-secondary);
+}
+
+#preview td, #1st2 td {
+    white-space: pre-line;
+    vertical-align: top;
+}
+.upload-tune-bg {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+.upload-log-bg {
+    background-color: #343a40;
+    color: #fff;
+}
+[data-theme="dark"] .upload-log-bg {
+    background-color: #1a1a1a;
+}
+.upload-progress-bg {
+    background-color: #17a2b8;
+    color: #fff;
+}
+[data-theme="dark"] .upload-progress-bg {
+    background-color: #0e6f81;
+}
+.upload-errors-bg {
+    background-color: var(--color-danger, #dc3545);
+    color: #fff;
+}
+.preview-copy-action {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    margin-left: .5rem;
+    vertical-align: middle;
+}
+.preview-copy-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .15rem .25rem;
+    border: 0;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    line-height: 1;
+}
+.preview-copy-icon:hover,
+.preview-copy-icon:focus {
+    color: var(--text-primary);
+}
+.preview-copy-icon:disabled {
+    opacity: .5;
+    cursor: default;
+}
+.preview-copy-status {
+    font-size: .75rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+}
+.preview-copy-status.success {
+    color: var(--color-success, #28a745);
+}
+.preview-copy-status.error {
+    color: var(--color-danger, #dc3545);
+}
+[data-theme="dark"] .upload-errors-bg {
+    background-color: var(--color-error-bg, #7f1d1d);
+    color: var(--color-error, #f87171);
+    border: 1px solid var(--color-error, #f87171);
+}
+[data-theme="dark"] #tune input[type="text"],
+[data-theme="dark"] #tune input[type="number"] {
+    background-color: var(--input-bg, #2d2d2d);
+    border-color: var(--input-border, #495057);
+    color: var(--text-primary, #e9ecef);
+}
+[data-theme="dark"] #tune input[type="text"]::placeholder,
+[data-theme="dark"] #tune input[type="number"]::placeholder {
+    color: var(--text-secondary, #adb5bd);
+}
+
+.xlsx-grid-wrap { max-height: 340px; overflow: auto; border: 1px solid var(--border-color, #dee2e6); border-radius: 4px; }
+table.xlsx-grid { border-collapse: collapse; font-size: .8rem; white-space: nowrap; }
+table.xlsx-grid th { position: sticky; top: 0; background: var(--bg-secondary, #f1f5f9); color: var(--text-secondary, #6c757d); font-weight: 600; padding: 2px 6px; border: 1px solid var(--border-color, #dee2e6); z-index: 1; }
+table.xlsx-grid tbody th { left: 0; z-index: 2; }
+table.xlsx-grid td { padding: 2px 6px; border: 1px solid var(--border-color, #dee2e6); cursor: pointer; max-width: 180px; overflow: hidden; text-overflow: ellipsis; color: var(--text-primary, #212529); }
+table.xlsx-grid td.xr { background: rgba(13, 110, 253, .14); }
+table.xlsx-grid td.xs { outline: 2px solid var(--color-primary, #0d6efd); outline-offset: -2px; font-weight: 600; }
+table.xlsx-grid td.xe { box-shadow: inset 0 0 0 2px var(--color-success, #28a745); }
+table.xlsx-grid td:hover { background: rgba(13, 110, 253, .22); }
+
+.xlsx-area-header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.xlsx-area-header-title { flex: 1; }
+.xlsx-area-toggle { background: none; border: none; padding: 2px 6px; cursor: pointer; color: var(--text-secondary, #6c757d); font-size: .85rem; line-height: 1; border-radius: 3px; }
+.xlsx-area-toggle:hover { background: var(--bg-secondary, #f1f5f9); color: var(--text-primary, #212529); }
+#xlsx-area.xlsx-collapsed #xlsx-area-body { display: none; }
+#xlsx-area.xlsx-collapsed .xlsx-area-header { margin-bottom: 0 !important; }
+</style>
+<script src="/js/jquery3.1.1.min.js"></script>
+<script src="/js/jquery-ui1.12.1.min.js"></script>
+<script src="/js/js.js"></script>
+<div id="choice">
+    <select class="form-control reps" onchange="if(this.value==='new')createType();else intApi('GET','object/'+this.value+'?JSON','type')" id="chosenType">
+        <option id="dummy"></option>
+        <option id="from_file" value="new"></option>
+    </select>
+    <select class="form-control" onchange="if(this.value!=='')applySet(this.value)" id="settings">
+        <option id="saved_set"></option>
+    </select>
+</div>
+<div id="input-area" class="m-1" style="display:none">
+    <table>
+        <tr><td class="pr-2"><a href="/{_global_.z}/{_global_.action}" title="Back to table selection"><i class="pi pi-arrow-left" style="font-size: 1.25rem; color: var(--text-secondary);"></i></a></td><td class="pt-2"><h4 id="chosen"></h4></td></tr>
+    </table>
+    <div class="mb-5 p-1 p-sm-2 shadow">
+        <div>Paste text from a file into this field or choose a file to upload:
+        <textarea rows="5" class="form-control mb-2 mt-1" id="input"></textarea>
+        JSON or any text file (CSV, TXT, etc.), as well as Excel (XLSX/XLS) — for Excel, you'll be asked to pick a sheet and a starting cell.
+		</div>
+		<div>
+        <label class="btn btn-outline-secondary upload-file-label mb-2"><i class="pi pi-upload"></i> Choose file<input type="file" id="selectFiles" style="display:none" /></label>
+        <span id="selectedFileName" style="margin-left: 0.5rem; color: var(--text-secondary);"></span>
+		</div>
+        <div class="mt-2">
+            <label for="selectLink" class="mb-1" style="color: var(--text-secondary);">…or enter a link to the file:</label>
+            <input class="form-control" type="text" id="selectLink" placeholder="https://example.com/data.csv" />
+        </div>
+		<br />
+        <div class="d-inline-block pb-3" id="try"><button onclick="importParse()" class="btn btn-primary">Check</button></div>
+        <div class="d-inline-block pb-3"><button onclick="$('#tune').toggle()" id="tune-btn" class="btn btn-outline-secondary">Configure</button></div>
+    </div>
+    <div id="tune" class="upload-tune-bg mb-5 pl-1 pl-sm-2 pr-1 pr-sm-2 pb-2 pt-3 shadow" style="display:none; border-top: 1px solid var(--border-color);">
+        <h5>Import settings</h5>
+        <div class="d-inline-block pb-1 mr-4 pt-1">
+            <label><input id="header" type="checkbox">&nbsp;First row contains headers</label><br />
+            <label><input id="trim" type="checkbox" checked>&nbsp;Trim leading and trailing spaces</label>
+        </div>
+        <div class="d-inline-block pb-1 mr-4 pt-1">Field delimiter <input type="text" id="delim" size="4" placeholder="auto"> <a onclick="$('#delim').val('\t');$('#upload').hide();$('#refresh').show();" style="border-bottom: 1px dashed">TAB</a></div>
+        <div class="d-inline-block pb-1 mr-4 pt-1">Line delimiter <input type="text" id="caret" size="4" placeholder="auto"></div>
+        <div class="d-inline-block pb-1 mr-4 pt-1">Encoding
+            <select class="form-control form-control-sm" onchange="resetEncoding()" id="encoding">
+                <option value="utf-8">UTF-8</option>
+                <option value="windows-1251">Windows-1251</option>
+            </select>
+        </div>
+        <div id="sample" style="/*overflow-x: auto;*/ display:none" class="mt-1">
+            First two lines of the file:
+            <table class="table-sm table-bordered mb-3"><tbody id="1st2"></tbody></table>
+        </div>
+        <br /><span id="order">You can set the field order as it appears in your file:</span><br />
+        <div id="sortable" style="white-space: nowrap; display: flex; /*overflow-x: auto*/" class="mt-1"></div>
+        <p onclick="$(this).hide();$('#formula').show()" id="formula-cap"><a id="edit-formulas" style="border-bottom: 1px dashed">Formulas for calculating fields</a></p>
+        <div class="input-group mb-3" id="formula" style="display: none;">
+            <div class="input-group-prepend">
+                <select class="form-control" onchange="markSelected(this.value)" id="fields">
+                </select>
+            </div>
+            <input type="text" placeholder="Enter a formula to calculate the field" class="form-control" id="set-formula">
+            <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" onclick="doSaveFormula()" id="set-formula-btn">Save</button>
+            </div>
+        </div>
+        <div class="pb-1 mr-4 pt-1" id="unique-cap" style="display:none">
+            <label title="Identical independent objects cannot be added (does not apply to requisites)">
+                <input id="unique" type="checkbox">&nbsp;Make the first column of the table unique
+            </label>
+        </div>
+        <div class="row" id="save-set-form">
+            <div class="col-12 col-sm-8 col-md-6 col-lg-5">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" value="New" id="save-set">
+                    <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="doSaveSet()" id="save-set-btn">Save settings</button>
+                    <button class="btn btn-outline-secondary" id="save-set-wait" style="display:none"><img src="/i/ajax.gif"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="log" class="upload-log-bg overflow-auto small shadow-sm p-2 mb-2" style="max-height: 100px; display:none"></div>
+    <div id="xlsx-area" class="mb-4 p-2 p-sm-3 shadow" style="display:none">
+        <div class="xlsx-area-header mb-2">
+            <span class="xlsx-area-header-title"><b>Excel file.</b> Choose a sheet and click the <b>starting cell</b> — data to the right of and below it will be used. <b>Shift+click</b> another cell to set the right/bottom boundary.</span>
+            <button type="button" class="xlsx-area-toggle" onclick="xlsxToggleArea()" title="Collapse / expand panel">&#9650;</button>
+        </div>
+        <div id="xlsx-area-body">
+            <div class="mb-2 d-flex align-items-center" style="gap:.75rem;flex-wrap:wrap">
+                <label class="mb-0">Sheet:&nbsp;<select id="xlsx-sheet" class="form-control d-inline-block" style="width:auto;min-width:140px"></select></label>
+                <span id="xlsx-info" class="small" style="color:var(--text-secondary)"></span>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="xlsxClearLimits()">Reset boundaries</button>
+            </div>
+            <div id="xlsx-sheets-note" class="small mb-2 p-2" style="display:none;border:1px solid var(--bs-warning,#ffc107);border-radius:4px;background:rgba(255,193,7,.12)"></div>
+            <div id="xlsx-grid" class="xlsx-grid-wrap"></div>
+            <div class="mt-2"><button type="button" class="btn btn-primary" onclick="applyXlsxRange()">Apply range</button></div>
+        </div>
+    </div>
+    <div id="progress" class="upload-progress-bg shadow p-2" style="display:none"></div>
+    <div id="errors" class="upload-errors-bg p-2 mt-1" style="display:none"></div>
+    <div class="pb-3" id="refresh" style="display:none"><button onclick="importParse();" class="btn btn-outline-secondary">Refresh</button></div>
+    <div id="upload" style="display:none">
+        <button onclick="$('#do-upload,.confirm').toggle()" class="btn btn-warning" id="do-upload">Upload</button>
+        <button onclick="$('#do-upload,.confirm').toggle()" class="btn btn-outline-secondary confirm" style="display:none">Cancel</button>
+        <button onclick="$('#do-upload,.confirm').toggle();$('#upload').hide();doImport()" class="btn btn-warning confirm" style="display:none">Yes, upload</button>
+        <button onclick="$('#stats').toggle()" class="btn btn-outline-secondary" id="show-stats">Statistics</button>
+    </div>
+    <div id="stats" class="pl-1 pr-1 pt-3 pb-1 mt-3 mb-4 shadow" style="display:none"></div>
+    <div id="up" class="mt-4" style="display:none">
+        <div class="d-inline-block">
+            Select the parent record for the upload
+            <input type="text" id="searchParent" class="form-control" onfocusout="validateParent()" onfocus="searchDb(event)" onkeyup="searchDb(event)" placeholder="Search by value or #ID">
+            <div class="search-results shadow-lg"></div>
+            <p class="mt-2">
+                or specify the source file column to take the parent or its ID from:
+                <input style="display: none;" />
+                <table>
+                    <tr>
+                        <td><input type="number" name="ap" class="form-control auto-parent" onchange="setAutoParent(this.value)" min="0" autocomplete="off" placeholder="N" />
+                        <td class="pl-3 pt-2"><label><input id="createParent" type="checkbox">&nbsp;Create the parent if it doesn't exist</label>
+                    </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="resume" class="mt-4"></div>
+    <div id="preview" style="/*overflow-x: auto*/" class="mt-3 mb-5"></div>
+</div>
+<script src="/js/papaparse5.3.1.min.js"></script>
+<script>
+function showNotification(message, type) {
+    type = type || 'info';
+    var existing = document.querySelectorAll('.integram-toast');
+    for (var i = 0; i < existing.length; i++) existing[i].remove();
+    var toast = document.createElement('div');
+    toast.className = 'integram-toast integram-toast-' + type;
+    toast.textContent = message;
+    var style = getComputedStyle(document.documentElement);
+    var errorColor = style.getPropertyValue('--color-danger').trim() || '#dc3545';
+    var successColor = style.getPropertyValue('--color-success').trim() || '#28a745';
+    var infoColor = '#17a2b8';
+    var bgColor = type === 'error' ? errorColor : type === 'success' ? successColor : infoColor;
+    toast.style.cssText = 'position:fixed;top:20px;right:20px;padding:12px 24px;border-radius:4px;color:white;z-index:10000;font-family:sans-serif;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.2);cursor:pointer;background-color:' + bgColor + ';';
+    document.body.appendChild(toast);
+    var remove = function() { if (toast.parentNode) toast.remove(); };
+    setTimeout(remove, 5000);
+    toast.addEventListener('click', remove);
+}
+var previewCopyStatusTimer;
+function normalizePreviewClipboardText(text) {
+    return String(text == null ? '' : text).replace(/[\r\n\t]+/g, ' ').trim();
+}
+function previewCellClipboardText(cell) {
+    if(!cell)
+        return '';
+    var copyText = cell.getAttribute ? cell.getAttribute('data-copy-text') : null;
+    if(copyText !== null)
+        return normalizePreviewClipboardText(copyText);
+    return normalizePreviewClipboardText(cell.textContent || '');
+}
+function previewCellColSpan(cell) {
+    if(!cell)
+        return 1;
+    var raw = cell.getAttribute ? cell.getAttribute('colspan') : cell.colSpan;
+    var span = parseInt(raw, 10);
+    return span > 1 ? span : 1;
+}
+function buildPreviewTableTsv(table) {
+    if(!table && typeof document !== 'undefined')
+        table = document.querySelector('#preview table');
+    if(!table)
+        return '';
+    var rows = table.querySelectorAll('tr'), out = [], cells, row, i, j, k, span;
+    for(i=0;i<rows.length;i++){
+        cells = rows[i].querySelectorAll('th,td');
+        row = [];
+        for(j=0;j<cells.length;j++){
+            row.push(previewCellClipboardText(cells[j]));
+            span = previewCellColSpan(cells[j]);
+            for(k=1;k<span;k++)
+                row.push('');
+        }
+        out.push(row.join('\t'));
+    }
+    return out.join('\n');
+}
+function previewCopyActionHtml() {
+    return '<span id="preview-actions" class="preview-copy-action">'
+        + '<button type="button" class="preview-copy-icon" id="copy-preview-table" onclick="copyPreviewTable()" title="Copy all preview rows for pasting into Excel" aria-label="Copy table">'
+        + '<i class="pi pi-copy" aria-hidden="true"></i></button>'
+        + '<span id="copy-preview-status" class="preview-copy-status small" aria-live="polite"></span>'
+        + '</span>';
+}
+function appendPreviewTsvText(row, text) {
+    row.push(normalizePreviewClipboardText(text));
+}
+function buildPreviewImportHeaderRow() {
+    var row = [], i, parentName;
+    if(typeof autoParent !== 'undefined' && autoParent){
+        parentName = typeof getParent === 'function' ? getParent(chosenType) : '';
+        appendPreviewTsvText(row, parentName);
+    }
+    if(typeof sourceMap === 'undefined' || !sourceMap)
+        return row;
+    for(i in sourceMap)
+        if(sourceMap[i] && sourceMap[i].skip===0)
+            appendPreviewTsvText(row, sourceMap[i].name);
+    return row;
+}
+function previewImportColumnIndex(sourceIndex) {
+    var jMap, parsed;
+    if(typeof chosenType === 'undefined' || chosenType===undefined)
+        return sourceIndex;
+    if(typeof sourceMap === 'undefined' || !sourceMap[sourceIndex])
+        return sourceIndex;
+    jMap = typeof origMap !== 'undefined' && origMap ? origMap[sourceMap[sourceIndex].id] : sourceIndex;
+    if(typeof autoParent !== 'undefined' && autoParent){
+        parsed = parseInt(jMap, 10);
+        return isNaN(parsed) ? jMap : parsed + 1;
+    }
+    return jMap;
+}
+function previewImportCellText(rowIndex, columnIndex) {
+    var errKey = rowIndex + '-' + columnIndex;
+    if(typeof evalErrs !== 'undefined' && evalErrs && evalErrs[errKey])
+        return serializeUploadCellValue(evalErrs[errKey].err);
+    if(typeof toImport === 'undefined' || !toImport || !toImport[rowIndex])
+        return '';
+    return serializeUploadCellValue(toImport[rowIndex][columnIndex]);
+}
+function buildPreviewImportTsv(fallbackTable) {
+    var header = buildPreviewImportHeaderRow(), out = [], row, i, j, jMap, hasRows = false;
+    if(header.length===0)
+        return buildPreviewTableTsv(fallbackTable);
+    out.push(header.join('\t'));
+    if(typeof toImport === 'undefined' || !toImport)
+        return fallbackTable ? buildPreviewTableTsv(fallbackTable) : out.join('\n');
+    for(i=1;i<toImport.length;i++){
+        if(toImport[i]===undefined)
+            continue;
+        hasRows = true;
+        row = [];
+        if(typeof autoParent !== 'undefined' && autoParent)
+            appendPreviewTsvText(row, toImport[i][0]);
+        for(j in sourceMap)
+            if(sourceMap[j] && sourceMap[j].skip===0){
+                jMap = previewImportColumnIndex(j);
+                appendPreviewTsvText(row, previewImportCellText(i, jMap));
+            }
+        out.push(row.join('\t'));
+    }
+    if(!hasRows && fallbackTable)
+        return buildPreviewTableTsv(fallbackTable);
+    return out.join('\n');
+}
+function setPreviewCopyStatus(message, type) {
+    var status = document.getElementById('copy-preview-status');
+    if(!status)
+        return;
+    window.clearTimeout(previewCopyStatusTimer);
+    status.textContent = message || '';
+    status.className = 'preview-copy-status small' + (type ? ' ' + type : '');
+    if(message)
+        previewCopyStatusTimer = window.setTimeout(function(){
+            status.textContent = '';
+            status.className = 'preview-copy-status small';
+        }, 2500);
+}
+function fallbackCopyPreviewText(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+}
+function writePreviewClipboardText(text) {
+    if(navigator.clipboard && navigator.clipboard.writeText)
+        return navigator.clipboard.writeText(text).catch(function(){
+            fallbackCopyPreviewText(text);
+        });
+    fallbackCopyPreviewText(text);
+    return Promise.resolve();
+}
+function copyPreviewTable() {
+    var table = document.querySelector('#preview table');
+    var text = buildPreviewImportTsv(table);
+    var btn = document.getElementById('copy-preview-table');
+    if(text === ''){
+        setPreviewCopyStatus('No table to copy', 'error');
+        showNotification('No table to copy', 'error');
+        return false;
+    }
+    if(btn)
+        btn.disabled = true;
+    writePreviewClipboardText(text).then(function(){
+        setPreviewCopyStatus('Copied', 'success');
+        showNotification('Entire table copied', 'success');
+        if(btn)
+            btn.disabled = false;
+    }, function(){
+        setPreviewCopyStatus('Copy failed', 'error');
+        showNotification('Could not copy the table', 'error');
+        if(btn)
+            btn.disabled = false;
+    });
+    return false;
+}
+var input,sourceMap=[],importMap={},chosenType,chosenTypeName,chosenSet,upType,uploadSets={},toImport=[],saveSet,formulas={},statArr={},origMap={}
+    ,types={},bt={},revBt={},toCreate=[],newType,chunkSize=1000,autoParent
+    ,ajax='<img src="/i/ajax.gif">'
+    ,typeOption='<option value=":id:" id=":id:">:name:</option>'
+    ,counter=1;
+$('#dummy').html('Select a table to upload to');
+$('#from_file').html('*** Create a new table from file ***');
+$('#saved_set').html('or choose saved settings');
+$('title').html('Universal import');
+function resetEncoding(){
+    if(chosenType===undefined)
+        $('#sortable').html('');
+    importParse();
+}
+function setAutoParent(par){
+    autoParent=par===''?undefined:par;
+    if(autoParent){
+        $('#searchParent').val('');
+        $('#do-upload').attr('disabled',false);
+    }
+    else
+        $('.auto-parent').val('');
+    gatherSet();
+    importParse();
+}
+function validateParent(){
+    const el=$('#searchParent');
+    if(el.attr('up-name')&&el.value!==$(el).attr('up-name')){
+        el.value=$(el).attr('up-name');
+        setAutoParent();
+    }
+}
+function createType(count){
+    intApi('GET','edit_types?JSON','base');
+    $('#chosen').html('New');
+    $('#order').html('You can set up the fields as they will be saved in the database:');
+    $('#choice').remove();
+    $('#input-area,#unique-cap').show();
+    $('#header').prop('checked',true);
+    $('#save-set-form').hide();
+    byId('chosen').title='The table name is set as the first column in the settings table below';
+}
+function doCreateType(){
+    var i,j,k,req,ok=true,chosenTypeBase;
+    for(i in sourceMap)
+        if(sourceMap[i].skip===0){
+            chosenTypeName=$('#n'+sourceMap[i].id).val(); // The table name might be renamed
+            chosenTypeBase=sourceMap[i].base;
+            break;
+        }
+    if(chosenTypeBase===undefined){
+        putMsg('errors','No columns selected - nothing to create',true);
+        return;
+    }
+    for(j in types.val)
+        if(types.val[j].toLowerCase()===chosenTypeName.toLowerCase()&&types.t[j]===chosenTypeBase)
+            if(types.req_id[j]===''){
+                putMsg('log','Term'+' <b>'+chosenTypeName+'</b> ('+bt[chosenTypeBase]+') '+'found'+' ('+newType+')',true);
+                newType=types.id[j];
+                for(k in types.req_id)
+                    if(types.req_t[k]==newType){
+                        putMsg('errors','Term'+' <b>'+chosenTypeName+'</b> ('+bt[chosenTypeBase]+') '+'found and is a column of table'+' <b>'+types.val[k]
+                                        +'</b>. <a class="du text-white" onclick="$(\'#n0\').focus()">'+'Rename it'+'</a>',true);
+                        newType=undefined;
+                        return;
+                    }
+                break;
+            }
+            else{
+                putMsg('errors','Table'+' <b>'+chosenTypeName+'</b> ('+bt[chosenTypeBase]+') '
+                        +'found and has columns. Upload the data to the existing table or'
+                        +' <a class="du text-white" onclick="$(\'.ui-state-default input\')[0].focus()">'+'change the name'+'</a>',true);
+                return;
+            }
+    for(i in sourceMap)
+        if(sourceMap[i].skip===0)
+            for(j in sourceMap)
+                if(i!==j&&sourceMap[i].name===sourceMap[j].name&&sourceMap[j].skip===0){
+                    putMsg('errors','Duplicate column names found'+': <b>'+sourceMap[j].name+'</b>'
+                            +', <a class="du text-white" onclick="$(\'#n'+j+'\').focus()">'+'rename them'+'</a>.',true);
+                    return;
+                }
+    while(toCreate.length)
+        toCreate.shift();
+    if(newType===undefined)
+        toCreate.push({url:'_d_new/?JSON&t='+chosenTypeBase+($('#unique').prop('checked')?'&unique=1':''),next:'parent',par:'val='+chosenTypeName
+                        ,msg:'Created table'+' <b>'+chosenTypeName+'</b> ('+bt[chosenTypeBase]+')'});
+    for(i in sourceMap)
+        if(sourceMap[i].skip===0){
+            if(sourceMap[i].name===''){
+                putMsg('errors','The name of a new table or column cannot be empty',true);
+                return;
+            }
+            i++;
+            for(j in sourceMap)
+                if(j>=i)
+                    if(sourceMap[j].skip===0){
+                        req=ref=undefined;
+                        if(sourceMap[j].name===''){
+                            ok=false;
+                            putMsg('errors','The name of a new column cannot be empty'+' #'+j,true);
+                        }
+                        for(k in types.val)
+                            if(types.val[k].toLowerCase().trim()===sourceMap[j].name.toLowerCase().trim()&&types.t[k]===sourceMap[j].base){
+                                req=types.id[k];
+                                if(types.req_id[k]!==''&&sourceMap[j].link===0){
+                                    putMsg('errors','Table already exists: <b>'+sourceMap[j].name+'</b> ('+bt[sourceMap[j].base]+')'
+                                            +'. <a class="du text-white" onclick="$(\'#n'+j+'\').focus()">'+'Rename this column'+'</a>.'
+                                        ,true);
+                                    return;
+                                }
+                            }
+                        if(req===undefined){
+                            toCreate.push({url:'_d_new/?JSON&t='+sourceMap[j].base,next:'postTypes',par:'val='+sourceMap[j].name,msg:'Added term '+sourceMap[j].name});
+                            if(sourceMap[j].link>0)
+                                toCreate.push({url:'_d_ref/:obj:?JSON',next:'postTypes',msg:'Reference to'+' '+sourceMap[j].name});
+                            toCreate.push({url:'_d_req/:parent:?JSON&t=:obj:'+(sourceMap[j].link===2?'&multiselect=1':'')
+                                        ,next:'postTypes',msg:'Added column'+' '+sourceMap[j].name});
+                        }
+                        else{
+                            putMsg('log','Will use term'+' '+sourceMap[j].name,true);
+                            if(sourceMap[j].link>0){
+                                for(k in types.ref_val)
+                                    if(types.ref_val[k]===req){
+                                        ref=types.id[k];
+                                        toCreate.push({url:'_d_req/:parent:?JSON&t='+ref+(sourceMap[j].link===2?'&multiselect=1':'')
+                                                    ,next:'postTypes',msg:'Used reference to'+' <b>'+sourceMap[j].name+'</b>'});
+                                        break;
+                                    }
+                                if(ref===undefined){
+                                    toCreate.push({url:'_d_ref/'+req+'?JSON',next:'postTypes',msg:'Reference to'+' '+sourceMap[j].name});
+                                    toCreate.push({url:'_d_req/:parent:?JSON&t=:obj:'+(sourceMap[j].link===2?'&multiselect=1':'')
+                                                ,next:'postTypes',msg:'Column'+' '+sourceMap[j].name+' added'});
+                                }
+                            }
+                            else
+                                toCreate.push({url:'_d_req/:parent:?JSON&t='+req,next:'postTypes',msg:'Column'+' '+sourceMap[j].name+' added'});
+                        }
+                    }
+								  
+            if(ok){
+                $('#try').remove();
+                postTypes(toCreate.shift());
+            }
+            return;
+        }
+    putMsg('errors','No fields to import');
+}
+function postTypes(q,json){
+    if(q===undefined){
+        $('#chosenType').val(chosenType=newType);
+        $('#chosenTypeName').val(chosenTypeName);
+        doImport();
+    }
+    else{
+        if(json!==undefined)
+            q.url=q.url.replace(':obj:',json.obj);
+        if(newType||q.url.indexOf(':parent:')===-1)
+            intApi('POST',q.url.replace(':parent:',newType),q.next,q.par||'',q.msg);    
+    }
+}
+function putMsg(target,text,append){
+    $('#'+target).html((append===undefined?'':$('#'+target).html())+text+'<br />').show();
+}
+function serializeUploadCellValue(v){
+    if(v===undefined||v===null)
+        return '';
+    if(typeof v==='object'){
+        try{
+            return JSON.stringify(v);
+        }
+        catch(e){
+            return String(v);
+        }
+    }
+    return v.toString();
+}
+function normalizeUploadJsonRecord(row){
+    var i,normalized;
+    if(Array.isArray(row)){
+        normalized=[];
+        for(i=0;i<row.length;i++)
+            normalized[i]=row[i]!==null&&typeof row[i]==='object'?serializeUploadCellValue(row[i]):row[i];
+        return normalized;
+    }
+    if(row!==null&&typeof row==='object'){
+        normalized={};
+        for(i in row)
+            if(Object.prototype.hasOwnProperty.call(row,i))
+                normalized[i]=row[i]!==null&&typeof row[i]==='object'?serializeUploadCellValue(row[i]):(row[i]===null?'':row[i]);
+        return normalized;
+    }
+    return row;
+}
+function normalizeUploadJsonRows(rows){
+    var i,normalized=[];
+    rows=Array.isArray(rows)?rows:[rows];
+    for(i=0;i<rows.length;i++)
+        normalized[i]=normalizeUploadJsonRecord(rows[i]);
+    return normalized;
+}
+function getUploadParseText(text){
+    var json;
+    try{
+        json=JSON.parse(text.replace(/^\uFEFF/,''));
+        if(json!==null&&typeof json==='object')
+            return Papa.unparse(normalizeUploadJsonRows(json));
+    }
+    catch(e){}
+    return text;
+}
+function parseUploadText(text,options){
+    var parseText=getUploadParseText(text),parseOptions=options,i;
+    if(parseText!==text){
+        parseOptions={};
+        for(i in options)
+            if(i!=='delimiter'&&i!=='linebreak')
+                parseOptions[i]=options[i];
+    }
+    Papa.parse(parseText,parseOptions);
+}
+function escapeFormulaValue(v){
+    return String(v===undefined||v===null?'':v)
+        .replace(/\\/g,'\\\\')
+        .replace(/'/g,"\\'")
+        .replace(/"/g,'\\"')
+        .replace(/`/g,'\\`')
+        .replace(/\r/g,'\\r')
+        .replace(/\n/g,'\\n')
+        .replace(/\u2028/g,'\\u2028')
+        .replace(/\u2029/g,'\\u2029');
+}
+function escapeSlashesNSemicolons(v){
+    return serializeUploadCellValue(v).replace(/\\/gm,'\\\\').replace(/;/gm,'\\;');
+//    return v.replace(/\\/gm,'\\\\').replace(/;/gm,'\\;');
+//    return v.replace(/\\/gm,'\\\\').replace(/(?<!\\);/gm,'\\;');
+}
+function doImport(count){
+    if(chosenType===undefined)
+        doCreateType();
+    if(chosenType===undefined)
+        return;
+    count=count||1;
+    if(count===1)
+        $('#progress').html('Sending in batches of'+' '+chunkSize+' records'+ajax).show();
+    var file='',i,j,k;
+    for(i=count;i<count+chunkSize;i++){
+        if(toImport[i]===undefined)
+            break;
+        if(newType===undefined){
+            k=0;
+            if(autoParent){
+                file+=escapeSlashesNSemicolons(toImport[i][0])+';';
+                k++;
+            }
+            for(j in origMap)
+                file+=toImport[i][k]===undefined?';':escapeSlashesNSemicolons(toImport[i][k])+';',
+                k++;
+        }
+        else{
+            for(j in sourceMap)
+                if(sourceMap[j].skip===0)
+                    file+=toImport[i][j]===undefined?';':escapeSlashesNSemicolons(toImport[i][j])+';'
+        }
+        file+='\r\n';
+    }
+    if(file!==''){
+        file='DATA\r\n'+file;
+        var fd = new FormData();
+        fd.append('bki_file',new File([file],'import.bki'));
+        fd.append('import','1');
+        if($('#searchParent').attr('up-id'))
+            fd.append('F_U',$('#searchParent').attr('up-id'));
+        if($('#createParent').prop('checked'))
+            fd.append('createParent',1);
+        if(autoParent)
+            fd.append('autoParent',getUpType(chosenType));
+        intApi('POST','object/'+chosenType+'?JSON&import=1','upload',fd,i);
+    }
+}
+function doSaveFormula(){
+    if($('#fields').val()===''||$('#fields').val()===null){
+        showNotification('Select a field for the formula first', 'error');
+        return;
+    }
+    formulas[$('#fields').val()]=$('#set-formula').val();
+    if($('#set-formula').val()!==''){
+        $('.ui-state-default[id="'+$('#fields').val()+'"').addClass('has-formula');
+        $('option[value="'+$('#fields').val()+'"').addClass('text-success');
+    }
+    else{
+        $('option[value="'+$('#fields').val()+'"').removeClass('text-success');
+        $('.ui-state-default[id="'+$('#fields').val()+'"').removeClass('has-formula');
+    }
+}
+function markSelected(v){
+    $('.ui-state-default,.ui-state-default>input,.ui-state-default>span>select').css('background-color','');
+    $('.ui-state-default[id="'+v+'"],.ui-state-default[id="'+v+'"]>input,.ui-state-default[id="'+v+'"]>span>select').css('background-color','var(--button-primary)');
+    $('#set-formula').val(formulas[v]||'');
+}
+function addSortableType(id,val,base){
+    return '<div onclick="if(event.target===this)toFormula(this)" class="ui-state-default dict p-1" id="'+id+'" style="text-align:center; font-size: .85em">'
+            +'<i class="pi pi-link" id="l'+id+'" onclick="setLink(this)" style="font-size: 1.1rem; color: var(--text-secondary); cursor: pointer;" title="'
+                +'Turn on this icon if the field is a reference to a lookup table'+'"></i>&nbsp;'
+            +'<input id="n'+id+'" size="'+(val.length+1)+'" onkeyup="this.size=this.value.length+1" onchange="$(\'#upload\').hide();$(\'#refresh\').show();" style="border:none; background:transparent; color:inherit" type="text" value="'+val+'">'
+            +'<hr class="m-2"><span class="base-type">'+base+'</span>'
+            +'<br><input id="s'+id+'" type="checkbox" checked class="mt-3" title="Uncheck to skip this field" onchange="$(\'#upload\').hide();$(\'#refresh\').show();"></div>';
+}
+function setLink(el){
+    if($(el).hasClass('multiselect'))
+        $(el).removeClass('pi-list').addClass('pi-link').css('color','var(--text-secondary)').removeClass('is-link').removeClass('multiselect')
+            .attr('title','Turn on this icon if the field is a reference to a lookup table');
+    else if($(el).hasClass('is-link'))
+        $(el).removeClass('pi-link').addClass('pi-list').css('color','var(--text-primary)').addClass('multiselect')
+            .attr('title','Click to make this field a non-reference field');
+    else
+        $(el).css('color','var(--text-primary)').addClass('is-link')
+            .attr('title','Click again to allow multiple selection from the lookup table');
+    $('#upload').hide();
+    $('#refresh').show();
+    importParse();
+}
+function addSortable(id,val,base,baseId){
+    return '<div onclick="toFormula(this)" class="ui-state-default dict p-1" id="'+id+'" name="'+val+'">'+addBr(val)+'<br />'
+        +'<input hidden id="t'+id+'" value="'+baseId+'"><input hidden id="n'+id+'" value="'+val+'">'
+        +'<span class="base-type">'+base.toLowerCase()+'</span></div>';
+}
+function toFormula(el){
+    if($('#fields').val()!=='')
+        $('#set-formula').val($('#set-formula').val()+'['+$('#n'+el.id).val()+']').focus();
+}
+function doSaveSet(){
+    gatherSet();
+    if($('#save-set').val()!=='')
+        if(byId('save-set').value.indexOf('"')===-1){
+            $('#save-set-btn').hide();
+            $('#save-set-wait').show();
+            intApi('GET','object/269?JSON&F_271=UPLOAD&F_269='+encodeURIComponent($('#save-set').val()),'check-set');
+        }
+        else
+            showNotification('The " character is not allowed in the settings name', 'error');
+}
+function applySet(v){
+    chosenSet=v;
+    $('#chosenType').val(uploadSets[v].type);
+    formulas=uploadSets[chosenSet].formulas;
+    intApi('GET','object/'+uploadSets[v].type+'?JSON','type');
+}
+function addBr(v){
+    return v.replace(/(\w{2,100}) /g,'$1<br>');
+}
+function getUpType(i){
+    i=i.toString();
+    for(var j in dataItems.req_t)
+        if(dataItems.req_t[j]===i)
+            return dataItems.id[j];
+}
+function getParent(i){
+    i=i.toString();
+    for(var j in dataItems.req_t)
+        if(dataItems.req_t[j]===i)
+            return dataItems.val[j];
+    return '';
+}
+function getType(i){
+    i=i.toString();
+    for(var j in dataItems.id)
+        if(dataItems.id[j]===i)
+            return dataTypes[dataItems.t[j]];
+    return '';
+}
+var lastS,lastV,searchUrl,timerId;
+function searchDb(event){
+    var el=byId('searchParent');
+    if(event.keyCode===27)
+        return;
+    if(event.keyCode===13){
+        if($(el).next().find('.newItem').length>0)
+            $(el).next().find('.newItem').click();
+        else
+            $(el).next().find('.default-val').click();
+        return;
+    }
+    clearTimeout(timerId);
+    searchUrl='object/'+upType+'?JSON&F_'+upType+'=';
+    if(lastV===el.value&&el.value.length>0){
+        if(lastV===lastS){
+            if(($(el).next().html()||'').length>0)
+                $(el).next().show();
+        }
+        else if(el.value.substr(0,1)==='#'&&parseInt(el.value.substr(1))){
+            lastS=el.value;
+            intApi('GET',searchUrl+'@'+parseInt(el.value.substr(1)),'searchDb');
+        }
+        else if(getType(upType)==='DATE'||getType(upType)==='DATETIME')
+            intApi('GET',searchUrl+(lastS=el.value),'searchDb');
+        else
+            intApi('GET',searchUrl+'%25'+(lastS=el.value).replace(' ','%25')+'%25','searchDb');
+    }
+    else if((el.value===undefined)||(el.value.length===0))
+        intApi('GET',searchUrl,'searchDb');
+    else
+        timerId=setTimeout(searchDb,333,event);
+    lastV=el.value;
+}
+function intApi(m,u,b,vars,index){
+    vars=vars||'';
+    var h='',i,j,json,obj=new XMLHttpRequest();
+    obj.open(m,'/'+db+'/'+u,true);
+    if(m=='POST'){
+        if(typeof vars=='object')
+            vars.append('_xsrf',xsrf);
+        else{
+            obj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+            vars='_xsrf='+xsrf+'&'+vars;
+        }
+    }
+    obj.onload=function(e){
+        try{
+            json=JSON.parse(this.responseText);
+        }
+        catch(e){
+            h=this.responseText;
+        }
+        obj.abort();
+        switch(b){
+            case 'types':
+                dataItems=json.edit_types;
+                dataTypes=json.types;
+                for(i in dataItems[0])
+                    if(dataItems.ord[i]==='1'&&dataItems.req_t[i]!==''){
+                        j=getParent(dataItems[0][i]);
+                        h+=typeOption.replace(':name:',dataItems[4][i]+(j===''?'':' ('+j+')'))
+                                    .replace(/:id:/g,dataItems[0][i]);
+                    }
+                $('#chosenType').append(h);
+                break;
+                break;
+                
+            case 'type':
+                chosenType=json.type.id;
+                chosenTypeName=json.type.val;
+                origMap[json.type.id]=0;
+                for(i in json.req_order)
+                    origMap[json.req_order[i]]=parseInt(i)+1;
+                j=0;
+                if(chosenSet===undefined){
+                    $('#save-set').val(chosenTypeName);
+                    h=addSortable(json.type.id,json.type.val,json.type.base,json.base.id);
+                    for(i in json.req_order)
+                        h+=addSortable(json.req_order[i],json.req_type[json.req_order[i]],json.req_base[json.req_order[i]],json.req_base_id[json.req_order[i]]);
+                }
+                else{
+                    $('#save-set').val(chosenSet);
+                    var m=[];
+                    for(i in uploadSets[chosenSet].importMap){
+                        if(json.req_type[i])
+                            m[uploadSets[chosenSet].importMap[i]]=addSortable(i,json.req_type[i],json.req_base[i],json.req_base_id[i]);
+                        else if(i==json.type.id)
+                            m[uploadSets[chosenSet].importMap[i]]=addSortable(json.type.id,json.type.val,json.type.base,json.base.id);
+                        else
+                            m[uploadSets[chosenSet].importMap[i]]=addSortable('','','---','---');
+                    }
+                    j=0;
+                    for(i in m){
+                        while(j<i)
+                            m[j++]=addSortable('','','---','---');
+                        j++;
+                    }
+                    h=m.join('');
+                    if(uploadSets[chosenSet].importMap[json.type.id]===undefined)
+                        h+=addSortable(json.type.id,json.type.val,json.type.base,json.base.id);
+                    for(i in json.req_order)
+                        if(uploadSets[chosenSet].importMap[json.req_order[i]]===undefined)
+                            h+=addSortable(json.req_order[i],json.req_type[json.req_order[i]],json.req_base[json.req_order[i]],json.req_base_id[json.req_order[i]]);
+                    $('#header').prop('checked',uploadSets[chosenSet].header);
+                    $('#trim').prop('checked',uploadSets[chosenSet].trim);
+                    $('#delim').val(uploadSets[chosenSet].delimiter);
+                    $('#caret').val(uploadSets[chosenSet].newline);
+                }
+                h+='<div class="pl-2 pt-1 h3" title="'+'Add a gap — an empty field'+'" onclick="$(addSortable(\'\',\'\',\'--\',\'--\')).insertBefore(this)"><a>+</a></div>';
+                $('#sortable').html(h);
+                j=getParent(chosenType);
+                if(j!==''){
+                    j+=' > ';
+                    upType=getUpType(chosenType);
+                    $('#do-upload').attr('disabled',true)
+                        .attr('title','Select the parent record for the upload');
+                    $('#up').show();
+                }
+                $('#chosen').html(j+chosenTypeName+(chosenSet===undefined?'':' ('+chosenSet+')'));
+                $('#choice').remove();
+                $('#input-area').show();
+                gatherSet();
+                for(i in formulas){
+                    $('.ui-state-default[id="'+i+'"]').addClass('has-formula');
+                    $('#f'+i).addClass('text-success');
+                }
+                if(uploadSets[chosenSet]&&uploadSets[chosenSet].autoParent){
+                    $('.auto-parent').val(uploadSets[chosenSet].autoParent);
+                    setAutoParent(uploadSets[chosenSet].autoParent);
+                }
+                $('#createParent').prop('checked',!!(uploadSets[chosenSet]&&uploadSets[chosenSet].createParent));
+                if(uploadSets[chosenSet]&&uploadSets[chosenSet].searchParent)
+                    selectItem(uploadSets[chosenSet].searchParent,'#'+uploadSets[chosenSet].searchParent);
+                xlsxSavedSel=(uploadSets[chosenSet]&&uploadSets[chosenSet].xlsx)?uploadSets[chosenSet].xlsx:null;
+                break;
+                
+            case 'base':
+                for(i in json.types){
+                    bt[i]=json.types[i];
+                    revBt[json.types[i]]=i;
+                }
+                types=json.edit_types;
+                break;
+                
+            case 'parent':
+                newType=json.obj;
+                
+            case 'postTypes':
+                postTypes(toCreate.shift(),json);
+                putMsg('log',index,true);
+                break;
+            
+            case 'sets':
+                for(i in json.object){
+                    try{
+                        uploadSets[json.object[i].val]=JSON.parse(json.reqs[json.object[i].id][273]);
+                        h+='<option value="'+json.object[i].val+'">'+json.object[i].val+'</option>';
+                    }
+                    catch(e){
+                        h+='<option value="" class="text-danger">'+json.object[i].val+' (template error)'+'</option>';
+                    }
+                }
+                $('#settings').html($('#settings').html()+h);
+                break;
+            
+            case 'check-set':
+                saveSet={type:chosenType,name:chosenTypeName,header:($('#header').prop('checked')?1:0),trim:($('#trim').prop('checked')?1:0)
+                        ,delimiter:$('#delim').val(),newline:$('#caret').val(),importMap:importMap,formulas:formulas,createParent:($('#createParent').prop('checked')?1:0)};
+                if(autoParent)
+                    saveSet['autoParent']=autoParent;
+                if($('#searchParent').val().length>0)
+                    saveSet['searchParent']=$('#searchParent').attr('up-id');
+                if(xlsxWorkbook&&xlsxRows.length)
+                    saveSet['xlsx']={sheet:$('#xlsx-sheet').val(),r0:xlsxSel.r0,c0:xlsxSel.c0,r1:xlsxSel.r1,c1:xlsxSel.c1};
+                else if(uploadSets[chosenSet]&&uploadSets[chosenSet].xlsx)
+                    saveSet['xlsx']=uploadSets[chosenSet].xlsx;
+                if(json.object)
+                    intApi('POST','_m_set/'+json.object[0].id+'?JSON','save-set','t273='+encodeURIComponent(JSON.stringify(saveSet)));
+                else
+                    intApi('POST','_m_new/269?JSON&up=1','save-set','t271=UPLOAD&t269='+encodeURIComponent($('#save-set').val())+'&t273='+encodeURIComponent(JSON.stringify(saveSet)));
+                break;
+                
+            case 'upload':
+                $('#progress').html('Sending in batches of 1000 records, processed'+' '+(index-1)+' ('+Math.round(index/toImport.length*100)+'%) '+(index<toImport.length?ajax:''));
+                if(json===undefined)
+                    $('#errors').html(h).show();
+                else
+                    doImport(index);
+                break;
+                
+            case 'save-set':
+                $('#save-set-wait').hide();
+                $('#save-set-btn').show();
+                break;
+                
+            case 'searchDb':
+                var req0,req1;
+                for(i in json.req_order)
+                    if(i==0)
+                        req0=json.req_order[i];
+                    else if(i==1)
+                        req1=json.req_order[i];
+                    else
+                        break;
+                for(i in json.object)
+                    if($('#searchParent').val()===json.object[i].val)
+                        j=true;
+                    else
+                        h+='<a onclick="selectItem('+json.object[i].id+',this.innerHTML)" class="dropdown-item">#'+json.object[i].id+': '+escape(json.object[i].val)
+                                +(req0?' / '+escape((json.reqs[json.object[i].id]?json.reqs[json.object[i].id][req0]:'')||''):'')
+                                +(req1?' / '+escape((json.reqs[json.object[i].id]?json.reqs[json.object[i].id][req0]:'')||''):'')
+                            +'</a>';
+                if(h==='')
+                    if(parseInt(lastS)&&index===undefined)
+                        intApi('GET',searchUrl+'@'+parseInt(lastS),'searchDb',undefined,'by ID');
+                $('.search-results').html(h).show();
+                break;
+
+            case 'fetchLink':
+                if(json&&json.status==='ok'){
+                    var text;
+                    try{
+                        var bin=atob(json.content||''),bytes=new Uint8Array(bin.length);
+                        for(var bi=0;bi<bin.length;bi++)bytes[bi]=bin.charCodeAt(bi);
+                        text=new TextDecoder($('#encoding').val()||'utf-8').decode(bytes);
+                    }catch(err){
+                        $('#errors').html(escape('Could not read the content from the link.')).show();
+                        break;
+                    }
+                    parseUploadText(text,{delimiter:$('#delim').val(),linebreak:$('#caret').val(),skipEmptyLines:true
+                        ,LocalChunkSize:1048024
+                        ,RemoteChunkSize:1048024
+                        ,chunk:(results,parser)=>{importDoParse(results);}
+                    });
+                }
+                else
+                    $('#errors').html(escape((json&&json.error)?json.error:'Could not download the file from the link.')).show();
+                break;
+        }
+    }
+    obj.send(vars);
+}
+function selectItem(dicId,val){
+    $('#searchParent').val(val).attr('up-id',dicId).attr('up-name',val);
+    $('#do-upload').attr('disabled',false);
+    $('.search-results').hide();
+    setAutoParent();
+}
+intApi('GET','object/269?JSON&F_271=UPLOAD','sets')
+intApi('GET','edit_types?JSON','types');
+var isfloatMask = /^\d*(\.|,)\d*$/
+    ,commaFloatMask = /^(\d{0,3}(,)?)+\.\d*$/
+    ,dotFloatMask = /^(\d{0,3}(\.)?)+,\d*$/
+    ,dateMask = /^\d{0,4}(\.|\/)\d{0,4}(\.|\/)\d{0,4}$/
+	,dateTimeMask = /^\d{1,4}(\.|\/|-)\d{1,2}(\.|\/|-)\d{1,4} \d{1,2}(:|-)\d{1,2}((:|-)\d{1,2})??$/
+    ,isoDateTimeMask = /^([\+-]?\d{4,4}(?!\d{2,2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2,2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/
+    ,emailMask = /^[A-za-z0-9._-]*@[A-za-z0-9_-]*\.[A-Za-z0-9.]*$/;
+function guessBase(str){
+    str=str||'';
+    if(str==='')
+        return "SHORT";
+    if(typeof str !== 'string')
+        str=str.toString();
+    if(str.length>90)
+        return "CHARS";
+    var nan = isNaN(Number(str.replace(/,/,'.')));
+    if(dateMask.test(str))
+        return "DATE";
+    else if(!nan){
+        if (str.replace(',','.').indexOf('.')===-1)
+            return "NUMBER";
+        else
+            return "SIGNED";
+    }
+    else if(isfloatMask.test(str) || commaFloatMask.test(str) || dotFloatMask.test(str)) return "SIGNED";
+    else if(dateTimeMask.test(str)) return "DATETIME";
+    else if(isoDateTimeMask.test(str)) return "DATETIME";
+    else if(emailMask.test(str)) return "SHORT";
+    return "SHORT";
+}
+function gatherSet(){
+    var i=0,prevField=$('#fields').val(),h='<option class="text-light" value="">-- '+'select'+' --</option>';
+    $('.ui-state-default').each(function(){
+        if(this.id==='')
+            sourceMap[i]={};
+        else{
+            h+='<option value="'+this.id+'" id="f'+this.id+'">'+$('#n'+this.id).val()+'</option>';
+            if(chosenType===undefined)
+                sourceMap[i]={id:this.id,base:$('#t'+this.id).val(),name:$('#n'+this.id).val(),skip:$('#s'+this.id).prop('checked')?0:1
+                            ,link:$('#l'+this.id).hasClass('is-link')?($('#l'+this.id).hasClass('multiselect')?2:1):0};
+            else
+                sourceMap[i]={id:this.id,base:$('#t'+this.id).val(),name:$('#n'+this.id).val(),skip:0};
+            importMap[this.id]=i;
+        }
+        i++;
+    });
+    $('#fields').html(h);
+    if(prevField&&$('#fields option[value="'+prevField+'"]').length)
+        $('#fields').val(prevField);
+    $('#set-formula').val(formulas[$('#fields').val()]||'');
+    $('#upload').hide();
+    $('#refresh').show();
+}
+function parseType(input){
+    var base,h='';
+    if($('#sortable').html()===''||input.data[0].length!==sourceMap.length){
+        for(i in input.data[0]){
+            base=input.data[1]===undefined?'SHORT':guessBase(input.data[1][i]);
+            h+=addSortableType(i,input.data[0][i],chooseBase(i,base));
+        }
+        $('#sortable').html(h);
+    }
+    //$('#tune').show();
+    //$('#tune-btn').hide();
+    //$('#save-set-form').hide();
+    gatherSet();
+}
+function chooseBase(i,v){ 
+    var h='<select name="t" id="t'+i+'" onchange="$(\'#upload\').hide();$(\'#refresh\').show();" style="border:none;background:transparent;color:inherit">';
+    for(i in bt)
+        h+='<option value="'+i+'"'+(v==bt[i]?' selected':'')+'>'+bt[i].toLowerCase()+'</option>';
+    return h+'</select>';
+}
+function importParse(){
+    if(($('#input').val()||'').length>0)
+        parseUploadText($('#input').val(),{delimiter:$('#delim').val(),linebreak:$('#caret').val(),skipEmptyLines:true
+            ,LocalChunkSize:1048024
+            ,RemoteChunkSize:1048024
+            ,chunk: (results, parser) =>{importDoParse(results);}
+        });
+    else{
+    	var selectFiles=document.getElementById('selectFiles'),files=selectFiles?selectFiles.files:null;
+    	if(!files||files.length <= 0){
+    	    var link=($('#selectLink').val()||'').trim();
+    	    if(link.length>0){
+    	        $('#errors').hide();
+    	        intApi('POST','_m_fetchurl/?JSON','fetchLink','url='+encodeURIComponent(link));
+    	        $('#refresh').hide();
+    	        return false;
+    	    }
+    	    return false;
+    	}
+	    if(isExcelFile(files.item(0).name)){
+	        if(xlsxWorkbook && xlsxRows.length) applyXlsxRange(); else handleExcelFile(files.item(0));
+	        $('#refresh').hide(); return false;
+	    }
+	    var fr = new FileReader();
+	    fr.onload = function(e){
+	        parseUploadText(e.target.result,{delimiter:$('#delim').val(),linebreak:$('#caret').val(),skipEmptyLines:true
+                    ,LocalChunkSize:1048024
+                    ,RemoteChunkSize:1048024
+                    ,chunk: (results, parser) => {
+                    	importDoParse(results);
+                    }
+                });
+	    };
+	    fr.readAsText(files.item(0),$('#encoding').val());
+	    }
+    $('#refresh').hide();
+}
+var evalErrs={},evalExpr={};
+function importDoParse(input){
+    $('#progress,#errors,#log').html('').hide();
+    $('#preview-actions').hide();
+    setPreviewCopyStatus('', '');
+    var val,cellValue,i,j=0,jMap,reverseMap={}
+        ,err=0,skippedInvalid=0,empties=0,sampleHeader='',sampleLine='',expr,l=0,line
+        ,stats='<h5>'+'Statistics'+'</h5><table class="table table-sm table-bordered mt-2"><thead><tr><td></td>';
+    if(chosenType===undefined){
+        parseType(input);
+        $('#chosen').html('');
+    }
+    for(i in input.data[0]){
+        sampleHeader+='<td style="font-size: .85em;">'+escape(serializeUploadCellValue(input.data[0][i]))+'</td>';
+        if(input.data[1])
+            sampleLine+='<td style="font-size: .85em;">'+escape(serializeUploadCellValue(input.data[1][i]))+'</td>';
+    }
+    $('#1st2').html('<tr>'+sampleHeader+'</tr><tr>'+sampleLine+'</tr>');
+    $('#sample').show();
+    toImport=[];
+    statArr={};
+    for(j in sourceMap){
+        statArr[j]={empty:0,invalid:0,min:'',max:'',avg:'',sum:0};
+        stats+='<td>'+sourceMap[j].name+'</td>';
+        if(chosenType===undefined) 
+            reverseMap[sourceMap[j].name]=sourceMap[j].id;
+        else
+            reverseMap[sourceMap[j].name]=importMap[sourceMap[j].id];
+    }
+    function rowCellTrimmed(row,j){
+        var v=chosenType===undefined?input.data[row][sourceMap[j].id]:input.data[row][importMap[sourceMap[j].id]];
+        if(v!==undefined||$('#trim').prop('checked'))
+            v=serializeUploadCellValue(v);
+        if($('#trim').prop('checked')&&v!==' ')
+            v=v.trim();
+        return v;
+    }
+    function isPrimaryEmpty(row){
+        for(var k in sourceMap)
+            if(sourceMap[k].skip===0&&(chosenType===undefined?k==='0':sourceMap[k].id===chosenType))
+                return rowCellTrimmed(row,k)==='';
+        return false;
+    }
+    mainloop:for(i in input.data)
+        if(!$('#header').prop('checked')||i!=0){
+            if(isPrimaryEmpty(i)){
+                skippedInvalid++;
+                continue mainloop;
+            }
+            l++;
+            if(autoParent)
+                toImport[l]=Array(serializeUploadCellValue(input.data[i][autoParent-1]));
+            else
+                toImport[l]=[];
+            for(j in sourceMap)
+                if(sourceMap[j].skip===0){
+                    if(chosenType===undefined){
+                        val=input.data[i][sourceMap[j].id];
+                        jMap=j;
+                    }
+                    else{
+                        val=input.data[i][importMap[sourceMap[j].id]];
+                        jMap=origMap[sourceMap[j].id];
+                        if(autoParent)
+                            jMap=parseInt(jMap)+1;
+                    }
+                    if(val!==undefined||$('#trim').prop('checked'))
+                        val=serializeUploadCellValue(val);
+                    if($('#trim').prop('checked'))
+                        if(val!==' ')
+                            val=val.trim();
+                    if(formulas[sourceMap[j].id]){
+                        expr=formulas[sourceMap[j].id].replace(/\[(.+?)\]/mug,function($1,$2){
+                                if(reverseMap[$2]!==undefined)
+                                    return escapeFormulaValue(input.data[i][reverseMap[$2]]);
+                                return '['+$2+']';
+                            });
+                        try{
+                            toImport[l][jMap]=serializeUploadCellValue(eval(expr));
+                            evalExpr[l+'-'+jMap]=expr;
+                            procStats(j,toImport[l][jMap],sourceMap[j].base);
+                        }
+                        catch(e){
+                            evalErrs[l+'-'+jMap]={title:expr,err:e};
+                            err++;
+                            statArr[j].invalid++;
+                        }
+                    }
+                    else if(val!==undefined)
+                        procStats(j,toImport[l][jMap]=val,sourceMap[j].base);
+                    else{
+                        empties++;
+                        statArr[j].empty++;
+                    }
+                    if(val==='')
+                        statArr[j].empty++;
+                }
+        }
+    for(j in sourceMap){
+        statArr[j].avg=parseFloat(Math.round((statArr[j].sum/l + Number.EPSILON) * 100) / 100);
+        statArr[j].sum=parseFloat(Math.round((statArr[j].sum + Number.EPSILON) * 100) / 100);
+    }
+    for(i in statArr[j]){
+        stats+='<tr><td>'+i+'</td>';
+        for(j in sourceMap){
+            stats+='<td'+(i==='invalid'&&statArr[j][i]>0?' class="cell-error"':'')
+                        +(sourceMap[j].base==='14'/*SIGNED*/||sourceMap[j].base==='13'/*NUMBER*/||i==='empty'||i==='invalid'?' align="right"':'')+'>';
+            if((i!=='avg'&&i!=='sum')||(sourceMap[j].base==='14'/*SIGNED*/||sourceMap[j].base==='13'/*NUMBER*/))
+                stats+=((i==='empty'||i==='invalid')&&statArr[j][i]===0)?'':statArr[j][i];
+            stats+='</td>';
+        }
+        stats+='</tr>';
+    }
+    if(l>chunkSize){
+        line=', '+'page'+' <select onchange="drawPage(this.value)">';
+        for(i=1;i<=Math.ceil(l/chunkSize);i++)
+            line+='<option value="'+i+'">'+i+'</option>'
+        line+='</select>';
+    }
+    else
+        line='';
+    $('#stats').html(stats);
+    $('#resume').html('<h5>'+'Import preview (total rows'+': <b>'+l+'</b>'+(err>0?'<span style="color:var(--bs-warning,orange)">, '+'errors'+': '+err+'</span>':'')
+                        +(empties>0?'<span style="color:var(--text-secondary)">, '+'empty cells'+': '+empties+'</span>':'')
+                        +(skippedInvalid>0?'<span style="color:var(--bs-warning,orange)">, '+'empty skipped'+': '+skippedInvalid+'</span>':'')+')'+line
+                        +(l>0?previewCopyActionHtml():'')+'</h5>');
+    drawPage(1);
+    if((l==0&&chosenType!==undefined)||sourceMap.length==0){
+        $('#upload').hide();
+    }
+    else{
+        $('#upload').show();
+    }
+    $('#formula-cap').show();
+    $('#formula').hide();
+}
+function drawPage(n){
+    var cellValue,i,j=0,jMap,line,link,parentName,h='<table class="table table-sm table-bordered mt-1"><thead><tr>';
+    if(autoParent){
+        parentName = getParent(chosenType);
+        h+='<td data-copy-text="'+escape(parentName)+'">'+escape(parentName)+'</td>';
+    }
+    for(i in sourceMap)
+        if(sourceMap[i].skip===0){
+            link='';
+            if(chosenType===undefined&&j>0)
+                if(sourceMap[i].link===1)
+                    link='<i class="pi pi-link" style="font-size: 0.8rem; color: var(--text-primary);" title="'+'Lookup value'+'"></i>&nbsp;';
+                else if(sourceMap[i].link===2)
+                    link='<i class="pi pi-list" style="font-size: 0.8rem; color: var(--text-primary);" title="'+'Multiple selection from lookup table'+'"></i>&nbsp;';
+            h+='<td id="'+sourceMap[i].id+'" data-copy-text="'+escape(sourceMap[i].name)+'">'+link+sourceMap[i].name
+                +(chosenType===undefined?'<br /><span style="font-size: 75%; color: var(--text-secondary)">'+bt[sourceMap[i].base]+'</span>':'')
+                +'</td>';
+            if($('#chosen').html()==='')
+                $('#chosen').html(sourceMap[i].name);
+            j++;
+        }
+    h+='</tr></thead><tbody id="page">';
+    for(i=1+n*chunkSize-chunkSize;i<=n*chunkSize;i++){
+        if(!toImport[i])
+            break;
+        line='';
+        if(autoParent){
+            cellValue = serializeUploadCellValue(toImport[i][0]);
+            line+='<td data-copy-text="'+escape(cellValue)+'">'+escape(cellValue)+'</td>';
+        }
+        for(j in sourceMap)
+            if(sourceMap[j].skip===0){
+                if(chosenType===undefined)
+                    jMap=j;
+                else{
+                    jMap=origMap[sourceMap[j].id];
+                    if(autoParent)
+                        jMap=parseInt(jMap)+1;
+                }
+                if(evalErrs[i+'-'+jMap])
+                    line+='<td class="cell-error" data-copy-text="'+escape(serializeUploadCellValue(evalErrs[i+'-'+jMap].err))+'" title="'+escape(evalErrs[i+'-'+jMap].title)+'">'+escape(serializeUploadCellValue(evalErrs[i+'-'+jMap].err))+'</td>';
+                else if((cellValue=serializeUploadCellValue(toImport[i][jMap]))!==''){
+                    line+='<td data-copy-text="'+escape(cellValue)+'"'+(evalExpr[i+'-'+jMap]?' title="'+escape(evalExpr[i+'-'+jMap])+'" class="cell-success"':'')+'>'
+                            +escape(cellValue)+'</td>';
+                }
+                else
+                    line+='<td class="cell-empty"></td>';
+            }
+        h+='<tr>'+line+'</tr>';
+    }
+    h+='</tbody></table>';
+    $('#preview').html(h);
+    setPreviewCopyStatus('', '');
+}
+function procStats(j,val,type){
+    if((type==='4'/*DATETIME*/&&!dateTimeMask.test(val)&&isNaN(Number(val)))
+            ||(type==='9'/*DATE*/&&!dateMask.test(val)))
+        statArr[j].invalid++;
+    else if(type==='14'/*SIGNED*/||type==='13'/*NUMBER*/){
+        if(isNaN(Number(val.replace(',','.').replace(/\D/g,''))))
+            statArr[j].invalid++;
+        else{
+            val=parseFloat(val.replace(',','.').replace(/ /g,''))||0;
+            statArr[j].sum+=val;
+            if(statArr[j].min>val||statArr[j].min==='')
+                statArr[j].min=val;
+            else if(statArr[j].max<val||statArr[j].max==='')
+                statArr[j].max=val;
+        }
+    }
+    else if(statArr[j].min>val||statArr[j].min==='')
+        statArr[j].min=val;
+    else if(statArr[j].max<val||statArr[j].max==='')
+        statArr[j].max=val;
+}
+function getPage(n){
+    var h='',i=0;
+    for(i=1+n*chunkSize-chunkSize;i<=n*chunkSize;i++){
+        if(toImport[i]===undefined)
+            break;
+        h+='<tr>';
+        for(j in sourceMap)
+            h+='<td>'+(toImport[i][j]||'')+'</td>';
+        h+='</tr>';
+    }
+    $('#page').html(h);
+}
+function escape(htmlStr){
+   return htmlStr.toString().replace(/&/g,"&amp;")
+         .replace(/</g,"&lt;")
+         .replace(/>/g,"&gt;")
+         .replace(/"/g,"&quot;")
+         .replace(/'/g,"&#39;");
+}
+
+var xlsxWorkbook=null, xlsxRows=[], xlsxSel={r0:0,c0:0,r1:null,c1:null};
+var xlsxSavedSel=null;
+var XLSX_GRID_MAX_R=60, XLSX_GRID_MAX_C=40;
+
+function isExcelFile(name){ return /\.(xlsx|xlsm|xlsb|xls)$/i.test(name||''); }
+
+function ensureXlsx(){
+    return new Promise(function(resolve,reject){
+        if(window.XLSX) return resolve(window.XLSX);
+        var s=document.createElement('script');
+        s.src='/js/xlsx0.18.5.full.min.js';
+        s.onload=function(){ window.XLSX?resolve(window.XLSX):reject(new Error('Excel parser failed to load')); };
+        s.onerror=function(){ reject(new Error('Could not load the Excel parser')); };
+        document.head.appendChild(s);
+    });
+}
+
+function xlsxShowError(msg){ $('#errors').html(escape(msg)).show(); }
+
+function handleExcelFile(file){
+    $('#errors').hide();
+    $('#xlsx-area').show();
+    $('#xlsx-grid').html('<div style="color:var(--text-secondary)">Reading Excel…</div>');
+    ensureXlsx().then(function(XLSX){
+        var fr=new FileReader();
+        fr.onload=function(e){
+            try{ xlsxWorkbook=XLSX.read(new Uint8Array(e.target.result),{type:'array',cellDates:true}); }
+            catch(err){ $('#xlsx-area').hide(); xlsxShowError('Could not read Excel: '+err.message); return; }
+            if(!xlsxWorkbook.SheetNames.length){ $('#xlsx-area').hide(); xlsxShowError('The file has no sheets'); return; }
+            $('#xlsx-sheet').html(xlsxWorkbook.SheetNames.map(function(n){ return '<option>'+escape(n)+'</option>'; }).join(''));
+            var saved=xlsxSavedSel; xlsxSavedSel=null;
+            if(saved&&saved.sheet&&xlsxWorkbook.SheetNames.indexOf(saved.sheet)!==-1){
+                $('#xlsx-sheet').val(saved.sheet);
+                renderXlsxSheet(saved.sheet,saved);
+                xlsxSetAreaCollapsed(applyXlsxRange());
+            }
+            else{
+                renderXlsxSheet(xlsxWorkbook.SheetNames[0]);
+                xlsxSetAreaCollapsed(false);
+            }
+            updateXlsxSheetsNote();
+        };
+        fr.onerror=function(){ $('#xlsx-area').hide(); xlsxShowError('Error reading file'); };
+        fr.readAsArrayBuffer(file);
+    }).catch(function(err){ $('#xlsx-area').hide(); xlsxShowError(err.message); });
+}
+
+function updateXlsxSheetsNote(){
+    var el=document.getElementById('xlsx-sheets-note');
+    if(!el||!xlsxWorkbook) return;
+    var names=xlsxWorkbook.SheetNames;
+    if(names.length<2){ el.style.display='none'; el.innerHTML=''; return; }
+    var sel=$('#xlsx-sheet').val();
+    var parts=names.map(function(n){
+        var ws=xlsxWorkbook.Sheets[n], ref=ws&&ws['!ref'];
+        var cnt=ref?(window.XLSX.utils.decode_range(ref).e.r+1):0;
+        var label=escape(n)+' — '+cnt+' '+'rows';
+        return (n===sel)?'<b>'+label+' (selected)</b>':label;
+    });
+    el.innerHTML='&#9888; Sheets in file: '+names.length+'. Import takes data from only one'
+        +' sheet — if there are fewer rows than expected, choose the right sheet in the “Sheet:” list above.<br>'
+        +parts.join(' · ');
+    el.style.display='';
+}
+
+function renderXlsxSheet(name,saved){
+    var ws=xlsxWorkbook.Sheets[name];
+    var rows=window.XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''});
+    var maxC=0; rows.forEach(function(r){ if(r.length>maxC) maxC=r.length; });
+    rows.forEach(function(r){ while(r.length<maxC) r.push(''); });
+    xlsxRows=rows;
+    if(saved)
+        xlsxSel=xlsxClampSel(saved,rows.length,maxC);
+    else{
+        var det=xlsxAutoDetectStart(rows);
+        xlsxSel={r0:det.r, c0:det.c, r1:null, c1:null};
+    }
+    drawXlsxGrid();
+}
+
+function xlsxClampSel(saved,nR,nC){
+    var lastR=Math.max(nR-1,0), lastC=Math.max(nC-1,0);
+    function clamp(v,lo,hi){ v=v|0; return v<lo?lo:(v>hi?hi:v); }
+    var r0=clamp(saved.r0,0,lastR), c0=clamp(saved.c0,0,lastC);
+    return {r0:r0, c0:c0,
+        r1:(saved.r1==null)?null:clamp(saved.r1,r0,lastR),
+        c1:(saved.c1==null)?null:clamp(saved.c1,c0,lastC)};
+}
+
+function xlsxAutoDetectStart(rows){
+    function cnt(r){ var n=0; for(var k=0;k<r.length;k++) if(String(r[k]).trim()!=='') n++; return n; }
+    function firstNE(r){ for(var k=0;k<r.length;k++) if(String(r[k]).trim()!=='') return k; return -1; }
+    for(var i=0;i<rows.length-1;i++){ var c=cnt(rows[i]); if(c>0 && cnt(rows[i+1])===c){ var fc=firstNE(rows[i]); if(fc>=0) return {r:i,c:fc}; } }
+    for(var i2=0;i2<rows.length;i2++){ var fc2=firstNE(rows[i2]); if(fc2>=0) return {r:i2,c:fc2}; }
+    return {r:0,c:0};
+}
+
+function xlsxColName(n){ var s=''; n++; while(n>0){ var m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=Math.floor((n-1)/26); } return s; }
+function xlsxEndR(){ return xlsxSel.r1==null?xlsxRows.length-1:xlsxSel.r1; }
+function xlsxEndC(){ return xlsxSel.c1==null?((xlsxRows[0]?xlsxRows[0].length:1)-1):xlsxSel.c1; }
+
+function drawXlsxGrid(){
+    var rows=xlsxRows, nR=Math.min(rows.length,XLSX_GRID_MAX_R), nC=Math.min(rows[0]?rows[0].length:0,XLSX_GRID_MAX_C);
+    var eR=xlsxEndR(), eC=xlsxEndC();
+    var h='<table class="xlsx-grid"><thead><tr><th></th>';
+    for(var c=0;c<nC;c++) h+='<th>'+xlsxColName(c)+'</th>';
+    h+='</tr></thead><tbody>';
+    for(var r=0;r<nR;r++){
+        h+='<tr><th>'+(r+1)+'</th>';
+        for(var c2=0;c2<nC;c2++){
+            var inR = r>=xlsxSel.r0 && c2>=xlsxSel.c0 && r<=eR && c2<=eC;
+            var isS = r===xlsxSel.r0 && c2===xlsxSel.c0;
+            var isE = r===eR && c2===eC && (xlsxSel.r1!=null||xlsxSel.c1!=null);
+            h+='<td class="'+(inR?'xr ':'')+(isS?'xs ':'')+(isE?'xe':'')+'" data-r="'+r+'" data-c="'+c2+'">'+escape(String(rows[r][c2]))+'</td>';
+        }
+        h+='</tr>';
+    }
+    h+='</tbody></table>';
+    var trunc=(rows.length>XLSX_GRID_MAX_R||(rows[0]&&rows[0].length>XLSX_GRID_MAX_C))
+        ? '<div class="small mt-1" style="color:var(--text-secondary)">Showing the first '+nR+'×'+nC+' cells; the range applies to the whole sheet.</div>' : '';
+    $('#xlsx-grid').html(h+trunc);
+    $('#xlsx-info').html('Start: <b>'+xlsxColName(xlsxSel.c0)+(xlsxSel.r0+1)+'</b> · right to: <b>'
+        +(xlsxSel.c1==null?'edge':xlsxColName(xlsxSel.c1))+'</b> · down to: <b>'+(xlsxSel.r1==null?'edge':(xlsxSel.r1+1))+'</b>');
+}
+
+function xlsxClearLimits(){ xlsxSel.r1=null; xlsxSel.c1=null; drawXlsxGrid(); }
+
+function xlsxSetAreaCollapsed(collapsed){
+    var area = document.getElementById('xlsx-area');
+    if(!area) return;
+    area.classList.toggle('xlsx-collapsed', !!collapsed);
+    var btn = area.querySelector('.xlsx-area-toggle');
+    if(btn) btn.innerHTML = collapsed ? '&#9660;' : '&#9650;';
+}
+
+function xlsxToggleArea(){
+    var area = document.getElementById('xlsx-area');
+    if(!area) return;
+    xlsxSetAreaCollapsed(!area.classList.contains('xlsx-collapsed'));
+}
+
+function applyXlsxRange(){
+    if(!xlsxRows.length){ xlsxShowError('The sheet is empty'); return false; }
+    var eR=xlsxEndR(), eC=xlsxEndC(), out=[];
+    for(var r=xlsxSel.r0;r<=eR;r++){
+        var row=[];
+        for(var c=xlsxSel.c0;c<=eC;c++) row.push(xlsxRows[r]&&xlsxRows[r][c]!==undefined?xlsxRows[r][c]:'');
+        if(row.some(function(v){ return String(v).trim()!==''; })) out.push(row);
+    }
+    if(!out.length){ xlsxShowError('No data in the selected range'); return false; }
+    $('#errors').hide();
+    $('#input').val(Papa.unparse(out.map(function(row){
+        return row.map(function(v){
+            var s=serializeUploadCellValue(v);
+            if(/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) return s.replace(/,/g,'');
+            return s;
+        });
+    }),{delimiter:$('#delim').val()||','}));
+    importParse();
+    return true;
+}
+
+$(document).on('click','#xlsx-grid td[data-r]',function(e){
+    var r=+this.getAttribute('data-r'), c=+this.getAttribute('data-c');
+    if(e.shiftKey){ if(r>=xlsxSel.r0 && c>=xlsxSel.c0){ xlsxSel.r1=r; xlsxSel.c1=c; drawXlsxGrid(); } }
+    else { xlsxSel.r0=r; xlsxSel.c0=c; xlsxSel.r1=null; xlsxSel.c1=null; drawXlsxGrid(); }
+});
+$(document).on('change','#xlsx-sheet',function(){ renderXlsxSheet(this.value); updateXlsxSheetsNote(); });
+
+$(function(){
+    $("#sortable").sortable({update:function(){gatherSet();importParse();}});
+    $("#sortable").disableSelection();
+});
+$(document).ready(function(){
+    $('html').click(function(event){
+        if($(event.target).attr('id')!=='searchParent')
+            $('.search-results').hide();
+    });
+});
+localize();
+</script>
+<script src="/js/bootstrap4.5.2.min.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/hints.js"></script>
+<!-- Workspace hints -->
+<style>
+#upload-hint-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 420px;
+    background: var(--card-bg, #fff);
+    border-radius: 12px;
+    padding: 1.25rem 1.25rem 1rem;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.28);
+    z-index: 2000;
+    display: none;
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+}
+#upload-hint-box .hint-drag-handle {
+    position: absolute;
+    top: 6px;
+    left: 0;
+    right: 12px;
+    height: 2rem;
+    cursor: grab;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+#upload-hint-box .hint-drag-handle:active { cursor: grabbing; }
+#upload-hint-box .hint-drag-handle .hint-drag-icon {
+    font-size: 1rem;
+    color: var(--text-secondary, #888);
+    pointer-events: none;
+    line-height: 1;
+    letter-spacing: 2px;
+}
+#upload-hint-mobile-toggle {
+    display: none;
+    position: fixed;
+    right: 1rem;
+    z-index: 2001;
+    background: var(--button-primary, #0d6efd);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 2.4rem;
+    height: 2.4rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    align-items: center;
+    justify-content: center;
+}
+@media (max-width: 767px) {
+    #upload-hint-box { width: calc(100% - 2rem); max-width: none; }
+    #upload-hint-mobile-toggle { display: flex; }
+}
+</style>
+<div id="upload-hint-box">
+    <div class="hint-drag-handle" id="upload-hint-drag-handle" title="You can drag this window around the screen"><span class="hint-drag-icon">⠿⠿</span></div>
+    <div id="upload-hint-1" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Choose a table and check the file</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Choose a table from the list or click “Create a new table from file” (for example, from <a href="/download/movies.txt" download="movies.txt">this one</a>), then paste the data text or upload a file (JSON, CSV, TXT). Click “Check”, then click “Configure” to set the field delimiter, encoding, column names and more.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="uploadHintClose()" style="padding:0.35rem 0.9rem; border:1px solid var(--border-color); border-radius:6px; background:none; color:var(--text-secondary); cursor:pointer; font-size:0.85rem;">Close</button>
+        </div>
+    </div>
+    <div id="upload-hint-2" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Check data statistics</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">After configuring, click “Statistics” and make sure the row count is right and the types are recognized correctly — the next tip will appear.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="uploadHintClose()" style="padding:0.35rem 0.9rem; border:1px solid var(--border-color); border-radius:6px; background:none; color:var(--text-secondary); cursor:pointer; font-size:0.85rem;">Close</button>
+        </div>
+    </div>
+    <div id="upload-hint-3" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Uploading data</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Once everything is checked, click “Upload” and confirm. When it finishes, the statistics will show the number of uploaded, skipped and failed records.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="uploadHintClose()" style="padding:0.35rem 0.9rem; border:none; border-radius:6px; background:var(--button-primary,#0d6efd); color:#fff; cursor:pointer; font-size:0.85rem;">Got it</button>
+        </div>
+    </div>
+</div>
+<button id="upload-hint-mobile-toggle" title="Move hint" aria-label="Move hint up/down" style="bottom:5rem;"></button>
+<script>
+// Workspace-specific hint configuration for 'upload'.
+// Texts and steps are defined here; the display mechanism is in /js/hints.js.
+document.addEventListener('DOMContentLoaded', function() {
+    // Show selected filename when file is chosen
+    var selectFilesInput = document.getElementById('selectFiles');
+    if (selectFilesInput) {
+        selectFilesInput.addEventListener('change', function() {
+            var selectedFileName = document.getElementById('selectedFileName');
+            if (selectedFileName) {
+                if (this.files.length > 0) {
+                    selectedFileName.textContent = this.files[0].name;
+                } else {
+                    selectedFileName.textContent = '';
+                }
+            }
+            if (this.files.length > 0 && isExcelFile(this.files[0].name)) handleExcelFile(this.files[0]);
+            else $('#xlsx-area').hide();
+        });
+    }
+
+    window.initHints({
+        workspace: 'upload',
+        steps: 3,
+        onInit: function(api) {
+            var tuneBtn = document.getElementById('tune-btn');
+            if (tuneBtn) tuneBtn.addEventListener('click', function() { api.advance(2); });
+
+            var showStatsBtn = document.getElementById('show-stats');
+            if (showStatsBtn) showStatsBtn.addEventListener('click', function() { api.advance(3); });
+        }
+    });
+});
+</script>

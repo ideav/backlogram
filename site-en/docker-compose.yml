@@ -1,0 +1,62 @@
+# Local / test stack for the English Integram site: dist-en + PHP engine on Apache, MySQL 8, Mailpit.
+#   npm run build:en
+#   docker compose -f site-en/docker-compose.yml up -d --build
+#   open http://localhost:8080  (mail UI: http://localhost:8025)
+# Smoke test: node scripts/en-engine-smoke.mjs --compose
+name: integram-en
+
+services:
+  db:
+    image: ${INTEGRAM_DB_IMAGE:-mysql:8.0}
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: integram
+      MYSQL_USER: integram
+      MYSQL_PASSWORD: ${INTEGRAM_DB_PASSWORD:-integram-local}
+      MYSQL_ROOT_PASSWORD: ${INTEGRAM_DB_ROOT_PASSWORD:-integram-local-root}
+    volumes:
+      - db:/var/lib/mysql
+
+  mail:
+    image: axllent/mailpit:v1.20
+    restart: unless-stopped
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "1"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "1"
+    ports:
+      - "${INTEGRAM_MAIL_UI_PORT:-8025}:8025"
+
+  app:
+    build:
+      context: ..
+      dockerfile: site-en/docker/Dockerfile
+    restart: unless-stopped
+    depends_on: [db, mail]
+    environment:
+      INTEGRAM_NO_REDIRECT: "1"
+      INTEGRAM_BASE_URL: ${INTEGRAM_BASE_URL:-http://localhost:8080}
+      INTEGRAM_DB_HOST: db
+      INTEGRAM_DB_NAME: integram
+      INTEGRAM_DB_USER: integram
+      INTEGRAM_DB_PASSWORD: ${INTEGRAM_DB_PASSWORD:-integram-local}
+      INTEGRAM_SALT: ${INTEGRAM_SALT:-local-dev-salt}
+      INTEGRAM_MASTER_PASSWORD: ${INTEGRAM_MASTER_PASSWORD:-}
+      INTEGRAM_ADMIN_EMAIL: ${INTEGRAM_ADMIN_EMAIL:-admin@example.com}
+      INTEGRAM_SMTP_HOST: mail
+      INTEGRAM_SMTP_PORT: "1025"
+      INTEGRAM_SMTP_FROM_EMAIL: hello@ideav.pro
+      INTEGRAM_GOOGLE_CLIENT_ID: ${INTEGRAM_GOOGLE_CLIENT_ID:-}
+      INTEGRAM_GOOGLE_CLIENT_SECRET: ${INTEGRAM_GOOGLE_CLIENT_SECRET:-}
+      INTEGRAM_GITHUB_CLIENT_ID: ${INTEGRAM_GITHUB_CLIENT_ID:-}
+      INTEGRAM_GITHUB_CLIENT_SECRET: ${INTEGRAM_GITHUB_CLIENT_SECRET:-}
+      INTEGRAM_TURNSTILE_SITEKEY: ${INTEGRAM_TURNSTILE_SITEKEY:-}
+      INTEGRAM_TURNSTILE_SECRET: ${INTEGRAM_TURNSTILE_SECRET:-}
+      INTEGRAM_RATE_LIMIT: ${INTEGRAM_RATE_LIMIT:-1}
+    ports:
+      - "${INTEGRAM_HTTP_PORT:-8080}:80"
+    volumes:
+      - uploads:/var/www/html/download
+
+volumes:
+  db:
+  uploads:

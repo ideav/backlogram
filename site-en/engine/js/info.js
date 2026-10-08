@@ -1,0 +1,315 @@
+/**
+ * Info.html Workspace Script
+ * Handles tabs (with cookie persistence), expandable action items,
+ * hints mode management, and quick links loading.
+ */
+
+(function() {
+    'use strict';
+
+    var COOKIE_ACTIVE_TAB = 'info_active_tab';
+    var COOKIE_HINTS_MODE = 'hints_mode';
+    var COOKIE_HINTS_SEEN = 'hints_seen_workspaces';
+    var COOKIE_FORMS_DESC_HIDDEN = 'info_forms_desc_hidden';
+
+    // ── Cookie helpers ──────────────────────────────────────────────────────
+
+    // Info-page state (info_active_tab, info_forms_desc_hidden) and hints state
+    // (hints_mode, hints_seen_workspaces) are kept in localStorage, not cookies,
+    // so they are not sent to the server on every request. A legacy cookie of the
+    // same name is migrated on first read and then deleted.
+    function setCookie(name, value) {
+        try {
+            localStorage.setItem(name, value);
+            if (document.cookie.indexOf(name + '=') !== -1) document.cookie = name + '=; path=/; max-age=0';
+        } catch (e) {
+            document.cookie = name + '=' + encodeURIComponent(value) + '; path=/; max-age=31536000';
+        }
+    }
+
+    function getCookie(name) {
+        var legacy = null;
+        var prefix = name + '=';
+        var parts = document.cookie ? document.cookie.split(';') : [];
+        for (var i = 0; i < parts.length; i++) {
+            var part = parts[i].trim();
+            if (part.indexOf(prefix) === 0) { legacy = decodeURIComponent(part.substring(prefix.length)); break; }
+        }
+        try {
+            if (legacy !== null) {
+                if (localStorage.getItem(name) === null && legacy !== '') localStorage.setItem(name, legacy);
+                document.cookie = name + '=; path=/; max-age=0';
+            }
+            return localStorage.getItem(name);
+        } catch (e) {
+            return legacy;
+        }
+    }
+
+    // Clear keys matching prefix…suffix from both localStorage and any legacy cookies.
+    function deleteCookiesByMask(prefix, suffix) {
+        var parts = document.cookie ? document.cookie.split(';') : [];
+        parts.forEach(function(part) {
+            var name = part.trim().split('=')[0];
+            if (name.indexOf(prefix) === 0 && name.slice(-suffix.length) === suffix) {
+                document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+            }
+        });
+        try {
+            for (var i = localStorage.length - 1; i >= 0; i--) {
+                var k = localStorage.key(i);
+                if (k && k.indexOf(prefix) === 0 && k.slice(-suffix.length) === suffix) localStorage.removeItem(k);
+            }
+        } catch (e) { /* ignore */ }
+    }
+
+    // ── Owner check ──────────────────────────────────────────────────────────
+
+    function isOwner() {
+        return window.user && window.db && window.user === window.db;
+    }
+
+    // ── Tab switching ────────────────────────────────────────────────────────
+
+    var TAB_ORDER = ['intro', 'quicklinks', 'forms'];
+
+    function getActiveTab() {
+        var saved = getCookie(COOKIE_ACTIVE_TAB);
+        if (saved && TAB_ORDER.indexOf(saved) >= 0) {
+            // Non-owners cannot access the intro tab
+            if (saved === 'intro' && !isOwner()) return 'forms';
+            return saved;
+        }
+        // Default tab: intro for owners, forms for everyone else
+        return isOwner() ? 'intro' : 'forms';
+    }
+
+    function renderTabs(activeTab) {
+        var tabsEl = document.getElementById('info-tabs');
+        if (!tabsEl) return;
+
+        // Show or hide the intro tab based on ownership
+        var tabIntro = document.getElementById('tab-intro');
+        if (tabIntro) {
+            tabIntro.style.display = isOwner() ? '' : 'none';
+        }
+
+        var active = activeTab || getActiveTab();
+
+        // Update active class on existing buttons (tabs stay in their fixed positions)
+        tabsEl.querySelectorAll('.info-tab').forEach(function(btn) {
+            var tabId = btn.dataset.tab;
+            btn.classList.toggle('active', tabId === active);
+        });
+
+        showContent(active);
+
+        // Reveal the container once the correct tab is already shown (eliminates flicker)
+        var container = tabsEl.closest('.info-tabs-container');
+        if (container) {
+            container.style.visibility = 'visible';
+        }
+    }
+
+    function showContent(tabId) {
+        // Non-owners cannot see the intro tab content; fall back to forms
+        if (tabId === 'intro' && !isOwner()) tabId = 'forms';
+
+        ['intro', 'quicklinks', 'forms'].forEach(function(id) {
+            var el = document.getElementById('content-' + id);
+            if (el) el.style.display = (id === tabId) ? '' : 'none';
+        });
+
+        // Lazy-load quick links when that tab becomes visible
+        if (tabId === 'quicklinks') {
+            loadQuickLinks();
+        }
+    }
+
+    // Exposed globally so inline onclick handlers can call it
+    window.infoSwitchTab = function(tabId) {
+        setCookie(COOKIE_ACTIVE_TAB, tabId, 365);
+        renderTabs(tabId);
+    };
+
+
+    function initActionLinkHover() {
+        var links = document.querySelectorAll('.info-action-link[href]');
+        links.forEach(function(link) {
+            link.addEventListener('mouseenter', function() {
+                highlightMenuItemForLink(link.getAttribute('href'), true);
+            });
+            link.addEventListener('mouseleave', function() {
+                highlightMenuItemForLink(link.getAttribute('href'), false);
+            });
+        });
+    }
+
+    function initMenuNameHover() {
+        var names = document.querySelectorAll('strong[data-menu-href]');
+        names.forEach(function(el) {
+            var menuHref = el.getAttribute('data-menu-href');
+            el.addEventListener('mouseenter', function() {
+                highlightMenuItemByHref(menuHref, true);
+            });
+            el.addEventListener('mouseleave', function() {
+                highlightMenuItemByHref(menuHref, false);
+            });
+        });
+    }
+
+    function highlightMenuItemByHref(menuHref, on) {
+        if (!menuHref) return;
+        var menuItems = document.querySelectorAll('.app-menu-item[data-href]');
+        menuItems.forEach(function(item) {
+            var itemHref = item.getAttribute('data-href') || '';
+            if (itemHref === menuHref) {
+                item.classList.toggle('link-hover', on);
+            }
+        });
+    }
+
+    function highlightMenuItemForLink(href, on) {
+        if (!href || href === '#') return;
+        // Strip leading slash and db prefix (e.g. "/mydb/tables" -> "tables")
+        // Menu item data-href stores the path after the db prefix
+        var parts = href.replace(/^\//, '').split('/');
+        // Remove the db segment (first part) to get the menu href
+        var menuHref = parts.slice(1).join('/');
+        highlightMenuItemByHref(menuHref, on);
+    }
+
+    // ── Expandable action items ──────────────────────────────────────────────
+
+    function initActionItems() {
+        var items = document.querySelectorAll('.info-action-item');
+        items.forEach(function(item) {
+            var header = item.querySelector('.info-action-header');
+            if (!header) return;
+            header.addEventListener('click', function() {
+                var isOpen = item.classList.contains('open');
+                // Close all items (accordion behaviour)
+                items.forEach(function(other) { other.classList.remove('open'); });
+                // Toggle the clicked item
+                if (!isOpen) item.classList.add('open');
+            });
+        });
+    }
+
+    // ── Hints mode ──────────────────────────────────────────────────────────
+
+    window.infoHints = function(action) {
+        if (!isOwner()) return;
+
+        var statusEl = document.getElementById('hints-status');
+
+        if (action === 'enable') {
+            setCookie(COOKIE_HINTS_MODE, 'on', 365);
+            if (statusEl) statusEl.textContent = 'Hints mode is on.';
+        } else if (action === 'disable') {
+            setCookie(COOKIE_HINTS_MODE, 'off', 365);
+            if (statusEl) statusEl.textContent = 'Hints mode is off.';
+        } else if (action === 'reset') {
+            setCookie(COOKIE_HINTS_MODE, 'on', 365);
+            setCookie(COOKIE_HINTS_SEEN, '', 365);
+            deleteCookiesByMask('table_info_', '_seen');
+            if (statusEl) statusEl.textContent = 'Hints mode reset: hints will be shown again.';
+        }
+
+        // Update button states
+        updateHintButtons();
+    };
+
+    function updateHintButtons() {
+        if (!isOwner()) return;
+
+        var mode = getCookie(COOKIE_HINTS_MODE);
+        var enableBtn = document.getElementById('hints-enable');
+        var disableBtn = document.getElementById('hints-disable');
+        if (!enableBtn || !disableBtn) return;
+
+        if (mode === 'off') {
+            enableBtn.style.opacity = '0.6';
+            disableBtn.style.opacity = '1';
+        } else {
+            enableBtn.style.opacity = '1';
+            disableBtn.style.opacity = '0.6';
+        }
+    }
+
+    // ── Forms tab description ────────────────────────────────────────────────
+
+    window.infoHideFormsDescription = function() {
+        setCookie(COOKIE_FORMS_DESC_HIDDEN, '1', 365);
+        var el = document.getElementById('forms-description');
+        if (el) el.style.display = 'none';
+    };
+
+    function initFormsDescription() {
+        var el = document.getElementById('forms-description');
+        if (!el) return;
+        if (getCookie(COOKIE_FORMS_DESC_HIDDEN) === '1') {
+            el.style.display = 'none';
+        }
+    }
+
+    // ── Quick links ─────────────────────────────────────────────────────────
+
+    var quickLinksLoaded = false;
+
+    function loadQuickLinks() {
+        if (quickLinksLoaded) return;
+        var container = document.getElementById('quick-links');
+        if (!container) return;
+
+        fetch('/' + window.db + '/report/299?JSON_KV')
+            .then(function(r) { return r.json(); })
+            .then(function(links) {
+                quickLinksLoaded = true;
+                if (!links || links.length === 0) {
+                    container.innerHTML = '<div style="padding:20px;color:var(--text-secondary)">No quick links</div>';
+                    return;
+                }
+                var html = '';
+                links.forEach(function(link) {
+                    var format = link['Report format'] || 'report';
+                    var queryId = link['QueryID'];
+                    var label = link['Query'] || 'Link';
+                    var isPriority = link['priority'] === 'X';
+                    var url = '/' + window.db + '/' + format + '/' + queryId;
+                    html += '<a href="' + url + '" class="quick-link-badge' + (isPriority ? ' priority' : '') + '" target="' + queryId + '">' +
+                        (isPriority ? '<span class="icon"><i class="pi pi-bolt"></i></span>' : '') +
+                        label + '</a>';
+                });
+                container.innerHTML = html;
+            })
+            .catch(function(err) {
+                console.error('Error loading quick links:', err);
+                container.innerHTML = '<div style="padding:20px;color:var(--color-error)">Error loading quick links</div>';
+            });
+    }
+
+    // ── Init ─────────────────────────────────────────────────────────────────
+
+    function initTabClickHandlers() {
+        var tabsEl = document.getElementById('info-tabs');
+        if (!tabsEl) return;
+        tabsEl.querySelectorAll('.info-tab').forEach(function(btn) {
+            var tabId = btn.dataset.tab;
+            btn.addEventListener('click', function() {
+                infoSwitchTab(tabId);
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initTabClickHandlers();
+        renderTabs();
+        initActionItems();
+        updateHintButtons();
+        initActionLinkHover();
+        initMenuNameHover();
+        initFormsDescription();
+    });
+
+})();

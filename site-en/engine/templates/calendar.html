@@ -1,0 +1,1539 @@
+<!-- Import IntegramTable CSS for edit form styles -->
+<link rel="stylesheet" href="/download/{_global_.z}/css/integram-table.css">
+
+<style>
+    /* CSS Variables */
+    :root {
+        --primary-color: #2563eb;
+        --primary-hover: #1d4ed8;
+        --primary-light: #3b82f6;
+        --background: #f8fafc;
+        --surface: #ffffff;
+        --border-color: #e2e8f0;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --overdue-color: #dc2626;
+        --important-color: #f59e0b;
+        --overdue-bg: #fee2e2;
+        --overdue-border: #fca5a5;
+        --overdue-hover-bg: #fecaca;
+        --overdue-task-bg: #ffffff;
+        --error-bg: #fee2e2;
+        --error-color: #991b1b;
+        --search-close-hover-bg: #fee2e2;
+        --search-close-hover-border: #fca5a5;
+        --toast-error-bg: #dc3545;
+        --toast-success-bg: #28a745;
+        --toast-info-bg: #17a2b8;
+    }
+
+    [data-theme="dark"] {
+        --primary-color: #3b82f6;
+        --primary-hover: #2563eb;
+        --primary-light: #60a5fa;
+        --background: #1a1a1a;
+        --surface: #2d2d2d;
+        --border-color: #495057;
+        --text-primary: #e9ecef;
+        --text-secondary: #adb5bd;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+        --overdue-color: #f87171;
+        --important-color: #fbbf24;
+        --overdue-bg: #450a0a;
+        --overdue-border: #7f1d1d;
+        --overdue-hover-bg: #7f1d1d;
+        --overdue-task-bg: #2d2d2d;
+        --error-bg: #7f1d1d;
+        --error-color: #fca5a5;
+        --search-close-hover-bg: #450a0a;
+        --search-close-hover-border: #7f1d1d;
+        --toast-error-bg: #b91c1c;
+        --toast-success-bg: #15803d;
+        --toast-info-bg: #0e7490;
+    }
+
+    /* Calendar Container */
+    .calendar-container {
+        padding: 20px;
+        height: calc(100vh - 120px);
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Control Panel */
+    .calendar-controls {
+        background-color: var(--surface);
+        padding: 0 0 16px 0;
+        margin-bottom: 16px;
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+    }
+
+    .calendar-control-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .calendar-control-label {
+        font-weight: 500;
+        color: var(--text-primary);
+        font-size: 0.875rem;
+        margin-bottom: 0;
+    }
+
+    .calendar-select {
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background-color: var(--surface);
+        font-size: 0.875rem;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 150px;
+    }
+
+    .calendar-select:hover {
+        border-color: var(--primary-color);
+    }
+
+    .calendar-select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .calendar-checkbox-label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        font-size: 0.875rem;
+        color: var(--text-primary);
+        gap: 6px;
+        margin-bottom: 0;
+    }
+
+    .calendar-checkbox-label input[type="checkbox"] {
+        cursor: pointer;
+        width: 16px;
+        height: 16px;
+        margin-bottom: 0;
+    }
+
+    .calendar-button {
+        padding: 6px 16px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background-color: var(--surface);
+        color: var(--text-primary);
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .calendar-button:hover {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+
+    /* Overdue Section - Issue #428: Compact inline display */
+    .overdue-section {
+        background-color: var(--overdue-bg);
+        border: 1px solid var(--overdue-border);
+        border-radius: 8px;
+        padding: 8px 12px;
+        transition: all 0.3s ease;
+        display: inline-block;
+        margin-left: auto;
+    }
+
+    /* Collapsed State - Issue #428: Compact button-like display */
+    .overdue-section.collapsed {
+        max-height: 38px;
+        overflow: hidden;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .overdue-section.collapsed:hover {
+        background-color: var(--overdue-hover-bg);
+    }
+
+    /* Expanded State - Issue #428: Full width overlay */
+    .overdue-section.expanded {
+        position: fixed;
+        top: 120px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        max-height: 600px;
+        width: 90%;
+        max-width: 1200px;
+        overflow-y: auto;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .overdue-section h3 {
+        margin: 0;
+        color: var(--overdue-color);
+        font-size: 0.875rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        user-select: none;
+    }
+
+    /* Issue #428: Compact title in collapsed state */
+    .overdue-section.collapsed h3 {
+        gap: 6px;
+    }
+
+    /* Issue #428: Full title in expanded state */
+    .overdue-section.expanded h3 {
+        font-size: 1rem;
+        margin-bottom: 12px;
+    }
+
+    .overdue-toggle-icon {
+        font-size: 0.875rem;
+        transition: transform 0.3s ease;
+    }
+
+    .overdue-section.expanded .overdue-toggle-icon {
+        transform: rotate(180deg);
+    }
+
+    .overdue-task-item {
+        background-color: var(--overdue-task-bg);
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Hide task items when collapsed */
+    .overdue-section.collapsed .overdue-task-item {
+        display: none;
+    }
+
+    /* Issue #428: Full width list when expanded */
+    .overdue-section.expanded #overdue-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 8px;
+        margin-top: 8px;
+    }
+
+    .overdue-task-item:hover {
+        box-shadow: var(--shadow-sm);
+        transform: translateX(4px);
+    }
+
+    .overdue-task-icon {
+        font-size: 16px;
+    }
+
+    .overdue-task-info {
+        flex: 1;
+    }
+
+    .overdue-task-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.875rem;
+    }
+
+    .overdue-task-executor {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+    }
+
+    .overdue-task-date {
+        font-size: 0.75rem;
+        color: var(--overdue-color);
+        font-weight: 500;
+    }
+
+    /* Backdrop for expanded overdue section */
+    .overdue-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.1);
+        z-index: 999;
+        display: none;
+    }
+
+    .overdue-backdrop.active {
+        display: block;
+    }
+
+    /* Calendar Wrapper */
+    .calendar-wrapper {
+        flex: 1;
+        background-color: var(--surface);
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+        /* padding: 16px; */
+        overflow: hidden;
+    }
+
+    #calendar {
+        height: 100%;
+    }
+
+    /* FullCalendar Customization */
+    .fc {
+        font-family: inherit;
+    }
+
+    .fc-toolbar-title {
+        font-size: 1.5rem !important;
+        font-weight: 600 !important;
+        color: var(--text-primary) !important;
+    }
+
+    .fc-button {
+        background-color: var(--primary-color) !important;
+        border-color: var(--primary-color) !important;
+        color: white !important;
+        padding: 6px 12px !important;
+        border-radius: 6px !important;
+        font-weight: 500 !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .fc-button:hover {
+        background-color: var(--primary-hover) !important;
+        border-color: var(--primary-hover) !important;
+    }
+
+    .fc-button:disabled {
+        background-color: var(--border-color) !important;
+        border-color: var(--border-color) !important;
+        color: var(--text-secondary) !important;
+    }
+
+    .fc-button-active {
+        background-color: var(--primary-hover) !important;
+        border-color: var(--primary-hover) !important;
+    }
+
+    .fc .fc-button-group {
+        gap: 2px;
+    }
+    
+    .fc-today-button {
+        background-color: var(--surface) !important;
+        border-color: var(--border-color) !important;
+        color: var(--primary-color) !important;
+    }
+
+    .fc-today-button:hover {
+        background-color: var(--primary-color) !important;
+        border-color: var(--primary-color) !important;
+        color: white !important;
+    }
+
+    /* Search functionality styles - Issue #439 */
+    .fc-search-container {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-left: 8px;
+        vertical-align: middle;
+    }
+
+    .fc-search-icon {
+        background-color: var(--surface) !important;
+        border: 1px solid var(--border-color) !important;
+        color: var(--primary-color) !important;
+        padding: 6px 12px !important;
+        border-radius: 6px !important;
+        font-weight: 500 !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        font-size: 14px;
+        line-height: 1.5;
+        vertical-align: middle;
+    }
+
+    .fc-search-icon:hover {
+        background-color: var(--primary-color) !important;
+        border-color: var(--primary-color) !important;
+        color: white !important;
+    }
+
+    .fc-search-input-wrapper {
+        display: none;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .fc-search-input-wrapper.active {
+        display: inline-flex;
+    }
+
+    .fc-search-input {
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background-color: var(--surface);
+        font-size: 0.875rem;
+        color: var(--text-primary);
+        transition: all 0.2s ease;
+        width: 200px;
+    }
+
+    .fc-search-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .fc-search-close {
+        background-color: var(--surface);
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        padding: 6px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 14px;
+    }
+
+    .fc-search-close:hover {
+        background-color: var(--search-close-hover-bg);
+        border-color: var(--search-close-hover-border);
+        color: var(--overdue-color);
+    }
+
+    /* Highlight matched tasks - Issue #439 */
+    .fc-event.event-search-match {
+        box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.8) !important;
+        background: linear-gradient(135deg, var(--current-bg-color, var(--primary-color)) 0%, #fbbf24 100%) !important;
+    }
+
+    .fc-event.event-search-match.event-overdue {
+        --current-bg-color: var(--overdue-color);
+    }
+
+    .fc-event.event-search-match.event-important {
+        --current-bg-color: var(--important-color);
+    }
+
+    @keyframes pulse-yellow {
+        0%, 100% {
+            box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.8);
+        }
+        50% {
+            box-shadow: 0 0 0 6px rgba(250, 204, 21, 0.5);
+        }
+    }
+
+    .fc .fc-daygrid-day.fc-day-today {
+        background-color: rgba(37, 99, 235, 0.1) !important;
+    }
+
+    .fc-event {
+        border: none !important;
+        padding: 2px 4px !important;
+        margin: 1px 0 !important;
+        border-radius: 3px !important;
+        cursor: pointer !important;
+        font-size: 0.75rem !important;
+    }
+
+    .fc-event-title {
+        font-weight: 500 !important;
+    }
+
+    .fc-timegrid-event {
+        border-left-width: 3px !important;
+    }
+
+    /* Event colors */
+    .fc-event.event-overdue {
+        background-color: var(--overdue-color) !important;
+        border-color: var(--overdue-color) !important;
+        color: white !important;
+    }
+
+    .fc-event.event-important {
+        background-color: var(--important-color) !important;
+        border-color: var(--important-color) !important;
+        color: white !important;
+    }
+
+    .fc-event.event-custom {
+        /* Custom color will be set inline */
+    }
+
+    /* Loading indicator */
+    .loading {
+        text-align: center;
+        padding: 40px;
+        color: var(--text-secondary);
+    }
+
+    .loading-spinner {
+        border: 3px solid var(--border-color);
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Error */
+    .error {
+        background-color: var(--error-bg);
+        color: var(--error-color);
+        padding: 16px;
+        border-radius: 8px;
+        margin: 20px;
+    }
+
+    /* Task Type Icons */
+    .task-icon {
+        margin-right: 4px;
+    }
+
+    /* Tooltip Enhancement */
+    .fc-event:hover {
+        opacity: 0.9;
+        box-shadow: var(--shadow-md);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .calendar-container {
+            padding: 10px;
+        }
+
+        .calendar-controls {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .calendar-control-group {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .calendar-select {
+            min-width: auto;
+            flex: 1;
+        }
+
+        .fc-toolbar {
+            flex-direction: column !important;
+            gap: 8px !important;
+        }
+
+        .fc-toolbar-chunk {
+            display: flex;
+            justify-content: center;
+        }
+
+        .fc-event-title {
+            font-size: 0.7rem !important;
+        }
+    }
+
+    /* Dark theme overrides for FullCalendar */
+    [data-theme="dark"] .fc .fc-view-harness,
+    [data-theme="dark"] .fc-theme-standard td,
+    [data-theme="dark"] .fc-theme-standard th,
+    [data-theme="dark"] .fc-theme-standard .fc-scrollgrid {
+        border-color: var(--border-color);
+    }
+
+    [data-theme="dark"] .fc-theme-standard .fc-scrollgrid {
+        border-color: var(--border-color);
+    }
+
+    [data-theme="dark"] .fc .fc-daygrid-day-frame,
+    [data-theme="dark"] .fc .fc-timegrid-slot,
+    [data-theme="dark"] .fc .fc-col-header-cell {
+        background-color: var(--surface);
+    }
+
+    [data-theme="dark"] .fc .fc-daygrid-day-number,
+    [data-theme="dark"] .fc .fc-col-header-cell-cushion {
+        color: var(--text-primary);
+    }
+
+    [data-theme="dark"] .fc .fc-daygrid-day.fc-day-today {
+        background-color: rgba(59, 130, 246, 0.15) !important;
+    }
+
+    [data-theme="dark"] .fc .fc-daygrid-day.fc-day-other .fc-daygrid-day-number {
+        color: var(--text-secondary);
+    }
+
+    [data-theme="dark"] .fc-col-header {
+        background-color: var(--surface);
+    }
+
+    [data-theme="dark"] .fc-timegrid-axis {
+        background-color: var(--surface);
+    }
+
+    [data-theme="dark"] .fc .fc-timegrid-slot-label-cushion,
+    [data-theme="dark"] .fc .fc-timegrid-axis-cushion {
+        color: var(--text-secondary);
+    }
+
+    [data-theme="dark"] .fc .fc-list-event:hover td {
+        background-color: var(--bg-secondary);
+    }
+
+    [data-theme="dark"] .fc-list-day-cushion {
+        background-color: var(--bg-secondary) !important;
+    }
+
+    [data-theme="dark"] .fc .fc-list-table td,
+    [data-theme="dark"] .fc .fc-list-day-text,
+    [data-theme="dark"] .fc .fc-list-day-side-text {
+        color: var(--text-primary);
+    }
+
+    [data-theme="dark"] .calendar-container {
+        background-color: var(--background);
+    }
+
+    [data-theme="dark"] .calendar-wrapper {
+        background-color: var(--surface);
+    }
+
+    [data-theme="dark"] .calendar-controls {
+        background-color: var(--surface);
+    }
+
+    [data-theme="dark"] .calendar-select {
+        background-color: var(--surface);
+        border-color: var(--border-color);
+        color: var(--text-primary);
+    }
+
+    [data-theme="dark"] .calendar-button {
+        background-color: var(--surface);
+        border-color: var(--border-color);
+        color: var(--text-primary);
+    }
+
+    [data-theme="dark"] .calendar-button:hover {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: #ffffff;
+    }
+
+    [data-theme="dark"] .fc-today-button {
+        background-color: var(--surface) !important;
+        border-color: var(--border-color) !important;
+        color: var(--primary-color) !important;
+    }
+
+    [data-theme="dark"] .fc-today-button:hover {
+        background-color: var(--primary-color) !important;
+        border-color: var(--primary-color) !important;
+        color: #ffffff !important;
+    }
+
+    [data-theme="dark"] .fc-search-icon {
+        background-color: var(--surface) !important;
+        border-color: var(--border-color) !important;
+        color: var(--primary-color) !important;
+    }
+
+    [data-theme="dark"] .fc-search-input {
+        background-color: var(--surface);
+        border-color: var(--border-color);
+        color: var(--text-primary);
+    }
+
+    [data-theme="dark"] .fc-search-close {
+        background-color: var(--surface);
+        border-color: var(--border-color);
+        color: var(--text-secondary);
+    }
+
+    [data-theme="dark"] .overdue-task-item:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Dark theme for hint box */
+    [data-theme="dark"] #calendar-hint-box {
+        background: var(--card-bg, var(--surface));
+        color: var(--text-primary);
+    }
+</style>
+
+<!-- Calendar Container -->
+<div class="calendar-container">
+    <!-- Control Panel -->
+    <div class="calendar-controls">
+        <div class="calendar-control-group">
+            <select id="executorFilter" class="calendar-select" onchange="applyFilters()">
+                <option value="%">All assignees</option>
+            </select>
+        </div>
+
+        <div class="calendar-control-group">
+            <label class="calendar-control-label">Type:</label>
+            <select id="taskTypeFilter" class="calendar-select" onchange="applyFilters()">
+                <option value="">All</option>
+            </select>
+        </div>
+
+        <div class="calendar-control-group">
+            <label class="calendar-control-label">Status:</label>
+            <select id="statusFilter" class="calendar-select" onchange="applyFilters()">
+                <option value="">All</option>
+            </select>
+        </div>
+
+        <div class="calendar-control-group">
+            <label class="calendar-checkbox-label">
+                <input type="checkbox" id="importantFilter" onchange="applyFilters()">
+                <span>Important</span>
+            </label>
+        </div>
+
+        <div class="calendar-control-group">
+            <button class="calendar-button" onclick="refreshCalendar()"><i class="pi pi-refresh"></i> Refresh</button>
+        </div>
+
+        <!-- Issue #427: Create Task Button -->
+        <div class="calendar-control-group">
+            <button class="calendar-button" onclick="createNewTask()" style="background-color: var(--primary-color); color: white;"><i class="pi pi-plus"></i> Task</button>
+        </div>
+
+        <!-- Issue #428: Overdue Tasks - Compact Inline Display -->
+        <div id="overdue-section" class="overdue-section collapsed" style="display: none;" onclick="toggleOverdueSection(event)">
+            <h3>
+                <span><i class="pi pi-exclamation-triangle"></i> Overdue <span id="overdue-count">0</span></span>
+                <span class="overdue-toggle-icon"><i class="pi pi-chevron-down"></i></span>
+            </h3>
+            <div id="overdue-list"></div>
+        </div>
+    </div>
+
+    <!-- Overdue backdrop -->
+    <div id="overdue-backdrop" class="overdue-backdrop" onclick="collapseOverdueSection()"></div>
+
+    <!-- Calendar -->
+    <div class="calendar-wrapper">
+        <div id="calendar"></div>
+    </div>
+</div>
+
+<!-- Include FullCalendar locally -->
+<script src="/js/index.global.min.js"></script>
+
+<!-- Include IntegramTable for edit form functionality -->
+<script src="/download/{_global_.z}/js/integram-table.js"></script>
+
+<script>
+function showNotification(message, type) {
+    type = type || 'info';
+    const existing = document.querySelectorAll('.integram-toast');
+    existing.forEach(t => t.remove());
+    const toast = document.createElement('div');
+    toast.className = `integram-toast integram-toast-${type}`;
+    toast.textContent = message;
+    const toastBg = type === 'error'
+        ? getComputedStyle(document.documentElement).getPropertyValue('--toast-error-bg').trim() || '#dc3545'
+        : type === 'success'
+            ? getComputedStyle(document.documentElement).getPropertyValue('--toast-success-bg').trim() || '#28a745'
+            : getComputedStyle(document.documentElement).getPropertyValue('--toast-info-bg').trim() || '#17a2b8';
+    toast.style.cssText = `position:fixed;top:20px;right:20px;padding:12px 24px;border-radius:4px;color:white;z-index:10000;font-family:sans-serif;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.2);cursor:pointer;background-color:${toastBg};`;
+    document.body.appendChild(toast);
+    const remove = () => { if (toast.parentNode) toast.remove(); };
+    setTimeout(remove, 5000);
+    toast.addEventListener('click', remove);
+}
+
+// Calendar functionality
+let calendar;
+let allTasks = [];
+let taskStatuses = [];
+let currentView = 'dayGridMonth'; // Default view
+let autoRefreshInterval;
+let searchQuery = ''; // Issue #439: Search query state
+
+// Task type icons mapping
+const taskTypeIcons = {
+    'Call': '<i class="pi pi-phone"></i>',
+    'CRM work': '<i class="pi pi-file"></i>',
+    'Meeting': '<i class="pi pi-users"></i>',
+    'Email': '<i class="pi pi-envelope"></i>',
+    'Other': '<i class="pi pi-pencil"></i>'
+};
+
+// Toggle overdue section collapsed/expanded (Issue #423)
+function toggleOverdueSection(event) {
+    // Don't toggle if clicking on a task item
+    if (event.target.closest('.overdue-task-item')) {
+        return;
+    }
+
+    const section = document.getElementById('overdue-section');
+    const backdrop = document.getElementById('overdue-backdrop');
+
+    if (section.classList.contains('collapsed')) {
+        section.classList.remove('collapsed');
+        section.classList.add('expanded');
+        backdrop.classList.add('active');
+    } else {
+        section.classList.remove('expanded');
+        section.classList.add('collapsed');
+        backdrop.classList.remove('active');
+    }
+}
+
+// Collapse overdue section
+function collapseOverdueSection() {
+    const section = document.getElementById('overdue-section');
+    const backdrop = document.getElementById('overdue-backdrop');
+
+    section.classList.remove('expanded');
+    section.classList.add('collapsed');
+    backdrop.classList.remove('active');
+}
+
+// Initialize calendar on page load
+document.addEventListener('DOMContentLoaded', async function() {
+    initializeCalendar();
+    // Issue #443: Load executors first, then tasks
+    await loadFilterOptions();
+    loadTasks();
+    setupAutoRefresh();
+    // Issue #439: Setup search input blur handler after a short delay
+    setTimeout(setupSearchInputBlur, 500);
+});
+
+// Initialize FullCalendar
+function initializeCalendar() {
+    const calendarEl = document.getElementById('calendar');
+
+    calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        locale: 'ru',
+        firstDay: 1, // Monday
+        slotMinTime: '08:00:00',
+        slotMaxTime: '20:00:00',
+        height: '100%',
+        editable: true,
+        eventDurationEditable: false,
+        eventStartEditable: true,
+        eventDrop: handleEventDrop,
+        eventClick: handleEventClick,
+        eventDidMount: handleEventDidMount,
+        eventContent: function(arg) {
+            return { html: arg.event.title };
+        },
+        datesSet: handleDatesSet,
+        buttonText: {
+            today: 'Today',
+            month: 'Month',
+            week: 'Week',
+            day: 'Day'
+        }
+    });
+
+    calendar.render();
+
+    // Issue #439: Add search icon and input next to Today button
+    addSearchToToolbar();
+}
+
+// Issue #439: Add search functionality to calendar toolbar
+function addSearchToToolbar() {
+    // Find the Today button and add search UI next to it
+    const todayButton = document.querySelector('.fc-today-button');
+    if (!todayButton) return;
+
+    // Create search container
+    const searchContainer = document.createElement('div');
+    searchContainer.className = 'fc-search-container';
+    searchContainer.innerHTML = `
+        <button class="fc-search-icon" id="search-icon" onclick="showSearchInput()" title="Search tasks">
+            <i class="pi pi-search"></i>
+        </button>
+        <div class="fc-search-input-wrapper" id="search-input-wrapper">
+            <input
+                type="text"
+                class="fc-search-input"
+                id="search-input"
+                placeholder="Search tasks..."
+                oninput="performSearch()"
+            />
+            <button class="fc-search-close" onclick="hideSearchInput()" title="Close">
+                <i class="pi pi-times"></i>
+            </button>
+        </div>
+    `;
+
+    // Insert after Today button
+    todayButton.parentNode.insertBefore(searchContainer, todayButton.nextSibling);
+}
+
+// Issue #439: Show search input and hide icon
+function showSearchInput() {
+    const icon = document.getElementById('search-icon');
+    const wrapper = document.getElementById('search-input-wrapper');
+    const input = document.getElementById('search-input');
+
+    icon.style.display = 'none';
+    wrapper.classList.add('active');
+    input.focus();
+}
+
+// Issue #439: Hide search input and show icon
+function hideSearchInput() {
+    const icon = document.getElementById('search-icon');
+    const wrapper = document.getElementById('search-input-wrapper');
+    const input = document.getElementById('search-input');
+
+    // Clear input field and hide search (Issue #441)
+    input.value = '';
+    wrapper.classList.remove('active');
+    icon.style.display = 'inline-block';
+    searchQuery = '';
+    renderEvents(); // Re-render without search filter
+}
+
+// Issue #439: Handle blur event on search input
+function setupSearchInputBlur() {
+    const input = document.getElementById('search-input');
+    if (input) {
+        input.addEventListener('blur', function() {
+            // Delay to allow click on close button
+            // Don't auto-hide on blur anymore since close button will handle it (Issue #441)
+            // setTimeout(() => {
+            //     if (input.value.trim() === '') {
+            //         hideSearchInput();
+            //     }
+            // }, 200);
+        });
+    }
+}
+
+// Issue #439: Perform search and highlight matched tasks
+function performSearch() {
+    const input = document.getElementById('search-input');
+    searchQuery = input ? input.value.trim().toLowerCase() : '';
+    renderEvents();
+}
+
+// Load all filter options from API
+async function loadFilterOptions() {
+    try {
+        // Load executors
+        const executorResponse = await fetch(`/${ window.db }/report/5230?JSON_KV`);
+        const executors = await executorResponse.json();
+        populateExecutorFilter(executors);
+
+        // Load task types
+        const taskTypeResponse = await fetch(`/${ window.db }/report/5241?JSON_KV`);
+        const taskTypes = await taskTypeResponse.json();
+        populateTaskTypeFilter(taskTypes);
+
+        // Load statuses
+        const statusResponse = await fetch(`/${ window.db }/report/All%20task%20statuses?JSON_KV`);
+        const statuses = await statusResponse.json();
+        populateStatusFilter(statuses);
+    } catch (error) {
+        console.error('Error loading filter options:', error);
+    }
+}
+
+// Load tasks from API
+async function loadTasks() {
+    try {
+        // Get current view date range
+        const view = calendar.view;
+        const startDate = formatDateForAPI(view.activeStart);
+        const endDate = formatDateForAPI(view.activeEnd);
+
+        // Build query parameters with filters
+        let queryParams = `JSON_KV&FR_date=${ startDate }&TO_date=${ endDate }`;
+
+        // Add executor filter
+        const executorValue = document.getElementById('executorFilter').value;
+        if (executorValue) {
+            queryParams += `&FR_AssigneeID=${ encodeURIComponent(executorValue) }&FR_Assignee=%`;
+        }
+
+        // Add task type filter
+        const taskTypeValue = document.getElementById('taskTypeFilter').value;
+        if (taskTypeValue) {
+            queryParams += `&FR_Task%20typeID=${ encodeURIComponent(taskTypeValue) }`;
+        }
+
+        // Add status filter
+        const statusValue = document.getElementById('statusFilter').value;
+        if (statusValue) {
+            queryParams += `&FR_Task%20statusID=${ encodeURIComponent(statusValue) }`;
+        }
+
+        // Add important filter
+        const importantOnly = document.getElementById('importantFilter').checked;
+        if (importantOnly) {
+            queryParams += `&FR_Important=%`;
+        }
+
+        // Fetch tasks with filters applied on backend
+        const response = await fetch(`/${ window.db }/report/4283?${ queryParams }`);
+        const data = await response.json();
+
+        if (Array.isArray(data)) {
+            allTasks = data;
+            renderEvents();
+        } else {
+            console.error('Invalid tasks data format:', data);
+        }
+    } catch (error) {
+        console.error('Error loading tasks:', error);
+        showError('Failed to load tasks: ' + error.message);
+    }
+}
+
+// Format date for API (DD.MM.YYYY)
+function formatDateForAPI(date) {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${ day }.${ month }.${ year }`;
+}
+
+// Parse date from API format (DD.MM.YYYY HH:MM:SS)
+function parseDateFromAPI(dateStr) {
+    if (!dateStr) return null;
+
+    // Parse DD.MM.YYYY HH:MM:SS format
+    const parts = dateStr.split(' ');
+    if (parts.length < 1) return null;
+
+    const dateParts = parts[0].split('.');
+    if (dateParts.length !== 3) return null;
+
+    const day = parseInt(dateParts[0], 10);
+    const month = parseInt(dateParts[1], 10) - 1; // JS months are 0-indexed
+    const year = parseInt(dateParts[2], 10);
+
+    let hours = 0, minutes = 0, seconds = 0;
+    if (parts.length > 1) {
+        const timeParts = parts[1].split(':');
+        hours = parseInt(timeParts[0] || 0, 10);
+        minutes = parseInt(timeParts[1] || 0, 10);
+        seconds = parseInt(timeParts[2] || 0, 10);
+    }
+
+    return new Date(year, month, day, hours, minutes, seconds);
+}
+
+// Populate executor filter
+function populateExecutorFilter(executors) {
+    const executorFilter = document.getElementById('executorFilter');
+    executorFilter.innerHTML = '<option value="%">All assignees</option>';
+
+    if (Array.isArray(executors)) {
+        executors.forEach(executor => {
+            const option = document.createElement('option');
+            option.value = executor.k || executor.id || executor['UserID'];
+            option.textContent = executor.v || executor.name || executor.k || executor['User'];
+            executorFilter.appendChild(option);
+        });
+
+        // Issue #443: Set default to current user only if it exists in the dropdown
+        if (window.uid) {
+            // Check if window.uid exists among the options
+            const uidExists = Array.from(executorFilter.options).some(option => option.value === window.uid);
+            if (uidExists) {
+                executorFilter.value = window.uid;
+            }
+        }
+    }
+}
+
+// Populate task type filter
+function populateTaskTypeFilter(taskTypes) {
+    const taskTypeFilter = document.getElementById('taskTypeFilter');
+    taskTypeFilter.innerHTML = '<option value="">All</option>';
+
+    if (Array.isArray(taskTypes)) {
+        taskTypes.forEach(type => {
+            const option = document.createElement('option');
+            option.value = type.k || type.id || type['Task typeID'];
+            option.textContent = type.v || type.name || type.k || type['Task type'];
+            taskTypeFilter.appendChild(option);
+        });
+    }
+}
+
+// Populate status filter
+function populateStatusFilter(statuses) {
+    const statusFilter = document.getElementById('statusFilter');
+    statusFilter.innerHTML = '<option value="">All</option>';
+
+    if (Array.isArray(statuses)) {
+        statuses.forEach(status => {
+            const option = document.createElement('option');
+            option.value = status.k || status.id || status['Task statusID'];
+            option.textContent = status.v || status.name || status.k || status['Task status'];
+            statusFilter.appendChild(option);
+        });
+    }
+}
+
+// Apply filters and render events
+function applyFilters() {
+    // Since filters are now applied on the backend, reload tasks with new filters
+    loadTasks();
+}
+
+// Render events (called after tasks are loaded)
+function renderEvents() {
+    // Issue #439: Filter tasks based on search query
+    let tasksToRender = allTasks;
+    if (searchQuery) {
+        tasksToRender = allTasks.filter(task => taskMatchesSearch(task, searchQuery));
+    }
+
+    // Convert to FullCalendar events
+    const events = tasksToRender.map(task => convertTaskToEvent(task));
+
+    // Update calendar
+    calendar.removeAllEvents();
+    calendar.addEventSource(events);
+
+    // Update overdue section
+    updateOverdueSection(allTasks);
+}
+
+// Issue #439: Check if task matches search query (search in all fields)
+function taskMatchesSearch(task, query) {
+    if (!query) return true;
+
+    // Search in all task fields
+    const searchableFields = [
+        task['Task'],
+        task['Description'],
+        task['Customer'],
+        task['Assignee'],
+        task['Status'],
+        task['Task type'],
+        task['Due date']
+    ];
+
+    return searchableFields.some(field => {
+        if (!field) return false;
+        return String(field).toLowerCase().includes(query);
+    });
+}
+
+// Convert task to FullCalendar event
+function convertTaskToEvent(task) {
+    const deadline = parseDateFromAPI(task['Due date']);
+    const now = new Date();
+    const isOverdue = deadline && deadline < now;
+    const isImportant = task['Important'] === 'X';
+    const customColor = task['color'];
+
+    // Get task type icon
+    const taskType = task['Task type'] || 'Other';
+    const icon = taskTypeIcons[taskType] || taskTypeIcons['Other'];
+
+    // Determine event color
+    let backgroundColor = '';
+    let classNames = [];
+
+    if (customColor) {
+        backgroundColor = customColor;
+        classNames.push('event-custom');
+    } else if (isOverdue) {
+        backgroundColor = 'var(--overdue-color)';
+        classNames.push('event-overdue');
+    } else if (isImportant) {
+        backgroundColor = 'var(--important-color)';
+        classNames.push('event-important');
+    } else {
+        backgroundColor = 'var(--primary-color)';
+    }
+
+    // Issue #439: Add highlight class if task matches search
+    if (searchQuery && taskMatchesSearch(task, searchQuery)) {
+        classNames.push('event-search-match');
+    }
+
+    return {
+        id: task['TaskID'],
+        title: `${ icon } ${ task['Task'] || 'Untitled' }`,
+        start: deadline,
+        allDay: false,
+        backgroundColor: backgroundColor,
+        borderColor: backgroundColor,
+        classNames: classNames,
+        extendedProps: {
+            description: task['Description'] || '',
+            client: task['Customer'] || '',
+            executor: task['Assignee'] || '',
+            status: task['Status'] || '',
+            taskType: taskType,
+            important: isImportant,
+            taskData: task
+        }
+    };
+}
+
+// Update overdue section
+function updateOverdueSection(tasks) {
+    const now = new Date();
+    const overdueTasks = tasks.filter(task => {
+        const deadline = parseDateFromAPI(task['Due date']);
+        return deadline && deadline < now && task['Status'] !== 'Done';
+    });
+
+    const overdueSection = document.getElementById('overdue-section');
+    const overdueCount = document.getElementById('overdue-count');
+    const overdueList = document.getElementById('overdue-list');
+
+    if (overdueTasks.length === 0) {
+        overdueSection.style.display = 'none';
+        return;
+    }
+
+    overdueSection.style.display = 'block';
+    overdueCount.textContent = overdueTasks.length;
+
+    overdueList.innerHTML = overdueTasks.map(task => {
+        const taskType = task['Task type'] || 'Other';
+        const icon = taskTypeIcons[taskType] || taskTypeIcons['Other'];
+
+        return `
+            <div class="overdue-task-item" onclick="openTaskDetail('${ task['TaskID'] }')">
+                <span class="overdue-task-icon">${ icon }</span>
+                <div class="overdue-task-info">
+                    <div class="overdue-task-title">${ task['Task'] || 'Untitled' }</div>
+                    <div class="overdue-task-executor">${ task['Assignee'] || '' }</div>
+                </div>
+                <div class="overdue-task-date">${ task['Due date'] || '' }</div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Handle event drop (drag and drop)
+async function handleEventDrop(info) {
+    const taskId = info.event.id;
+    const newDate = info.event.start;
+
+    // Format new date for API (DD.MM.YYYY HH:MM:SS)
+    const formattedDate = formatDateTimeForAPI(newDate);
+
+    try {
+        // Update task deadline via API
+        const formData = new FormData();
+        formData.append('_xsrf', window.xsrf);
+        formData.append('t3888', formattedDate); // Assuming t3888 is the field ID for deadline
+
+        const response = await fetch(`/${ window.db }/_m_set/${ taskId }/?JSON`, {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.error) {
+            showNotification('Update failed: ' + result.error, 'error');
+            info.revert();
+        } else {
+            // Update local task data
+            const task = allTasks.find(t => t['TaskID'] === taskId);
+            if (task) {
+                task['Due date'] = formattedDate;
+            }
+        }
+    } catch (error) {
+        console.error('Error updating task:', error);
+        showNotification('Failed to update the task', 'error');
+        info.revert();
+    }
+}
+
+// Format date and time for API (DD.MM.YYYY HH:MM:SS)
+function formatDateTimeForAPI(date) {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    const seconds = String(d.getSeconds()).padStart(2, '0');
+    return `${ day }.${ month }.${ year } ${ hours }:${ minutes }:${ seconds }`;
+}
+
+// Handle event click
+function handleEventClick(info) {
+    const taskId = info.event.id;
+    openTaskDetail(taskId);
+}
+
+// Open task detail (Issue #425)
+async function openTaskDetail(taskId) {
+    // Create a temporary IntegramTable instance to use its edit form functionality
+    const tempContainer = document.createElement('div');
+    tempContainer.id = 'temp-table-container';
+    tempContainer.style.display = 'none';
+    document.body.appendChild(tempContainer);
+
+    try {
+        // Create IntegramTable instance with minimal configuration
+        // Use report/4283 as apiUrl to properly initialize the table component (issue #437)
+        const tempTable = new IntegramTable('temp-table-container', {
+            apiUrl: `/${ window.db }/report/4283?JSON_KV`,
+            instanceName: 'calendarTaskEdit'
+        });
+
+        // Task type ID is 3596 as per issue #425
+        const taskTypeId = 3596;
+
+        // Open edit form for the task
+        await tempTable.openEditForm(taskId, taskTypeId, 0);
+
+        // Clean up temp container after modal is opened
+        setTimeout(() => {
+            document.body.removeChild(tempContainer);
+        }, 100);
+    } catch (error) {
+        console.error('Error opening task edit form:', error);
+        showNotification('Failed to open the task edit form', 'error');
+        // Clean up on error
+        if (tempContainer.parentNode) {
+            document.body.removeChild(tempContainer);
+        }
+    }
+}
+
+// Create new task (Issue #427)
+async function createNewTask() {
+    const tempContainer = document.createElement('div');
+    tempContainer.id = 'temp-table-container-create';
+    tempContainer.style.display = 'none';
+    document.body.appendChild(tempContainer);
+
+    try {
+        // Create IntegramTable instance with minimal configuration
+        // Use report/4283 as apiUrl to properly initialize the table component (issue #437)
+        const tempTable = new IntegramTable('temp-table-container-create', {
+            apiUrl: `/${ window.db }/report/4283?JSON_KV`,
+            instanceName: 'calendarTaskCreate'
+        });
+
+        // Task type ID is 3596
+        const taskTypeId = 3596;
+
+        // Open create form (pass empty/null recordId to trigger create mode)
+        await tempTable.openEditForm(null, taskTypeId, 0);
+
+        // Clean up temp container after modal is opened
+        setTimeout(() => {
+            document.body.removeChild(tempContainer);
+        }, 100);
+    } catch (error) {
+        console.error('Error opening task create form:', error);
+        showNotification('Failed to open the new task form', 'error');
+        // Clean up on error
+        if (tempContainer.parentNode) {
+            document.body.removeChild(tempContainer);
+        }
+    }
+}
+
+// Handle event mount (for tooltips)
+function handleEventDidMount(info) {
+    const props = info.event.extendedProps;
+
+    // Create tooltip content
+    const tooltipContent = `
+        <strong>${ info.event.title }</strong><br>
+        ${ props.client ? `Customer: ${ props.client }<br>` : '' }
+        ${ props.executor ? `Assignee: ${ props.executor }<br>` : '' }
+        ${ props.description ? `Description: ${ props.description }<br>` : '' }
+    `;
+
+    // Set title attribute for native tooltip
+    info.el.setAttribute('title', tooltipContent.replace(/<br>/g, '\n').replace(/<\/?strong>/g, ''));
+}
+
+// Handle date range change
+function handleDatesSet(info) {
+    // Reload tasks when date range changes
+    loadTasks();
+}
+
+// Refresh calendar
+function refreshCalendar() {
+    loadTasks();
+}
+
+// Setup auto-refresh
+function setupAutoRefresh() {
+    // Refresh every 60 seconds
+    autoRefreshInterval = setInterval(() => {
+        loadTasks();
+    }, 60000);
+}
+
+// Show error
+function showError(message) {
+    const calendarEl = document.getElementById('calendar');
+    calendarEl.innerHTML = `<div class="error">${ message }</div>`;
+}
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', function() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+    }
+});
+</script>
+<script src="/js/hints.js"></script>
+<!-- Workspace hints -->
+<style>
+#calendar-hint-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 420px;
+    background: var(--card-bg, #fff);
+    border-radius: 12px;
+    padding: 1.25rem 1.25rem 1rem;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.28);
+    z-index: 2000;
+    display: none;
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+}
+#calendar-hint-box .hint-drag-handle {
+    position: absolute;
+    top: 6px;
+    left: 0;
+    right: 12px;
+    height: 2rem;
+    cursor: grab;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+#calendar-hint-box .hint-drag-handle:active { cursor: grabbing; }
+#calendar-hint-box .hint-drag-handle .hint-drag-icon {
+    font-size: 1rem;
+    color: var(--text-secondary, #888);
+    pointer-events: none;
+    line-height: 1;
+    letter-spacing: 2px;
+}
+#calendar-hint-mobile-toggle {
+    display: none;
+    position: fixed;
+    right: 1rem;
+    z-index: 2001;
+    background: var(--button-primary, #0d6efd);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 2.4rem;
+    height: 2.4rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    align-items: center;
+    justify-content: center;
+}
+@media (max-width: 767px) {
+    #calendar-hint-box { width: calc(100% - 2rem); max-width: none; }
+    #calendar-hint-mobile-toggle { display: flex; }
+}
+</style>
+<div id="calendar-hint-box">
+    <div class="hint-drag-handle" id="calendar-hint-drag-handle" title="You can drag this window around the screen"><span class="hint-drag-icon">⠿⠿</span></div>
+    <div id="calendar-hint-1" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Navigating dates</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Use the "next" and "previous" buttons in the calendar header to move between months and weeks. "Today" takes you straight back to the current date. Switch views (month / week / day) in the top right corner.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="calendarHintClose()" style="padding:0.35rem 0.9rem; border:1px solid var(--border-color); border-radius:6px; background:none; color:var(--text-secondary); cursor:pointer; font-size:0.85rem;">Close</button>
+        </div>
+    </div>
+    <div id="calendar-hint-2" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Filtering events</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Use the "Assignee", "Task type" and "Status" drop-downs to show only the events you need. Check "Important" to highlight priority tasks. Overdue tasks are collected in a separate section at the bottom.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="calendarHintClose()" style="padding:0.35rem 0.9rem; border:1px solid var(--border-color); border-radius:6px; background:none; color:var(--text-secondary); cursor:pointer; font-size:0.85rem;">Close</button>
+        </div>
+    </div>
+    <div id="calendar-hint-3" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Compact and expanded view</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Click any event to open its card for editing. Click the "Overdue" section to collapse or expand it and keep the screen tidy.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="calendarHintClose()" style="padding:0.35rem 0.9rem; border:none; border-radius:6px; background:var(--button-primary,#0d6efd); color:#fff; cursor:pointer; font-size:0.85rem;">Got it</button>
+        </div>
+    </div>
+</div>
+<button id="calendar-hint-mobile-toggle" title="Move hint" aria-label="Move hint up/down" style="bottom:5rem;"></button>
+<script>
+// Workspace-specific hint configuration for 'calendar'.
+// Texts and steps are defined here; the display mechanism is in /js/hints.js.
+document.addEventListener('DOMContentLoaded', function() {
+    window.initHints({
+        workspace: 'calendar',
+        steps: 3,
+        onInit: function(api) {
+            var execFilter = document.getElementById('executorFilter');
+            if (execFilter) execFilter.addEventListener('change', function() { api.advance(2); });
+            var nextBtn = document.querySelector('.fc-next-button');
+            if (nextBtn) nextBtn.addEventListener('click', function() { api.advance(2); });
+            var importantFilter = document.getElementById('importantFilter');
+            if (importantFilter) importantFilter.addEventListener('change', function() { api.advance(3); });
+        }
+    });
+});
+</script>
