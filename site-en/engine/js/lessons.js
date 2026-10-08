@@ -130,7 +130,7 @@
                   hl: ['tables'], check: function () { return onPage(['tables']); } },
                 { on: ['tables'], title: 'Tables',
                   html: '<p>These are the tables of your database. Even an empty system has the basic tables every app needs: users, roles, queries and lookups. The ORGANIZER folder in the menu also has ready-made tables for tasks, deals and contacts.</p>'
-                      + '<p>Click a table name to open it, or create a new table with the <b>+</b> button. Now open <b>Users</b> in the menu.</p>',
+                      + '<p>Click a table name to open it, or create a new table with <b>+ New table</b>. Now open <b>Users</b> in the menu.</p>',
                   hl: ['table/18'], check: function () { return onPage(['table/18']); } },
                 { on: ['table/18'], title: 'Users',
                   html: '<p>This is the list of users. Initially there is only you — the administrator, named the same as your database. You can add users here and assign roles to them: a role defines access to tables and workplaces and the menu the user sees.</p>'
@@ -149,7 +149,7 @@
                   hl: ['dir_admin'], next: true },
                 { on: [], title: 'Your account',
                   html: '<p>The menu in the top right corner links to your account, the theme and font settings, password change and logout. In <i>My account</i> you can create more databases and change your plan.</p>'
-                      + '<p>The <b>AI</b> button opens an assistant that can build tables and queries for you.</p><p>That\'s the end of the tour. Go back to the home page and start the next lesson: <b>Data import</b>.</p>',
+                      + '<p>The chat button next to it opens the AI assistant that can build tables and queries for you.</p><p>That\'s the end of the tour. Go back to the <a href="' + url('') + '">home page</a> and start the next lesson: <b>Data import</b>.</p>',
                   sel: ['#user-menu-toggle', '#ai-chat-toggle'], next: true, last: true }
             ]
         },
@@ -167,18 +167,24 @@
                       + '<p>Press <b>Check</b>: Integram parses the text and shows how it will be imported. The first row becomes the table and column names.</p>',
                   next: true },
                 { on: ['upload'], title: 'Set up the import',
-                  html: '<p>Below the text you see a card for each column of the future table. Here you can rename, skip and reorder columns:</p><ul>'
+                  html: '<p>Press <b>Configure</b>: besides the file settings (headers, delimiter, encoding) it shows a card for each column of the future table. Here you can rename, skip and reorder columns and change their types:</p><ul>'
                       + '<li>uncheck <b>Rank</b> — it is just the row number in the file;</li>'
                       + '<li>rename <b>Title</b> to <b>Movie</b> — this will be the table name;</li>'
                       + '<li>click the link icon on <b>Director</b> once to make it a reference, so that directors become a lookup table;</li>'
-                      + '<li>click the link icon on <b>Genre</b> and <b>Actors</b> twice to make them multiple choice — a movie has several of them.</li></ul>'
-                      + '<p>Press <b>Refresh</b> to apply the changes. <b>Configure</b> holds the file settings: headers, delimiter and encoding.</p>',
+                      + '<li>click the link icon on <b>Genre</b> and <b>Actors</b> twice to make them multiple choice — a movie has several of them;</li>'
+                      + '<li>switch the type of <b>Description</b> from chars to <b>memo</b> for a multi-line input.</li></ul>'
+                      + '<p>Press <b>Refresh</b> to apply the changes and check the preview below.</p>',
                   next: true },
                 { on: ['upload'], title: 'Check and upload',
                   html: '<p>Press <b>Statistics</b> to see the minimum, maximum, totals and the number of empty cells per column — handy to reconcile with the source spreadsheet.</p>'
-                      + '<p>When everything looks right, press <b>Upload</b> and confirm. The log shows which tables and columns were created; then the data is loaded at 500–3000 records per second.</p>'
-                      + '<p class="lsn-wait">I am waiting for the <i>Movie</i> table to appear…</p>',
-                  check: function () { return tableId(['Movie', 'Movies', 'Title']).then(Boolean); } },
+                      + '<p>When everything looks right, press <b>Upload</b> and then <b>Yes, upload</b>. The log shows which tables and columns were created; then the data is loaded at 500–3000 records per second.</p>'
+                      + '<p class="lsn-wait">Stay on this page until the upload reaches 100%…</p>',
+                  check: function () {
+                      return tableId(['Movie', 'Movies', 'Title']).then(function (id) {
+                          // Leaving the page too early breaks the import: wait for the 100% line
+                          return !!id && (!onPage(['upload']) || /\(100%\)/.test(document.body.innerText));
+                      });
+                  } },
                 { on: ['tables'], title: 'Your new tables',
                   html: '<p>Done! Open <b>Tables</b>: there are the movies plus the lookups Integram filled from the file — directors, genres and actors.</p><p>Open the movie table.</p>',
                   hl: ['tables'],
@@ -211,7 +217,7 @@
                       });
                   } },
                 { on: ['sql'], title: 'Add columns',
-                  html: '<p>The query is empty so far. In the <i>Add a column</i> block choose the <b>Movie</b> table and its <b>Year</b> column, then <b>Runtime (Minutes)</b>, and then the <b>Movie</b> column itself.</p>'
+                  html: '<p>The query is empty so far. On the right, under <i>Add a column</i>, choose the <b>Movie</b> table and then its column <b>Movie -> Year</b>. Add two more the same way: <b>Movie -> Runtime (Minutes)</b> and <b>Movie</b> itself.</p>'
                       + '<p>Notice that once you add a column, the table list keeps only the tables linked to the ones already in the query.</p>'
                       + '<p class="lsn-wait">I am waiting for 3 columns in the query…</p>',
                   check: function () {
@@ -219,16 +225,16 @@
                       return records(28, state.vars.query).then(function (r) { return r.length >= 3; });
                   } },
                 { on: ['sql'], title: 'Aggregates',
-                  html: '<p>Now let\'s calculate. Press the <b>Function</b> button and choose <b>AVG</b> (average) for <i>Runtime</i> and <b>COUNT</b> for <i>Movie</i>. Integram groups the rows by the remaining column — the year.</p>'
+                  html: '<p>Now let\'s calculate. Press the <b>Function</b> button: a row of lists appears under the column names. Choose <b>AVG</b> (average) under <i>Runtime</i> and <b>COUNT</b> under <i>Movie</i>. Integram groups the rows by the remaining column — the year.</p>'
                       + '<p>The builder shows the first rows of the result right away, so you see each change on the fly.</p>',
                   next: true },
-                { on: ['sql'], title: 'Order and totals',
-                  html: '<p>Press <b>Order</b> and sort by <i>Year</i>. You can sort by several columns — experiment and then go back to sorting by year.</p>'
-                      + '<p>Press <b>Totals</b> and choose <b>SUM</b> for the <i>Movie</i> column: the total row shows 1000 movies.</p>',
+                { on: ['sql'], title: 'Sorting and totals',
+                  html: '<p>Press <b>Sort</b> and click the arrows icon under <i>Year</i>: the badge 1 shows it is the first sort column, and one more click reverses the order. You can sort by several columns.</p>'
+                      + '<p>Press <b>Totals</b> and choose <b>SUM</b> under <i>Movie</i>: the total row shows 1000 movies.</p>',
                   next: true },
                 { on: ['sql'], title: 'Filters',
-                  html: '<p>Press <b>Filter</b> and type <b>2016</b> in the <i>Year</i> filter. Filters work by the same rules as in tables.</p>'
-                      + '<p>Add one more column — <b>Movie → Genre</b> — to see how the 2016 movies split by genre, and sort by the movie count descending to find the most popular genre. Clear the totals: a movie has several genres, so the sum no longer makes sense.</p>',
+                  html: '<p>Press <b>Filter</b>, type <b>2016</b> in the <i>From</i> field under <i>Year</i> and press Enter: only that year is left. Fill in <i>To</i> as well to get a range.</p>'
+                      + '<p>Now clear the filter field and press Enter again: in the next lesson this query draws a chart of all the years.</p>',
                   next: true },
                 { on: ['sql', 'report'], title: 'What we have learned',
                   html: '<p>You selected data from linked tables, grouped it, calculated averages and counts, sorted, filtered and added totals. Highlighted buttons mean a setting is in use.</p>'
@@ -254,21 +260,24 @@
                   } },
                 { on: ['forms'], title: 'A panel to add users',
                   html: '<p>A form consists of panels. Each panel shows a table or a query in a certain way.</p>'
-                      + '<p>Press <b>Add panel</b>, choose the <b>User</b> table as the source and the <b>table</b> type. Users can be added and edited right on the form.</p>',
+                      + '<p>Press <b>Add panel</b>, enter the title <b>Users</b> and choose the <b>Data entry form</b> type. Set <i>Data source</i> to <b>Table (object)</b>, pick <b>User</b> and press <b>Add</b>. Users can now be added right on the form.</p>'
+                      + '<p>If the new panel says <i>Set up a data source</i>, refresh the page.</p>',
                   check: function () {
                       if (!state.vars.form) return Promise.resolve(false);
                       return records(138, state.vars.form).then(function (r) { return r.length >= 1; });
                   } },
                 { on: ['forms'], title: 'A chart panel',
-                  html: '<p>Add one more panel: the source is the <b>Average duration</b> query from the previous lesson and the type is <b>XYChart</b>. It draws the average movie length by year.</p>',
+                  html: '<p>Add one more panel: the title <b>Average duration by year</b>, the <b>Line chart</b> type, <i>Data source</i> — <b>Query (report)</b> and the <b>Average duration</b> query from the previous lesson. It draws the movie length and count by year.</p>',
                   check: function () {
                       if (!state.vars.form) return Promise.resolve(false);
                       return records(138, state.vars.form).then(function (r) { return r.length >= 2; });
                   } },
                 { on: ['forms'], title: 'Run the form',
-                  html: '<p>Switch from <b>Edit</b> to <b>View</b> mode to see the form as users will. Add a user through the first panel and check the chart.</p>'
+                  html: function () {
+                      return '<p>You are in the edit mode. <a href="' + url('forms/' + state.vars.form) + '">Open the form</a> as users will see it, add a user through the first panel and check the chart. The <b>Edit</b> button brings you back to the builder.</p>'
                       + '<p>Important: to let other users open the form, their role needs read access to the tables and queries the form uses.</p>'
-                      + '<p>The last lesson is <b>Data structures</b>.</p>',
+                      + '<p>The last lesson is <b>Data structures</b>.</p>';
+                  },
                   next: true, last: true }
             ]
         },
@@ -282,16 +291,16 @@
                   hl: ['edit_types'],
                   check: function () { return tableId('Book').then(Boolean); } },
                 { on: ['edit_types'], title: 'Book properties',
-                  html: '<p>You taught the system a new term. Now add columns to the <b>Book</b> card: pick a name in its list and press <b>Add column</b>, or pick <i>--- add new ---</i> to create one:</p><ul>'
-                      + '<li><b>Started</b> — DATE;</li><li><b>Notes</b> — MEMO, a multi-line text.</li></ul>'
+                  html: '<p>You taught the system a new term. The new <b>Book</b> card is at the bottom of the page: click the name <b>Book</b> in it to open its settings.</p>'
+                      + '<p>At the bottom of the card pick a column in the list and press <b>Add column</b>. Terms the system already knows can be reused by any table — add <b>Start date (date)</b> and <b>Notes (memo)</b>, a multi-line text.</p>'
                       + '<p class="lsn-wait">I am waiting for both columns…</p>',
-                  check: function () { return hasColumns('Book', ['Started', 'Notes']); } },
+                  check: function () { return hasColumns('Book', ['Start date', 'Notes']); } },
                 { on: ['edit_types'], title: 'A lookup: reading status',
-                  html: '<p>We want to choose a status from a list: <i>To read</i>, <i>Reading</i>, <i>Finished</i>. Add a new column <b>Reading status</b> to the Book and tick <b>Link</b> — Integram creates the lookup table and links the book to it.</p>',
+                  html: '<p>We want to choose a status from a list: <i>To read</i>, <i>Reading</i>, <i>Finished</i>. In the same list pick <i>--- add new ---</i>, type <b>Reading status</b>, tick <b>Link</b> and press <b>Create</b>: Integram creates the lookup table and links the book to it.</p>',
                   check: function () { return hasColumns('Book', ['Reading status']); } },
                 { on: ['edit_types'], title: 'A linked table: authors',
-                  html: '<p>Authors deserve their own table with properties. Create a table <b>Author</b>, add columns <b>Country</b> and <b>Website</b> to it, and then add a column <b>Author</b> to the <b>Book</b> with <b>Link</b> ticked.</p>'
-                      + '<p>Linked tables are drawn to the right of the table that refers to them.</p>',
+                  html: '<p>Authors deserve their own table with properties. Create the table <b>Author</b> with the field at the top of the page, open its card and add new columns <b>Country</b> and <b>Website</b> (<i>--- add new ---</i>, SHORT, <b>Create</b>).</p>'
+                      + '<p>Then press <b>Create link</b> in the Author card: the column list gets <b>-->Author</b>, a reference to authors. Add it to the <b>Book</b>. Linked tables are drawn to the right of the table that refers to them.</p>',
                   check: function () {
                       return Promise.all([hasColumns('Author', ['Country', 'Website']), hasColumns('Book', ['Author'])])
                           .then(function (r) { return r[0] && r[1]; });
@@ -426,7 +435,23 @@
         });
     }
 
-    // Page hint boxes (js/hints.js) overlap the lesson panel: hide them while a lesson runs
+    // Page hints (js/hints.js and the info pop-ups of table.html) cover the page and block
+    // clicks. They all stay silent while hints_mode is 'off', so a running lesson switches
+    // them off and gives the user's own setting back when it ends.
+    function muteHints() {
+        try {
+            if (!('hintsPrev' in state)) { state.hintsPrev = localStorage.getItem('hints_mode'); save(); }
+            localStorage.setItem('hints_mode', 'off');
+        } catch (e) { /* ignore */ }
+    }
+    function restoreHints() {
+        if (!('hintsPrev' in state)) return;
+        try {
+            if (state.hintsPrev === null) localStorage.removeItem('hints_mode');
+            else localStorage.setItem('hints_mode', state.hintsPrev);
+        } catch (e) { /* ignore */ }
+        delete state.hintsPrev;
+    }
     function hideHints() {
         document.querySelectorAll('[id$="-hint-box"]').forEach(function (el) { el.style.display = 'none'; });
     }
@@ -452,7 +477,7 @@
         box.querySelector('.lsn-count').textContent = (i + 1) + '/' + n;
         box.querySelector('.lsn-x').textContent = state.min ? '+' : '–';
 
-        var body = s.html, foot = '';
+        var body = typeof s.html === 'function' ? s.html() : s.html, foot = '';
         var away = s.on.length && !onPage(s.on);
         // A step that waits for the user to open a menu item is fine on any page
         if (away && !(s.hl && s.check)) {
@@ -484,6 +509,7 @@
     function finish() {
         state.done[state.cur] = true;
         state.cur = null; state.step = 0;
+        restoreHints();
         save();
         render();
         markCards();
@@ -491,6 +517,7 @@
 
     function stop() {
         state.cur = null; state.step = 0;
+        restoreHints();
         save();
         render();
     }
@@ -512,6 +539,7 @@
     function start(name) {
         if (!LESSONS[name]) return;
         state.cur = name; state.step = 0; state.min = false;
+        muteHints();
         save();
         var first = LESSONS[name].steps[0];
         // Jump to the first workplace of the lesson right away
@@ -540,6 +568,7 @@
     window.IntegramLessons = { start: start, stop: stop, order: ORDER, lessons: LESSONS };
 
     function init() {
+        if (state.cur) muteHints();
         markCards();
         render();
         // The sidebar is built on DOMContentLoaded by main-app.js: mark menu items once it exists
