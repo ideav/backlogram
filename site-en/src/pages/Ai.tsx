@@ -62,7 +62,7 @@ export default function Ai() {
             </div>
             <p className="mt-4 text-sm text-slate-500">API and MCP access are included in every plan, free included.</p>
           </div>
-          <Img src="/img/ai-mcp.png" alt="An AI agent connected to an Integram workspace through MCP, creating linked tables" eager />
+          <Img src="/img/ai-mcp.png" eager />
         </Container>
       </section>
 

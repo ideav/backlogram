@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import { href, SIGNUP_PATH } from '../site'
+import { getImageAlt } from '../content/imageAlt'
 
 /** Internal link that respects the deployment base. Plain <a>: every page is a prerendered file. */
 export function A({
@@ -165,7 +166,7 @@ export function Img({
   className = '',
 }: {
   src: string
-  alt: string
+  alt?: string
   width?: number
   height?: number
   eager?: boolean
@@ -174,7 +175,7 @@ export function Img({
   return (
     <img
       src={href(src)}
-      alt={alt}
+      alt={alt ?? getImageAlt(src)}
       width={width}
       height={height}
       loading={eager ? 'eager' : 'lazy'}
