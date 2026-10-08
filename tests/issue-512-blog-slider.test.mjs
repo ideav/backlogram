@@ -14,13 +14,15 @@ import { cpSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import { readBlogPosts, SLIDER_LIMIT } from '../scripts/lib/blog-posts.mjs'
-import { BLOG_URL, BLOG_POSTS } from '../src/data/blogPosts.mjs'
+import { BLOG_URL, BLOG_POSTS, BLOG_POSTS_AS_OF, visibleBlogPosts } from '../src/data/blogPosts.mjs'
 
 const repo = new URL('..', import.meta.url).pathname
 const read = (path) => readFileSync(resolve(repo, path), 'utf8')
 
 test('src/data/blogPosts.mjs совпадает с контентом блога', () => {
-  const expected = readBlogPosts(SLIDER_LIMIT)
+  // Сверяем «на день сборки»: отложенные статьи (issue #726) делают состав
+  // списка зависимым от даты, и без этого тест краснел бы сам по себе.
+  const expected = readBlogPosts(SLIDER_LIMIT, { today: BLOG_POSTS_AS_OF })
 
   assert.equal(
     BLOG_POSTS.length,
@@ -59,7 +61,7 @@ test('слайдер подключён к главной и ведёт в бл�
   assert.match(home, /<BlogSlider \/>/)
 
   const slider = read('src/components/BlogSlider.tsx')
-  assert.match(slider, /import \{ BLOG_URL, BLOG_POSTS \} from '\.\.\/data\/blogPosts'/)
+  assert.match(slider, /import \{ BLOG_URL, visibleBlogPosts \} from '\.\.\/data\/blogPosts'/)
   assert.match(slider, /Перейти в блог/)
   assert.match(slider, /href=\{`\$\{BLOG_URL\}\/`\}/)
   // Карточки уходят на внешний домен — только новой вкладкой и без noopener-дыры.
@@ -91,7 +93,10 @@ test('пререндер главной показывает статьи бло
 
   assert.match(out, /Свежее в блоге/)
   assert.match(out, new RegExp(`<a href="${BLOG_URL}/">Перейти в блог</a>`))
+  // В снапшоте — только вышедшие статьи; отложенные (issue #726) туда не
+  // попадают, иначе краулер пошёл бы по ссылке на ещё не собранную страницу.
   for (const post of BLOG_POSTS) {
-    assert.ok(out.includes(post.url), `в снапшоте нет ссылки на ${post.slug}`)
+    const visible = visibleBlogPosts().includes(post)
+    assert.equal(out.includes(post.url), visible, `${post.slug}: в снапшоте ${visible ? 'нет' : 'лишняя'} ссылка`)
   }
 })

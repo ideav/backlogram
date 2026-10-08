@@ -1,4 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content'
+import { isPublished } from './published.mjs'
 
 // Слаг тега и порог «тонкого» тега живут в tag-slug.mjs: их же импортирует
 // astro.config.mjs для фильтра карты сайта, где astro:content недоступен.
@@ -14,7 +15,7 @@ export interface TagInfo {
 }
 
 export async function getAllTags(): Promise<TagInfo[]> {
-  const posts = await getCollection('posts', ({ data }) => !data.draft)
+  const posts = await getCollection('posts', ({ data }) => isPublished(data))
   const counts = new Map<string, number>()
   for (const post of posts) {
     for (const tag of post.data.tags ?? []) {
@@ -39,7 +40,7 @@ export async function getAllTags(): Promise<TagInfo[]> {
 export async function getPostsByTagSlug(
   slug: string
 ): Promise<CollectionEntry<'posts'>[]> {
-  const posts = await getCollection('posts', ({ data }) => !data.draft)
+  const posts = await getCollection('posts', ({ data }) => isPublished(data))
   return posts.filter((post) =>
     (post.data.tags ?? []).some((t) => tagSlug(t) === slug)
   )

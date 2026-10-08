@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
-import { BLOG_URL, BLOG_POSTS } from '../data/blogPosts'
+import { BLOG_URL, visibleBlogPosts } from '../data/blogPosts'
 
 /**
  * Слайдер свежих статей блога на главной (issue #512).
@@ -16,6 +16,8 @@ import { BLOG_URL, BLOG_POSTS } from '../data/blogPosts'
  * рассинхронизироваться с реальным положением ленты.
  */
 export default function BlogSlider() {
+  // Отложенные статьи открываются в свой день без пересборки (issue #726).
+  const [posts] = useState(() => visibleBlogPosts())
   const trackRef = useRef<HTMLDivElement>(null)
   const [atStart, setAtStart] = useState(true)
   const [atEnd, setAtEnd] = useState(false)
@@ -44,7 +46,7 @@ export default function BlogSlider() {
     el.scrollBy({ left: dir === 'left' ? -step : step, behavior: 'smooth' })
   }
 
-  if (BLOG_POSTS.length === 0) return null
+  if (posts.length === 0) return null
 
   return (
     <section id="blog" className="py-24 border-t border-slate-200 dark:border-slate-900">
@@ -104,7 +106,7 @@ export default function BlogSlider() {
             onScroll={syncEdges}
             className="flex gap-6 overflow-x-auto scrollbar-none snap-x snap-mandatory pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"
           >
-            {BLOG_POSTS.map((post) => (
+            {posts.map((post) => (
               <a
                 key={post.slug}
                 href={post.url}

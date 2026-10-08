@@ -1,6 +1,7 @@
 ---
 import { existsSync } from 'node:fs'
 import { getCollection, render } from 'astro:content'
+import { isPublished } from '../../lib/published.mjs'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import { tagSlug } from '../../lib/tags'
 import { categorySlug } from '../../lib/categories'
@@ -21,7 +22,7 @@ function ogImage(image) {
 }
 
 export async function getStaticPaths() {
-  const all = await getCollection('posts', ({ data }) => !data.draft)
+  const all = await getCollection('posts', ({ data }) => isPublished(data))
   const ascending = [...all].sort(
     (a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf()
   )

@@ -23,7 +23,8 @@ const { tag, count, posts } = Astro.props
 
 // Sort newest first, assign issue numbers from the full collection ordering
 import { getCollection } from 'astro:content'
-const allPosts = await getCollection('posts', ({ data }) => !data.draft)
+import { isPublished } from '../../lib/published.mjs'
+const allPosts = await getCollection('posts', ({ data }) => isPublished(data))
 const ascending = [...allPosts].sort(
   (a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf()
 )

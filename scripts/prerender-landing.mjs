@@ -20,7 +20,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { USE_CASES } from '../src/data/usecases.mjs'
-import { BLOG_URL, BLOG_POSTS } from '../src/data/blogPosts.mjs'
+import { BLOG_URL, visibleBlogPosts } from '../src/data/blogPosts.mjs'
 import { HOME_FAQ } from '../src/data/home-faq.mjs'
 import { HOME_CASE_SCREENSHOTS } from '../src/data/home-cases.mjs'
 
@@ -138,7 +138,7 @@ const blogHtml = `
         <h2 id="lp-blog-title">Свежее в блоге</h2>
         <p>Разборы проектов, кейсы заказчиков и то, как устроена платформа изнутри.</p>
         <ul class="lp-prerender__posts">
-          ${BLOG_POSTS.map(
+          ${visibleBlogPosts().map(
             (post) => `<li>
             <a href="${escape(post.url)}">${escape(post.title)}</a>
             <span class="lp-prerender__post-meta">${escape(post.category)} · <time datetime="${escape(post.date)}">${escape(post.dateLabel)}</time></span>

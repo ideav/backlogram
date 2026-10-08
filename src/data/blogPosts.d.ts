@@ -18,4 +18,10 @@ export interface BlogPost {
 }
 
 export const BLOG_URL: string
+/** День сборки (YYYY-MM-DD по Москве), на который собран список. */
+export const BLOG_POSTS_AS_OF: string
+export const SLIDER_LIMIT: number
+/** Вышедшие к сборке статьи и все отложенные — см. visibleBlogPosts. */
 export const BLOG_POSTS: BlogPost[]
+/** Статьи, вышедшие к дню `today` (по умолчанию — сегодня по Москве). */
+export function visibleBlogPosts(today?: string): BlogPost[]
