@@ -2894,8 +2894,8 @@ document.addEventListener('DOMContentLoaded', function() {
         steps: 3,
         onInit: function(api) {
             api.on('click', 'button, .btn, [role="button"]', 1, 2, api.label(/create|new|edit|add/i));
-            api.on('change', '#editPanelModal select, #editPanelModal input', 2, 3);
-            api.on('click', '#toggleEditBtn', 2, 3);
+            // Step 2 is about panel types and sources: move on once a panel is added or its settings are saved
+            api.on('click', '[onclick^="addPanel("], [onclick^="savePanel("], [onclick^="showEditPanelModal("]', 2, 3);
         }
     });
 });
