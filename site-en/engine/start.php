@@ -137,6 +137,9 @@ footer a{color:#64748b;margin:0 8px}
   var qs = new URLSearchParams(location.search);
   var db = (qs.get('db') || 'my').toLowerCase();
   if (!/^[a-z0-9_]{1,15}$/.test(db)) db = 'my';
+  // ?next=upload (the "Excel to app" page): after sign-in the workspace opens on the file import.
+  // Kept in localStorage to survive the confirmation email and the OAuth round trip; js/main-app.js uses it.
+  if (['upload'].indexOf(qs.get('next')) >= 0) try { localStorage.setItem('en_next', qs.get('next')); } catch (e) {}
   var msg = document.getElementById('msg');
 
   function show(text, ok) { msg.textContent = text; msg.className = 'msg ' + (ok ? 'ok' : 'err'); }

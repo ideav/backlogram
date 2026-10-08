@@ -1917,6 +1917,15 @@ class MainAppController {
     }
 }
 
+// Sign-up from the "Excel to app" page (/start?next=upload, see start.php) lands on the file import
+// instead of the workspace home. The intent is used once, whichever page of a workspace opens first.
+(() => {
+    let next = '';
+    try { next = localStorage.getItem('en_next') || ''; localStorage.removeItem('en_next'); } catch (e) {}
+    const home = location.pathname.match(/^\/([a-z0-9_]{1,15})\/?$/i);
+    if (next === 'upload' && home && home[1].toLowerCase() !== 'my') location.replace('/' + home[1] + '/upload');
+})();
+
 // Initialize main app controller when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     // Wait for app.js to initialize
