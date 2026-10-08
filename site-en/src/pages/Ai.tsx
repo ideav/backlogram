@@ -188,7 +188,7 @@ export default function Ai() {
         <Faq items={AI_FAQ} title="Questions about AI and MCP" />
       </Section>
 
-      <CtaBand title="Connect your agent to a real backend" text="Free plan includes API and MCP access. Sign up with email, Google or GitHub and connect your first agent in minutes." />
+      <CtaBand title="Connect your agent to a real backend" text="Free plan includes API and MCP access. Sign up and connect your first agent in minutes." to={SIGNUP_PATH} />
     </>
   )
 }

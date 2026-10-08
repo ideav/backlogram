@@ -91,3 +91,11 @@ test('"Excel to app" sign-up lands on the file import, not the workspace home (#
   assert.match(app, /localStorage\.removeItem\('en_next'\)/)
   assert.match(app, /location\.replace\('\/' \+ home\[1\] \+ '\/upload'\)/)
 })
+
+test('closing CTA band leads to the file import; no Google/GitHub promise on pages (#722)', () => {
+  const read = p => fs.readFileSync(path.join(ROOT, p), 'utf8')
+  assert.match(read('site-en/src/components/ui.tsx'), /to = SIGNUP_UPLOAD_PATH,/)
+  for (const p of ['Home', 'Ai', 'ExcelToApp', 'Compare', 'UseCases']) {
+    assert.doesNotMatch(read(`site-en/src/pages/${p}.tsx`), /Google or GitHub/, p)
+  }
+})

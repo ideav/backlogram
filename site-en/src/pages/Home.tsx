@@ -68,7 +68,7 @@ const FEATURES = [
   { icon: BarChart3, title: 'Forms, reports, dashboards', body: 'Data-entry forms for the people who add records, live reports for the people who read them, scheduled emails for the rest.' },
   { icon: Code2, title: 'Full REST API', body: 'Schema, records, users, roles and access rules are all available over HTTP with a token. Screens are plain HTML, CSS and JS.' },
   { icon: Server, title: 'Cloud or self-hosted', body: 'Start in the cloud. Move to a Docker container on your own servers, even without internet access, when you need to.' },
-  { icon: KeyRound, title: 'Sign in your way', body: 'Email, Google or GitHub to get started. SSO and LDAP / Active Directory for larger teams.' },
+  { icon: KeyRound, title: 'Sign in your way', body: 'Email sign-up to get started. SSO and LDAP / Active Directory for larger teams.' },
 ]
 
 type Mark = 'yes' | 'no' | 'partial'
@@ -117,7 +117,7 @@ export default function Home() {
               </Button>
             </div>
             <p className="mt-4 text-sm text-slate-500">
-              Free plan forever. No credit card. Sign up with email, Google or GitHub.
+              Free plan forever. No credit card. Sign up with email.
             </p>
           </div>
           <Img
