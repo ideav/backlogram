@@ -315,7 +315,7 @@
                       });
                   } },
                 { on: ['table', 'object'], title: 'Your first book',
-                  html: '<p>Add a record with the <b>+</b> button: type a book title, set the date, choose a reading status (type a new value to add it to the lookup) and an author, then save.</p>'
+                  html: '<p>Press the blue <b>+</b> next to the table name: type a book title and set the date. The lookups are empty so far — type a reading status such as <b>To read</b> and press the green <b>+</b> to add it to the lookup, the same way for an author. Then press <b>Save</b>.</p>'
                       + '<p class="lsn-wait">I am waiting for the first book…</p>',
                   check: function () {
                       if (!state.vars.book) return Promise.resolve(false);
