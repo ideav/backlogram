@@ -31,11 +31,11 @@ for (const name of NAMES) {
   const groups = groupsFor(P)
   const campaigns = campaignsFor(P)
 
-  test(`${name}-junk: посадочная, цель и цена — как у основных кампаний`, () => {
+  test(`${name}-junk: посадочная и цель — как у основных, цена 100 ₽ днём и 10 ₽ ночью`, () => {
     assert.equal(P.path, base.path)
     assert.equal(P.goalName, base.goalName)
-    assert.equal(P.cpaRub, base.cpaRub)
-    assert.equal(P.nightCpaRub, base.nightCpaRub)
+    assert.equal(P.cpaRub, 100)
+    assert.equal(P.nightCpaRub, 10)
     assert.deepEqual(campaigns.map(c => c._slug), ['search-day', 'search-night', 'network-day', 'network-night'].map(s => `${name}-junk-${s}`))
   })
 
