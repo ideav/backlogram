@@ -205,6 +205,9 @@
         queries: {
             title: 'Queries',
             needs: 'upload',
+            go: function (p) {
+                return p === 'sql' && state.vars.query ? { href: 'sql/' + state.vars.query, name: 'the Average duration query' } : null;
+            },
             steps: [
                 { on: ['sql'], title: 'Create a query',
                   html: '<p>A query tells Integram which data to take from the tables and what to do with it. We will calculate the average movie length by year of release.</p>'
@@ -247,6 +250,9 @@
         forms: {
             title: 'Forms',
             needs: 'queries',
+            go: function (p) {
+                return p === 'forms' && state.vars.form ? { href: 'forms/' + state.vars.form + '?EDIT', name: 'the Stats form' } : null;
+            },
             steps: [
                 { on: ['forms'], title: 'Create a form',
                   html: '<p>In the form builder you make data entry forms and dashboards with tables, charts and pivots. We will make a form to add users and a chart of movie statistics.</p>'
@@ -283,6 +289,9 @@
 
         structure: {
             title: 'Data structures',
+            go: function (p) {
+                return (p === 'table' || p === 'object') && state.vars.book ? { href: 'table/' + state.vars.book, name: 'the Book table' } : null;
+            },
             steps: [
                 { on: ['edit_types'], title: 'A reading list app',
                   html: '<p>In this lesson we will design a small app from scratch: a list of books with authors and reading statuses. The same way you will build the apps you need.</p>'
@@ -290,7 +299,7 @@
                   hl: ['edit_types'],
                   check: function () { return tableId('Book').then(Boolean); } },
                 { on: ['edit_types'], title: 'Book properties',
-                  html: '<p>You taught the system a new term. The new <b>Book</b> card is at the bottom of the page: click the name <b>Book</b> in it to open its settings.</p>'
+                  html: '<p>You taught the system a new term. The new <b>Book</b> card is at the bottom of the page: click the name <b>Book</b> in it to open its settings. After a page reload a table without columns is hidden: press <b>Simple</b> at the top to show it.</p>'
                       + '<p>At the bottom of the card pick a column in the list and press <b>Add column</b>. Terms the system already knows can be reused by any table — add <b>Start date (date)</b> and <b>Notes (memo)</b>, a multi-line text.</p>'
                       + '<p class="lsn-wait">I am waiting for both columns…</p>',
                   check: function () { return hasColumns('Book', ['Start date', 'Notes']); } },
@@ -481,9 +490,11 @@
         // A step that waits for the user to open a menu item is fine on any page
         if (away && !(s.hl && s.check)) {
             var target = s.on[0];
-            body = '<p>Open <b>' + esc(MENU_NAMES[target] || target) + '</b> to continue the lesson.</p>';
-            if (MENU_NAMES[target] !== undefined)
-                foot += '<button class="lsn-btn" data-act="go" data-href="' + esc(url(MENU_HREF[target] || target)) + '">Open</button>';
+            // A lesson may know the exact record to come back to (its query, form or table)
+            var dest = (c.lesson.go && c.lesson.go(target)) || null;
+            body = '<p>Open <b>' + esc(dest ? dest.name : (MENU_NAMES[target] || target)) + '</b> to continue the lesson.</p>';
+            if (dest || MENU_NAMES[target] !== undefined)
+                foot += '<button class="lsn-btn" data-act="go" data-href="' + esc(url(dest ? dest.href : (MENU_HREF[target] || target))) + '">Open</button>';
             clearHl();
             if (target) hlMenu(target);
         } else {
