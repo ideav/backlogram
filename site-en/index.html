@@ -2,20 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/favicon.ico" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
-    <meta name="description" content="Integram turns the spreadsheets your team already lives in into a real application — shared data, roles, forms and reports. Tell us the task, we build the first working version." />
-    <link rel="canonical" href="{{CANONICAL}}" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="{{CANONICAL}}" />
-    <meta property="og:title" content="Integram — turn your spreadsheets into a working application" />
-    <meta property="og:description" content="Shared data, roles, forms and reports instead of files passed around. Tell us the task — we build the first working version and show it to you." />
-    <meta name="twitter:card" content="summary_large_image" />
-    <title>Integram — turn your spreadsheets into a working application</title>
+    <meta name="theme-color" content="#2563eb" />
+    <!--
+      Route-specific head (title, description, canonical, og:*, twitter:*,
+      JSON-LD) is injected per page by the prerender step in vite.config.ts.
+      Canonical URLs always point at this site (SITE_URL + SITE_BASE). There is
+      deliberately no hreflang: the English site is independent and not an
+      alternate of any other-language site (issue #524), so do not add one.
+    -->
+    <!--app-head-->
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><!--app-html--></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
