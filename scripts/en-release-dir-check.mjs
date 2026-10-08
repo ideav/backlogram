@@ -14,6 +14,7 @@ if (!process.argv[2] || !fs.existsSync(dir)) {
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const allowlist = JSON.parse(fs.readFileSync(path.join(ROOT, 'tests', 'en-guard-allowlist.json'), 'utf8'))
 
+// Release paths are relative to the engine root, allowlist paths carry the engine/ prefix (as in en-engine.test.mjs): check both.
 const problems = []
 ;(function walk(d) {
   for (const e of fs.readdirSync(d, { withFileTypes: true })) {
@@ -23,7 +24,7 @@ const problems = []
     const buf = fs.readFileSync(f)
     if (!looksLikeText(rel, buf)) continue
     for (const x of scanText(buf.toString('utf8'))) {
-      if (!isAllowed(allowlist, rel, x)) problems.push(`${rel}:${x.line}:${x.col} [${x.rule}] ${x.match}`)
+      if (!isAllowed(allowlist, rel, x) && !isAllowed(allowlist, 'engine/' + rel, x)) problems.push(`${rel}:${x.line}:${x.col} [${x.rule}] ${x.match}`)
     }
   }
 })(dir)

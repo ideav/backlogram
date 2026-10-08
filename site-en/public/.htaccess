@@ -59,4 +59,6 @@ RewriteRule ^ index.php [L,QSA]
 <IfModule mod_headers.c>
 Header always set X-Content-Type-Options "nosniff"
 Header always set Referrer-Policy "strict-origin-when-cross-origin"
+# HSTS only over https (directly or behind a TLS proxy); plain-http local docker is unaffected.
+Header always set Strict-Transport-Security "max-age=31536000" "expr=%{HTTPS} == 'on' || %{HTTP:X-Forwarded-Proto} == 'https'"
 </IfModule>
