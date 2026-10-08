@@ -71,7 +71,38 @@
             advance: function(toStep) {
                 if (hintBox.style.display === 'none') return;
                 api.show(toStep);
+            },
+
+            // The step currently on screen (0 when the box is hidden)
+            step: function() {
+                if (hintBox.style.display === 'none') return 0;
+                for (var i = 1; i <= steps; i++) {
+                    var el = document.getElementById(workspace + '-hint-' + i);
+                    if (el && el.style.display !== 'none') return i;
+                }
+                return 0;
+            },
+
+            // Delegated trigger: advance fromStep -> toStep on an event whose target
+            // matches the selector (and, optionally, the filter). Listens on document in
+            // the capture phase, so it works for content rendered after page load and
+            // for widgets that stop propagation.
+            on: function(type, selector, fromStep, toStep, filter) {
+                document.addEventListener(type, function(e) {
+                    if (api.step() !== fromStep) return;
+                    var t = e.target && e.target.closest ? e.target.closest(selector) : null;
+                    if (!t || t.closest('#' + workspace + '-hint-box')) return;
+                    if (filter && !filter(t, e)) return;
+                    if (e.hintAdvanced) return; // one event moves at most one step
+                    e.hintAdvanced = true;
+                    api.advance(toStep);
+                }, true);
             }
+        };
+
+        // Button-like element whose visible label matches the regexp (for api.on filters)
+        api.label = function(re) {
+            return function(el) { return re.test((el.textContent || el.title || el.value || '').trim()); };
         };
 
         // Expose API on window for inline onclick handlers, e.g. window.uploadHintClose()

@@ -289,13 +289,11 @@ document.addEventListener('DOMContentLoaded', function() {
         workspace: 'table',
         steps: 3,
         onInit: function(api) {
-            var btns = document.querySelectorAll('button, .btn, [role="button"]');
-            btns.forEach(function(btn) {
-                var txt = btn.textContent || btn.innerText || '';
-                if (txt.trim() === '+' || txt.toLowerCase().indexOf('new') !== -1 || txt.toLowerCase().indexOf('add') !== -1) {
-                    btn.addEventListener('click', function() { api.advance(2); });
-                }
-            });
+            // The table is rendered by integram-table.js after the data arrives,
+            // so the triggers are delegated instead of bound to existing buttons.
+            api.on('click', '.title-create-btn, .add-row-btn, .paste-data-btn', 1, 2);
+            api.on('click', 'th, .integram-table-settings', 2, 3);
+            api.on('input', '.integram-table input, .integram-table-search', 2, 3);
         }
     });
 });

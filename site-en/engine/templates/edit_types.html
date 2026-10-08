@@ -894,14 +894,14 @@ drawChart();
     </div>
     <div id="edit_types-hint-2" style="display:none;">
         <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Creating tables and adding fields</h3>
-        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Click "Add table" to create a new one. In an existing table, click "+" or "Add field" to extend its structure.</p>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">To create a table, type its name in the "Search / New table" box, pick a base type and click "Create". To add fields to an existing table, open the table and click "Add column" at the end of its header row.</p>
         <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
             <button onclick="edit_typesHintClose()" style="padding:0.35rem 0.9rem; border:1px solid var(--border-color); border-radius:6px; background:none; color:var(--text-secondary); cursor:pointer; font-size:0.85rem;">Close</button>
         </div>
     </div>
     <div id="edit_types-hint-3" style="display:none;">
-        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Data types and uniqueness</h3>
-        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">When adding a field, choose a suitable data type (text, number, date, link, etc.). Check "Unique" to prevent duplicate values in this field.</p>
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Table settings and uniqueness</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Click a table name to open its settings. Check "Unique" to prevent identical top-level records, use "Create link" to turn the table into a lookup for other tables, or delete the table.</p>
         <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
             <button onclick="edit_typesHintClose()" style="padding:0.35rem 0.9rem; border:none; border-radius:6px; background:var(--button-primary,#0d6efd); color:#fff; cursor:pointer; font-size:0.85rem;">Got it</button>
         </div>
@@ -916,13 +916,9 @@ document.addEventListener('DOMContentLoaded', function() {
         workspace: 'edit_types',
         steps: 3,
         onInit: function(api) {
-            var btns = document.querySelectorAll('button.btn, .btn');
-            btns.forEach(function(btn) {
-                var txt = btn.textContent || btn.innerText || '';
-                if (txt.toLowerCase().indexOf('add') !== -1) {
-                    btn.addEventListener('click', function() { api.advance(2); });
-                }
-            });
+            api.on('input', '#val', 1, 2);
+            api.on('click', '#addbtn, a[id^="id"]', 1, 2);
+            api.on('click', 'a[id^="id"]', 2, 3);
         }
     });
 });

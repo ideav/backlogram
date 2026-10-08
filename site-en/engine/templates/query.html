@@ -112,10 +112,11 @@ document.addEventListener('DOMContentLoaded', function() {
         workspace: 'query',
         steps: 3,
         onInit: function(api) {
-            var filterInputs = document.querySelectorAll('.filter-row input, .integram-table-search');
-            filterInputs.forEach(function(inp) {
-                inp.addEventListener('input', function() { api.advance(2); }, { once: true });
-            });
+            // The grid is built by integram-table.js after load: delegate.
+            api.on('click', 'th', 1, 2);
+            api.on('input', '.integram-table input, .integram-table-search', 1, 2);
+            api.on('input', '.integram-table input, .integram-table-search', 2, 3);
+            api.on('click', '.integram-table-settings', 2, 3);
         }
     });
 });

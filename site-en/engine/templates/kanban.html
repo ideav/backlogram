@@ -1993,11 +1993,9 @@ document.addEventListener('DOMContentLoaded', function() {
         workspace: 'kanban',
         steps: 3,
         onInit: function(api) {
-            document.addEventListener('dragstart', function() { api.advance(2); }, { once: true });
-            var columns = document.querySelectorAll('.kanban-column, .kanban-col, [data-status]');
-            columns.forEach(function(col) {
-                col.addEventListener('click', function() { api.advance(2); }, { once: true });
-            });
+            // Cards and columns are rendered after the board loads: delegate.
+            api.on('dragstart', '.kanban-card', 1, 2);
+            api.on('click', '.kanban-card, .kanban-settings-icon', 2, 3);
         }
     });
 });

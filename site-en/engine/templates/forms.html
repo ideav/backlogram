@@ -2893,13 +2893,9 @@ document.addEventListener('DOMContentLoaded', function() {
         workspace: 'forms',
         steps: 3,
         onInit: function(api) {
-            var btns = document.querySelectorAll('button, .btn, [role="button"]');
-            btns.forEach(function(btn) {
-                var txt = btn.textContent || btn.innerText || '';
-                if (txt.toLowerCase().indexOf('create') !== -1 || txt.toLowerCase().indexOf('new') !== -1 || txt.toLowerCase().indexOf('edit') !== -1 || txt.toLowerCase().indexOf('edit') !== -1) {
-                    btn.addEventListener('click', function() { api.advance(2); });
-                }
-            });
+            api.on('click', 'button, .btn, [role="button"]', 1, 2, api.label(/create|new|edit|add/i));
+            api.on('change', '#editPanelModal select, #editPanelModal input', 2, 3);
+            api.on('click', '#toggleEditBtn', 2, 3);
         }
     });
 });
