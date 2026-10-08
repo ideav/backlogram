@@ -1,4 +1,4 @@
-# Integram EN (ideav.pro): web root = dist-en (static marketing pages) + site-en/engine (PHP engine).
+# Integram EN (integram-ai.online): web root = dist-en (static marketing pages) + site-en/engine (PHP engine).
 # Existing files and directories are served as is; /start is the auth page; every other path
 # goes to the engine (index.php), which treats the first path segment as the workspace name.
 
