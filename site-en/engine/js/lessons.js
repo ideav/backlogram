@@ -385,7 +385,21 @@
         });
         drag(box.querySelector('.lsn-head'));
         if (state.pos) place(state.pos.x, state.pos.y);
+        else clearCookieBar();
         return box;
+    }
+
+    // The cookie bar (fixed, full width, z-index 9999) covers the panel's buttons until it is accepted:
+    // keep the panel above it while it is shown, unless the user has moved the panel.
+    function clearCookieBar() {
+        var bar = document.getElementById('cookie-consent');
+        if (!bar || state.pos) return;
+        var shown = getComputedStyle(bar).display !== 'none';
+        box.style.bottom = shown ? (bar.offsetHeight + 16) + 'px' : '';
+        if (shown && !bar.lsnWatch) {
+            bar.lsnWatch = true;
+            bar.addEventListener('click', function () { setTimeout(clearCookieBar, 0); });
+        }
     }
 
     function place(x, y) {
