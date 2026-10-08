@@ -5,10 +5,38 @@
 // Astro-сборка на ideav.ru/blog, поэтому список «запекается» в данные на этапе
 // сборки: файл импортируют и React (src/components/BlogSlider.tsx), и Node-скрипт
 // пререндера главной (scripts/prerender-landing.mjs). Типы — src/data/blogPosts.d.ts.
+//
+// Статьи с датой позже дня сборки лежат здесь заранее, а показывает их
+// visibleBlogPosts() — с наступлением их дня по Москве (issue #726).
 
 export const BLOG_URL = 'https://ideav.ru/blog'
 
+/** День сборки: список собран «на него» (tests/issue-512-blog-slider.test.mjs). */
+export const BLOG_POSTS_AS_OF = '2026-10-08'
+
+export const SLIDER_LIMIT = 9
+
 export const BLOG_POSTS = [
+  {
+    slug: '10-priznakov-chto-tablice-pora-stat-bazoj-dannyh',
+    url: 'https://ideav.ru/blog/posts/10-priznakov-chto-tablice-pora-stat-bazoj-dannyh/',
+    title: '10 признаков, что таблице пора стать базой данных',
+    description: 'Таблица тормозит, близка к лимиту ячеек, заявки в ней ведут пятеро? Чек-лист из 10 признаков: как проверить свою таблицу и что делать дальше.',
+    date: '2026-10-24',
+    dateLabel: '24 октября 2026',
+    category: 'Обучение',
+    image: 'https://ideav.ru/blog/abstract/blog-material-1.svg',
+  },
+  {
+    slug: 'podklyuchaem-claude-k-baze-dannyh-cherez-mcp',
+    url: 'https://ideav.ru/blog/posts/podklyuchaem-claude-k-baze-dannyh-cherez-mcp/',
+    title: 'Подключаем Claude к базе данных через MCP: инструкция',
+    description: 'Как подключить Claude Desktop и Claude Code к базе Интеграма через MCP-сервер integram-mcp: конфиг, команды, проверка и что делать, если сервер не добавился.',
+    date: '2026-10-20',
+    dateLabel: '20 октября 2026',
+    category: 'Обучение',
+    image: 'https://ideav.ru/blog/abstract/blog-material-2.svg',
+  },
   {
     slug: 'google-tablicy-2026-riski-i-kuda-perenesti',
     url: 'https://ideav.ru/blog/posts/google-tablicy-2026-riski-i-kuda-perenesti/',
@@ -17,7 +45,7 @@ export const BLOG_POSTS = [
     date: '2026-10-16',
     dateLabel: '16 октября 2026',
     category: 'О платформе',
-    image: 'https://ideav.ru/blog/abstract/blog-material-1.svg',
+    image: 'https://ideav.ru/blog/abstract/blog-material-3.svg',
   },
   {
     slug: 'kak-sdelat-prilozhenie-iz-excel-tablicy-poshagovo',
@@ -27,7 +55,7 @@ export const BLOG_POSTS = [
     date: '2026-10-12',
     dateLabel: '12 октября 2026',
     category: 'Обучение',
-    image: 'https://ideav.ru/blog/abstract/blog-material-2.svg',
+    image: 'https://ideav.ru/blog/abstract/blog-material-4.svg',
   },
   {
     slug: 'dashbordy-integram-prodazhi-personal-byudzhet',
@@ -47,7 +75,7 @@ export const BLOG_POSTS = [
     date: '2026-10-03',
     dateLabel: '3 октября 2026',
     category: 'О платформе',
-    image: 'https://ideav.ru/blog/abstract/blog-material-4.svg',
+    image: 'https://ideav.ru/blog/abstract/blog-material-6.svg',
   },
   {
     slug: 'ierarhicheskii-oltp-izmeryaem-sleduyushchii-uroven-unifikacii',
@@ -57,7 +85,7 @@ export const BLOG_POSTS = [
     date: '2026-09-10',
     dateLabel: '10 сентября 2026',
     category: 'Технологии',
-    image: 'https://ideav.ru/blog/abstract/blog-material-5.svg',
+    image: 'https://ideav.ru/blog/abstract/blog-material-1.svg',
   },
   {
     slug: 'odin-kontragent-tri-vzglyada',
@@ -99,4 +127,39 @@ export const BLOG_POSTS = [
     category: 'О платформе',
     image: 'https://ideav.ru/blog/uploads/og/hero-ai-background.jpg',
   },
+  {
+    slug: 'semeynyi-byudzhet-v-integrame',
+    url: 'https://ideav.ru/blog/posts/semeynyi-byudzhet-v-integrame/',
+    title: 'Семейный бюджет в Интеграме: от Excel к приложению за один запрос',
+    description: 'Как собрать семейный бюджет в Интеграме — разбор готового приложения по экранам. Счета с автоподсчётом остатка, план и факт по категориям, цели накопления, долги и рассрочки, регулярные платежи одной кнопкой и фото чека к операции. Со скриншотами каждого экрана и объяснением, как это устроено.',
+    date: '2026-07-17',
+    dateLabel: '17 июля 2026',
+    category: 'Проекты',
+    image: 'https://ideav.ru/blog/uploads/og/semeynyi-byudzhet-svodka.jpg',
+  },
+  {
+    slug: 'bezopasnost-i-otkazoustoichivost-dlya-krupnogo-biznesa',
+    url: 'https://ideav.ru/blog/posts/bezopasnost-i-otkazoustoichivost-dlya-krupnogo-biznesa/',
+    title: 'Безопасность и отказоустойчивость Интеграма: данные крупного бизнеса под контролем',
+    description: 'Как в Интеграме устроена защита данных от посторонних и от потери: обычная СУБД, гибкая топология развёртывания, шифрование и георезервирование, а главное — выгрузка данных в Excel и реляционную БД без вендор-лока.',
+    date: '2026-07-16',
+    dateLabel: '16 июля 2026',
+    category: 'О платформе',
+    image: 'https://ideav.ru/blog/abstract/blog-material-1.svg',
+  },
 ]
+
+/** Сегодня по Москве, YYYY-MM-DD — как moscowDay() в blog-v2/src/lib/published.mjs. */
+function moscowDay(now = new Date()) {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Moscow',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(now)
+}
+
+/** Статьи, вышедшие к дню `today`, — то, что видит посетитель. */
+export function visibleBlogPosts(today = moscowDay()) {
+  return BLOG_POSTS.filter((post) => post.date <= today).slice(0, SLIDER_LIMIT)
+}

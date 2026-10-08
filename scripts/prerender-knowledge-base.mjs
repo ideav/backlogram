@@ -113,6 +113,7 @@ const groups = [
       '10-no-release-changes',
       '13-api-json-export',
       '26-mcp-server-explained',
+      '27-text-to-sql-russian',
       '14-forms',
       '14a-reports',
       '14b-dashboards',
