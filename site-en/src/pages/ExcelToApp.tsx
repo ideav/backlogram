@@ -1,7 +1,7 @@
 import { Check, X } from 'lucide-react'
 import { Button, Container, CtaBand, Eyebrow, Faq, H2, Img, Lead, Section } from '../components/ui'
 import { EXCEL_FAQ } from '../data/faq'
-import { SIGNUP_PATH } from '../site'
+import { SIGNUP_UPLOAD_PATH } from '../site'
 
 const DETECTS = [
   { title: 'Tables', text: 'Every sheet with a header row becomes a table. Header names become field names.' },
@@ -40,7 +40,7 @@ export default function ExcelToApp() {
               reports. Your data stays exactly as it is; the copies, the merging and the hand-built reports go away.
             </Lead>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button to={SIGNUP_PATH} arrow>
+              <Button to={SIGNUP_UPLOAD_PATH} arrow>
                 Upload your file free
               </Button>
               <Button to="/contact" variant="secondary">
@@ -124,7 +124,7 @@ export default function ExcelToApp() {
               Sign up, upload the file, confirm the structure and invite your team. The free plan covers one user and
               3,000 actions a month; Team is $29 a month flat for up to ten people.
             </p>
-            <Button to={SIGNUP_PATH} className="mt-6" arrow>
+            <Button to={SIGNUP_UPLOAD_PATH} className="mt-6" arrow>
               Start free
             </Button>
           </div>

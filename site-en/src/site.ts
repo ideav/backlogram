@@ -36,3 +36,5 @@ export function absUrl(path: string): string {
 /** The application engine owns these (auth stream); the marketing site only links to them. */
 export const LOGIN_PATH = '/start'
 export const SIGNUP_PATH = '/start#signup'
+/** Sign-up that lands on the spreadsheet import (/<workspace>/upload) instead of the workspace home. */
+export const SIGNUP_UPLOAD_PATH = '/start?next=upload#signup'
