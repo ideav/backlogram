@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>File manager</title>
+    <link rel="stylesheet" href="/css/bootstrap.3.3.7.min.css">
+	<link rel="stylesheet" href="/assets/vendor/primeicons/primeicons.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        a{ cursor: pointer; }
+        [data-theme="dark"] body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] .alert-info {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] .btn-default {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] .btn-default:hover,
+        [data-theme="dark"] .btn-default:focus {
+            background-color: var(--bg-primary);
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) {
+            background-color: var(--bg-secondary);
+        }
+        [data-theme="dark"] .input-group-btn .btn-default {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] svg path[stroke="#1A1A1A"],
+        [data-theme="dark"] svg path[stroke="#1a1a1a"] {
+            stroke: var(--text-primary);
+        }
+    </style>
+    <script src="/js/jquery-3.5.1.slim.min.js"></script>
+</head>
+<body style="font-family:Verdana,Tahoma,sans-serif;line-height:normal;padding:2px">
+<div>
+    <a href="/{_global_.z}"><i class="pi pi-home" style="font-size: 2rem; color: var(--text-primary, #333);"></i></a>
+    &nbsp; 
+    <div style="display: inline; margin-top: 7px"><a href="/{_global_.z}">Back to the&nbsp;main menu</a>
+    </div>
+</div>
+<br />
+<p>
+    This is a technical page. Here you can restore damaged template files if your pages stopped working because of them.<br />
+    You can download the original files <a target="git" href="https://github.com/ideav/crm/tree/main/templates">here</a> and upload them to the <a href="/{_global_.z}/dir_admin/?templates=1">templates</a> folder.
+</p>
+<div class="container" style="margin:1px;">
+<div class="row">
+<script language="javascript">
+    var db='{_global_.z}';
+    function copyLink(link){
+        document.getElementById('copy_path').style='display:block';
+        document.getElementById('copy_path').value=link;
+        document.getElementById('copy_path').select();
+        document.execCommand('copy');
+        document.getElementById('copy_path').style='display:none';
+    }
+    function sel_all(){
+     if( !document.view_dir.cheks ) return;
+     if( !document.view_dir.cheks.length )
+    	document.view_dir.cheks.checked = document.view_dir.cheks.checked ? false : true;
+     else
+    	for(var i=0;i<document.view_dir.cheks.length;i++)
+    		document.view_dir.cheks[i].checked = document.view_dir.cheks[i].checked ? false : true;
+    }
+</script>
+<!-- Begin:&Warnings -->
+	<div class="alert alert-info" role="alert">{WARNING}</div>
+<!-- End:&Warnings -->
+<!-- Begin:&Dir_Admin -->
+<form enctype="multipart/form-data" action="/{_global_.z}/dir_admin" method="POST" name="view_dir">
+    <input type="hidden" name="_xsrf" value="{_global_.xsrf}">
+    <input name="{FOLDER}" type="hidden" value="1">
+    <input name="add_path" type="hidden" value="{ADD_PATH}">
+    <p>Server directory: <b>{FOLDER}</b>. &nbsp; Go to directory <a href="/{_global_.z}/dir_admin/?{ANOTHER}=1">{ANOTHER}</a>.</p>
+    <p><a style="border-bottom: 1px dotted;" onclick="document.getElementById('css').style.display='block';">Path to custom styles, fonts and JS</a></p>
+    <div id="css" class="alert alert-info mb-0" role="alert" style="display:none;">
+        To use your own styles, upload them to the <a href="/{_global_.z}/dir_admin/?download=1">download</a> directory (you can create folders and subfolders there for styles, JS, fonts and more), and reference them from your HTML with this path:
+        <b> download/&#123;_global_.z}/</b><br />
+        You can also copy a file's path with the &nbsp;<i class="pi pi-copy"></i>&nbsp; link next to the file.
+    </div>
+    <p><a style="border-bottom: 1px dotted;" onclick="document.getElementById('backup').style.display='block';">Database backup</a></p>
+    <div id="backup" class="alert alert-info mb-0" role="alert" style="display:none;">
+        You can back up your database into a compact archive and restore it later if needed. To get the archive, <a href="/{_global_.z}/backup">click here</a>.
+        The file will also be available in the backups folder inside <a href="/{_global_.z}/dir_admin/?templates=1">templates</a> folder.
+    </div>
+    <p><a style="border-bottom: 1px dotted;" onclick="document.getElementById('repo-update').style.display='block'; RepoUpdate.open();">Update from repository</a></p>
+    <div id="repo-update" class="alert alert-info mb-0" role="alert" style="display:none;">
+        Reading the repository…
+    </div>
+    <table class="table table-striped table-condensed table-bordered">
+      <tr>
+        <td><a href="javascript:sel_all()" title="Invert selection"><b><font size="3">*</font></b></a></td>
+        <td colspan="4" >&nbsp;<a href="/{_global_.z}/dir_admin/?{FOLDER}=1"> .. </a>
+    <!-- Begin:&Pattern -->/<a href="/{_global_.z}/dir_admin/?{_parent_.FOLDER}=1&add_path={PATH}">{NAME}</a><!-- End:&Pattern -->
+    	</td>
+      </tr>
+    <!-- Begin:&Dir_list -->
+      <tr>
+        <td><input type="checkbox"  id="cheks" name="del[]" value="{NAME}"></td>
+        <td colspan="2"><a href="/{_global_.z}/dir_admin/?{_parent_.FOLDER}=1&add_path={_parent_.ADD_PATH}/{NAME}"><b>{NAME}</b></a></td>
+        <td align="right">&nbsp;</td>
+        <td align="right">&nbsp;</td>
+      </tr>
+    <!-- End:&Dir_list -->
+    <!-- Begin:&File_list -->
+      <tr>
+        <td><input type="checkbox"  id="cheks" name="del[]" value="{NAME}"></td>
+        <td style="vertical-align:middle;">&nbsp;<a href="/{_global_.z}/dir_admin/?{_parent_.FOLDER}=1&add_path={_parent_.ADD_PATH}&gf={NAME}">{NAME}</a>&nbsp;</td>
+        <td style="padding:2px;">&nbsp;
+			<a class="menu-name" name="{NAME}" onclick="pusk('{NAME}'.replace('.html',''))" title="Run template"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 4v16m14-8L6 20m14-8L6 4" stroke="#1A1A1A" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg></a>
+            <a href="/ace/editor.html?src=/{_global_.z}/dir_admin/&{_parent_.FOLDER}=1&add_path={_parent_.ADD_PATH}&gf={NAME}" target="_blank" title="Edit (in a new window)"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 16.66V22C22 22.5304 21.7893 23.0391 21.4142 23.4142C21.0391 23.7893 20.5304 24 20 24H6C5.46957 24 4.96086 23.7893 4.58579 23.4142C4.21071 23.0391 4 22.5304 4 22V8C4 7.46957 4.21071 6.96086 4.58579 6.58579C4.96086 6.21071 5.46957 6 6 6H11.34M20 4L24 8L14 18H10V14L20 4Z" stroke="#1A1A1A" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg></a>&nbsp;&nbsp;
+            <a class="menu-name" name="{NAME}" onclick="copyLink('{NAME}'.replace('.html',''))" title="Copy the template name to paste into the menu"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6H20C20.5304 6 21.0391 6.21071 21.4142 6.58579C21.7893 6.96086 22 7.46957 22 8V22C22 22.5304 21.7893 23.0391 21.4142 23.4142C21.0391 23.7893 20.5304 24 20 24H8C7.46957 24 6.96086 23.7893 6.58579 23.4142C6.21071 23.0391 6 22.5304 6 22V8C6 7.46957 6.21071 6.96086 6.58579 6.58579C6.96086 6.21071 7.46957 6 8 6H10M11 4H17C17.5523 4 18 4.44772 18 5V7C18 7.55228 17.5523 8 17 8H11C10.4477 8 10 7.55228 10 7V5C10 4.44772 10.4477 4 11 4Z" stroke="#1A1A1A" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg></a><span class="menu-name" name="{NAME}">&nbsp;&nbsp;</span>
+            <a class="file-name" onclick="copyLink('/{_parent_.FOLDER}/{'+'_global_.z}{_parent_.ADD_PATH}/{NAME}')" title="Copy the link for a template"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6H20C20.5304 6 21.0391 6.21071 21.4142 6.58579C21.7893 6.96086 22 7.46957 22 8V22C22 22.5304 21.7893 23.0391 21.4142 23.4142C21.0391 23.7893 20.5304 24 20 24H8C7.46957 24 6.96086 23.7893 6.58579 23.4142C6.21071 23.0391 6 22.5304 6 22V8C6 7.46957 6.21071 6.96086 6.58579 6.58579C6.96086 6.21071 7.46957 6 8 6H10M11 4H17C17.5523 4 18 4.44772 18 5V7C18 7.55228 17.5523 8 17 8H11C10.4477 8 10 7.55228 10 7V5C10 4.44772 10.4477 4 11 4Z" stroke="#1A1A1A" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg></a><span class="file-name">&nbsp;&nbsp;</span>
+            <a class="file-name" onclick="copyLink('https://'+location.host+'/{_parent_.FOLDER}/{_global_.z}{_parent_.ADD_PATH}/{NAME}')" title="Copy the absolute link"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M11.9436 14.9336C12.373 15.5077 12.9209 15.9827 13.5501 16.3265C14.1793 16.6703 14.8751 16.8747 15.5902 16.9259C16.3054 16.9771 17.0231 16.8739 17.6949 16.6233C18.3667 16.3728 18.9767 15.9806 19.4836 15.4736L22.4836 12.4736C23.3944 11.5305 23.8983 10.2675 23.8869 8.95655C23.8755 7.64557 23.3497 6.39151 22.4227 5.46447C21.4956 4.53743 20.2415 4.01158 18.9306 4.00019C17.6196 3.9888 16.3566 4.49277 15.4136 5.40356L13.6936 7.11356M15.9436 12.9336C15.5141 12.3594 14.9662 11.8844 14.337 11.5406C13.7078 11.1969 13.0121 10.9924 12.2969 10.9412C11.5818 10.89 10.864 10.9932 10.1922 11.2438C9.52045 11.4944 8.91044 11.8865 8.40356 12.3936L5.40356 15.3936C4.49277 16.3366 3.9888 17.5996 4.00019 18.9106C4.01158 20.2216 4.53743 21.4756 5.46447 22.4027C6.39151 23.3297 7.64557 23.8555 8.95655 23.8669C10.2675 23.8783 11.5305 23.3744 12.4736 22.4636L14.1836 20.7536" stroke="#1A1A1A" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg></a><span class="file-name">&nbsp;&nbsp;</span>
+            <a class="menu-name" name="{NAME}" href="/ace/gjs.html?src=/{_global_.z}/dir_admin/&{_parent_.FOLDER}=1&add_path={_parent_.ADD_PATH}&gf={NAME}" target="_blank" title="Edit (in a new window)"><img src="/ace/gjs.png" style="vertical-align: baseline;"></a>
+            <a class="restore" name="{NAME}" href="/{_global_.z}/restore/?backup_file={NAME}" title="Restore from backup" style="display:none"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 14V22C6 22.5304 6.21071 23.0391 6.58579 23.4142C6.96086 23.7893 7.46957 24 8 24H20C20.5304 24 21.0391 23.7893 21.4142 23.4142C21.7893 23.0391 22 22.5304 22 22V14M18 8L14 4M14 4L10 8M14 4V17" stroke="#1A1A1A" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg></a>&nbsp;
+        </td>
+        <td align="right"> &nbsp;{SIZE}</td>
+        <td align="left"> &nbsp;{TIME}</td>
+      </tr>
+    <!-- End:&File_list -->
+    <tr>
+    <td colspan="5"><input class="btn btn-default" type="submit" name="delete" value="Delete selected" ></td>
+    </tr>
+    </table>
+    <p>Files: {FILES}, folders: {FOLDERS}</p>
+</form>
+<input id="copy_path" type="text" value="" style="display:none;">
+<form action="/{_global_.z}/dir_admin/?{FOLDER}=1" method="POST" style="max-width:400px">
+    <input name="add_path" type="hidden" value="{ADD_PATH}">
+    <input type="hidden" name="_xsrf" value="{_global_.xsrf}">
+    <div class="input-group">
+       <input name="dir_name" class="form-control" type="text" placeholder="New folder">
+       <span class="input-group-btn">
+            <input class="btn btn-default" type="submit" name="mkdir" value="Create" >
+       </span>
+    </div>
+</form>
+<br />
+<form action="/{_global_.z}/dir_admin/?{FOLDER}=1" method="POST" style="max-width:400px">
+    <input name="add_path" type="hidden" value="{ADD_PATH}">
+    <input type="hidden" name="_xsrf" value="{_global_.xsrf}">
+    <div class="input-group">
+       <input name="dir_name" class="form-control" type="text" placeholder="New file">
+       <span class="input-group-btn">
+            <input class="btn btn-default" type="submit" name="touch" value="Create" >
+       </span>
+    </div>
+</form>
+<br />
+<table class="table table-striped table-condensed table-bordered">
+    <tr>
+        <td>
+            <form enctype="multipart/form-data" action="/{_global_.z}/dir_admin/?{FOLDER}=1" method="POST">
+                <input name="add_path" type="hidden" value="{ADD_PATH}">
+                <input type="hidden" name="_xsrf" value="{_global_.xsrf}">
+                <p>Upload file: <input name="userfile" type="file"></p>
+                <p><label><input type="checkbox" name="rewrite"> Overwrite </label>&nbsp; &nbsp; &nbsp; 
+                <input class="btn btn-default" type="submit" name="upload" value="Upload" ></p>
+            </form>
+        </td>
+    </tr>
+</table>
+
+<!-- Begin:&Sessions -->
+<br />
+<h4>Database queries</h4>
+<p>MySQL sessions running a query right now, longest-running first; the first 127 characters of each query are shown.
+   You can kill a stuck session; its running query will be aborted.</p>
+<form action="/{_global_.z}/dir_admin/?{_parent_.FOLDER}=1" method="POST">
+    <input name="add_path" type="hidden" value="{_parent_.ADD_PATH}">
+    <input type="hidden" name="_xsrf" value="{_global_.xsrf}">
+    <table class="table table-striped table-condensed table-bordered">
+      <tr>
+        <td><b>Session</b></td>
+        <td align="right"><b>Time, s</b></td>
+        <td><b>State</b></td>
+        <td><b>Query</b></td>
+        <td>&nbsp;</td>
+      </tr>
+    <!-- Begin:&Processlist -->
+      <tr>
+        <td>{PID}</td>
+        <td align="right">{TIME}</td>
+        <td>{STATE}</td>
+        <td style="font-family:monospace;font-size:12px;word-break:break-all">{SQL}</td>
+        <td align="right" style="white-space:nowrap">{OWN}
+            <button class="btn btn-default btn-xs" type="submit" name="kill" value="{PID}" {DISABLED}
+                    onclick="return confirm('Kill session {PID}?')">Kill</button>
+        </td>
+      </tr>
+    <!-- End:&Processlist -->
+    </table>
+    <p>Queries running: {_parent_.SESSIONS}. &nbsp;<a href="/{_global_.z}/dir_admin/?{_parent_.FOLDER}=1&add_path={_parent_.ADD_PATH}">Refresh</a></p>
+</form>
+<!-- End:&Sessions -->
+
+<!-- Begin:&Crontab -->
+<br />
+<h4>Cron jobs</h4>
+<p>Server scheduled jobs for this database: the database name appears in the command line (db=database name, /database name/ path, or the database folder).
+   Secrets in the command line are hidden. Jobs are set up by the server administrator.</p>
+<table class="table table-striped table-condensed table-bordered">
+  <tr>
+    <td><b>Schedule</b></td>
+    <td><b>Command</b></td>
+    <td><b>Description</b></td>
+  </tr>
+<!-- Begin:&Cronlist -->
+  <tr>
+    <td style="font-family:monospace;white-space:nowrap">{SCHEDULE}</td>
+    <td style="font-family:monospace;font-size:12px;word-break:break-all">{COMMAND}</td>
+    <td>{NOTE}</td>
+  </tr>
+<!-- End:&Cronlist -->
+</table>
+<p>Jobs: {_parent_.CRONTASKS}.</p>
+<!-- End:&Crontab -->
+<!-- End:&Dir_Admin -->
+</div>
+</div>
+<script src="/js/app.js"></script>
+<script src="/js/form-submit.js" defer></script>
+<script src="/js/js.js"></script>
+
+<script src="/js/repo-update.js?4876.1" defer></script>
+<script>
+    window.addEventListener('load', function() {
+        if (!window.RepoUpdate || !document.view_dir) return;
+        var box = document.getElementById('repo-update');
+        try {
+            RepoUpdate.init({ db: db, xsrf: document.view_dir._xsrf ? document.view_dir._xsrf.value : '' });
+        } catch (e) {
+            if (box) {
+                box.style.display = 'block';
+                box.textContent = 'Failed to initialize repository update: '
+                    + (e && e.message ? e.message : e);
+            }
+            return;
+        }
+        if (box) box.textContent = 'Click "Update from repository" to check for differences.';
+    });
+</script>
+<script>
+    if(search.download)
+        $('.menu-name').remove();
+    else{
+        $('.file-name,.menu-name:not([name$=".html"])').remove();
+        $('.restore[name$=".dmp.zip"]').show();
+    }
+	function pusk(link){
+         window.open('/{_global_.z}/'+link, '_blank');
+    }
+</script>
+</body>
+</html>

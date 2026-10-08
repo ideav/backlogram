@@ -1,0 +1,141 @@
+/* Edit Types Screen Styles */
+
+/* Top panel (fixed form) */
+.edit-types-form {
+    position: fixed;
+    background-color: var(--bg-primary);
+    z-index: 1;
+    /* margin: 5px; */
+    width: 100%;
+    max-width: 1050px;
+}
+
+#obj {
+    margin-left: -20px;
+}
+
+/* Controls area below form */
+.edit-types-controls {
+    margin-top: 44px;
+}
+
+/* Controls left links */
+.controls-left-area {
+    padding: 10px 0 0 0;
+}
+
+/* Schema card containers */
+.schema-card-wrap {
+    margin-top: 20px;
+}
+
+/* Card body with minimal padding */
+.card-body-compact {
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+
+/* Inline element container */
+.inline-block {
+    display: inline;
+}
+
+/* Double indent spacer */
+.indent-2 {
+    display: inline-block;
+    width: 14px;
+}
+
+/* Icon: multi-select enabled */
+.icon-multi-enabled {
+    color: var(--text-secondary);
+}
+
+/* Icon: multi-select disabled (active) */
+.icon-multi-disabled {
+    color: var(--text-primary);
+}
+
+/* Required field indicator */
+.icon-required {
+    color: var(--color-danger, #dc3545);
+}
+
+/* Optional field indicator */
+.icon-optional {
+    color: var(--text-secondary);
+}
+
+/* Composite uniqueness key indicator */
+.icon-key-enabled {
+    color: var(--color-warning, #b7791f);
+}
+
+.icon-key-disabled {
+    color: var(--text-secondary);
+}
+
+/* Disabled input field */
+.input-disabled {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+}
+
+/* Dropdown select — add column */
+.add-col-select {
+    max-width: 300px;
+}
+
+/* New type input row */
+.new-type-input {
+    margin-bottom: 5px;
+}
+
+/* Highlighted matching card header */
+.card-header-match {
+    background-color: #cfe2ff;
+}
+
+[data-theme="dark"] .card-header-match {
+    background-color: #1e3a5f;
+}
+
+/* Dark theme overrides for form controls */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-control:focus {
+    background-color: var(--input-bg, #2d2d2d);
+    border-color: var(--input-border, #495057);
+    color: var(--text-primary, #e9ecef);
+}
+[data-theme="dark"] .form-control::placeholder {
+    color: var(--text-secondary, #adb5bd);
+}
+[data-theme="dark"] select.form-control option {
+    background-color: var(--input-bg, #2d2d2d);
+    color: var(--text-primary, #e9ecef);
+}
+[data-theme="dark"] .card {
+    background-color: var(--card-bg, #2d2d2d);
+    border-color: var(--border-color, #495057);
+    color: var(--text-primary, #e9ecef);
+}
+[data-theme="dark"] .card-header,
+[data-theme="dark"] .card-footer {
+    background-color: var(--bg-secondary, #2d2d2d);
+    border-color: var(--border-color, #495057);
+    color: var(--text-primary, #e9ecef);
+}
+[data-theme="dark"] .table,
+[data-theme="dark"] .table td,
+[data-theme="dark"] .table th {
+    color: var(--text-primary, #e9ecef);
+    border-color: var(--border-color, #495057);
+}
+[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+[data-theme="dark"] .input-group-text {
+    background-color: var(--bg-secondary, #2d2d2d);
+    border-color: var(--input-border, #495057);
+    color: var(--text-primary, #e9ecef);
+}

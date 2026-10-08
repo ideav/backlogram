@@ -1,0 +1,8 @@
+# Build context is the repo root; send only what the image needs.
+*
+!dist-en
+!site-en/engine
+!site-en/docker
+!site-en/public/.htaccess
+site-en/engine/.env
+site-en/engine/logs

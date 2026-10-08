@@ -1,0 +1,284 @@
+    <link rel="stylesheet" href="/css/tables.css">
+    <!-- Tables Workplace Content -->
+    <div class="tables-workplace">
+        <div class="tables-header">
+            <h1>Tables</h1>
+            <div class="tables-actions">
+                <div class="search-box">
+                    <input type="text" id="tables-search" placeholder="Search tables..." class="search-input" autocomplete="off">
+                    <i class="search-icon pi pi-search"></i>
+                </div>
+                <button type="button" id="add-table-btn" class="btn-primary btn-small">
+                    <span>+</span> New table
+                </button>
+            </div>
+        </div>
+        <script>
+        // Hide "New Table" button when user lacks structure write permission (issue #1536)
+        (function () {
+            if (!(window.grants && window.grants['1'] === 'WRITE')) {
+                var btn = document.getElementById('add-table-btn');
+                if (btn) btn.style.display = 'none';
+            }
+        }());
+        </script>
+
+        <div class="tables-container" id="tables-container">
+            <!-- Folders with tables will be rendered here by JavaScript -->
+            <div class="loading-state" id="tables-loading">
+                <div class="loading-spinner"></div>
+                <p>Loading tables...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Table Modal -->
+    <div id="new-table-modal" class="modal" style="display: none;">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>New table</h2>
+                <button type="button" class="modal-close" id="close-new-table-modal"><i class="pi pi-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="new-table-form">
+                    <div class="form-group">
+                        <label for="new-table-name">Table name</label>
+                        <input type="text" id="new-table-name" name="name" required placeholder="Enter a name">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-table-type">Type</label>
+                        <div class="custom-select-wrapper">
+                            <select id="new-table-type" name="type" required class="custom-select">
+                                <option value="3" data-icon="pi pi-file">Short text (up to 127 characters)</option>
+                                <option value="8" data-icon="pi pi-align-left">Long text (unlimited length)</option>
+                                <option value="9" data-icon="pi pi-calendar">Date</option>
+                                <option value="13" data-icon="pi pi-hashtag">Integer</option>
+                                <option value="14" data-icon="pi pi-sort-numeric-down">Decimal number</option>
+                                <option value="12" data-icon="pi pi-file-edit">Multiline text</option>
+                                <option value="4" data-icon="pi pi-clock">Date and time</option>
+                                <option value="2" data-icon="pi pi-code">HTML text</option>
+                                <option value="5" data-icon="pi pi-lock">Access rights</option>
+                                <option value="16" data-icon="pi pi-table">Report column</option>
+                            </select>
+                            <i class="custom-select-arrow pi pi-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="form-group form-group-checkbox">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="new-table-unique" name="unique">
+                            <span>Unique values</span>
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Create</button>
+                        <button type="button" class="btn-secondary" id="cancel-new-table">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Folder Modal -->
+    <div id="new-folder-modal" class="modal" style="display: none;">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>New folder</h2>
+                <button type="button" class="modal-close" id="close-new-folder-modal"><i class="pi pi-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="new-folder-form">
+                    <div class="form-group">
+                        <label for="new-folder-name">Folder name</label>
+                        <input type="text" id="new-folder-name" name="name" required placeholder="Enter a name">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Create</button>
+                        <button type="button" class="btn-secondary" id="cancel-new-folder">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings object to be populated by templater -->
+    <script>
+        document.title = 'Tables';
+        var myTablesSet = {};
+        <!-- Begin: &Settings -->
+        myTablesSet['{ID}'] = {'{TYPE}': '{SETTINGS}'.replace(/&quot;/g, '"')};
+        <!-- End: &Settings -->
+    </script>
+    <script src="/js/column-name-dict.js"></script>
+    <script src="/js/tables.js"></script>
+<script>
+(function () {
+    var typeManuallyChanged = false;
+    var refManuallyChanged = false;
+
+    function initNewTableAutoDetect() {
+        var nameInput = document.getElementById('new-table-name');
+        var typeSelect = document.getElementById('new-table-type');
+        var uniqueCheckbox = document.getElementById('new-table-unique');
+
+        if (!nameInput || !typeSelect || !uniqueCheckbox) return;
+
+        typeSelect.addEventListener('change', function () {
+            typeManuallyChanged = true;
+        });
+
+        uniqueCheckbox.addEventListener('change', function () {
+            if (!uniqueCheckbox._autoDetecting) {
+                refManuallyChanged = true;
+            }
+        });
+
+        nameInput.addEventListener('input', function () {
+            if (typeof detectColumnType !== 'function') return;
+            var value = nameInput.value.trim();
+            if (!value) return;
+            var detected = detectColumnType(value);
+            if (!detected) return;
+
+            if (!typeManuallyChanged) {
+                typeSelect.value = String(detected.type);
+            }
+            if (!refManuallyChanged) {
+                uniqueCheckbox._autoDetecting = true;
+                uniqueCheckbox.checked = detected.ref;
+                uniqueCheckbox._autoDetecting = false;
+            }
+        });
+
+        // Reset manual-change flags when modal is re-opened so each new name starts fresh
+        function resetFlags() {
+            typeManuallyChanged = false;
+            refManuallyChanged = false;
+        }
+        var addTableBtn = document.getElementById('add-table-btn');
+        if (addTableBtn) addTableBtn.addEventListener('click', resetFlags);
+        var cancelBtn = document.getElementById('cancel-new-table');
+        if (cancelBtn) cancelBtn.addEventListener('click', resetFlags);
+        var closeBtn = document.getElementById('close-new-table-modal');
+        if (closeBtn) closeBtn.addEventListener('click', resetFlags);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initNewTableAutoDetect);
+    } else {
+        initNewTableAutoDetect();
+    }
+}());
+</script>
+<script src="/js/hints.js"></script>
+<!-- Workspace hints -->
+<style>
+:root {
+    --tables-hint-shadow: 0 8px 40px rgba(0,0,0,0.28);
+    --tables-hint-btn-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+[data-theme="dark"] {
+    --tables-hint-shadow: 0 8px 40px rgba(0,0,0,0.55);
+    --tables-hint-btn-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+#tables-hint-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 420px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.25rem 1.25rem 1rem;
+    box-shadow: var(--tables-hint-shadow);
+    z-index: 2000;
+    display: none;
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+}
+#tables-hint-box .hint-drag-handle {
+    position: absolute;
+    top: 6px;
+    left: 0;
+    right: 12px;
+    height: 2rem;
+    cursor: grab;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+#tables-hint-box .hint-drag-handle:active { cursor: grabbing; }
+#tables-hint-box .hint-drag-handle .hint-drag-icon {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    pointer-events: none;
+    line-height: 1;
+    letter-spacing: 2px;
+}
+#tables-hint-mobile-toggle {
+    display: none;
+    position: fixed;
+    right: 1rem;
+    z-index: 2001;
+    background: var(--button-primary);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 2.4rem;
+    height: 2.4rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: var(--tables-hint-btn-shadow);
+    align-items: center;
+    justify-content: center;
+}
+@media (max-width: 767px) {
+    #tables-hint-box { width: calc(100% - 2rem); max-width: none; }
+    #tables-hint-mobile-toggle { display: flex; }
+}
+</style>
+<div id="tables-hint-box">
+    <div class="hint-drag-handle" id="tables-hint-drag-handle" title="You can drag this window around the screen"><span class="hint-drag-icon">⠿⠿</span></div>
+    <div id="tables-hint-1" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Finding a table</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Type a name in the search bar at the top to quickly find a table in the list. You can move tables into any folder and create new folders here.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="tablesHintClose()" style="padding:0.35rem 0.9rem; border:1px solid var(--border-color); border-radius:6px; background:none; color:var(--text-secondary); cursor:pointer; font-size:0.85rem;">Close</button>
+        </div>
+    </div>
+    <div id="tables-hint-2" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Creating a table</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Click "Create table" (or "+") and enter a name. Add fields and pick a data type for each. Put the table in a folder and its position is remembered in this browser.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="tablesHintClose()" style="padding:0.35rem 0.9rem; border:1px solid var(--border-color); border-radius:6px; background:none; color:var(--text-secondary); cursor:pointer; font-size:0.85rem;">Close</button>
+        </div>
+    </div>
+    <div id="tables-hint-3" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Opening a table</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Click a table name in the list to view and edit its data.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="tablesHintClose()" style="padding:0.35rem 0.9rem; border:none; border-radius:6px; background:var(--button-primary); color:#fff; cursor:pointer; font-size:0.85rem;">Got it</button>
+        </div>
+    </div>
+</div>
+<button id="tables-hint-mobile-toggle" title="Move hint" aria-label="Move hint up/down" style="bottom:5rem;"></button>
+<script>
+// Workspace-specific hint configuration for 'tables'.
+// Texts and steps are defined here; the display mechanism is in /js/hints.js.
+document.addEventListener('DOMContentLoaded', function() {
+    window.initHints({
+        workspace: 'tables',
+        steps: 3,
+        onInit: function(api) {
+            var searchInput = document.getElementById('tables-search');
+            if (searchInput) searchInput.addEventListener('input', function() { api.advance(2); });
+            var addTableBtn = document.getElementById('add-table-btn');
+            if (addTableBtn) addTableBtn.addEventListener('click', function() { api.advance(3); });
+        }
+    });
+});
+</script>

@@ -1,0 +1,1381 @@
+<link rel="stylesheet" href="/css/bootstrap4.5.2.min.css">
+<style>
+label {
+    display: inline-block;
+    margin: .5rem 0 0 0;
+    float: left;
+}
+.list {
+    position: absolute;
+}
+.list-open {
+    z-index: 10000;
+    background-color: var(--card-bg, #fafafa);
+    border: 1px solid var(--border-color, #eeeeee);
+	border-radius: 8px;
+}
+.rth {
+    vertical-align: bottom;
+}
+.saving {
+    border-color: var(--button-success, #28a745);
+    border-width: 2px;
+}
+.btns, .inline {
+    display: inline-block;
+}
+.icon8 {
+    padding: 3px;
+    margin: 3px;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--text-secondary, #666);
+    transition: color 0.2s ease, transform 0.2s ease;
+    vertical-align: middle;
+}
+.icon8:hover {
+    color: var(--text-primary, #333);
+    transform: scale(1.1);
+}
+.icon8.text-muted {
+    color: var(--text-secondary, #aaa);
+    opacity: 0.6;
+}
+.icon8.text-muted:hover {
+    color: var(--text-secondary, #666);
+    opacity: 1;
+}
+.icon8.text-danger {
+    color: var(--color-danger, #dc3545);
+}
+.icon8.text-danger:hover {
+    color: var(--color-danger-hover, #c82333);
+}
+.ileft {
+    margin-left: -8px;
+}
+.iright {
+    margin-right: -8px;
+}
+.order-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    background-color: var(--button-primary, #3b82f6);
+    border-radius: 50%;
+    margin: 2px;
+    vertical-align: middle;
+}
+.order-badge-clickable {
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.order-badge-clickable:hover {
+    background-color: var(--button-primary-hover, #2563eb);
+    transform: scale(1.1);
+}
+.loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--bg-secondary, #f3f3f3);
+    border-top: 2px solid var(--button-primary, #3b82f6);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.t-selected {
+    margin-top: 3px;
+}
+.textarea-container {
+    padding: 10px 15px 0;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0;
+    position: relative;
+}
+.textarea-container + #ShowReport {
+    margin-top: 10px;
+}
+.textarea-container textarea {
+    padding: 5px 10px;
+    padding-right: 65px;
+    min-height: 75px;
+}
+.textarea-controls {
+    align-items: flex-end;
+    display: flex;
+    flex-direction: column;
+    margin-left: 15px;
+    row-gap: 5px;
+    position: absolute;
+    right: 30px;
+    top: 15px;
+}
+.textarea-controls button {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+}
+.btn-textarea-save {
+    background-color: var(--button-primary-muted, rgba(59, 130, 246, 0.73));
+}
+.btn-textarea-save:hover {
+    background-color: var(--button-primary, #3b82f6);
+}
+.btn-textarea-cancel {
+    background-color: var(--text-secondary-muted, rgba(108, 117, 125, 0.53));
+}
+.btn-textarea-cancel:hover {
+    background-color: var(--text-secondary, #6c757d);
+}
+td[id*="td101"],td[id*="td102"],td[id*="td105"],td[id*="td132"] {
+    position: relative;
+}
+.control-label {
+    display: none;
+    position: absolute;
+    right: 5px;
+    cursor: pointer;
+    background-color: var(--card-bg, white);
+    padding: 0 0 0 4px;
+}
+.control-label:last-of-type {
+    bottom: 6px;
+}
+.control-label:first-of-type {
+    top: 17px;
+}
+.active.control-label {
+    display: block;
+}
+center {
+    position: relative;
+}
+center .add-id-for-col {
+    display: none;
+    position: absolute;
+    right: 0px;
+    z-index: 0;
+    cursor: pointer;
+    background-color: var(--card-bg, white);
+    border: 1px solid var(--button-primary, #3b82f6);
+    font-size: 12px;
+    padding: 0 3px;
+    border-radius: 5px;
+    color: var(--button-primary, #3b82f6);
+}
+center:hover .add-id-for-col {
+    display: inline-block;
+}
+#ShowReport {
+    overflow-x: auto;
+    overflow-y: auto;
+}
+#ShowReportStickyScrollbar {
+    position: fixed;
+    bottom: 0;
+    height: 20px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    z-index: 1030;
+    background: var(--bg-secondary, #f1f3f5);
+    border-top: 1px solid var(--border-color, #dee2e6);
+    display: none;
+    scrollbar-color: var(--text-secondary, #adb5bd) var(--bg-secondary, #f1f3f5);
+}
+#ShowReportStickyScrollbar::-webkit-scrollbar {
+    height: 16px;
+}
+#ShowReportStickyScrollbar::-webkit-scrollbar-track {
+    background: var(--bg-secondary, #f1f3f5);
+}
+#ShowReportStickyScrollbar::-webkit-scrollbar-thumb {
+    background: var(--text-secondary, #adb5bd);
+    border: 3px solid var(--bg-secondary, #f1f3f5);
+    border-radius: 8px;
+}
+#ShowReportStickyScrollbarContent {
+    height: 1px;
+}
+.inner-modal{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20%;
+    border: 1px solid var(--border-color, #dee2e6);
+    border-radius: 3px;
+    background-color: var(--card-bg, #fbfbfb);
+}
+.middle-modal{
+    display: table-cell;
+    vertical-align: middle;
+    
+}
+.outer-modal{
+    display: table;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+    background: var(--modal-overlay, rgba(255, 255, 255, .4));
+}
+.existing-froms{
+    font-size: larger;
+}
+.empty-val{
+    border: 2px solid var(--color-danger, red);
+}
+/* .edit-col-title-input {
+    z-index: 10;
+}
+.col-title-wrapper {
+    position: relative;
+} */
+[data-theme="dark"] .dropdown-menu {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+[data-theme="dark"] .dropdown-menu a {
+    color: var(--text-primary);
+}
+[data-theme="dark"] .dropdown-menu a:hover {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+[data-theme="dark"] .list-open {
+    color: var(--text-primary);
+}
+[data-theme="dark"] #sql-hint-box {
+    color: var(--text-primary);
+}
+</style>
+<script src="/js/jquery3.1.1.min.js"></script>
+<script src="/js/jquery-ui1.12.1.min.js"></script>
+<script src="/js/js.js"></script>
+<div>
+<h3 id="sql-title" class="mt-2 mb-4" style="font-size: 20px; font-weight: 500; color: var(--md-text-primary); letter-spacing: 0.15px;">Query builder (SQL)</h3>
+<div id="show" class="list" style="z-index: 1;">
+<a id="showanchor" onclick="if(json['list']){byId('queries').classList.remove('hidden');byId('show').classList.add('hidden')}else myApi('GET','object/22/?JSON','list')"><i class="pi pi-list icon8" title="Query list"></i></a>
+</div>
+<div id="queries" class="list list-open shadow p-3 hidden" onclick="event.stopPropagation?event.stopPropagation():(event.cancelBubble=true);">
+<p>
+    Select a query or add a new one
+    <a id="closeList" onclick="byId('queries').classList.add('hidden');byId('show').classList.remove('hidden')">
+        &nbsp;&nbsp;&nbsp;&nbsp;<i class="pi pi-times icon8" title="Hide query list"></i>
+    </a>
+</p>
+<div>
+<form method="post" action="/{_global_.z}/_m_new/22?up=1" onsubmit="addbtn.disabled=true; return true;">
+    <input type="hidden" name="_xsrf" value="{_global_.xsrf}">
+    <input type="hidden" name="next_act" value="{_global_.action}">
+    <table>
+    <tr>
+    	<td><input placeholder="Search / New query" type="text" name="t22" class="form-control form-control-sm" autocomplete="off" onkeyup="seekRep(this.value)"></td>
+    	<td><input type="submit" name="addbtn" class="btn btn-primary btn-sm" value="Create query"></td>
+    </tr>
+    </table>
+</form>
+</div>
+<br/>
+<div id="list">
+    <p><a target="_rep{_global_.id}" href="/{_global_.z}/report/:id:">:val:</a> 
+     <a target="_rep{_global_.id}"  href="/{_global_.z}/smartq/:id:"><i class="pi pi-pencil icon8 ml-2"></i></a>
+     <a  href="/{_global_.z}/sql/:id:"><i class="pi pi-cog icon8 ml-2"></i></a>
+</p>
+</div>
+</div>
+</div>
+<div class="add-from outer-modal" style="display:none;">
+    <div class="middle-modal">
+        <div class="inner-modal w-75 pt-4 pb-3 shadow">
+            <center>
+            <b>Join a table on a condition in an existing column</b>
+            <div class="form-inline justify-content-center align-items-center mt-3">
+                <select class="form-control form-control-sm add-from-left"></select>
+                <input type="text" placeholder="Alias: one word, Latin letters" class="add-from-alias form-control form-control-sm">
+                <select class="form-control form-control-sm add-from-left-field mr-2">
+                    <option value="id">ID</option>
+                    <option value="t">Type (table)</option>
+                    <option value="up">Parent (up)</option>
+                    <option value="val">Value</option>
+                </select>
+                <font size="+2">=</font>
+                <select class="form-control form-control-sm add-from-right ml-2"></select>
+                <select class="form-control form-control-sm add-from-right-field mr-2">
+                    <option value="id">ID</option>
+                    <option value="t" selected>Type (table)</option>
+                    <option value="up">Parent (up)</option>
+                    <option value="val">Value</option>
+                </select>
+                <button class="btn btn-sm btn-primary" onclick="newFrom(this)">Add</button>
+            </div>
+            <div class="existing-froms mt-3"></div>
+            <button class="btn btn-outline-secondary btn-sm mt-3" onclick="$('.add-from').hide(200)">Close</button>
+            </center>
+        </div>
+    </div>
+</div>
+<div id="one" class="hidden mt-3" onclick="hideList()">
+    <center>
+        <h4 class="ml-5">
+            <a target=":id:" href="/{_global_.z}/report/{_global_.id}">:val:</a>&nbsp;
+			<a target="2122" href="/{_global_.z}/query/{_global_.id}" title="Customizable table"><i class="pi pi-bolt icon8"></i></a>&nbsp;
+            <a target=":id:" href="/{_global_.z}/smartq/{_global_.id}" title="Editable report"><i class="pi pi-pencil icon8"></i></a>&nbsp;
+            <a target=":id:" href="/{_global_.z}/edit_obj/{_global_.id}#t22" title="Edit other query properties"><i class="pi pi-file-edit icon8"></i></a>&nbsp;
+            <a href="#" onclick="copyLink('report/{_global_.id}')" title="Copy path for use in Integram templates"><i class="pi pi-link icon8"></i></a>&nbsp;
+            <a href="#" onclick="copyLink('https://'+location.host+'/{_global_.z}/report/{_global_.id}')" title="Copy absolute URL for external sharing"><i class="pi pi-copy icon8"></i></a>&nbsp;
+            <span id="copied" style="display:none; color:var(--text-secondary, gray); position:absolute" class="text-nowrap">Copied</span>
+        </h4>
+    </center>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col" style="height:12px"></div>
+        </div>
+        <div class="row">
+            <div class="col-6 col-md-2 col-lg-2 col-xl-2 mb-1">
+                <br /><nobr><label class="mt-0"><img id="interactWait" class="hidden" src="/i/ajax.gif"><input type="checkbox" id="interact" onchange="setInteract()" value="1">&nbsp;Interactive</label></nobr>
+            </div>
+            <div class="col-6 col-md-2 col-lg-2 col-xl-1 mb-1 pr-1">
+                <br /><img id="limitWait" class="hidden" src="/i/ajax.gif"><input class="form-control form-control-sm" type="text" id="limit" onchange="setLimit(this.valur)" placeholder="LIMIT" autocomplete="off">
+            </div>
+            <div class="col-12 col-md-8 col-lg-8 col-xl-6 pl-1">
+                <br />
+                <button class="btn btn-outline-secondary btn-sm mb-1" id="102" onclick="showCtl(this)">Filter</button>
+                <button class="btn btn-outline-secondary btn-sm mb-1" id="84" onclick="showCtl(this)">Format</button>
+                <button class="btn btn-outline-secondary btn-sm mb-1" id="104" onclick="showCtl(this)">Function</button>
+                <button class="btn btn-outline-secondary btn-sm mb-1" id="109" onclick="showCtl(this)">Sort</button>
+                <button class="btn btn-outline-secondary btn-sm mb-1" id="72" onclick="showCtl(this)">Totals</button>
+                <button class="btn btn-outline-secondary btn-sm mb-1" id="101" onclick="showCtl(this)">Formula</button>
+                <button class="btn btn-outline-secondary btn-sm mb-1" id="105" onclick="showCtl(this)">HAVING</button>
+                <button class="btn btn-outline-secondary btn-sm mb-1" id="132" onclick="showCtl(this)">SET</button>
+                <button class="btn btn-outline-secondary btn-sm mb-1" id="58" onclick="showCtl(this)" style="display:none">ALIAS</button>
+            </div>
+            <div class="col-12 col-md-12 col-lg-12 col-xl-3 mb-1">
+                Add a column, <a class="text-primary" onclick="addCol(0)">calculated</a>, <a class="text-primary" onclick="addFrom()">ALIAS</a><br>
+                <div class="input-group input-group-sm">
+                    <span class="t-selected table-column" style="display:none;"></span>
+            		<select id="table" class="form-control table-column" onchange="if(this.value.length)selectTable(this.value)">
+            			<option id=":id:" value=":id:">:val:</option>
+            		</select>
+            		<div class="input-group-append">
+            		    <img id="addColWait" style="display:none;" src="/i/ajax.gif">
+            		    <a onclick="$('.table-column').toggle()" class="table-column" title="Choose another table" style="display:none;"><i class="pi pi-times icon8"></i></a>
+                    </div>
+            		<select id="t28" class="form-control table-column" onchange="if(this.value.length)addCol(this.value)" style="display:none;">
+            		</select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="warning" class="alert alert-warning hidden" role="alert"></div>
+    <div id="ShowReport"></div>
+    <div id="ShowReportStickyScrollbar" aria-hidden="true">
+        <div id="ShowReportStickyScrollbarContent"></div>
+    </div>
+</div>
+<div class="hidden" id="controls">
+    <div id="template102">
+        <label class="control-label" for="t102_:id:">
+            <i class="pi pi-pencil" style="font-size: 14px; color: var(--text-primary, #212529);"></i>
+        </label>
+        <input type="text" id="t102_:id:" value="" placeholder="From" class="form-control form-control-sm save-input">
+        <div id="dd102_:id:"></div>
+        <label class="control-label" for="t103_:id:">
+            <i class="pi pi-pencil" style="font-size: 14px; color: var(--text-primary, #212529);"></i>
+        </label>
+		<input type="text" id="t103_:id:" value="" placeholder="To" class="form-control form-control-sm save-input">
+		<div id="dd103_:id:"></div>
+	</div>
+    <div id="template104">
+        <select name="t104" id="t104_:id:" class="form-control form-control-sm onchange">
+		    <option> </option>
+            <!-- Begin: &Functions -->
+		    <option value="{ID}" r="104">{VAL}</option>
+            <!-- End: &Functions -->
+		</select>
+	</div>
+	<div id="template84">
+	    <select name="t84" id="t84_:id:" class="form-control form-control-sm onchange">
+		    <option> </option>
+            <!-- Begin: &Formats -->
+		    <option value="{ID}" r="104">{VAL}</option>
+            <!-- End: &Formats -->
+		</select>
+    </div>
+    <div id="template72">
+	    <select name="t72" id="t72_:id:" class="form-control form-control-sm onchange">
+		    <option> </option>
+			<option value="68" r="72">AVG</option>
+			<option value="71" r="72">COUNT</option>
+			<option value="70" r="72">MAX</option>
+			<option value="69" r="72">MIN</option>
+			<option value="67" r="72">SUM</option>
+		</select>
+	</div>
+    <div id="template105"><!--Having-->
+        <label class="control-label" for="t105_:id:">
+            <i class="pi pi-pencil" style="font-size: 14px; color: var(--text-primary, #212529);"></i>
+        </label>
+        <input type="text" id="t105_:id:" value="" placeholder="From" class="form-control form-control-sm save-input">
+        <label class="control-label" for="t106_:id:">
+            <i class="pi pi-pencil" style="font-size: 14px; color: var(--text-primary, #212529);"></i>
+        </label>
+		<input type="text" id="t106_:id:" value="" placeholder="to" class="form-control form-control-sm save-input">
+	</div>
+    <div id="template109"><!--Order-->
+		
+	</div>
+    <div id="template101" style="position: relative;">
+        <label class="control-label" for="t101_:id:">
+            <i class="pi pi-pencil" style="font-size: 14px; color: var(--text-primary, #212529);"></i>
+        </label>
+        <!--Expression-->
+		<input type="text" name="t101" id="t101_:id:" class="form-control form-control-sm save-input" value="">
+	</div>
+    <div id="date_dd"><!--Date DD-->
+    	<ul class="dropdown-menu">
+            <li class="p-2"><a onclick="curEl.value='[TODAY]';updateValue(curEl)">[TODAY] – today</a></li>
+            <li class="p-2"><a onclick="curEl.value='[YESTERDAY]';updateValue(curEl)">[YESTERDAY] – yesterday</a></li>
+            <li class="p-2"><a onclick="curEl.value='[TOMORROW]';updateValue(curEl)">[TOMORROW] – tomorrow</a></li>
+            <li class="p-2"><a onclick="curEl.value='[MONTH_AGO]';updateValue(curEl)">[MONTH_AGO] – same day a month ago</a></li>
+            <li class="p-2"><a onclick="curEl.value='';updateValue(curEl)"><i class="pi pi-times-circle icon8 p-0" style="color: var(--color-danger, #dd0000);"></i> Clear</a></li>
+        </ul>
+	</div>
+    <div id="template58"><!--Alias-->
+		<select name="t58" id="t58_:id:" class="form-control form-control-sm onchange t-58"></select>
+	</div>
+    <div id="template132"><!--Set-->
+        <label class="control-label" for="t132_:id:">
+            <i class="pi pi-pencil" style="font-size: 14px; color: var(--text-primary, #212529);"></i>
+        </label>
+		<input type="text" name="t132" id="t132_:id:" class="form-control form-control-sm save-input" value="">
+	</div>
+</div>
+<script>
+var timer,lastK,froms,repList=byId('list').innerHTML;
+var showReportScrollbarAttached=false,showReportScrollbarSyncing=false,showReportScrollbarReport,showReportScrollbarSticky;
+function getFrom(json){
+    var i,alias,right,f='',h='<option value=""> </option>';
+    for(i in json.object){
+        fi=json.object[i].id;
+        alias=json.reqs[fi]?json.reqs[fi][265]:''
+        right=json.reqs[fi]?json.reqs[fi][266]:''
+        h+='<option value="'+alias+'">'+alias+' / '+json.object[i].val+'</option>';
+        f+='<span id="'+fi+'" class="badge badge-pill badge-outline-secondary border shadow-sm p-2 m-2">'
+                +json.object[i].val+' / '+alias+' / '+right
+            +' <a class="text-primary ml-2" onclick="dropFrom('+fi+')">X</a></span>';
+        $('#58').show();
+    }
+    $('.t-58').html(h);
+    $('.existing-froms').html(f);
+    getCols();
+}
+function fromDone(json){
+    document.location.reload();
+}
+function newFrom(el){
+    $('.empty-val').removeClass('empty-val');
+    $('.add-from-alias,.add-from-left,.add-from-right').each(function(){
+        if(this.value.length===0)
+            $(this).addClass('empty-val');
+    });
+    if($('.empty-val').length>0)
+        return;
+    $(el).prop('disabled',true);
+    var fd = new FormData();
+    fd.append('t265',$('.add-from-alias').val());
+    fd.append('t266','a'+$('.add-from-alias').val()+'.'+$('.add-from-left-field').val()+'=r'+$('.add-from-right').val()+'.'+$('.add-from-right-field').val());
+    newApi('POST','_m_new/44?JSON&up={_global_.id}&t44='+$('.add-from-left').val(),'fromDone',fd);
+}
+function dropFromDone(json){
+    $('#'+json.id).remove();
+    fromDone();
+}
+function dropFrom(i){
+    newApi('POST','_m_del/'+i+'?JSON','dropFromDone');
+}
+function getCols(){
+    myApi('GET','object/28/?F_U={_global_.id}&JSON&LIMIT=1000','select');
+}
+function getFromList(json){
+    froms={};
+    for(var i in json.rep_col_list)
+        if(json.rep_col_list[i].id===json.rep_col_list[i].table)
+            froms[json.rep_col_list[i].id]=json.rep_col_list[i].name;
+    fillInFrom();
+}
+function fillInFrom(){
+    var i,h='<option value="">--- '+'table'+' ---</option>',l='<option value="">--- '+'column'+' ---</option>';
+    for(i in froms)
+        h+='<option value="'+i+'">'+froms[i]+'</option>';
+    $('.add-from-left').html(h);
+    $('.col-title-wrapper').each(function(){
+        l+='<option value="'+$(this).attr('ref')+'">'+$(this).find('a').html()+'</option>';
+    });
+    $('.add-from-right').html(l);
+}
+function addFrom(){
+    if(!froms)
+        newApi('GET','object/44/?F_U={_global_.id}&JSON&LIMIT=1000','getFromList');
+    else
+        fillInFrom();
+    $('.add-from').show(200);
+}
+function selectTable(v){
+    var i,h=colListTemplate.replace(/:id:/g,'')
+                            .replace(':val:','select a column');
+    for(i in json.select.rep_col_list)
+        if(json.select.rep_col_list[i].table===v)
+            h+=colListTemplate.replace(/:id:/g,json.select.rep_col_list[i].id)
+                            .replace(':val:',json.select.rep_col_list[i].name);
+    $('#t28').html(h);
+    if($('#t28').find('option[value]').length===2)
+        addCol($('#t28').find('option[value]')[1].id);
+    $('.t-selected').html(getTableName(v));
+    $('.table-column').toggle();
+    $('#t28').focus();
+}
+function getTableName(v){
+    for(i in json.select.rep_col_list)
+        if(json.select.rep_col_list[i].table===v)
+            return json.select.rep_col_list[i].name;
+}
+function copyLink(i){
+    var $temp = $("<input>");
+    $("body").append($temp);
+    $temp.val(i).select();
+    document.execCommand("copy");
+    $temp.remove();
+    $('#copied').show().delay(2500).slideUp(400);
+}
+function seekRep(v){
+    if(lastK==v) return;
+    lastK=v;
+    window.clearTimeout(timer);
+    if(v.length>0){
+        if(v.substring(0,1)!='@'&&v.substring(0,1)!='!')
+            v='%25'+v+'%25';
+        timer=setTimeout(function(){myApi('GET','object/22/?JSON&F_22='+v,'list')},330);
+    }
+}
+function fillQueryNameFromHint(v){
+    var input=document.querySelector('input[name="t22"]');
+    if(!input) return false;
+    input.value=v;
+    input.focus();
+    lastK=null;
+    seekRep(v);
+    if(byId('queries').classList.contains('hidden')){
+        byId('queries').classList.remove('hidden');
+        byId('show').classList.add('hidden');
+    }
+    return false;
+}
+function hideList(){
+    if(!byId('queries').classList.contains('hidden'))
+        byId('closeList').click();
+}
+function showCtl(el){ // Mark buttons pressed in case they were pressed before the last action
+    i='r'+el.id;
+    if(byId(i).classList.contains('hidden')){
+        byId(i).classList.remove('hidden');
+        el.classList.add('active')
+    }
+    else{
+        byId(i).classList.add('hidden');
+        el.classList.remove('active')
+    }
+    scheduleShowReportScrollbarUpdate();
+}
+function setInteract(){ // Set Interactive mark and save it's value
+    byId('interactWait').classList.remove('hidden');
+    byId('interact').classList.add('hidden');
+    myApi('POST','_m_set/{_global_.id}?JSON&t95='+(interact?'':1),'interact');
+}
+function setLimit(){ // Set Interactive mark and save it's value
+    byId('limitWait').classList.remove('hidden');
+    byId('limit').classList.add('hidden');
+    myApi('POST','_m_set/{_global_.id}?JSON&t134='+($('#limit').val()),'interact');
+}
+function addCol(val, isId){ // Add a column to the report
+    $('.table-column,#addColWait').toggle();
+    // Prevent creating duplicate names, use Name1, Name2, ...
+    var j=1,seek=true,a=alias[val];
+    if (isId) {
+        a+='ID';
+        while(seek){
+            seek=false;
+            for(i in colNames)
+            if(colNames[i]===a){
+                a = a.slice(0, a.length - 2) + 1 + a.slice(-2);
+                seek=true;
+                break;
+            }
+        }
+    } else {
+        while(seek){
+            seek=false;
+            for(i in colNames)
+            if(colNames[i]===a){
+                a+=(j++);
+                seek=true;
+                break;
+            }
+        }
+    }
+    myApi('POST','_m_new/28?JSON&up={_global_.id}&t28='+val+'&t100='+a,'addCol', isId ? 'isIdCol' : '');
+}
+function addIdCol(el) {
+    const colRef = $(el).closest('.col-title-wrapper').attr('ref');
+    addCol(colRef, true);
+}
+function getReq(id,r){
+    if(json['select'].reqs)
+        if(json['select'].reqs[id]!==undefined)
+            if(json['select'].reqs[id][r]!==undefined)
+                return json['select'].reqs[id][r].replace(/"/gm,'&quot;');
+    return '';
+}
+function align(i){
+    switch(i){
+		case 'PWD':
+		case 'DATE':
+		case 'DATETIME':
+		case 'BOOLEAN':
+			return 'CENTER';
+		case 'NUMBER':
+		case 'SIGNED':
+			return 'RIGHT';
+	}
+	return 'LEFT';
+}
+function parseSqlReportUnixTimestamp(value){
+    if(value===undefined||value===null||value==='') return null;
+    var str=String(value).trim();
+    if(!/^\d+(\.\d+)?$/.test(str)) return null;
+    var num=parseFloat(str);
+    if(isNaN(num)||num<1000000000) return null;
+    var date=new Date(num>=1000000000000?num:num*1000);
+    var year=date.getFullYear();
+    if(year<2001||year>2100) return null;
+    return date;
+}
+function formatSqlReportDateTime(date){
+    if(!date||isNaN(date.getTime())) return '';
+    var day=String(date.getDate()).padStart(2,'0');
+    var month=String(date.getMonth()+1).padStart(2,'0');
+    var year=date.getFullYear();
+    var hours=String(date.getHours()).padStart(2,'0');
+    var minutes=String(date.getMinutes()).padStart(2,'0');
+    var seconds=String(date.getSeconds()).padStart(2,'0');
+    return day+'.'+month+'.'+year+' '+hours+':'+minutes+':'+seconds;
+}
+function formatReportCellValue(value,column){
+    if(!column||String(column.format).toUpperCase()!=='DATETIME') return value;
+    var date=parseSqlReportUnixTimestamp(value);
+    if(!date) return value;
+    return formatSqlReportDateTime(date);
+}
+function myApi(m,u,b,vars,index){
+    vars=vars||'';
+    var h='',i,j,er='',obj=new XMLHttpRequest();
+    json[u]=[];
+    obj.open(m,'/'+db+'/'+u,true);
+    if(m=='POST'){
+        obj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+        vars='_xsrf='+xsrf+'&'+vars;
+        obj.send(vars);
+    }
+    else
+        obj.send();
+    obj.onload=function(e){
+        try{
+            json[b]=JSON.parse(this.responseText);
+        }
+        catch(e){
+            console.log(e);
+            console.log(er=this.responseText);
+        }
+        obj.abort();
+        switch(b){
+            case 'addCol':
+                $('#addColWait').hide();
+                if (vars.split('&').includes('isIdCol')) {
+                    // get abn_ID field id for a new ID column
+                    lastCreatedIdColumn = json[b].id;
+                }
+            case 'd':
+                go();
+                break;
+            case 'setOrder': // Wait until all orders are updated
+                ordersCount--;
+                if(ordersCount===0)
+                    go();
+                break;
+            case 'ctls': // Controls were updated - Filter, Function, Totals, etc.
+                myApi('GET','report/{_global_.id}?LIMIT=25&JSON','ShowReport');
+            case 'updateCol': // Update a column name - alias
+                if(byId(index))
+                    byId(index).classList.remove('saving');
+                break;
+            case 'interact':
+                $('#interactWait,#limitWait').addClass('hidden');
+                $('#interact,#limit').removeClass('hidden');
+                go();
+                break;
+            case 'list': 
+                if(json[b].object){
+                    for(i in json[b].object)
+                        h+=repList.replace(/:id:/g,json[b].object[i].id).replace(':val:',json[b].object[i].val);
+                    byId('list').innerHTML=h;
+                }
+                else
+                    byId('list').innerHTML='Not found';
+                byId('queries').classList.remove('hidden');
+                byId('show').classList.add('hidden');
+                break;
+            case 'one': // Get the info on the requested report
+                if(json[b]['obj']){
+                    byId('one').innerHTML=byId('one').innerHTML.replace(/:id:/g,json[b]['obj'].id)
+                                                                .replace(':val:',json[b]['obj'].val);
+                    byId('one').classList.remove('hidden');
+                    byId('sql-title').classList.add('hidden');
+                    byId('interact').checked=interact=(json[b]['reqs'][95]['value']!="");
+                    $('#limit').val(json[b]['reqs'][134]['value']);
+                    if(json[b]['reqs'][261]['arr']) // Fetch manual joins if any
+                        newApi('GET','object/44/?F_U={_global_.id}&JSON&LIMIT=1000','getFrom');
+                    else
+                        getCols();
+                }
+                break;
+            case 'select': // Get the info on the requested report's columns
+                if(json[b]['type']){
+                    var hcolor,htitle,id,ref,dir,order,l='',hide,c=[],control;
+                    for(k in ctl)
+                        c[k]='';
+                    j=0;
+                    for(i in json[b].object){
+                        id=json[b].object[i].id;
+                        ref=json[b].object[i].ref;
+                        var refs = json[b].object?.map(val => val.ref);
+                        // Check if we should add ID button to the header
+                        let shouldDrawIdButton = false;
+                        const colName = json[b].reqs[id]?json[b].reqs[id][100]:undefined;
+                        const colBase = json[b].rep_col_list.find?json[b].rep_col_list.find(val => val.id === ref):undefined;
+                        if(colName)
+                            if (colBase?.type === colBase?.table && ref !== "0" && colName && colName.slice(-2) !== "ID" && refs.filter(val => val === ref).length < 2)
+                                shouldDrawIdButton = true;
+                        // The report table header
+                        h+='<td class="rth pt-2 pl-2 pr-2"><center><div class="col-title-wrapper" ref="'+ref+'" id="'+id+'">'+drawCol(id, shouldDrawIdButton)+'</div>';
+                        // Hidden/non-hidden fields
+                        if(getReq(id,107)===''){
+                            hcolor='aaaaaa';
+                            htitle='Click to hide the column in the report';
+                            l+='<td align=":align'+j+':">:'+j+':</td>'; // a non-hidden report line
+                            j++;
+                            t107=1;
+                        }
+                        else{
+                            hcolor='222222';
+                            htitle='Hidden field';
+                            l+='<td> </td>' // a hidden report line
+                            t107='';
+                        }
+                        // Buttons under the column name
+                        h+='<nobr><i class="pi pi-chevron-left icon8 ileft" onclick="showLoading(this);d(\'up\','+id+')" title="'
+                                +'Move column left'+'"></i>'
+                            +'<i class="pi '+(t107?'pi-eye-slash':'pi-eye')+' icon8" style="color:#'+hcolor+'" onclick="showLoading(this);d(\'set\','+id+',\'t107='+t107+'\')" title="'+htitle+'"></i>'
+                            +'<i class="pi pi-trash icon8 iright" onclick="d(\'del\','+id+');colNames['+id+']=undefined" title="'
+                                +'Delete column'+'"></i><nobr></center></td>';
+                        // Column control lines: Filter, Function, Totals, etc.
+                        for(k in ctl){
+                            c[k]+='<td style="border: none;" class="p-0" id="td'+ctl[k]+'_'+id+'">';
+                            control=(i==0?byId(ctl[k]).innerHTML:'')+'<br />';
+                            control+=byId('template'+ctl[k]).innerHTML.replace(/:t:/g,ctl[k]).replace(/:id:/g,id);
+                            if(getReq(id,'ref_'+ctl[k])!=='') // Reference - select input
+                                control=control.replace('value="'+getReq(id,'ref_'+ctl[k]).split(':')[1]+'"','value="'+getReq(id,'ref_'+ctl[k]).split(':')[1]+'" selected');
+                            if(getReq(id,58)!=='') // Alias - select input
+                                control=control.replace('value="'+getReq(id,58)+'"','value="'+getReq(id,58)+'" selected');
+                            else if(ctl[k]==102){ // Range input for Filter
+                                var v102=getReq(id,102),v103=getReq(id,103);
+                                control=control.replace('id="t102_'+id+'" value=""',function(){return 'id="t102_'+id+'" value="'+v102+'"';})
+                                                .replace('id="t103_'+id+'" value=""',function(){return 'id="t103_'+id+'" value="'+v103+'"';});
+                            }
+                            else if(ctl[k]==105){ // Range input for HAVING
+                                var v105=getReq(id,105),v106=getReq(id,106);
+                                control=control.replace('id="t105_'+id+'" value=""',function(){return 'id="t105_'+id+'" value="'+v105+'"';})
+                                                .replace('id="t106_'+id+'" value=""',function(){return 'id="t106_'+id+'" value="'+v106+'"';});
+                            }
+                            else if(ctl[k]==109){ // Order
+                                dir=getReq(id,ctl[k]);
+                                order=Math.abs(dir);
+                                if(dir=='')
+                                    control+='<i onclick="showLoading(this);setOrder('+id+',0,1)" title="'+'Enable sorting'
+                                            +'" class="pi pi-sort-alt icon8 text-muted"></i>';
+                                else{
+                                    if(order==1)
+                                        control+='<span class="order-badge" title="'+'Sorted by this column first'
+                                                +'">'+order+'</span>';
+                                    else
+                                        control+='<span class="order-badge order-badge-clickable" onclick="showLoading(this);setOrder('+id+','+dir+','+(order-1)+')" title="'+'Sort priority. Click to raise.'
+                                                +'">'+order+'</span>';
+                                    if(dir>0)
+                                        control+='<i title="'+'Ascending. Click to reverse'
+                                                +'" onclick="showLoading(this);d(\'set\','+id+',\'t109='+(-dir)+'\')" class="pi pi-sort-amount-up icon8"></i>';
+                                    else
+                                        control+='<i title="'+'Descending. Click to reverse'
+                                                +'" onclick="showLoading(this);d(\'set\','+id+',\'t109='+(-dir)+'\')" class="pi pi-sort-amount-down icon8"></i>';
+                                    control+='<i title="'+'Remove sorting'
+                                            +'" onclick="showLoading(this);setOrder('+id+',0,\'\')" class="pi pi-times-circle icon8 text-danger"></i>';
+                                }
+                            }
+                            else{
+                                // Use a function as the replacement so that $-sequences ($', $&, $`, $n) in the
+                                // user value are not interpreted by String.prototype.replace (fixes #2791).
+                                var v=getReq(id,ctl[k]);
+                                control=control.replace('value=""',function(){return 'value="'+v+'" title="'+v+'"';});
+                            }
+                            c[k]+=control+'</td>';
+                        }
+                    }
+                    // Construct the control lines
+                    for(k in ctl)
+                        c[k]='<tr style="border: 1px" id="r'+ctl[k]+'" class="'+(byId(ctl[k]).classList.contains('active')?'':'hidden')+'">'+c[k]+'</tr>';
+                    // The template for the data line
+                    rbody='<tr>'+l+'</tr>';
+                    // Table: Header (h) + Control lines (c) + Data (rbody as a template)
+                    byId('ShowReport').innerHTML='<table class="table table-bordered table-sm integram-table"><thead><tr>'+h+c.join('')+'</thead><tbody id="rbody" style="display:none;">'+rbody+'</body></table>';
+                    attachShowReportScrollbar();
+                    // A list of columns available to add to the report
+                    h=colListTemplate.replace(/:id:/g,'')
+                                    .replace(':val:','select a table');
+                    var suffix;
+                    for(i in json[b].rep_col_list){
+                        if(json[b].rep_col_list[i].table===json[b].rep_col_list[i].id){
+                            if(json[b].rep_col_list[parseInt(i)+1]&&json[b].rep_col_list[parseInt(i)+1].table===json[b].rep_col_list[i].id)
+                                suffix='...';
+                            else
+                                suffix='';
+                            h+=colListTemplate.replace(/:id:/g,json[b].rep_col_list[i].id)
+                                            .replace(':val:',json[b].rep_col_list[i].name+suffix);
+                        }
+                        alias[json[b].rep_col_list[i].id]=json[b].rep_col_list[i].name.split(' -> ').pop();
+                    }
+                    $('#table').html(h);
+                    // Request the report data
+                    myApi('GET','report/{_global_.id}?LIMIT=25&JSON','ShowReport');
+                    // Listeners to auto-save the changed control line values
+                    $('.save-input').focusout(function(){ // Text input fields
+                        updateValue(this);
+                    });
+                    $('.save-input').focusin(function(){ // Text input fields - get current element for Date DDs
+                        curEl=this;
+                    });
+                    $('.onchange').change(function(){ // Dropdown lists
+                        updateValue(this);
+                    });
+                    $('.save-input').keyup(function(){ // Text input fields on Enter pressed
+                        if(event.keyCode==13)
+                            updateValue(this);
+                    });
+                    colorBtns();
+                    addTextareaListeners();
+                    if (lastCreatedIdColumn > 0) {
+                        $('#t104_' + lastCreatedIdColumn).val(85).change();
+                        lastCreatedIdColumn = 0;
+                    }
+                }
+                break;
+            case 'ShowReport': // Construct the report table
+                if(er!=''){ // There were errors during report retrieval
+                    byId('warning').innerHTML=er.replace(/<A.+<\/a>/i,''); // Clean up the links if any
+                    byId('warning').classList.remove('hidden');
+                }
+                else if(json[b]["data"]){
+                    byId('warning').classList.add('hidden');
+                    for(i in json[b]["data"][0]){ // Data lines
+                        el=rbody;
+                        for(j in json[b]["data"]){
+                            var cellValue=formatReportCellValue(json[b]["data"][j][i], json[b]["columns"][j]);
+                            el=el.replace('>:'+j+':<','>'+cellValue+'<')
+                                .replace(':align'+j+':',align(json[b]["columns"][j].format));
+                        }
+                        h+=el;
+                    }
+                    if(json[b]["columns"][0]["totals"]!==undefined){ // Fill in Total lines, if any
+                        el=rbody;
+                        for(j in json[b]["data"])
+                            el=el.replace(':'+j+':','<b>'+json[b]["columns"][j]["totals"]+'</b>')
+                                .replace(':align'+j+':',align(json[b]["columns"][j].format));
+                        h+=el;
+                    }
+                    byId('rbody').innerHTML=h;
+                    var id;
+                    for(i in json[b]["columns"]) // Update DATE fields with keyword dropdowns
+                        if(json[b]["columns"][i].format=='DATE')
+                            if(dateDDFilledIn[json[b]["columns"][i].id]==undefined){
+                                id=json[b]["columns"][i].id;
+                    		    $('#t102_'+id).attr("data-toggle", "dropdown");
+                    		    $('#t102_'+id).attr("autocomplete", "off");
+                    		    $('#t103_'+id).attr("data-toggle", "dropdown");
+                    		    $('#t103_'+id).attr("autocomplete", "off");
+                    		    byId('dd102_'+id).innerHTML+=byId('date_dd').innerHTML.replace(/:t:/g,'102').replace(/:id:/g,id);
+                                dateDDFilledIn[id]=true;
+                            }
+                }
+                else{
+                    byId('warning').innerHTML='Empty report';
+                    byId('warning').classList.remove('hidden');
+                }
+                $('#rbody').show();
+                scheduleShowReportScrollbarUpdate();
+                if (window.sqlHintAdvance) {
+                    var firstColWrapper = document.querySelector('.col-title-wrapper');
+                    var firstColAnchor = firstColWrapper && firstColWrapper.querySelector('a');
+                    if (firstColAnchor && firstColAnchor.title === 'User') window.sqlHintAdvance(2);
+                    var interactCheck = document.getElementById('interact');
+                    if (interactCheck && interactCheck.checked && document.querySelector('.col-title-wrapper[ref="120"]')) window.sqlHintAdvance(3);
+                }
+                break;
+
+        }
+    }
+}
+var ordersCount;
+function setOrder(id,dir,order){ // Set the order control
+    ordersCount=0;
+    for(i in json['select'].reqs)
+        if(json['select'].reqs[i][109]!==undefined)
+            if(order===''){ // Move others up in case we delete an order value
+                if(Math.abs(json['select'].reqs[i][109])>json['select'].reqs[id][109])
+                    myApi('POST','_m_set/'+i+'?JSON&a1&t109='+(parseInt(json['select'].reqs[i][109])-Math.sign(json['select'].reqs[i][109])),'setOrder','',ordersCount++);
+            }
+            else if((Math.abs(json['select'].reqs[i][109])<=order)||(dir===0)) // Move others down in case we add a new ordering
+                myApi('POST','_m_set/'+i+'?JSON&a2&t109='+(Math.sign(json['select'].reqs[i][109])+parseInt(json['select'].reqs[i][109])),'setOrder','',ordersCount++);
+    myApi('POST','_m_set/'+id+'?JSON&a3&t109='+order,'setOrder','',ordersCount++); // Save the initially changed order value
+}
+function colorBtns(){ // Color the buttons blue in case there are filled in control under them
+    for(var i in ctl)
+        byId(ctl[i]).classList.add('btn-outline-secondary');
+    if(json['select'].reqs==undefined)
+        return;
+    for(i in json['select'].reqs)
+        for(var j in json['select'].reqs[i])
+            if(byId(k=j.replace('ref_',''))&&(json['select'].reqs[i][j]!=''))
+                if(byId(k).classList.contains('btn-outline-secondary')){
+                    byId(k).classList.remove('btn-outline-secondary');
+                    byId(k).classList.add('btn-outline-primary');
+                    $('#'+k).show();
+                }
+}
+function updateValue(i){ // Save the updated control value
+    var obj=i.id.split('_')[1],req=i.id.split('_')[0].substr(1);
+    if(getReq(obj,req)==i.value)
+        return;
+    if($(i).attr('name')==='t101')
+        if(['id','t','ord','up','val'].indexOf(i.value)!==-1)
+            $(i).val(i.value.toUpperCase());
+    setReq(obj,req,i.value);
+    i.className+=' saving';
+    myApi('POST','_m_set/'+obj+'?JSON&t'+req+'='+encodeURIComponent(i.value),'ctls','',i.id);
+}
+function setReq(id,t,v){ // Save the changed value in the local array
+    if(json['select'].reqs==undefined)
+        json['select'].reqs=[];
+    if(json['select'].reqs[id]==undefined)
+        json['select'].reqs[id]=[];
+    json['select'].reqs[id][t]=v;
+}
+function d(d,i,v){ // Do the DML command and re-draw the report
+    v=v||'';
+    myApi('POST','_m_'+d+'/'+i+'?JSON&'+v,'d');
+}
+function showLoading(el){ // Show loading spinner on icon click
+    if(el.tagName==='I'){
+        el.className='loading-spinner';
+    } else if(el.tagName==='SPAN'){
+        el.innerHTML='<span class="loading-spinner"></span>';
+    }
+}
+function scheduleShowReportScrollbarUpdate(){
+    if(window.requestAnimationFrame)
+        window.requestAnimationFrame(updateShowReportScrollbar);
+    else
+        setTimeout(updateShowReportScrollbar,0);
+}
+function updateShowReportScrollbar(){
+    var report=byId('ShowReport'),
+        scrollbar=byId('ShowReportStickyScrollbar'),
+        content=byId('ShowReportStickyScrollbarContent');
+    if(!report||!scrollbar||!content)
+        return;
+    var table=report.querySelector('table');
+    if(!table){
+        scrollbar.style.display='none';
+        return;
+    }
+    var rect=report.getBoundingClientRect(),
+        left=Math.max(0,rect.left),
+        visibleWidth=Math.min(rect.width,window.innerWidth-left),
+        scrollWidth=Math.max(report.scrollWidth||0,table.scrollWidth||0),
+        clientWidth=report.clientWidth||rect.width||0,
+        reportVisible=rect.bottom>0&&rect.top<window.innerHeight,
+        nativeScrollbarBelowViewport=rect.bottom>window.innerHeight,
+        hasHorizontalOverflow=scrollWidth>clientWidth+1;
+
+    if(!reportVisible||!nativeScrollbarBelowViewport||!hasHorizontalOverflow||visibleWidth<=0){
+        scrollbar.style.display='none';
+        return;
+    }
+
+    content.style.width=scrollWidth+'px';
+    scrollbar.style.left=left+'px';
+    scrollbar.style.width=visibleWidth+'px';
+    scrollbar.style.display='block';
+    if(!showReportScrollbarSyncing)
+        scrollbar.scrollLeft=report.scrollLeft;
+}
+function handleShowReportScrollbarWindowScroll(event){
+    var report=byId('ShowReport'),
+        scrollbar=byId('ShowReportStickyScrollbar');
+    if(event&&event.target&&(event.target===report||event.target===scrollbar))
+        return;
+    scheduleShowReportScrollbarUpdate();
+}
+function attachShowReportScrollbar(){
+    var report=byId('ShowReport'),
+        scrollbar=byId('ShowReportStickyScrollbar');
+    if(!report||!scrollbar)
+        return;
+    if(showReportScrollbarAttached&&showReportScrollbarReport===report&&showReportScrollbarSticky===scrollbar){
+        scheduleShowReportScrollbarUpdate();
+        return;
+    }
+
+    report.addEventListener('scroll',function(){
+        if(!showReportScrollbarSyncing){
+            showReportScrollbarSyncing=true;
+            scrollbar.scrollLeft=report.scrollLeft;
+            showReportScrollbarSyncing=false;
+        }
+    });
+    scrollbar.addEventListener('scroll',function(){
+        if(!showReportScrollbarSyncing){
+            showReportScrollbarSyncing=true;
+            report.scrollLeft=scrollbar.scrollLeft;
+            showReportScrollbarSyncing=false;
+        }
+    });
+    if(!showReportScrollbarAttached){
+        window.addEventListener('scroll',handleShowReportScrollbarWindowScroll,true);
+        window.addEventListener('resize',scheduleShowReportScrollbarUpdate);
+    }
+    showReportScrollbarAttached=true;
+    showReportScrollbarReport=report;
+    showReportScrollbarSticky=scrollbar;
+    scheduleShowReportScrollbarUpdate();
+}
+function drawCol(id, drawIdButton){
+    if (drawIdButton) {
+        return '<a title="'+colOrigName(id)+'" onclick="activate('+id+')">'+colAlias(id)+'</a><span onclick="addIdCol(this)" title="'+'Click to add an ID column for this column'+'" class="add-id-for-col">ID</span>';
+    } else {   
+        return '<a title="'+colOrigName(id)+'" onclick="activate('+id+')">'+colAlias(id)+'</a>';
+    }
+}
+function colAlias(id){ // In case the alias is not set, use the original object name, referenced by the column
+    colNames[id]=getReq(id,100);
+    if(colNames[id]==='')
+        for(i in json['select'].object)
+            if(json['select'].object[i].id==id)
+                colNames[id]=json['select'].object[i].val;
+    return colNames[id];
+}
+function colOrigName(id){ // The Object referenced by this column
+    for(i in json['select'].object)
+        if(json['select'].object[i].id==id)
+            return json['select'].object[i].val;
+}
+function deActivate(id){ // Deactivate the column name edit field upon a focus change
+    if(byId(id))
+        byId(id).innerHTML=drawCol(id);
+    active=undefined;
+}
+function activate(id){ // Activate the column name edit field upon click
+    if(active==id)
+        return;
+    deActivate(active);
+    active=id;
+    // COnstruct the input field to edit the column name
+    byId(id).innerHTML='<input type="text" id="c'+id+'" class="edit-col-title-input form-control form-control-sm" onkeyup="if(event.keyCode==13)updateCol(this)" onfocusout="updateCol(this);deActivate('+id+')" value="'+colAlias(id)+'">';
+    byId('c'+id).focus();
+}
+function updateCol(i){ // Save the updated column name - alias
+    var id=i.id.substr(1);
+    if(colNames[id]==i.value)
+        return;
+    i.className+=' saving';
+    setReq(id,100,i.value);
+    colNames[id]=i.value;
+    myApi('POST','_m_set/'+id+'?JSON&t100='+encodeURIComponent(i.value),'updateCol','',i.id);
+}
+function go(){ // Re-draw the header and the report
+    byId('warning').classList.add('hidden');
+    $('#rbody').hide();
+    myApi('GET','edit_obj/{_global_.id}?JSON','one');
+}
+function addTextareaListeners() {
+    const COLORS = ['78AAD2','78AAFF','78D2AA','78D2FF','78FFAA','78FFD2','AA78D2','AA78FF','AAD278','AAD2FF','AAFF78','AAFFD2','D278AA','D278FF','D2AA78','D2AAFF','D2FF78','D2FFAA','FF78AA','FF78D2','FFAA78','FFAAD2','FFD278','FFD2AA'];
+    let lastClickedElement = null;
+
+    $('[id*="t102"],[id*="t103"],[id*="t101"],[id*="t105"],[id*="t106"],[id*="t132"]').click(function(e) {
+        const textareaSelector = 'textarea[id=' + $(this).attr('id') + '_text]';
+        if ($(textareaSelector).length > 0) {
+            $(textareaSelector).focus();
+            return;
+        };
+        $(this).prev().addClass('active');
+    });
+    // $('[id*="t102"],[id*="t103"],[id*="t101"],[id*="t105"],[id*="t106"],[id*="t132"]').mouseleave(function(e) {
+    //     $(this).prev().removeClass('active');
+    // });
+
+    $('[id*="t102"],[id*="t103"],[id*="t101"],[id*="t105"],[id*="t106"],[id*="t132"]').siblings('label').click(function(e) {
+        const label = $(e.currentTarget);
+        const inputSelector = $($(this).next('input'));
+        $(inputSelector).addClass('active-input');
+        if ($('textarea[id=' + inputSelector.attr('id') + '_text]').length > 0) return;
+
+        // Getting the number of active inputs before the current input to find out a position for DOM insertion
+        let index = $(inputSelector).prevAll().find('.active-input').length +
+                    $(inputSelector).parent().prevAll().find('.active-input').length +
+                    $(inputSelector).parent().parent().prevAll().find('.active-input').length;
+
+        // Color is based on the count of existing textarea-containers to ensure unique colors
+        const colorIndex = $('.textarea-container').length;
+        const positionColor = COLORS[colorIndex % COLORS.length] + '66';
+        inputSelector[0].style.backgroundColor = "#" + positionColor;
+
+        const textareaBg = '#' + positionColor;
+        const newTextareaHtml = `
+            <div class="textarea-container">
+                <textarea rows="3" style="${'width:100%;background-color:' + textareaBg};" name="textarea_formula" id="${inputSelector.attr('id')}_text"></textarea>
+                <div class="textarea-controls">
+                    <button id="${inputSelector.attr('id')}_save" class="btn btn-textarea-save">
+                        <i class="pi pi-save" style="font-size: 16px; color: #fff;"></i>
+                    </button>
+                    <button id="${inputSelector.attr('id')}_cancel" class="btn btn-textarea-cancel">
+                        <i class="pi pi-times" style="font-size: 16px; color: #fff;"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        // Insert new textarea, order RTL,TTB (index was already calculated above for color assignment)
+        if (!$('.textarea-container').length) {
+            inputSelector.closest('#ShowReport').before(newTextareaHtml);
+        } else {
+            if (index > 0) {
+                $($('.textarea-container')[index - 1]).after(newTextareaHtml);
+            } else {
+                $($('.textarea-container')[index]).before(newTextareaHtml);
+            }
+        }
+        scheduleShowReportScrollbarUpdate();
+        
+        const newTextarea = $('[id="' + inputSelector.attr('id') + '_text"]');
+        newTextarea.keydown(function(event){ // Text input fields on Enter pressed
+            if(event.key === 'Enter' && !event.shiftKey)
+                saveTextareaValue(newTextarea, inputSelector);
+            if(event.key === 'Escape')
+                removeTextarea(newTextarea);
+        });
+        newTextarea.focus();
+        newTextarea.val($(inputSelector).val());
+        // Later
+        // newTextarea.blur(function(e) {
+        //     const newTarget = e.relatedTarget;
+        //     if (lastClickedElement && lastClickedElement.tagName === 'TD' && $(lastClickedElement).parent().parent().is('tbody')) {
+        //         insertValueToTextarea(newTextarea, lastClickedElement.textContent);
+        //         $(this).focus();
+        //     } else if ($(newTarget).not('textarea').is('[id*="t102"],[id*="t103"],[id*="t101"],[id*="t105"],[id*="t106"],[id*="t132"],tbody tr td')) {
+        //         insertValueToTextarea(newTextarea, $(newTarget).val());
+        //         $(this).focus();
+        //     }
+        // });
+        
+        const saveButtonSelector = $(newTextarea).next().find('.btn-textarea-save');
+        $(saveButtonSelector).click(function(e) {
+            saveTextareaValue(newTextarea, inputSelector);
+        })
+        const cancelButtonSelector = $(newTextarea).next().find('.btn-textarea-cancel');
+        $(cancelButtonSelector).click(function(e) {
+            removeTextarea(newTextarea);
+        })
+    });
+    // Getting last clicked element (to be able to detect <td>'s on textarea blur)
+    $(document).mousedown(function(e) {
+        lastClickedElement = e.target;
+    });
+    // Remove edit buttons from inputs
+    $(document).mouseup(function(e) {
+        if (!$(e.target).hasClass('active')) {
+            $('label.active').removeClass('active');
+        }
+    });
+}
+function saveTextareaValue(newTextarea, inputSelector) {
+    const inputId = $(newTextarea).attr('id').slice(0, -5);
+    $(inputSelector).val($(newTextarea).val());
+    $(inputSelector).focusout();
+    removeTextarea(newTextarea);
+}
+function removeTextarea(textareaSelector) {
+    const inputId = $(textareaSelector).attr('id').slice(0, -5);
+    // Remove textarea
+    $(textareaSelector).parent().remove();
+    // Get back to normal
+    $('[id="' + inputId + '"]').removeClass('active-input');
+    $('[id="' + inputId + '"]').css('background-color', '');
+    // $('[id="' + inputId + '"]').css('box-shadow', 'none');
+    scheduleShowReportScrollbarUpdate();
+}
+function insertValueToTextarea(newTextarea, value) {
+    const textareaSelector = $(newTextarea)[0];
+    if (textareaSelector.selectionStart || textareaSelector.selectionStart == '0') {
+        var startPos = textareaSelector.selectionStart;
+        var endPos = textareaSelector.selectionEnd;
+        textareaSelector.value = textareaSelector.value.substring(0, startPos)
+            + value
+            + textareaSelector.value.substring(endPos, textareaSelector.value.length);
+        textareaSelector.selectionStart = startPos + value.length; 
+        textareaSelector.selectionEnd = startPos + value.length;
+    } else {
+        textareaSelector.value += value;
+    }
+}
+document.title='Query builder';
+var rbody,active=-1,alias=[],colNames={},rep=[],json=[],colListTemplate=$('#table').html(),dateDDFilledIn=[],curEl,ctl=['102','84','104','109','72','101','105','132','58'],lastCreatedIdColumn=0;
+localize();
+attachShowReportScrollbar();
+if('{_global_.id}'=='')
+    byId('showanchor').click();
+else // In case a report is requested - draw it
+    go();
+</script>
+<script src="/js/bootstrap4.5.2.min.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/hints.js"></script>
+<!-- Workspace hints -->
+<style>
+#sql-hint-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 420px;
+    background: var(--card-bg, #fff);
+    border-radius: 12px;
+    padding: 1.25rem 1.25rem 1rem;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.28);
+    z-index: 2000;
+    display: none;
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+}
+#sql-hint-box .hint-drag-handle {
+    position: absolute;
+    top: 6px;
+    left: 0;
+    right: 12px;
+    height: 2rem;
+    cursor: grab;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+#sql-hint-box .hint-drag-handle:active { cursor: grabbing; }
+#sql-hint-box .hint-drag-handle .hint-drag-icon {
+    font-size: 1rem;
+    color: var(--text-secondary, #888);
+    pointer-events: none;
+    line-height: 1;
+    letter-spacing: 2px;
+}
+#sql-hint-mobile-toggle {
+    display: none;
+    position: fixed;
+    right: 1rem;
+    z-index: 2001;
+    background: var(--button-primary, #0d6efd);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 2.4rem;
+    height: 2.4rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    align-items: center;
+    justify-content: center;
+}
+@media (max-width: 767px) {
+    #sql-hint-box { width: calc(100% - 2rem); max-width: none; }
+    #sql-hint-mobile-toggle { display: flex; }
+}
+</style>
+<div id="sql-hint-box">
+    <div class="hint-drag-handle" id="sql-hint-drag-handle" title="You can drag this window around the screen"><span class="hint-drag-icon">⠿⠿</span></div>
+    <div id="sql-hint-1" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Choose a data source</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Enter a query name at the top left — <a href="#" onclick="return fillQueryNameFromHint('Permissions')" class="text-primary">Permissions</a> — and click Create query (click <i class="pi pi-list"></i> there if you don't see the input field). Then, from the list at the top right, pick the source table for the query — User, and then its column — User.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="sqlHintClose()" style="padding:0.35rem 0.9rem; border:1px solid var(--border-color); border-radius:6px; background:none; color:var(--text-secondary); cursor:pointer; font-size:0.85rem;">Close</button>
+        </div>
+    </div>
+    <div id="sql-hint-2" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Adding columns to the query</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">In the same way, add to the query: the Role table and the Role column, the Objects table and the Objects column, the Grant table and the Grant -> Description column. Then tick “Interactive” (top left).</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="sqlHintClose()" style="padding:0.35rem 0.9rem; border:1px solid var(--border-color); border-radius:6px; background:none; color:var(--text-secondary); cursor:pointer; font-size:0.85rem;">Close</button>
+        </div>
+    </div>
+    <div id="sql-hint-3" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Configuring and running the query</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Click the query name (the blue link at the top) to see the results as a table.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="sqlHintClose()" style="padding:0.35rem 0.9rem; border:none; border-radius:6px; background:var(--button-primary,#0d6efd); color:#fff; cursor:pointer; font-size:0.85rem;">Got it</button>
+        </div>
+    </div>
+</div>
+<button id="sql-hint-mobile-toggle" title="Move hint" aria-label="Move hint up/down" style="bottom:5rem;"></button>
+<script>
+// Workspace-specific hint configuration for 'sql'.
+// Texts and steps are defined here; the display mechanism is in /js/hints.js.
+document.addEventListener('DOMContentLoaded', function() {
+    window.initHints({
+        workspace: 'sql',
+        steps: 3,
+        onInit: function(api) {
+            var interactCheck = document.getElementById('interact');
+            if (interactCheck) interactCheck.addEventListener('change', function() {
+                if (interactCheck.checked && document.querySelector('.col-title-wrapper[ref="120"]')) {
+                    api.advance(3);
+                }
+            });
+        }
+    });
+});
+</script>

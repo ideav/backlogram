@@ -123,10 +123,15 @@ test('the build derives base and origin from the environment', () => {
   assert.match(config, /base:\s*BASE/)
 })
 
-test('the English build does not ship the ideav.ru front controller', () => {
-  // public/.htaccess in the repo root routes every non-file path to index.php
-  // for the Интеграм engine. There is no engine on ideav.pro, so that file must
-  // stay out of site-en/public (issue #422 is the cautionary tale).
+test('the English build ships its own .htaccess, not a copy of the ideav.ru one', () => {
+  // ideav.pro runs its own engine fork (site-en/engine, issue #694), so site-en/public
+  // carries an EN .htaccess. It must not be the RU root public/.htaccess (issue #422 is
+  // the cautionary tale) and must carry no RU traces.
   const publicFiles = readdirSync(join(siteEn, 'public'))
-  assert.ok(!publicFiles.includes('.htaccess'), 'site-en/public must not carry an .htaccess')
+  if (!publicFiles.includes('.htaccess')) return
+  const en = readFileSync(join(siteEn, 'public', '.htaccess'), 'utf8')
+  const ru = readFileSync(join(siteEn, '..', 'public', '.htaccess'), 'utf8')
+  assert.notEqual(en, ru, 'site-en/public/.htaccess must not be the RU front controller')
+  assert.doesNotMatch(en, /[Ѐ-ӿ]|ideav\.ru|\.ru\b|yandex/i, 'EN .htaccess has RU traces')
+  assert.match(en, /RewriteRule \^ index\.php/, 'unknown paths go to the engine')
 })

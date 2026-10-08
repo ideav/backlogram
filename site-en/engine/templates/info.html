@@ -1,0 +1,162 @@
+<link rel="stylesheet" href="/css/info.css">
+<script src="/js/info.js" defer></script>
+<script>
+    document.title='Home - '+'{_global_.z}'.charAt(0).toUpperCase()+'{_global_.z}'.slice(1);
+</script>
+<div class="info-tabs-container" style="visibility:hidden">
+    <!-- Tab bar -->
+    <div class="info-tabs" id="info-tabs">
+        <button class="info-tab" id="tab-intro" data-tab="intro">Getting started</button>
+        
+        <button class="info-tab" id="tab-forms" data-tab="forms">Forms and reports</button>
+    </div>
+
+    
+    <div class="info-tab-content" id="content-intro">
+        <div class="info-welcome">
+            <h2 class="info-welcome-title">Welcome to Integram</h2>
+            <p class="info-welcome-text">This is your Integram instance, a universal platform for working with data. Here you can create tables and queries, build forms, import data from files and grant access to other users.</p>
+        </div>
+
+        <div class="info-actions" id="info-actions">
+            <div class="info-action-item" data-action="where-am-i">
+                <div class="info-action-header">
+                    <span class="info-action-icon"><i class="pi pi-map-marker"></i></span>
+                    <span class="info-action-title">Where am I?</span>
+                    <span class="info-action-toggle"><i class="pi pi-chevron-down"></i></span>
+                </div>
+                <div class="info-action-body">
+                    <p>This is the home page of your Integram instance. Use it as a sandbox for experiments or build a large app for hundreds of users.</p>
+                    <p>On the left is the organizer menu, which you can customize with links to any workspace. Use the icon at the bottom left to configure it.</p>
+                    <p>The small menu at the top right links to My account, where you can create another sandbox, get your referral link to earn from the payments of customers you bring, and change your plan.</p>
+                    <p>You can customize literally everything here, including this page, which you can edit in the <a target="info.html" href="/{_global_.z}/dir_admin" class="info-action-link">Files</a> menu — <a target="info.html" href="/ace/editor.html?src=/{_global_.z}/dir_admin/&templates=1&add_path=&gf=info.html" class="info-action-link">here it is</a>.<br /> You have full power here, so be careful at first!</p>
+                </div>
+            </div>
+            
+            <div class="info-action-item" data-action="hints">
+                <div class="info-action-header">
+                    <span class="info-action-icon"><i class="pi pi-question-circle"></i></span>
+                    <span class="info-action-title">Enable / disable / reset hints</span>
+                    <span class="info-action-toggle"><i class="pi pi-chevron-down"></i></span>
+                </div>
+                <div class="info-action-body">
+                    <p>Each workspace shows a short intro in 2–3 pop-up hints. After they are shown once, they won't appear again unless you reset hints here.</p>
+                    <div class="info-action-buttons">
+                        <button class="info-hint-btn" id="hints-enable" onclick="infoHints('enable')">Enable</button>
+                        <button class="info-hint-btn info-hint-btn-secondary" id="hints-disable" onclick="infoHints('disable')">Disable</button>
+                        <button class="info-hint-btn info-hint-btn-danger" id="hints-reset" onclick="infoHints('reset')">Reset</button>
+                    </div>
+                    <div id="hints-status" class="info-hint-status"></div>
+                </div>
+            </div>
+
+            <div class="info-action-item" data-action="tables">
+                <div class="info-action-header">
+                    <span class="info-action-icon"><i class="pi pi-table"></i></span>
+                    <span class="info-action-title">See which tables exist in the system</span>
+                    <span class="info-action-toggle"><i class="pi pi-chevron-down"></i></span>
+                </div>
+                <div class="info-action-body">
+                    <p>The <strong data-menu-href="tables">Tables</strong> menu. Even an empty system already has the basic tables every app needs: users, roles, queries and related lookups.</p>
+                    <p>You can add columns and records to these tables, but we don't recommend deleting anything that is already there.</p>
+                    <a href="/{_global_.z}/tables" class="info-action-link"><i class="pi pi-arrow-right"></i> Go to tables</a>
+                </div>
+            </div>
+
+            <div class="info-action-item" data-action="upload">
+                <div class="info-action-header">
+                    <span class="info-action-icon"><i class="pi pi-upload"></i></span>
+                    <span class="info-action-title">Import data from a file into a table</span>
+                    <span class="info-action-toggle"><i class="pi pi-chevron-down"></i></span>
+                </div>
+                <div class="info-action-body">
+                    <p>The <strong data-menu-href="upload">Upload</strong> menu. Import files into an existing table or create a new table straight from a file with the wizard.</p>
+                    <a href="/{_global_.z}/upload" class="info-action-link"><i class="pi pi-arrow-right"></i> Go to upload</a>
+                </div>
+            </div>
+
+            <div class="info-action-item" data-action="users">
+                <div class="info-action-header">
+                    <span class="info-action-icon"><i class="pi pi-users"></i></span>
+                    <span class="info-action-title">Grant access to users of this database</span>
+                    <span class="info-action-toggle"><i class="pi pi-chevron-down"></i></span>
+                </div>
+                <div class="info-action-body">
+                    <p>The <strong data-menu-href="table/18">Users</strong> menu. All users of the system are stored here.</p>
+                    <p>Initially only the database owner is here, but you can add other users and assign them roles.</p>
+                    <a href="/{_global_.z}/table/18" class="info-action-link"><i class="pi pi-arrow-right"></i> Go to users</a>
+                </div>
+            </div>
+
+            <div class="info-action-item" data-action="structure">
+                <div class="info-action-header">
+                    <span class="info-action-icon"><i class="pi pi-sitemap"></i></span>
+                    <span class="info-action-title">View the data structure</span>
+                    <span class="info-action-toggle"><i class="pi pi-chevron-down"></i></span>
+                </div>
+                <div class="info-action-body">
+                    <p>The <strong data-menu-href="edit_types">Structure</strong> menu. Quickly understand an unfamiliar database: see all tables and their links on one screen without opening each table.</p>
+                    <a href="/{_global_.z}/edit_types" class="info-action-link"><i class="pi pi-arrow-right"></i> Go to structure</a>
+                </div>
+            </div>
+
+            <div class="info-action-item" data-action="forms-tab">
+                <div class="info-action-header">
+                    <span class="info-action-icon"><i class="pi pi-file"></i></span>
+                    <span class="info-action-title">Go to the Forms and reports tab</span>
+                    <span class="info-action-toggle"><i class="pi pi-chevron-down"></i></span>
+                </div>
+                <div class="info-action-body">
+                    <p>The <strong>Forms and reports</strong> tab holds popular forms and reports for users.</p>
+                    <p>Make them shared by everyone or tie them to user roles so each role sees its own set of queries.</p>
+                    <a href="#" class="info-action-link" onclick="infoSwitchTab('forms'); return false;"><i class="pi pi-arrow-right"></i> Open the Forms and reports tab</a>
+                </div>
+            </div>
+
+            <div class="info-action-item" data-action="training">
+                <div class="info-action-header">
+                    <span class="info-action-icon info-action-icon-accent"><i class="pi pi-graduation-cap"></i></span>
+                    <span class="info-action-title">Book a training session</span>
+                    <span class="info-action-toggle"><i class="pi pi-chevron-down"></i></span>
+                </div>
+                <div class="info-action-body">
+                    <p>A 45-minute one-on-one session with a trainer, usually available right after booking or at a time you agree on. It's the fastest way to get started: we'll show you the most popular techniques and help you solve your specific task right away.</p>
+                    <p>You can also get a monthly support subscription and ask for help whenever you need it, in short 15-minute sessions as many times as you like. See <a href="/pricing" target="_blank">pricing</a> for details.</p>
+                    <a href="/contact" class="info-action-link" target="_blank"><i class="pi pi-arrow-right"></i> Book training</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    
+    <div class="info-tab-content" id="content-forms" style="display:none">
+        <div class="info-forms-description" id="forms-description">
+            <p class="info-forms-description-text">This tab shows the most relevant reports and forms for your daily work.</p>
+            <button class="info-forms-description-hide" onclick="infoHideFormsDescription()">Hide</button>
+        </div>
+        <h3 class="info-section-title">User reports</h3>
+        <table class="info-table">
+            <tr class="info-table-header">
+                <th>Report</th><th>Description</th>
+            </tr>
+            
+            <tr>
+                <td><a href="/{_global_.z}/query/{QueryID}">{Query}</a></td><td>{Description}</td>
+            </tr>
+            
+        </table>
+        <h3 class="info-section-title">Forms</h3>
+        <table class="info-table">
+            <tr class="info-table-header">
+                <th>Name</th><th>Description</th>
+            </tr>
+            
+            <tr>
+                <td>{Calculatable}</td><td>{Description}</td>
+            </tr>
+            
+        </table>
+    </div>
+</div>

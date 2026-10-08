@@ -1,0 +1,302 @@
+<div class="tasks-container">
+    <div id="tasks-table"
+         data-integram-table
+         data-api-url="/{_global_.z}/metadata/{_global_.id}"
+         data-page-size="20"
+         data-cookie-prefix="tasks-object"
+         data-title=""
+         data-instance-name="tasksTable"></div>
+</div>
+<link rel="stylesheet" href="/css/integram-table.css" />
+<script src="/js/column-name-dict.js"></script>
+<script src="/js/integram-table.js"></script>
+<script src="/js/hints.js"></script>
+<!-- Workspace hints -->
+<style>
+#table-hint-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 420px;
+    background: var(--card-bg, #fff);
+    border-radius: 12px;
+    padding: 1.25rem 1.25rem 1rem;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.28);
+    z-index: 2000;
+    display: none;
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+}
+#table-hint-box .hint-drag-handle {
+    position: absolute;
+    top: 6px;
+    left: 0;
+    right: 12px;
+    height: 2rem;
+    cursor: grab;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+#table-hint-box .hint-drag-handle:active { cursor: grabbing; }
+#table-hint-box .hint-drag-handle .hint-drag-icon {
+    font-size: 1rem;
+    color: var(--text-secondary, #888);
+    pointer-events: none;
+    line-height: 1;
+    letter-spacing: 2px;
+}
+#table-hint-mobile-toggle {
+    display: none;
+    position: fixed;
+    right: 1rem;
+    z-index: 2001;
+    background: var(--button-primary, #0d6efd);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 2.4rem;
+    height: 2.4rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    align-items: center;
+    justify-content: center;
+}
+@media (max-width: 767px) {
+    #table-hint-box { width: calc(100% - 2rem); max-width: none; }
+    #table-hint-mobile-toggle { display: flex; }
+}
+</style>
+<div id="table-hint-box">
+    <div class="hint-drag-handle" id="table-hint-drag-handle" title="You can drag this window around the screen"><span class="hint-drag-icon">⠿⠿</span></div>
+    <div id="table-hint-1" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Adding a record</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Click the blue "+" button at the top to open the add-record form, or the blue "+" button at the bottom to add a new row right in this table. Fill in the fields and click "Save".</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="tableHintClose()" style="padding:0.35rem 0.9rem; border:1px solid var(--border-color); border-radius:6px; background:none; color:var(--text-secondary); cursor:pointer; font-size:0.85rem;">Close</button>
+        </div>
+    </div>
+    <div id="table-hint-2" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Sorting and filtering</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Click a column header to sort. Use the search bar above the table or the column filters to find records.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="tableHintClose()" style="padding:0.35rem 0.9rem; border:1px solid var(--border-color); border-radius:6px; background:none; color:var(--text-secondary); cursor:pointer; font-size:0.85rem;">Close</button>
+        </div>
+    </div>
+    <div id="table-hint-3" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Editing and deleting</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Click a cell to edit it right in the table. To delete rows, use the <i class="pi pi-check-square"></i> button to select records, then remove them with the delete button. Changes apply after confirmation.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="tableHintClose()" style="padding:0.35rem 0.9rem; border:none; border-radius:6px; background:var(--button-primary,#0d6efd); color:#fff; cursor:pointer; font-size:0.85rem;">Got it</button>
+        </div>
+    </div>
+</div>
+<button id="table-hint-mobile-toggle" title="Move hint" aria-label="Move hint up/down" style="bottom:5rem;"></button>
+<!-- Info modal for table/440 (discount/club cards) -->
+<style>
+#table-info-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 3000;
+    align-items: center;
+    justify-content: center;
+}
+#table-info-modal-overlay.visible {
+    display: flex;
+}
+#table-info-modal {
+    background: var(--card-bg, #fff);
+    border-radius: 12px;
+    padding: 1.5rem 1.5rem 1.25rem;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.32);
+    width: 90%;
+    max-width: 440px;
+    z-index: 3001;
+}
+#table-info-modal p {
+    color: var(--text-secondary, #555);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0 0 1.25rem;
+}
+#table-info-modal .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+</style>
+<div id="table-info-modal-overlay">
+    <div id="table-info-modal">
+        <p>Keep your loyalty and discount cards in this table so you don't have to carry them: just show their photos at the store. Add a record with the store name and attach a photo of the card.</p>
+        <p>One menu item is simpler than installing a separate app full of ads and updates for such a small thing.</p>
+        <p>Click the photo cell to attach a photo of your card.</p>
+        <div class="modal-footer">
+            <button onclick="tableInfoModalClose()" style="padding:0.4rem 1.1rem; border:none; border-radius:6px; background:var(--button-primary,#0d6efd); color:#fff; cursor:pointer; font-size:0.9rem;">Got it</button>
+        </div>
+    </div>
+</div>
+<script>
+(function() {
+    // "Info seen" flags and hints_mode are kept in localStorage, not cookies, so
+    // they are not sent to the server on every request. A legacy cookie of the
+    // same name is migrated on first read and then deleted.
+    function getCookie(name) {
+        var legacy = null;
+        var prefix = name + '=';
+        var parts = document.cookie ? document.cookie.split(';') : [];
+        for (var i = 0; i < parts.length; i++) {
+            var part = parts[i].trim();
+            if (part.indexOf(prefix) === 0) { legacy = decodeURIComponent(part.substring(prefix.length)); break; }
+        }
+        try {
+            if (legacy !== null) {
+                if (localStorage.getItem(name) === null && legacy !== '') localStorage.setItem(name, legacy);
+                document.cookie = name + '=; path=/; max-age=0';
+            }
+            return localStorage.getItem(name);
+        } catch (e) {
+            return legacy;
+        }
+    }
+    function setCookie(name, value) {
+        try {
+            localStorage.setItem(name, value);
+            if (document.cookie.indexOf(name + '=') !== -1) document.cookie = name + '=; path=/; max-age=0';
+        } catch (e) {
+            document.cookie = name + '=' + encodeURIComponent(value) + '; path=/; max-age=31536000';
+        }
+    }
+    window.tableInfoModalClose = function() {
+        var overlay = document.getElementById('table-info-modal-overlay');
+        if (overlay) overlay.classList.remove('visible');
+        setCookie('table_info_440_seen', '1', 365);
+    };
+    document.addEventListener('DOMContentLoaded', function() {
+        var path = window.location.pathname;
+        var isTable440 = /\/table\/440(\/.*)?$/.test(path);
+        if (!isTable440) return;
+        if (typeof user === 'undefined' || typeof db === 'undefined') return;
+        if (user !== db) return;
+        if (getCookie('hints_mode') === 'off') return;
+        if (getCookie('table_info_440_seen') === '1') return;
+        var overlay = document.getElementById('table-info-modal-overlay');
+        if (overlay) overlay.classList.add('visible');
+    });
+})();
+</script>
+<!-- Info modal for table/18 (users list) -->
+<style>
+#table-info-modal-18-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 3000;
+    align-items: center;
+    justify-content: center;
+}
+#table-info-modal-18-overlay.visible {
+    display: flex;
+}
+#table-info-modal-18 {
+    background: var(--card-bg, #fff);
+    border-radius: 12px;
+    padding: 1.5rem 1.5rem 1.25rem;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.32);
+    width: 90%;
+    max-width: 440px;
+    z-index: 3001;
+}
+#table-info-modal-18 p {
+    color: var(--text-secondary, #555);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0 0 1.25rem;
+}
+#table-info-modal-18 .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+</style>
+<div id="table-info-modal-18-overlay">
+    <div id="table-info-modal-18">
+        <p>Integram doesn't start as a blank sheet like Google Sheets or Airtable: it already has tables every project needs, such as users, roles, queries and grants. This is the list of users registered in this Integram database.<br><br>Initially there is only one user&nbsp;— the administrator, which is you. The administrator can add other users here and assign each a <i>Role</i>, and each <i>Role</i> can be given access to tables and workspaces.</p>
+        <div class="modal-footer">
+            <button onclick="tableInfoModal18Close()" style="padding:0.4rem 1.1rem; border:none; border-radius:6px; background:var(--button-primary,#0d6efd); color:#fff; cursor:pointer; font-size:0.9rem;">Got it</button>
+        </div>
+    </div>
+</div>
+<script>
+(function() {
+    // "Info seen" flags and hints_mode are kept in localStorage, not cookies, so
+    // they are not sent to the server on every request. A legacy cookie of the
+    // same name is migrated on first read and then deleted.
+    function getCookie(name) {
+        var legacy = null;
+        var prefix = name + '=';
+        var parts = document.cookie ? document.cookie.split(';') : [];
+        for (var i = 0; i < parts.length; i++) {
+            var part = parts[i].trim();
+            if (part.indexOf(prefix) === 0) { legacy = decodeURIComponent(part.substring(prefix.length)); break; }
+        }
+        try {
+            if (legacy !== null) {
+                if (localStorage.getItem(name) === null && legacy !== '') localStorage.setItem(name, legacy);
+                document.cookie = name + '=; path=/; max-age=0';
+            }
+            return localStorage.getItem(name);
+        } catch (e) {
+            return legacy;
+        }
+    }
+    function setCookie(name, value) {
+        try {
+            localStorage.setItem(name, value);
+            if (document.cookie.indexOf(name + '=') !== -1) document.cookie = name + '=; path=/; max-age=0';
+        } catch (e) {
+            document.cookie = name + '=' + encodeURIComponent(value) + '; path=/; max-age=31536000';
+        }
+    }
+    window.tableInfoModal18Close = function() {
+        var overlay = document.getElementById('table-info-modal-18-overlay');
+        if (overlay) overlay.classList.remove('visible');
+        setCookie('table_info_18_seen', '1', 365);
+    };
+    document.addEventListener('DOMContentLoaded', function() {
+        var path = window.location.pathname;
+        var isTable18 = /\/table\/18(\/.*)?$/.test(path);
+        if (!isTable18) return;
+        if (typeof user === 'undefined' || typeof db === 'undefined') return;
+        if (user !== db) return;
+        if (getCookie('hints_mode') === 'off') return;
+        if (getCookie('table_info_18_seen') === '1') return;
+        var overlay = document.getElementById('table-info-modal-18-overlay');
+        if (overlay) overlay.classList.add('visible');
+    });
+})();
+</script>
+<script>
+// Workspace-specific hint configuration for 'table'.
+// Texts and steps are defined here; the display mechanism is in /js/hints.js.
+document.addEventListener('DOMContentLoaded', function() {
+    window.initHints({
+        workspace: 'table',
+        steps: 3,
+        onInit: function(api) {
+            var btns = document.querySelectorAll('button, .btn, [role="button"]');
+            btns.forEach(function(btn) {
+                var txt = btn.textContent || btn.innerText || '';
+                if (txt.trim() === '+' || txt.toLowerCase().indexOf('new') !== -1 || txt.toLowerCase().indexOf('add') !== -1) {
+                    btn.addEventListener('click', function() { api.advance(2); });
+                }
+            });
+        }
+    });
+});
+</script>

@@ -1,0 +1,9 @@
+.env
+logs/
+download/*
+!download/.gitkeep
+templates/custom/*
+!templates/custom/my/
+!templates/custom/en/
+templates/custom/en/*
+!templates/custom/en/.gitkeep

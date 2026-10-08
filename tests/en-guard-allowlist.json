@@ -1,1 +1,9 @@
-[]
+[
+  { "path": "engine/js/xlsx.full.min.js", "rule": "cyrillic", "reason": "SheetJS vendor bundle: codepage tables (cp1251 etc.) needed to read legacy spreadsheets" },
+  { "path": "engine/js/xlsx0.18.5.full.min.js", "rule": "cyrillic", "reason": "SheetJS 0.18.5 vendor bundle: codepage tables" },
+  { "path": "engine/js/core.js", "rule": "*", "reason": "amCharts core vendor bundle: core-js author URL (zloirock.ru) and a regex test string inside the minified library" },
+  { "path": "engine/js/moment.min.js", "rule": "phone-ru", "match": "+7-", "reason": "moment.js vendor: timezone offset parsing token, not a phone number" },
+  { "path": "engine/js/moment2.29.4.min.js", "rule": "phone-ru", "match": "+7-", "reason": "moment.js vendor: timezone offset parsing token, not a phone number" },
+  { "path": "engine/js/plotly.min.js", "rule": "phone-ru", "match": "+7-", "reason": "plotly vendor bundle: numeric literal, not a phone number" },
+  { "path": "engine/ace/emmet.js", "rule": "*", "reason": "Emmet vendor library for the Ace code editor: lorem-ipsum dictionaries in several languages and author URLs" }
+]

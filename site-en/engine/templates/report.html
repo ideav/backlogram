@@ -1,0 +1,288 @@
+<!-- Begin:&Uni_Report -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Pragma" content="no-cache">
+<title>{VAL}</title>
+<link rel="stylesheet" href="/css/bootstrap.3.3.7.min.css">
+<link rel="stylesheet" href="/css/styles.css">
+<link rel="stylesheet" href="/assets/vendor/primeicons/primeicons.css">
+<script>
+    (function() {
+        var t = localStorage.getItem('theme');
+        if (t) document.documentElement.setAttribute('data-theme', t);
+    })();
+</script>
+<script>
+    var db='{_global_.z}';
+</script>
+<script src="/js/jquery-3.5.1.slim.min.js"></script>
+<script src="/js/js.js"></script>
+</head>
+<body style="font-family:Verdana,Tahoma,sans-serif;font-size:13px;line-height:normal;padding:2px;background-color:var(--bg-primary,#fff);color:var(--text-primary,#212529)">
+<FORM method="post" id="report" action="/{_global_.z}/report/{_global_.id}">
+<input type="hidden" name="_xsrf" value="{_global_.xsrf}">
+<input type="submit" style="display:none">
+    <TABLE>
+	<TR>
+		<TD>&nbsp;<a href="/{_global_.z}"><i class="pi pi-home" style="font-size: 1.25rem;"></i></a>&nbsp;
+		<script type="text/javascript">
+		var tableToExcel = (function() {
+		  var uri = 'data:application/vnd.ms-excel;base64,'
+			, template = ('<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{'
+						+ 'worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{'
+						+ 'table}</table></body></html>')
+			, base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))); }
+			, format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
+		  return function(table, name) {
+			if (!table.nodeType) table = byId(table)
+			var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML}
+			window.location.href = uri + base64(format(template, ctx))
+		  }
+		})()
+		</script>
+		<a href="#" onclick="byId('refresh').style.display='none'; if(byId('filter_row')) byId('report_table').deleteRow(1); tableToExcel('report_table', '{VAL}');" style="border: 1px solid; -moz-border-radius: 5px; -webkit-border-radius:5px; -khtml-border-radius:5px; border-radius:5px; padding:3px; ">.HTML</a>
+		<a href="#" onclick="XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById('report_table')), 'output.xlsx');" style="border: 1px solid; -moz-border-radius: 5px; -webkit-border-radius:5px; -khtml-border-radius:5px; border-radius:5px; padding:3px; ">.XLS</a>
+		</td>
+		<TD ALIGN="center" style="padding-left:13px;padding-right:13px"><H4>{VAL}</H4></TD>
+		<TD align="right" class="t9n" style="padding-right:10px">
+			<a href="#" title="<t9n>[EN]Switch between compact and loose view</t9n>" onclick="toggle_compact(); return false;"><i class="pi pi-align-left" style="font-size: 1.25rem;"></i></a>&nbsp;
+			&nbsp;<a href="#" title="<t9n>[EN]To display the filter, click here or on the heading of the table</t9n>" onclick="toggle_filter(); return false;"><i class="pi pi-filter" style="font-size: 1.25rem;"></i></a>
+			&nbsp;<a href="#" id="refresh" onclick="byId('report').submit(); return false;" title="<t9n>[EN]Apply filter</t9n>"><i class="pi pi-refresh" style="font-size: 1.25rem;"></i></a>
+			&nbsp;<a href="/{_global_.z}/report/{_global_.id}" title="<t9n>[EN]Reset the filter and run the report</t9n>"><i class="pi pi-times-circle" style="font-size: 1.25rem;"></i></a>&nbsp;
+		</TD>
+	</TR>
+	</TABLE>
+	<!-- Issue #2755: scroll wrapper lives at FORM level (outside the toolbar
+	     layout TABLE) so the body content-area width — not the auto-sized
+	     outer TABLE — constrains it. JS below sets max-height so the wrapper
+	     becomes the scroll context for the sticky header (same pattern as
+	     .integram-table-container, issue #2083). -->
+	<div id="report_scroll" style="overflow:auto; -webkit-overflow-scrolling:touch; max-width:100%;">
+	<TABLE id="report_table" class="table table-bordered">
+			<TR style="background-color:var(--bg-secondary,#f9f9f9); position:sticky; top:-1px;" onclick="toggle_filter();">
+				<!-- Begin:&Uni_Report_Head -->
+				<TD ALIGN="CENTER" ><B>{VAL}</B></TD>
+				<!-- End:&Uni_Report_Head -->
+			</TR>
+			<TR id="filter_row" style="display:none;">
+				<!-- Begin:&Uni_Report_Filter -->
+				<TD style="padding:0px;" align="center">
+				<input type="text" name="FR_{COL}" value="{FR_VAL}" size="2" id="FR_{COL}" oninput="adjust('FR_{COL}')" style="background-color:var(--input-bg,#fff);color:var(--text-primary,#212529);border:1px solid var(--input-border,#ced4da);">-<input type="text" name="TO_{COL}" value="{TO_VAL}" size="2" id="TO_{COL}" oninput="adjust('TO_{COL}')" style="background-color:var(--input-bg,#fff);color:var(--text-primary,#212529);border:1px solid var(--input-border,#ced4da);">
+				</TD>
+				<!-- End:&Uni_Report_Filter -->
+			</TR>
+			<!-- Begin:&Uni_Report_Data -->
+			<TR>{DATA}
+				<!-- Begin:&Uni_Report_Column -->
+				<TD ALIGN="{ALIGN}" style="mso-number-format:\@">{VAL}</TD>
+				<!-- End:&Uni_Report_Column -->
+			</TR>
+			<!-- End:&Uni_Report_Data -->
+			<!-- Begin:&Uni_Report_Totals -->
+			<TR>{TOTALS}
+				<!-- Begin:&Uni_Report_Column_Total -->
+				<TD ALIGN="RIGHT"><B>{VAL}</B></TD>
+				<!-- End:&Uni_Report_Column_Total -->
+			</TR>
+			<!-- End:&Uni_Report_Totals -->
+	</TABLE>
+	</div>
+</FORM>
+<FORM method="POST" id="post" action="/{_global_.z}/"><input type="hidden" name="_xsrf" value="{_global_.xsrf}"></FORM>
+<script type="text/javascript">
+const script = document.createElement('script');
+
+script.src = '/js/xlsx.full.min.js';
+script.type = 'text/javascript';
+
+document.body.appendChild(script);
+
+localize();
+function post(a){
+	byId('post').action+=a;
+	byId('post').submit();
+	event.preventDefault?event.preventDefault():(event.returnValue=false);
+}
+function toggle_filter() {
+	if(!byId('filter_row'))
+		location.reload();
+	else
+	if(byId('filter_row').style.display=='table-row')
+		byId('filter_row').style.display='none';
+	else
+		byId('filter_row').style.display='table-row';
+}
+function set_cookie(name, value)
+{
+	var date = new Date();
+	date.setTime(date.getTime()+31536000000); // 1 year
+	document.cookie = name+"="+escape(value)+"; expires="+date.toGMTString();
+}
+function get_cookie(name)
+{
+  var results = document.cookie.match ( '(^|;) ?' + name + '=([^;]*)(;|$)' );
+  if(results)
+	return (unescape(results[2]));
+  else
+	return null;
+}
+function delete_cookie(name)
+{
+  var cookie_date=new Date();
+  cookie_date.setTime(cookie_date.getTime()-1);
+  document.cookie=name+"=; expires="+cookie_date.toGMTString();
+}
+function toggle_compact() {
+	if(get_cookie("compact") == "compact") {
+		byId('report_table').classList.remove('table-condensed');
+		delete_cookie("compact");
+	}
+	else {
+		byId('report_table').classList.add('table-condensed');
+		set_cookie("compact", "compact" );
+	}
+}
+function adjust(id) {
+	byId(id).size=byId(id).value.length + 1;
+}
+if(get_cookie("compact") == "compact")
+	byId('report_table').classList.add('table-condensed');
+// Issue #2755: size the scroll wrapper so it becomes the scroll context for the
+// sticky header row. Mirrors the updateContainerHeight() pattern used by
+// .integram-table-container (issue #2083).
+function updateReportScrollHeight() {
+	var wrapper = byId('report_scroll');
+	if (!wrapper) return;
+	var rect = wrapper.getBoundingClientRect();
+	var available = window.innerHeight - rect.top - 4;
+	wrapper.style.maxHeight = Math.max(200, available) + 'px';
+}
+window.addEventListener('resize', updateReportScrollHeight);
+updateReportScrollHeight();
+</script>
+<!--Elapsed-->
+<script src="/js/hints.js"></script>
+<!-- Workspace hints -->
+<style>
+:root {
+    --report-hint-shadow: 0 8px 40px rgba(0,0,0,0.28);
+    --report-hint-btn-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+[data-theme="dark"] {
+    --report-hint-shadow: 0 8px 40px rgba(0,0,0,0.55);
+    --report-hint-btn-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+#report-hint-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 420px;
+    background: var(--card-bg, #fff);
+    border-radius: 12px;
+    padding: 1.25rem 1.25rem 1rem;
+    box-shadow: var(--report-hint-shadow);
+    z-index: 2000;
+    display: none;
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+}
+#report-hint-box .hint-drag-handle {
+    position: absolute;
+    top: 6px;
+    left: 0;
+    right: 12px;
+    height: 2rem;
+    cursor: grab;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+#report-hint-box .hint-drag-handle:active { cursor: grabbing; }
+#report-hint-box .hint-drag-handle .hint-drag-icon {
+    font-size: 1rem;
+    color: var(--text-secondary, #888);
+    pointer-events: none;
+    line-height: 1;
+    letter-spacing: 2px;
+}
+#report-hint-mobile-toggle {
+    display: none;
+    position: fixed;
+    right: 1rem;
+    z-index: 2001;
+    background: var(--button-primary, #0d6efd);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 2.4rem;
+    height: 2.4rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: var(--report-hint-btn-shadow);
+    align-items: center;
+    justify-content: center;
+}
+@media (max-width: 767px) {
+    #report-hint-box { width: calc(100% - 2rem); max-width: none; }
+    #report-hint-mobile-toggle { display: flex; }
+}
+</style>
+<div id="report-hint-box">
+    <div class="hint-drag-handle" id="report-hint-drag-handle" title="You can drag this window around the screen"><span class="hint-drag-icon">⠿⠿</span></div>
+    <div id="report-hint-1" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Filtering by column</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Click a column header or use the search row under it to filter the data. You can set conditions on several columns at once. The next tip appears after you apply a filter.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="reportHintClose()" style="padding:0.35rem 0.9rem; border:1px solid var(--border-color); border-radius:6px; background:none; color:var(--text-secondary); cursor:pointer; font-size:0.85rem;">Close</button>
+        </div>
+    </div>
+    <div id="report-hint-2" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Exporting data</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Click "HTML" or "XLS" on the toolbar to download the report in that format. The current data set is exported with all active filters applied.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="reportHintClose()" style="padding:0.35rem 0.9rem; border:1px solid var(--border-color); border-radius:6px; background:none; color:var(--text-secondary); cursor:pointer; font-size:0.85rem;">Close</button>
+        </div>
+    </div>
+    <div id="report-hint-3" style="display:none;">
+        <h3 style="margin:0 0 0.75rem; font-size:1.05rem; color:var(--text-primary);"><span style="margin-right:0.4rem;">💡</span>Refreshing and resetting filters</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin:0 0 1rem;">Click "Refresh" to reload data from the database. "Reset" or clearing the search rows removes all active filters and shows the full data set.</p>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="reportHintClose()" style="padding:0.35rem 0.9rem; border:none; border-radius:6px; background:var(--button-primary,#0d6efd); color:#fff; cursor:pointer; font-size:0.85rem;">Got it</button>
+        </div>
+    </div>
+</div>
+<button id="report-hint-mobile-toggle" title="Move hint" aria-label="Move hint up/down" style="bottom:5rem;"></button>
+<script>
+// Workspace-specific hint configuration for 'report'.
+// Texts and steps are defined here; the display mechanism is in /js/hints.js.
+document.addEventListener('DOMContentLoaded', function() {
+    window.initHints({
+        workspace: 'report',
+        steps: 3,
+        onInit: function(api) {
+            var filterInputs = document.querySelectorAll('input[type="search"], input[type="text"].filter, .filter-input, th input');
+            filterInputs.forEach(function(inp) {
+                inp.addEventListener('input', function() { api.advance(2); }, { once: true });
+            });
+            var exportBtns = document.querySelectorAll('button, .btn, a');
+            exportBtns.forEach(function(btn) {
+                var txt = btn.textContent || btn.innerText || '';
+                if (txt.toLowerCase().indexOf('html') !== -1 || txt.toLowerCase().indexOf('xls') !== -1 || txt.toLowerCase().indexOf('export') !== -1) {
+                    btn.addEventListener('click', function() { api.advance(2); }, { once: true });
+                }
+            });
+        }
+    });
+});
+</script>
+</body>
+</html>
+<!-- End:&Uni_report -->
