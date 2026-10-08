@@ -111,10 +111,12 @@ test('RU guard: root public/.htaccess keeps the front controller rule', () => {
 
 test('RU guard: build:en never targets the Russian dist/', () => {
   const cfg = fs.readFileSync(path.join(ROOT, 'site-en', 'vite.config.ts'), 'utf8')
-  const m = cfg.match(/outDir:\s*([^\n]+)/)
-  assert.ok(m, 'outDir not found in site-en/vite.config.ts')
-  assert.match(m[1], /dist-en/, `outDir must be dist-en, got: ${m[1]}`)
+  // the client build writes to OUT_DIR (the SSR pass uses a scratch dir under .vite)
+  const m = cfg.match(/const OUT_DIR = ([^\n]+)/)
+  assert.ok(m, 'OUT_DIR not found in site-en/vite.config.ts')
+  assert.match(m[1], /dist-en/, `OUT_DIR must be dist-en, got: ${m[1]}`)
   assert.doesNotMatch(m[1].replace(/dist-en/g, ''), /dist\b/)
+  assert.match(cfg, /outDir:\s*OUT_DIR\b/, 'client build must write to OUT_DIR')
   const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'))
   const be = pkg.scripts['build:en'] ?? ''
   assert.match(be, /site-en\/vite\.config/, 'build:en must use the site-en vite config')
