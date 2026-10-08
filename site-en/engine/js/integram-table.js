@@ -12110,7 +12110,7 @@ class IntegramTable{
                 // Fallback: construct API base from current page URL using the database path segment
                 const pathParts = window.location.pathname.split('/');
                 if (pathParts.length >= 2 && pathParts[1]) {
-                    return 'https://' + window.location.hostname + '/' + pathParts[1];
+                    return window.location.origin + '/' + pathParts[1];
                 }
                 return '';
             }

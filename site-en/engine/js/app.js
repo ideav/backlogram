@@ -91,7 +91,7 @@ function apiScheme() {
 
 class ApiConfig {
     constructor() {
-        this.host = localStorage.getItem('apiHost') || window.location.hostname;
+        this.host = localStorage.getItem('apiHost') || window.location.host;
     }
 
     getBaseUrl(db) {

@@ -131,3 +131,38 @@ function enBotGuard($action){
         && !enTurnstileVerify(isset($_REQUEST['cf-turnstile-response']) ? $_REQUEST['cf-turnstile-response'] : ''))
         enBotDie("Please complete the human verification and try again.", "403 Forbidden");
 }
+
+# How many workspaces a free-plan user may own (INTEGRAM_MAX_WORKSPACES, default 3; 0 = unlimited).
+function enMaxWorkspaces(){
+    $n = trim((string)integram_env('INTEGRAM_MAX_WORKSPACES', '3'));
+    return ctype_digit($n) ? (int)$n : 3;
+}
+
+function enWorkspaceLimitMessage(){
+    $n = enMaxWorkspaces();
+    return "The free plan includes up to $n workspace".($n == 1 ? "" : "s")
+        .". Upgrade your plan at ".enBaseUrl()."/pricing to create more.";
+}
+
+# Starter data of the `en` template (db/seed-en.sql, ids 500+) made personal for a new workspace:
+# the demo tasks are assigned to the owner, and the demo dates, anchored at Monday 2026-01-05,
+# move to the signup week so the calendar and the boards show current work.
+define("EN_DEMO_ANCHOR", 1767571200); # 2026-01-05 00:00:00 UTC
+function enStarterForOwner($z, $userId){
+    $userId = (int)$userId;
+    Exec_sql("INSERT INTO $z (up, ord, t, val) SELECT id, 1, $userId, '455' FROM $z WHERE t=446 AND up=1",
+        "Assign the demo tasks to the owner");
+    $monday = strtotime("monday this week", time());
+    $days = (int)round(($monday - EN_DEMO_ANCHOR) / 86400);
+    if($days === 0)
+        return;
+    # DATE values (YYYYMMDD): task date, project start/deadline, deal close date
+    Exec_sql("UPDATE $z SET val=DATE_FORMAT(DATE_ADD(STR_TO_DATE(val, '%Y%m%d'), INTERVAL $days DAY), '%Y%m%d')"
+        ." WHERE t IN (447, 515, 517, 550) AND val REGEXP '^[0-9]{8}$'", "Shift the demo dates");
+    # DATETIME values (Unix time): task due date
+    Exec_sql("UPDATE $z SET val=CAST(val AS SIGNED) + ".($days * 86400)." WHERE t=453 AND val REGEXP '^[0-9]+$'",
+        "Shift the demo due dates");
+}
+
+# Exposed to templates as {_global_.max_workspaces}.
+$GLOBALS["GLOBAL_VARS"]["max_workspaces"] = enMaxWorkspaces();

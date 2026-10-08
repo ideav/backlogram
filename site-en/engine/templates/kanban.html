@@ -753,7 +753,7 @@
     };
 
     KanbanBoard.prototype._getApiUrl = function(endpoint) {
-        return 'https://' + window.location.hostname + '/' + window.db + '/' + endpoint;
+        return window.location.origin + '/' + window.db + '/' + endpoint;
     };
 
     KanbanBoard.prototype._loadData = function() {
@@ -773,6 +773,10 @@
             loadedCount++;
             console.log('[Kanban] _loadData: loaded ' + loadedCount + '/' + totalLoads);
             if (loadedCount === totalLoads) {
+                // Object rows are mapped by the table metadata, which may arrive after the data
+                if (self.config.dataSource.type === 'object') {
+                    self._processData(self._rawData);
+                }
                 // If no statuses endpoint, derive statuses from loaded data
                 if (!hasStatusesEndpoint) {
                     self._deriveStatusesFromData();
@@ -809,7 +813,11 @@
         this._fetchJson(this.config.dataSource.endpoint, function(data) {
             console.log('[Kanban] data loaded: isArray=' + Array.isArray(data)
                 + ', length=' + (Array.isArray(data) ? data.length : 'N/A'));
-            self._processData(data);
+            if (self.config.dataSource.type === 'object') {
+                self._rawData = data; // processed in checkAllLoaded, once the metadata is in
+            } else {
+                self._processData(data);
+            }
             checkAllLoaded();
         }, function(error) {
             console.error('[Kanban] data fetch error:', error);
@@ -845,6 +853,10 @@
             }
         }
 
+        // Columns follow the order of the status records (their ids), not the order of the cards
+        statuses.sort(function(a, b) {
+            return (parseInt(a[statusMapping.id], 10) || 0) - (parseInt(b[statusMapping.id], 10) || 0);
+        });
         this.statuses = statuses;
         console.log('[Kanban] _deriveStatusesFromData: derived', statuses.length, 'statuses:',
             statuses.map(function(s) { return s[statusMapping.name] + '(id=' + s[statusMapping.id] + ')'; }).join(', ') || '(none)');
@@ -891,6 +903,18 @@
             }
             if (req.val === mapping.activity || req.val === 'Activity') {
                 this.activityFieldId = req.id;
+            }
+        }
+        // No "Status" field: use the first reference whose name mentions a status or a stage
+        // (e.g. "Task status", "Deal stage").
+        if (!this.statusFieldId) {
+            for (var j = 0; j < reqs.length; j++) {
+                if (reqs[j].ref && /status|stage/i.test(reqs[j].val || '')) {
+                    this.statusFieldId = reqs[j].id;
+                    mapping.status = reqs[j].val;
+                    mapping.statusId = reqs[j].val + 'ID';
+                    break;
+                }
             }
         }
     };
@@ -944,16 +968,17 @@
                     + ', reqs.length=' + reqs.length
                     + ', reqs fields=' + reqs.map(function(r) { return r.val; }).join(', '));
                 this.data = rawData.map(function(item) {
-                    var obj = { '_cardId': item.i };
                     var row = item.r || [];
+                    var obj = { '_cardId': item.i, '_title': row[0] };
 
                     // r[0] is the object name; requisites map to r[i+1]
                     for (var i = 0; i < reqs.length && (i + 1) < row.length; i++) {
                         var fieldName = reqs[i].val;
                         var value = row[i + 1];
 
-                        // Handle reference values (format: "id:value")
-                        if (typeof value === 'string' && value.indexOf(':') !== -1) {
+                        // Handle reference values (format: "id:value"); dates with a time also
+                        // contain ":", so only reference fields are split
+                        if (reqs[i].ref && typeof value === 'string' && /^\d+:/.test(value)) {
                             var parts = value.split(':');
                             obj[fieldName + 'ID'] = parts[0];
                             obj[fieldName] = parts.slice(1).join(':');
@@ -1059,7 +1084,7 @@
             html += '<div class="kanban-column-header" data-status-id="' + statusId + '"' + headerStyle + '>';
             html += '<span>' + this._escapeHtml(statusName);
             if (totalSum > 0) {
-                html += '<span class="kanban-column-sum">(' + totalSum.toLocaleString('ru-RU') + ')</span>';
+                html += '<span class="kanban-column-sum">(' + totalSum.toLocaleString('en-US') + ')</span>';
             }
             html += '</span>';
             html += '<span class="kanban-column-count">' + cards.length + '</span>';
@@ -1093,7 +1118,7 @@
         // Try multiple field names for title
         var title = card[mapping.title];
         if (!title) {
-            var titleFields = ['Card', 'Project', 'Customer', 'Lead'];
+            var titleFields = ['_title', 'Card', 'Project', 'Customer', 'Lead'];
             for (var i = 0; i < titleFields.length; i++) {
                 if (card[titleFields[i]]) {
                     title = card[titleFields[i]];
@@ -1731,7 +1756,7 @@
 
 })(window);
 
-// Auto-detect kanban source from URL pattern: {host}/{db}/kanban/{id}
+// Auto-detect kanban source from URL pattern: <host>/<db>/kanban/<id>
 // If no ID, fetches list from object/269?JSON_OBJ&F_271=KANBAN and shows launchable list.
 // If ID present, fetches get_record/N to determine data source type:
 //   obj == "22" => report type  => report/N?JSON
@@ -1750,7 +1775,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var urlSearch = window.location.search;
     var urlParams = urlSearch ? urlSearch.slice(1) : '';
-    var apiBase = 'https://' + window.location.hostname + '/' + window.db;
+    var apiBase = window.location.origin + '/' + window.db;
 
     function buildEndpoint(base, params) {
         if (!params) return base;
@@ -1782,8 +1807,14 @@ document.addEventListener('DOMContentLoaded', function() {
             var html = '<div class="kanban-list"><h3>Select a kanban board:</h3>';
             items.forEach(function(item) {
                 var id = item.i;
-                var name = (item.r && item.r[0]) ? item.r[0] : ('Kanban #' + id);
-                var href = '/' + window.db + '/kanban/' + id;
+                var key = (item.r && item.r[0]) ? String(item.r[0]) : '';
+                // The setting is named kanban<source id> (a table or a report); its Value holds
+                // the board settings JSON, optionally with a "title".
+                var src = /^kanban(\d+)$/i.exec(key);
+                var settings = {};
+                try { settings = JSON.parse((item.r && item.r[2]) || '{}') || {}; } catch (e) { settings = {}; }
+                var name = settings.title || key || ('Kanban #' + id);
+                var href = '/' + window.db + '/kanban/' + (src ? src[1] : id);
                 html += '<div class="kanban-list-item">'
                     + '<span class="kanban-list-item-name">' + escapeHtml(name) + '</span>'
                     + '<a class="kanban-list-item-btn" href="' + href + '">Open</a>'

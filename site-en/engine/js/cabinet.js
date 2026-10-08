@@ -200,7 +200,7 @@ class CabinetController {
         try {
             // Call the API endpoint: report/313?JSON_KV
             const host = this.apiConfig.host;
-            const url = 'https://' + host + '/my/report/313?JSON_KV';
+            const url = apiScheme() + host + '/my/report/313?JSON_KV';
 
             const response = await fetch(url, {
                 method: 'GET',
@@ -368,14 +368,14 @@ class CabinetController {
             });
         }
 
-        // Show DB limit warning if needed (free plan: max 3 DBs)
+        // Show the workspace limit warning if needed (free plan: INTEGRAM_MAX_WORKSPACES)
         const planId = parseInt(this.userData && this.userData.PlanID || '0', 10);
         const createForm = document.getElementById('create-db-form');
         const limitWarning = document.getElementById('db-limit-warning');
         const submitBtn = document.getElementById('create-db-submit-btn');
         const nameInput = document.getElementById('new-db-name');
         const templateSelect = document.getElementById('new-db-template');
-        const atLimit = this.databases.length >= 3 && planId < 1147;
+        const maxWs = parseInt(window.maxWorkspaces, 10); const atLimit = maxWs > 0 && this.databases.length >= maxWs && planId < 1147;
         if (limitWarning) limitWarning.style.display = atLimit ? '' : 'none';
         if (submitBtn) submitBtn.disabled = atLimit;
         if (nameInput) nameInput.disabled = atLimit;
@@ -404,7 +404,7 @@ class CabinetController {
             card.innerHTML = `
                 <div class="database-info">
                     <div class="database-name-row">
-                        <a class="database-name-link" href="https://${this.apiConfig.host}/${db.DB}" target="${this.escapeHtml(db.DB)}">${this.escapeHtml(dbNameCapitalized)}</a>
+                        <a class="database-name-link" href="${apiScheme()}${this.apiConfig.host}/${db.DB}" target="${this.escapeHtml(db.DB)}">${this.escapeHtml(dbNameCapitalized)}</a>
                         <span class="database-id-inline">#${this.escapeHtml(dbId)}</span>
                         ${createdDate ? `<span class="database-created-date">Created: ${this.escapeHtml(createdDate)}</span>` : ''}
                     </div>
@@ -505,7 +505,7 @@ class CabinetController {
 
         try {
             const host = this.apiConfig.host;
-            const url = 'https://' + host + '/my/_m_set/' + encodeURIComponent(dbId) + '?JSON';
+            const url = apiScheme() + host + '/my/_m_set/' + encodeURIComponent(dbId) + '?JSON';
 
             const fd = new FormData();
             card.querySelectorAll('[data-field]').forEach(input => {
@@ -566,7 +566,7 @@ class CabinetController {
         if (btn) btn.disabled = true;
         try {
             const host = this.apiConfig.host;
-            const url = 'https://' + host + '/' + encodeURIComponent(dbName) + '/restore_admin';
+            const url = apiScheme() + host + '/' + encodeURIComponent(dbName) + '/restore_admin';
 
             const fd = new FormData();
             fd.append('_xsrf', xsrf);
@@ -639,7 +639,7 @@ class CabinetController {
 
         try {
             const host = this.apiConfig.host;
-            const url = 'https://' + host + '/my/_m_save/' + this.me + '?JSON';
+            const url = apiScheme() + host + '/my/_m_save/' + this.me + '?JSON';
 
             const photoInput = document.getElementById('profile-photo');
             const hasPhoto = photoInput && photoInput.files && photoInput.files.length > 0;
@@ -787,7 +787,7 @@ class CabinetController {
     async loadCommunityData() {
         try {
             const host = this.apiConfig.host;
-            const url = 'https://' + host + '/my/report/380?JSON_KV';
+            const url = apiScheme() + host + '/my/report/380?JSON_KV';
 
             const response = await fetch(url, {
                 method: 'GET',
@@ -1093,7 +1093,7 @@ class CabinetController {
 
             if (action === 'revoke') {
                 // Revoke endpoint: /my/report/236429/?JSON_KV&FR_InviteID=<id>
-                const url = 'https://' + host + '/my/report/236429/?JSON_KV&confirmed=1&FR_InviteID=' + encodeURIComponent(id);
+                const url = apiScheme() + host + '/my/report/236429/?JSON_KV&confirmed=1&FR_InviteID=' + encodeURIComponent(id);
 
                 const fd = new FormData();
                 fd.append('_xsrf', xsrf);
@@ -1116,7 +1116,7 @@ class CabinetController {
                 }
             } else if (action === 'revoke-request') {
                 // Revoke request endpoint: /my/report/236536/?JSON_KV&confirmed=1&FR_InviteID=<id>
-                const url = 'https://' + host + '/my/report/236536/?JSON_KV&confirmed=1&FR_InviteID=' + encodeURIComponent(id);
+                const url = apiScheme() + host + '/my/report/236536/?JSON_KV&confirmed=1&FR_InviteID=' + encodeURIComponent(id);
 
                 const fd = new FormData();
                 fd.append('_xsrf', xsrf);
@@ -1141,7 +1141,7 @@ class CabinetController {
                 // Invitations use report/inviteAccept; requests use report/inviteRequestAccept (236472)
                 const tabType = btn ? btn.dataset.tabType : 'requests';
                 const reportId = tabType === 'invitations' ? 'inviteAccept' : 'inviteRequestAccept';
-                const url = 'https://' + host + '/my/report/' + reportId + '/?JSON_KV&confirmed=1&FR_InviteID=' + encodeURIComponent(id);
+                const url = apiScheme() + host + '/my/report/' + reportId + '/?JSON_KV&confirmed=1&FR_InviteID=' + encodeURIComponent(id);
 
                 const fd = new FormData();
                 fd.append('_xsrf', xsrf);
@@ -1173,7 +1173,7 @@ class CabinetController {
                 // Invitations use report/inviteAccept; requests use report/inviteRequestAccept (236472)
                 const tabType = btn ? btn.dataset.tabType : 'requests';
                 const reportId = tabType === 'invitations' ? 'inviteAccept' : 'inviteRequestAccept';
-                const url = 'https://' + host + '/my/report/' + reportId + '/?JSON_KV&confirmed=1&FR_InviteID=' + encodeURIComponent(id);
+                const url = apiScheme() + host + '/my/report/' + reportId + '/?JSON_KV&confirmed=1&FR_InviteID=' + encodeURIComponent(id);
 
                 const fd = new FormData();
                 fd.append('_xsrf', xsrf);
@@ -1202,7 +1202,7 @@ class CabinetController {
                 }
             } else {
                 // Action endpoint: /my/_invite_action/?JSON&id=<id>&action=<action>
-                const url = 'https://' + host + '/my/_invite_action/?JSON' +
+                const url = apiScheme() + host + '/my/_invite_action/?JSON' +
                     '&id=' + encodeURIComponent(id) +
                     '&action=' + encodeURIComponent(action);
 
@@ -1346,7 +1346,7 @@ class CabinetController {
 
         try {
             const host = this.apiConfig.host;
-            const url = 'https://' + host + '/my/report/236495/?JSON_KV&confirmed=1&FR_DB=' + encodeURIComponent(dbName);
+            const url = apiScheme() + host + '/my/report/236495/?JSON_KV&confirmed=1&FR_DB=' + encodeURIComponent(dbName);
 
             const fd = new FormData();
             fd.append('_xsrf', xsrf);
@@ -1421,7 +1421,7 @@ class CabinetController {
         try {
             const host = this.apiConfig.host;
             const reportId = user ? '385' : '236801';
-            const url = 'https://' + host + '/my/report/' + reportId + '?JSON_KV';
+            const url = apiScheme() + host + '/my/report/' + reportId + '?JSON_KV';
 
             const fd = new FormData();
             fd.append('confirmed', '1');
@@ -1588,7 +1588,7 @@ class CabinetController {
         const nameInput = document.getElementById('new-db-name');
         const errEl = document.getElementById('new-db-name-error');
         const planId = parseInt(this.userData && this.userData.PlanID || '0', 10);
-        const atLimit = this.databases.length >= 3 && planId < 1147;
+        const maxWs = parseInt(window.maxWorkspaces, 10); const atLimit = maxWs > 0 && this.databases.length >= maxWs && planId < 1147;
         if (nameInput) { nameInput.value = ''; nameInput.classList.remove('input-invalid'); nameInput.disabled = atLimit; }
         if (errEl) errEl.style.display = 'none';
         const submitBtn = document.getElementById('create-db-submit-btn');
@@ -1631,7 +1631,7 @@ class CabinetController {
             // Step 1: Check if DB name is taken (report/292)
             const checkFd = new FormData();
             checkFd.append('_xsrf', xsrf);
-            const checkUrl = 'https://' + host + '/my/report/292?JSON&FR_DB=' + encodeURIComponent(dbName);
+            const checkUrl = apiScheme() + host + '/my/report/292?JSON&FR_DB=' + encodeURIComponent(dbName);
             const checkResp = await fetch(checkUrl, {
                 method: 'POST',
                 credentials: 'include',
@@ -1659,7 +1659,7 @@ class CabinetController {
             if (submitBtn) submitBtn.textContent = 'Creating...';
             const createFd = new FormData();
             createFd.append('_xsrf', xsrf);
-            const createUrl = 'https://' + host + '/my/_new_db/?JSON&db=' + encodeURIComponent(dbName) + '&template=' + encodeURIComponent(template);
+            const createUrl = apiScheme() + host + '/my/_new_db/?JSON&db=' + encodeURIComponent(dbName) + '&template=' + encodeURIComponent(template);
             const createResp = await fetch(createUrl, {
                 method: 'POST',
                 credentials: 'include',

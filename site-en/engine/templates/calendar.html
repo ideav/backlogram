@@ -1,5 +1,5 @@
 <!-- Import IntegramTable CSS for edit form styles -->
-<link rel="stylesheet" href="/download/{_global_.z}/css/integram-table.css">
+<link rel="stylesheet" href="/css/integram-table.css">
 
 <style>
     /* CSS Variables */
@@ -758,7 +758,7 @@
 <script src="/js/index.global.min.js"></script>
 
 <!-- Include IntegramTable for edit form functionality -->
-<script src="/download/{_global_.z}/js/integram-table.js"></script>
+<script src="/js/integram-table.js"></script>
 
 <script>
 function showNotification(message, type) {
@@ -766,14 +766,14 @@ function showNotification(message, type) {
     const existing = document.querySelectorAll('.integram-toast');
     existing.forEach(t => t.remove());
     const toast = document.createElement('div');
-    toast.className = `integram-toast integram-toast-${type}`;
+    toast.className = `integram-toast integram-toast-${ type }`;
     toast.textContent = message;
     const toastBg = type === 'error'
         ? getComputedStyle(document.documentElement).getPropertyValue('--toast-error-bg').trim() || '#dc3545'
         : type === 'success'
             ? getComputedStyle(document.documentElement).getPropertyValue('--toast-success-bg').trim() || '#28a745'
             : getComputedStyle(document.documentElement).getPropertyValue('--toast-info-bg').trim() || '#17a2b8';
-    toast.style.cssText = `position:fixed;top:20px;right:20px;padding:12px 24px;border-radius:4px;color:white;z-index:10000;font-family:sans-serif;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.2);cursor:pointer;background-color:${toastBg};`;
+    toast.style.cssText = `position:fixed;top:20px;right:20px;padding:12px 24px;border-radius:4px;color:white;z-index:10000;font-family:sans-serif;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.2);cursor:pointer;background-color:${ toastBg };`;
     document.body.appendChild(toast);
     const remove = () => { if (toast.parentNode) toast.remove(); };
     setTimeout(remove, 5000);
@@ -850,7 +850,7 @@ function initializeCalendar() {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
-        locale: 'ru',
+        locale: 'en',
         firstDay: 1, // Monday
         slotMinTime: '08:00:00',
         slotMaxTime: '20:00:00',
@@ -958,16 +958,34 @@ function performSearch() {
     renderEvents();
 }
 
+// Data contract of the calendar (seeded in the `en` workspace template): reports are looked up
+// by name, the task table and its due-date field by name via /metadata.
+const CAL_TASKS_REPORT = 'Calendar%20tasks';
+const CAL_TASK_TABLE = 'Task';
+const CAL_DUE_FIELD = 'Due date';
+let calTaskMeta = null;
+
+async function getTaskMeta() {
+    if (calTaskMeta) return calTaskMeta;
+    const response = await fetch(`/${ window.db }/metadata?JSON`);
+    const tables = await response.json();
+    const table = Array.isArray(tables) ? tables.find(t => t.val === CAL_TASK_TABLE) : null;
+    if (!table) throw new Error(`the workspace has no "${ CAL_TASK_TABLE }" table`);
+    const due = (table.reqs || []).find(r => r.val === CAL_DUE_FIELD);
+    calTaskMeta = { typeId: table.id, dueReqId: due ? due.id : null };
+    return calTaskMeta;
+}
+
 // Load all filter options from API
 async function loadFilterOptions() {
     try {
         // Load executors
-        const executorResponse = await fetch(`/${ window.db }/report/5230?JSON_KV`);
+        const executorResponse = await fetch(`/${ window.db }/report/Assignees?JSON_KV`);
         const executors = await executorResponse.json();
         populateExecutorFilter(executors);
 
         // Load task types
-        const taskTypeResponse = await fetch(`/${ window.db }/report/5241?JSON_KV`);
+        const taskTypeResponse = await fetch(`/${ window.db }/report/All%20task%20types?JSON_KV`);
         const taskTypes = await taskTypeResponse.json();
         populateTaskTypeFilter(taskTypes);
 
@@ -1016,10 +1034,14 @@ async function loadTasks() {
         }
 
         // Fetch tasks with filters applied on backend
-        const response = await fetch(`/${ window.db }/report/4283?${ queryParams }`);
+        const response = await fetch(`/${ window.db }/report/${ CAL_TASKS_REPORT }?${ queryParams }`);
         const data = await response.json();
 
-        if (Array.isArray(data)) {
+        if (Array.isArray(data) && data.length && data[0] && data[0].error) {
+            allTasks = [];
+            renderEvents();
+            showError('The calendar needs a "Calendar tasks" report and a "Task" table with a "Due date" field. New workspaces include them; in older ones, create them under Structure.');
+        } else if (Array.isArray(data)) {
             allTasks = data;
             renderEvents();
         } else {
@@ -1043,6 +1065,11 @@ function formatDateForAPI(date) {
 // Parse date from API format (DD.MM.YYYY HH:MM:SS)
 function parseDateFromAPI(dateStr) {
     if (!dateStr) return null;
+    dateStr = String(dateStr).trim();
+
+    // DATETIME fields come from the API as Unix time (seconds). Note: no brace quantifiers in
+    // templates, the engine takes a braced word for an insertion point and blanks the page.
+    if (/^\d+(\.\d+)?$/.test(dateStr) && dateStr.length >= 9) return new Date(parseFloat(dateStr) * 1000);
 
     // Parse DD.MM.YYYY HH:MM:SS format
     const parts = dateStr.split(' ');
@@ -1267,9 +1294,11 @@ async function handleEventDrop(info) {
 
     try {
         // Update task deadline via API
+        const meta = await getTaskMeta();
+        if (!meta.dueReqId) throw new Error(`the "${ CAL_TASK_TABLE }" table has no "${ CAL_DUE_FIELD }" field`);
         const formData = new FormData();
         formData.append('_xsrf', window.xsrf);
-        formData.append('t3888', formattedDate); // Assuming t3888 is the field ID for deadline
+        formData.append('t' + meta.dueReqId, formattedDate);
 
         const response = await fetch(`/${ window.db }/_m_set/${ taskId }/?JSON`, {
             method: 'POST',
@@ -1323,14 +1352,13 @@ async function openTaskDetail(taskId) {
 
     try {
         // Create IntegramTable instance with minimal configuration
-        // Use report/4283 as apiUrl to properly initialize the table component (issue #437)
+        // Use the tasks report as apiUrl to properly initialize the table component (issue #437)
         const tempTable = new IntegramTable('temp-table-container', {
-            apiUrl: `/${ window.db }/report/4283?JSON_KV`,
+            apiUrl: `/${ window.db }/report/${ CAL_TASKS_REPORT }?JSON_KV`,
             instanceName: 'calendarTaskEdit'
         });
 
-        // Task type ID is 3596 as per issue #425
-        const taskTypeId = 3596;
+        const taskTypeId = (await getTaskMeta()).typeId;
 
         // Open edit form for the task
         await tempTable.openEditForm(taskId, taskTypeId, 0);
@@ -1358,14 +1386,13 @@ async function createNewTask() {
 
     try {
         // Create IntegramTable instance with minimal configuration
-        // Use report/4283 as apiUrl to properly initialize the table component (issue #437)
+        // Use the tasks report as apiUrl to properly initialize the table component (issue #437)
         const tempTable = new IntegramTable('temp-table-container-create', {
-            apiUrl: `/${ window.db }/report/4283?JSON_KV`,
+            apiUrl: `/${ window.db }/report/${ CAL_TASKS_REPORT }?JSON_KV`,
             instanceName: 'calendarTaskCreate'
         });
 
-        // Task type ID is 3596
-        const taskTypeId = 3596;
+        const taskTypeId = (await getTaskMeta()).typeId;
 
         // Open create form (pass empty/null recordId to trigger create mode)
         await tempTable.openEditForm(null, taskTypeId, 0);

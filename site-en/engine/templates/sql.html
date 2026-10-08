@@ -334,7 +334,7 @@ center:hover .add-id-for-col {
             <a target=":id:" href="/{_global_.z}/smartq/{_global_.id}" title="Editable report"><i class="pi pi-pencil icon8"></i></a>&nbsp;
             <a target=":id:" href="/{_global_.z}/edit_obj/{_global_.id}#t22" title="Edit other query properties"><i class="pi pi-file-edit icon8"></i></a>&nbsp;
             <a href="#" onclick="copyLink('report/{_global_.id}')" title="Copy path for use in Integram templates"><i class="pi pi-link icon8"></i></a>&nbsp;
-            <a href="#" onclick="copyLink('https://'+location.host+'/{_global_.z}/report/{_global_.id}')" title="Copy absolute URL for external sharing"><i class="pi pi-copy icon8"></i></a>&nbsp;
+            <a href="#" onclick="copyLink(location.origin+'/{_global_.z}/report/{_global_.id}')" title="Copy absolute URL for external sharing"><i class="pi pi-copy icon8"></i></a>&nbsp;
             <span id="copied" style="display:none; color:var(--text-secondary, gray); position:absolute" class="text-nowrap">Copied</span>
         </h4>
     </center>

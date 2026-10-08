@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/css/cabinet.css">
 <!-- End: noAdmin1 -->
     <script>
-        var db='{_global_.z}',xsrf='{_global_.xsrf}',id='{_global_.id}',token='{_global_.token}',name='{_global_.user}',uid='{_global_.user_id}',action='{_global_.action}',menu=[];
+        var db='{_global_.z}',xsrf='{_global_.xsrf}',id='{_global_.id}',token='{_global_.token}',name='{_global_.user}',uid='{_global_.user_id}',action='{_global_.action}',menu=[],maxWorkspaces='{_global_.max_workspaces}';
     </script>
 <!-- Begin: isAdmin1 --><!--{Role}-->
     <link rel="stylesheet" href="/assets/vendor/primeicons/primeicons.css">
@@ -384,7 +384,7 @@
                         </div>
                     </div>
                     <div id="db-limit-warning" class="db-limit-warning" style="display:none;">
-                        You can create up to three databases on the free plan.
+                        The free plan includes up to {_global_.max_workspaces} workspaces. <a href="/pricing">Upgrade your plan</a> to create more.
                     </div>
                 </div>
 
