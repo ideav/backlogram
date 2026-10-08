@@ -43,7 +43,7 @@ export default function ExcelToApp() {
               <Button to={SIGNUP_UPLOAD_PATH} arrow>
                 Upload your file free
               </Button>
-              <Button to="/contact" variant="secondary">
+              <Button to="/contact?topic=build" variant="secondary">
                 Have us build it
               </Button>
             </div>
@@ -134,7 +134,7 @@ export default function ExcelToApp() {
               Send the spreadsheet and tell us how the team works. In two weeks you get a working app on your real data,
               with roles, forms and reports, and full admin rights to change it later. Pilots start at $1,200.
             </p>
-            <Button to="/contact" variant="secondary" className="mt-6" arrow>
+            <Button to="/contact?topic=build" variant="secondary" className="mt-6" arrow>
               Book a demo
             </Button>
           </div>
