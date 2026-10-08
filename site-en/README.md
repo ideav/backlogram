@@ -6,7 +6,13 @@
 
 ## Что это сейчас
 
-Один лендинг с формой обратной связи. Логина и регистрации нет: посетитель может только оставить заявку.
+Многостраничный маркетинговый сайт (issues #527–#534). Маршруты: `/`, `/pricing`, `/excel-to-app`, `/ai`, `/compare/{airtable,smartsheet,notion}`, `/use-cases` + `/use-cases/<slug>`, `/knowledge-base` + `/knowledge-base/<slug>`, `/contact`, `/terms`, `/privacy`, `/cookies`. Вход/регистрация — `/start`, `/start#signup` (движок, не этот билд).
+
+- Роутер крошечный (`src/match.ts`): каждая страница — отдельный файл `dist-en/<route>/index.html`, переходы — обычные ссылки, клиент только гидрирует нужную страницу (чанк на страницу).
+- Пререндер — плагин в `vite.config.ts`: после клиентской сборки собирает `src/entry-server.tsx` под Node, рендерит все маршруты из `src/routes.ts` со своими title/description/canonical/og/twitter/JSON-LD и пишет `robots.txt`, `sitemap.xml`, `llms.txt`, а также заглушки `offer_en.html`/`pp_en.html` (meta refresh; нужен 301 в `.htaccess`).
+- Контент: `src/content/kb/index.ts`, `src/content/usecases/index.ts` (контракт — `src/content/types.ts`). Новая статья/кейс сами попадают в страницы и sitemap.
+- Позиционирование, цены, глоссарий и стоп-лист — `docs/en-positioning.md`.
+- Аналитика — Plausible, грузится только после согласия в cookie-баннере; цель `lead` (отправка формы, клик на `/start#signup`); UTM уходят в заявку. Переменные: `VITE_PLAUSIBLE_DOMAIN` (`off` — выключить), `VITE_PLAUSIBLE_SRC`, `VITE_CONTACT_EMAIL`.
 
 ## Команды
 
