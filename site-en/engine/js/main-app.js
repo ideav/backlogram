@@ -134,6 +134,9 @@ class MainAppController {
         if (!dbName) return;
         document.cookie = 'idb_' + dbName + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
         document.cookie = dbName + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
+        // The account (cabinet) token signs the browser back into every workspace: drop it too,
+        // so "Sign out" really signs out of this browser.
+        document.cookie = 'idb_my=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
     }
 
     isMobile() {

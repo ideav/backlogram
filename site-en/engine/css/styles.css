@@ -324,7 +324,6 @@ body {
 .account-email {
     font-size: 0.9rem;
     color: var(--text-secondary);
-    text-transform: capitalize;
 }
 
 /* Main content area */

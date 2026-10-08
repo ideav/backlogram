@@ -943,7 +943,7 @@
         cardIdxs.forEach(function(i) {
             html += '<div class="funnel-summary-card">'
                 + '<div class="funnel-summary-label">' + esc(funnelStages[i]) + '</div>'
-                + '<div class="funnel-summary-value">' + totals[i].toLocaleString('ru') + '</div>'
+                + '<div class="funnel-summary-value">' + totals[i].toLocaleString('en-US') + '</div>'
                 + '</div>';
         });
         html += '</div>';
@@ -970,7 +970,7 @@
             html += '<div class="funnel-stage">'
                 + '<div class="funnel-stage-top">'
                 +   '<div class="funnel-stage-name">' + esc(s) + '</div>'
-                +   '<div class="funnel-stage-count">' + cnt.toLocaleString('ru') + '</div>'
+                +   '<div class="funnel-stage-count">' + cnt.toLocaleString('en-US') + '</div>'
                 +   '<div class="funnel-stage-pct">' + pct + '%</div>'
                 +   '<div class="funnel-stage-conv" title="Conversion from the previous visible stage">' + (pos > 0 ? conv : '—') + '</div>'
                 + '</div>'
@@ -1012,7 +1012,7 @@
             }
             funnelStages.forEach(function(s) {
                 var v = funnelNum(row[s]);
-                html += '<td>' + (v > 0 ? v.toLocaleString('ru') : '<span class="funnel-empty-val">—</span>') + '</td>';
+                html += '<td>' + (v > 0 ? v.toLocaleString('en-US') : '<span class="funnel-empty-val">—</span>') + '</td>';
             });
             html += '</tr>';
         });
@@ -1020,7 +1020,7 @@
         // Totals
         html += '</tbody><tfoot><tr><td colspan="' + (hasDateColumn ? 4 : 3) + '">Total (' + rows.length + ' records)</td>';
         funnelStages.forEach(function(s) {
-            html += '<td>' + funnelSumStage(rows, s).toLocaleString('ru') + '</td>';
+            html += '<td>' + funnelSumStage(rows, s).toLocaleString('en-US') + '</td>';
         });
         html += '</tr></tfoot></table></div></div>';
         return html;

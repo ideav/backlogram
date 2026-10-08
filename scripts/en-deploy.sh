@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
-# Deploy the English site (integram-ai.online). Issue #526, epic #524. See docs/en-deploy.md.
+# Deploy the English site. Issue #526, epic #524. See docs/en-deploy.md.
 #
-#   EN_DEPLOY_HOST=host EN_DEPLOY_USER=user EN_DEPLOY_PATH=/var/www/integram-ai.online \
-#     bash scripts/en-deploy.sh [--dry-run] [--install] [--no-build]
+#   EN_SITE_URL=https://example.com EN_DEPLOY_HOST=host EN_DEPLOY_USER=user \
+#   EN_DEPLOY_PATH=/var/www/example.com bash scripts/en-deploy.sh [--dry-run] [--install] [--no-build]
 #
 # Release dir = dist-en/* + site-en/engine/* (without .env, tests, docker files).
 # Uploaded with rsync over SSH; the server's .env and config files are never
 # overwritten or deleted. Optional: EN_DEPLOY_SSH_PORT, EN_DEPLOY_SSH_KEY,
-# EN_DEPLOY_PHP (default `php`).
+# EN_DEPLOY_PHP (default `php`), EN_CONTACT_EMAIL (public contact address,
+# default hello@<host of EN_SITE_URL>). EN_SITE_URL (scheme + host) is baked into the static
+# pages (canonical URLs, sitemap); the PHP engine takes its host from each request instead.
 set -euo pipefail
 
 DRY=0; INSTALL=0; BUILD=1
@@ -21,6 +23,7 @@ for a in "$@"; do
   esac
 done
 
+: "${EN_SITE_URL:?set EN_SITE_URL, e.g. https://example.com}"
 : "${EN_DEPLOY_HOST:?set EN_DEPLOY_HOST}"
 : "${EN_DEPLOY_USER:?set EN_DEPLOY_USER}"
 : "${EN_DEPLOY_PATH:?set EN_DEPLOY_PATH}"
@@ -29,7 +32,10 @@ case "$EN_DEPLOY_PATH" in /|""|/root|/home) echo "refusing unsafe EN_DEPLOY_PATH
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+export SITE_URL="${EN_SITE_URL%/}"
+[ -n "${EN_CONTACT_EMAIL:-}" ] && export VITE_CONTACT_EMAIL="$EN_CONTACT_EMAIL"
 if [ "$BUILD" = 1 ]; then npm run build:en; fi
+grep -q "$SITE_URL" dist-en/sitemap.xml 2>/dev/null || { echo "dist-en was built for another SITE_URL - rebuild (drop --no-build)" >&2; exit 1; }
 [ -f dist-en/index.html ] || { echo "dist-en/index.html missing - build first" >&2; exit 1; }
 
 RELEASE="$(mktemp -d)"
@@ -58,7 +64,12 @@ SSH=(ssh -o StrictHostKeyChecking=accept-new)
 [ -n "${EN_DEPLOY_SSH_KEY:-}" ] && SSH+=(-i "$EN_DEPLOY_SSH_KEY")
 
 # Server-side files are kept: no --delete for these, they are also excluded from upload.
+# User data written by the engine at runtime is protected from --delete: uploaded files
+# (download/<workspace>/...) and per-workspace templates, backups and logs
+# (templates/custom/<workspace>/...). Shipped files there (templates/custom/my/, the template
+# dirs) are still updated, just never deleted.
 RSYNC=(rsync -rlptvz --delete
+  --filter='protect /download/**' --filter='protect /templates/custom/**'
   --exclude='.env' --exclude='.env.*' --exclude='config.local.php' --exclude='config/local*' --exclude='order-config.php'
   --exclude='uploads/' --exclude='storage/' --exclude='logs/' --exclude='*.log'
   -e "${SSH[*]}")
@@ -75,4 +86,4 @@ if [ "$INSTALL" = 1 ]; then
     "${SSH[@]}" "$EN_DEPLOY_USER@$EN_DEPLOY_HOST" "cd '$EN_DEPLOY_PATH' && ${EN_DEPLOY_PHP:-php} install.php"
   fi
 fi
-echo "==> done. Next: node scripts/en-release-audit.mjs https://integram-ai.online"
+echo "==> done. Next: node scripts/en-release-audit.mjs $SITE_URL"

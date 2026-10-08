@@ -53,11 +53,13 @@ $mail_config['smtp_password'] = integram_env('INTEGRAM_SMTP_PASSWORD', '');
 $mail_config['smtp_host'] = integram_env('INTEGRAM_SMTP_HOST', 'localhost');
 $mail_config['smtp_port'] = integram_env('INTEGRAM_SMTP_PORT', '25');
 $mail_config['smtp_secure'] = strtolower(integram_env('INTEGRAM_SMTP_SECURE', ''));
-$mail_config['smtp_from_email'] = integram_env('INTEGRAM_SMTP_FROM_EMAIL', $mail_config['smtp_username'] !== '' ? $mail_config['smtp_username'] : 'hello@ideav.pro');
+# Empty From = no-reply@<current host> (set in include/en_site.php once the host is known).
+$mail_config['smtp_from_email'] = integram_env('INTEGRAM_SMTP_FROM_EMAIL', strpos($mail_config['smtp_username'], '@') !== false ? $mail_config['smtp_username'] : '');
 $mail_config['smtp_debug'] = filter_var(integram_env('INTEGRAM_SMTP_DEBUG', 'false'), FILTER_VALIDATE_BOOLEAN);
 $mail_config['smtp_charset'] = integram_env('INTEGRAM_SMTP_CHARSET', 'utf-8');
 $mail_config['smtp_from'] = integram_env('INTEGRAM_SMTP_FROM', 'Integram');
-define("ADMINEMAIL", integram_env('INTEGRAM_ADMIN_EMAIL', 'hello@ideav.pro'));
+# Where sign-up notifications go; empty = no notifications.
+define("ADMINEMAIL", integram_env('INTEGRAM_ADMIN_EMAIL', ''));
 # Workspace templates: a MySQL table with this name is cloned into each new workspace (newDb()).
 define("TEMPLATES", integram_env('INTEGRAM_TEMPLATES', ':en:'));
 $masterPassword = integram_env('INTEGRAM_MASTER_PASSWORD', '');

@@ -6,8 +6,8 @@
 #                                     find-or-create the user in `my`, workspace on first login
 #   GET /auth/google  (same; /auth.asp is an alias of the Google callback)
 #
-# Callback URLs to register with the providers: <INTEGRAM_BASE_URL>/auth/github and
-# <INTEGRAM_BASE_URL>/auth/google.
+# Callback URLs to register with the providers: https://<your-domain>/auth/github and
+# https://<your-domain>/auth/google (the host of the request, see enBaseUrl()).
 #
 # Users live in the `my` table: USER (t=18) val = the email, EMAIL requisite = the email,
 # the provider id is kept in the "social" requisite (t=274) as "github:<id>" / "google:<sub>".

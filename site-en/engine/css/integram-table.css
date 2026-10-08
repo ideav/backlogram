@@ -3243,7 +3243,6 @@ td:has(.inline-editor-reference) {
 }
 
 /* ========================================
-<<<<<<< issue-360-9f1a1d78c81c
    File Upload Styles (Inline and Form)
    ======================================== */
 
@@ -3413,7 +3412,7 @@ td:has(.inline-editor-file) {
     background-color: rgba(25, 118, 210, 0.08) !important;
     padding: 4px !important;
 }
-/* =======
+/* ========================================
    Export Menu Styles
    ======================================== */
 

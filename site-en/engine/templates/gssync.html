@@ -76,7 +76,7 @@
 
     <div class="gss-help-box" id="gss-help" style="display:none">
         <h5>How to use</h5>
-        <p><b>1. credentials.json</b> — a Google service account (download it from the <a target="googel" href="https://console.cloud.google.com/apis/credentials?project=ideavpro">Google Cloud Console</a>). Upload the file via the <a href="/{_global_.z}/dir_admin/?templates=1&add_path=/custom/{_global_.z}/gss"><b>Files</b> menu → <code>gss</code> folder</a> and enter just the file name in the form. If no file name is given, Integram's service account <code>ideav-430@ideavpro.iam.gserviceaccount.com</code> is used. Give it read access to your spreadsheet.</p>
+        <p><b>1. credentials.json</b> — a Google service account (create it in the <a target="google" href="https://console.cloud.google.com/apis/credentials">Google Cloud Console</a>). Upload the file via the <a href="/{_global_.z}/dir_admin/?templates=1&add_path=/custom/{_global_.z}/gss"><b>Files</b> menu → <code>gss</code> folder</a> and enter just the file name in the form. Share your spreadsheet with the service account's email (read access is enough).</p>
         <p><b>2. Spreadsheet ID</b> — from the Google Sheets link: <code>docs.google.com/spreadsheets/d/<b>SPREADSHEET_ID</b>/edit</code></p>
         <p><b>3. Sheets</b> — a JSON array of sheets. Each sheet defines a name, a list of rows (metrics) and columns in the <code>[from, to, label]</code> format. Example:</p>
         <pre style="white-space:pre-wrap;font-size:0.78rem;background:var(--bg-primary);padding:0.5rem;border-radius:4px;margin:0.25rem 0;">[
@@ -144,7 +144,7 @@
                 <input type="text" id="gss-spreadsheet-id" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms">
             </div>
             <div class="gss-field">
-                <label>Credentials file, e.g. <code>credentials.json</code>: put it in the <b>Files</b> menu, <code>gss</code> folder (or leave empty and grant access to <code id="service-acc" title="Copy">ideav-430@ideavpro.iam.gserviceaccount.com</code>)</label>
+                <label>Credentials file, e.g. <code>credentials.json</code>: put it in the <b>Files</b> menu, <code>gss</code> folder (leave empty to use the server-wide credentials file, if the administrator installed one)</label>
                 <input type="text" id="gss-credentials" placeholder="credentials.json">
             </div>
 
@@ -409,7 +409,7 @@
         }).catch(function(err) { alert('Load error: ' + err); });
     });
 
-    document.getElementById('service-acc').addEventListener('click', function(e) {
+    (document.getElementById('service-acc') || document.createElement('i')).addEventListener('click', function(e) {
         e.preventDefault();
         var text = this.textContent;
         var done = function() {

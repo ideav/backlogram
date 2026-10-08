@@ -251,7 +251,7 @@ t9n,.t9n {
                 </div>
                 <div class="col-12 mt-3 p-0 db-limit" style="display:none">
                     <div class="alert alert-info mb-0" role="alert">
-                        <p><t9n>[EN]Free plan includes three DBs as maximum</t9n></p>
+                        <p>The free plan includes up to {_global_.max_workspaces} workspaces. <a href="/pricing">Upgrade your plan</a> to create more.</p>
                     </div>
                 </div>
                 <br />
@@ -259,7 +259,7 @@ t9n,.t9n {
             <div class="lk-tab mt-3 p-1 p-sm-3 shadow" id="plan" style="display:none">
                 <h3><t9n>[EN]Your plan</t9n><span class="plan"></span></h3><br />
                 <h5><t9n>[EN]Next billing date is</t9n> <span class="plan-date"></span></h5>
-                <p><t9n>[EN]We charge the account monthly according to the tariff plan, and reset the resource counters of all your databases. If the resource consumption does not fit the plan limit, then you need to upgrade the plan to use the service. <a target="_blank" href="https://ideav.pro/#rec288682804">More about plans.</a></t9n>
+                <p><t9n>[EN]We charge the account monthly according to the tariff plan, and reset the resource counters of all your databases. If the resource consumption does not fit the plan limit, then you need to upgrade the plan to use the service. <a href="/pricing">More about plans.</a></t9n>
                 </p>
                 <p><t9n>[EN]Currently, you've spent <span class="count font-weight-bold">0</span> units of resources or <span class="countpc font-weight-bold">0</span>% out of the Free plan limit of 20000 units.</t9n>
                 </p>
@@ -399,7 +399,7 @@ function intApi(m,u,b,vars,index){
                 $('#t30').val(dataByColumn(json,'Phone',0));
                 $('#t41').val(dataByColumn(json,'Email',0));
                 $('#t39').val($('<div />').html(dataByColumn(json,'Notes',0)).text());
-                $('#t280').attr('src',dataByColumn(json,'Picture',0)||'https://ideav.pro/images/tild3366-6237-4630-b561-626231313263__quintet.gif');
+                $('#t280').attr('src',dataByColumn(json,'Picture',0)||'/images/logo.png');
                 $('.plan').html(' &mdash; <a class="text-blue" id="tariff" onclick="activateTab(\'\',\'plan\')">'+(dataByColumn(json,'Plan',0)||'Free')+'</a>');
                 planID=parseInt(dataByColumn(json,'PlanID',0))||1146;
                 var d=new Date();
@@ -425,7 +425,7 @@ function intApi(m,u,b,vars,index){
                 // countRes / 20000 / 1000 * 100 - percent of the Free plan limit
                 j=countRes/200000>1?Math.round(countRes/200000):(countRes/200000).toFixed(2);
                 $('.countpc').html(j);
-                if(i>=3&&planID<1147){
+                if(parseInt('{_global_.max_workspaces}',10)>0&&i>=parseInt('{_global_.max_workspaces}',10)&&planID<1147){
                     $('.new-db').hide();
                     $('.db-limit').show();
                 }

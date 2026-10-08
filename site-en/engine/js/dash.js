@@ -223,6 +223,22 @@ function dashSetStatus(msg) {
     if (el) el.textContent = msg;
 }
 
+// Opened without a dashboard id (or the id is not a Dashboard record): explain what a dashboard
+// is and point to the views every workspace has, instead of an empty page.
+function dashShowNoModel(reason) {
+    var el = document.getElementById('dash-status');
+    var fab = document.getElementById('dash-opt-open');
+    if (fab) fab.style.display = 'none';
+    if (!el) return;
+    var ws = '/' + encodeURIComponent(window.db || '');
+    el.innerHTML = '<h5 class="mb-2">' + (reason || 'No dashboard selected') + '</h5>'
+        + '<p class="mb-2">A dashboard is a financial or KPI model built on a <b>Dashboard</b> table '
+        + '(sheets, panels and items) and opened as <code>/dash/&lt;dashboard id&gt;</code>.</p>'
+        + '<p class="mb-0">Meanwhile, your workspace data is available as '
+        + '<a href="' + ws + '/tables">tables</a>, a <a href="' + ws + '/calendar">calendar</a> '
+        + 'and <a href="' + ws + '/kanban">kanban boards</a>.</p>';
+}
+
 function dashNormalizeNumberText(v) {
     if (v === null || v === undefined) return '';
     var raw = String(v).trim()
@@ -2408,11 +2424,11 @@ function dashDrainPendingPanelRows(panelKey) {
 
 function dashGetRecord(json) {
     if (!json || json.error || !json.val) {
-        dashSetStatus('Dashboard not found');
+        dashShowNoModel('Dashboard not found');
         return;
     }
     if (json.type !== 'Dashboard') {
-        dashSetStatus('This object is not a dashboard');
+        dashShowNoModel('This record is not a dashboard');
         return;
     }
     document.title = json.val;
@@ -7353,13 +7369,9 @@ document.getElementById('dash-model').addEventListener('click', function(e) {
     for (var i = 0; i < pathParts.length; i++) {
         if (pathParts[i] === 'dash') { dashIdx = i; break; }
     }
-    if (dashIdx === -1 || dashIdx + 1 >= pathParts.length) {
-        dashSetStatus('Dashboard not specified');
-        return;
-    }
-    var rawId = pathParts[dashIdx + 1];
+    var rawId = dashIdx === -1 ? '' : (pathParts[dashIdx + 1] || '');
     if (!/^\d+$/.test(rawId)) {
-        dashSetStatus('Dashboard not specified');
+        dashShowNoModel();
         return;
     }
     dashLoad(rawId);

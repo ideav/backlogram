@@ -12,10 +12,11 @@ engine `index.php` (`.htaccess` comes from `site-en/public/.htaccess` into `dist
 ## One-command deploy
 
 ```bash
+export EN_SITE_URL=https://integram-ai.online       # scheme + host the static pages are built for
 export EN_DEPLOY_HOST=host.example.com
 export EN_DEPLOY_USER=deploy
 export EN_DEPLOY_PATH=/var/www/integram-ai.online      # the web root
-# optional: EN_DEPLOY_SSH_PORT, EN_DEPLOY_SSH_KEY, EN_DEPLOY_PHP
+# optional: EN_CONTACT_EMAIL (default hello@<host>), EN_DEPLOY_SSH_PORT, EN_DEPLOY_SSH_KEY, EN_DEPLOY_PHP
 
 bash scripts/en-deploy.sh --dry-run            # show what would change
 bash scripts/en-deploy.sh                      # build + upload
@@ -25,13 +26,23 @@ bash scripts/en-deploy.sh --no-build           # reuse the existing dist-en/
 (`npm run deploy:en -- --dry-run` is the same.) Needs `rsync`, `ssh`, `node` locally (Git Bash on Windows works if rsync is installed).
 
 What the script does:
-1. `npm run build:en` -> `dist-en/`.
+1. `SITE_URL=$EN_SITE_URL npm run build:en` -> `dist-en/` (canonical URLs, sitemap, contact address); with `--no-build` it checks that `dist-en/` was built for `EN_SITE_URL`.
 2. Assembles a temporary release dir = `dist-en/*` + `site-en/engine/*`, excluding `.env*`, `tests/`, `docker-compose*.yml`, `Dockerfile*`, `.git`, `node_modules`.
 3. Scans the release dir with the guard rules (Cyrillic, `*.ru`, Yandex, ...); any hit aborts the deploy.
-4. `rsync -rlptvz --delete` over SSH. Server-side state is never touched or deleted: `.env`, `.env.*`, `config.local.php`, `config/local*`, `order-config.php`, `uploads/`, `storage/`, `logs/`, `*.log`. Put such files there on the server once; they survive every deploy.
+4. `rsync -rlptvz --delete` over SSH. Server-side state is never touched or deleted: `.env`, `.env.*`, `config.local.php`, `config/local*`, `order-config.php`, `uploads/`, `storage/`, `logs/`, `*.log`. Put such files there on the server once; they survive every deploy. Runtime data of the engine is protected from `--delete`: `download/**` (uploaded files) and `templates/custom/**` (per-workspace templates, backups, logs); shipped files there are updated but never deleted.
 5. With `--install`: `ssh ... 'cd $EN_DEPLOY_PATH && php install.php'`.
 
-After deploy run the release gate: `node scripts/en-release-audit.mjs https://integram-ai.online` and go through `docs/en-release-checklist.md`.
+## Running a copy on another domain
+
+Nothing in the code names a domain. The static pages get theirs from `EN_SITE_URL` at build time;
+the PHP engine takes the host of each request (links in mails, OAuth callbacks, cookies, the
+default sender `no-reply@<host>`). On the server set `INTEGRAM_ALLOWED_HOSTS=<domain>,www.<domain>`
+in `.env` so a forged `Host` header cannot leak into password-reset links, register the OAuth
+callbacks `https://<domain>/auth/google` and `https://<domain>/auth/github`, and set
+`INTEGRAM_ADMIN_EMAIL` if you want sign-up notifications. `tests/en-engine.test.mjs` fails on any
+literal domain in `site-en/engine` or `site-en/src`.
+
+After deploy run the release gate: `node scripts/en-release-audit.mjs $EN_SITE_URL` and go through `docs/en-release-checklist.md`.
 
 ## Production host (integram-ai.online)
 

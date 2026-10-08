@@ -465,7 +465,7 @@ function createDb($id, $name, $email, $pwd=""){
         $id = Insert($id, 1, DATABASE, $db, "Register new DB");
         Insert($id, 1, 275, date("Ymd"), "Insert new DB date");
         Insert($id, 1, 283, $template, "Insert new DB template");
-        Insert($id, 1, 276, t9n("[EN]Test one, created upon registration"), "Insert new DB notes");
+        Insert($id, 1, 276, t9n("[EN]My first workspace, created at sign-up"), "Insert new DB notes");
         $z = $db;
     }
 }
@@ -521,6 +521,8 @@ function newDb($db, $template, $name, $email, $pwd){
 	if(strlen($name))
 		Insert($id, 1, 33, $name, "Insert user name");
 	Insert($id, 1, ADMINROLE, "115", "Insert Admin role link");
+	if($template === "en")
+		enStarterForOwner($z, $id); # Demo tasks for the owner, demo dates moved to this week
 	
     # Set token and xsfr as of the current user's
 	Insert($id, 1, TOKEN, $GLOBALS["GLOBAL_VARS"]["token"], "Save token DB");
@@ -3761,14 +3763,14 @@ function Compile_Report($id, $cur_block, $exe=TRUE, $check=FALSE, $noFilters=FAL
 				$rec_limit = "LIMIT ".(int)(isset($limits[1]) ? $limits[1] : $limits[0]);
 		}
 		if(isset($GLOBALS["STORED_REPS"][$id]["references"][$typ][$typ])) // This is a reference attribute
-    		$GLOBALS["STORED_REPS"][$id]["sql"] = " WITH RECURSIVE c AS (SELECT id, 0 t FROM $z WHERE t=$typ AND up!=0 AND t!=up $cond"
+    		$GLOBALS["STORED_REPS"][$id]["sql"] = " SELECT * FROM (WITH RECURSIVE c AS (SELECT id, 0 t FROM $z WHERE t=$typ AND up!=0 AND t!=up $cond"
                     ."  UNION SELECT ref.up id, ref.t FROM $z ref INNER JOIN c ON c.id=ref.t WHERE ref.val='"
-                                .$GLOBALS["STORED_REPS"][$id]["references"][$typ][$typ]."' $rec_limit)"
-                    ." SELECT DISTINCT id $name FROM c";
+                                .$GLOBALS["STORED_REPS"][$id]["references"][$typ][$typ]."')"
+                    ." SELECT DISTINCT id $name FROM c $rec_limit) rec_items";
         else    // This is a dependent table items
-    		$GLOBALS["STORED_REPS"][$id]["sql"] = " WITH RECURSIVE c AS (SELECT id, 0 t FROM $z WHERE t=$typ AND up!=0 AND t!=up AND val!='' $cond"
-                    ."  UNION SELECT ref.id id, ref.t FROM $z ref INNER JOIN c ON c.id=ref.up WHERE ref.t=$typ $rec_limit)"
-                    ." SELECT DISTINCT id $name FROM c";
+    		$GLOBALS["STORED_REPS"][$id]["sql"] = " SELECT * FROM (WITH RECURSIVE c AS (SELECT id, 0 t FROM $z WHERE t=$typ AND up!=0 AND t!=up AND val!='' $cond"
+                    ."  UNION SELECT ref.id id, ref.t FROM $z ref INNER JOIN c ON c.id=ref.up WHERE ref.t=$typ)"
+                    ." SELECT DISTINCT id $name FROM c $rec_limit) rec_items";
         trace("RECURSIVE ".$GLOBALS["STORED_REPS"][$id]["sql"]);
         mywrite("\r\n".$GLOBALS["STORED_REPS"][$id]["sql"]);
 	}
@@ -8873,6 +8875,8 @@ function server_parse($socket, $response, $line = __LINE__) {
 }
 function mysendmail($to,$subj,$msg){
     global $mail_config;
+    if(trim((string)$to) === "") # e.g. INTEGRAM_ADMIN_EMAIL not set: no admin notifications
+        return "";
     wlog("===== ".date("d.m.y H:m:s ")."\nTo $to\nSubj: $subj\nMsg: $msg", "log");
     $res = "id:".smtpmail($to, $to, $subj, $msg);
     wlog("\nResult: ".($res ? " Ok" : " Failed")."\n=====\n", "log");
@@ -9177,10 +9181,9 @@ function aiAgentRawInput(){
 function aiAgentCallbackUrl($db){
     $base = aiConfigValue(array("AI_AGENT_CALLBACK_BASE_URL", "INTEGRAM_AGENT_CALLBACK_BASE_URL"));
     if($base === ""){
-        $host = isset($_SERVER["HTTP_HOST"]) ? preg_replace('/[^a-z0-9.\-:]/i', '', (string)$_SERVER["HTTP_HOST"]) : "";
-        if($host === "")
+        if(enRequestHost() === "")
             return "";
-        $base = "https://".$host;
+        $base = enBaseUrl();
     }
     $base = rtrim($base, "/");
     return $base."/".rawurlencode((string)$db)."/ai/agent/callback";
@@ -12090,8 +12093,8 @@ if(Validate_Token())
 			                    ." LEFT JOIN $z mail ON mail.up=db.up AND mail.t=".EMAIL // User email
 			                    ." WHERE db.up=".$GLOBALS["GLOBAL_VARS"]["user_id"]." AND db.t=".DATABASE, "Count the existing DBs");
 			if($row = mysqli_fetch_array($result))
-			    if($row["dbs"] >= 3 && (int)$row["plan"] < 1147)
-    			    my_die(t9n("[EN]Maximum 3 DBs available on a free plan"));
+			    if(enMaxWorkspaces() > 0 && $row["dbs"] >= enMaxWorkspaces() && (int)$row["plan"] < 1147)
+    			    my_die(enWorkspaceLimitMessage());
             if(!isDbVacant($db))
 			    my_die(t9n("[EN]The DB name for $db is occupied"));
 			$template=strtolower($_REQUEST["template"]);
@@ -12231,6 +12234,7 @@ if(Validate_Token())
             Exec_sql("DELETE FROM $z WHERE up=".$GLOBALS["GLOBAL_VARS"]["user_id"]." AND t=".TOKEN, "Exit - drop the token");
     		if(strlen($next_act))
     			die("<script>document.location.href='/$z/$next_act'</script>");
+            $_SERVER["REQUEST_URI"] = "/$z"; # After the next log in open the workspace, not /exit again
             login($z);
     		break;
 
