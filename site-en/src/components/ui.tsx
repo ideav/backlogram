@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { ArrowRight, ChevronDown } from 'lucide-react'
-import { href, SIGNUP_PATH } from '../site'
+import { href, SIGNUP_UPLOAD_PATH } from '../site'
 import { getImageAlt } from '../content/imageAlt'
 
 /** Internal link that respects the deployment base. Plain <a>: every page is a prerendered file. */
@@ -108,9 +108,11 @@ export function Faq({ items, title = 'Frequently asked questions' }: { items: { 
 export function CtaBand({
   title = 'Your spreadsheet, working as an app, today',
   text = 'Start free with your own file. No credit card, no sales call. If you would rather have us build it, book a demo.',
+  to = SIGNUP_UPLOAD_PATH,
 }: {
   title?: string
   text?: string
+  to?: string
 }) {
   return (
     <section className="bg-slate-900 py-16 text-white sm:py-20">
@@ -118,7 +120,7 @@ export function CtaBand({
         <h2 className="mx-auto max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">{title}</h2>
         <p className="mx-auto mt-4 max-w-xl text-lg text-slate-300">{text}</p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <Button to={SIGNUP_PATH} arrow>
+          <Button to={to} arrow>
             Start free
           </Button>
           <A
