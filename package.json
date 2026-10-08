@@ -20,7 +20,8 @@
     "seo-widths": "node scripts/audit-serp-widths.mjs",
     "blog-figures": "node scripts/render-blog-figures.mjs",
     "kb-sitemap": "node scripts/sync-kb-sitemap.mjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "direct-images": "node scripts/generate-direct-images.mjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
