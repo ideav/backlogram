@@ -51,7 +51,7 @@ export function matchPath(path: string): Match | null {
   if (m) return { page: 'use-case', slug: m[1] }
   m = /^\/knowledge-base\/([a-z0-9-]+)$/.exec(path)
   if (m) return { page: 'kb-article', slug: m[1] }
-  m = /^\/(terms|privacy|cookies)$/.exec(path)
+  m = /^\/(terms|privacy|cookies|dpa|subprocessors|acceptable-use|copyright|security)$/.exec(path)
   if (m) return { page: 'legal', slug: m[1] }
   return null
 }

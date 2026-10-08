@@ -33,6 +33,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 //   VITE_PLAUSIBLE_DOMAIN  analytics site id (default: host of SITE_URL; `off` disables)
 //   VITE_PLAUSIBLE_SRC     analytics script URL
 //   VITE_CONTACT_EMAIL     public contact address (default hello@<host of SITE_URL>)
+//   VITE_LEGAL_*           operator details of the legal pages, see src/data/legal/config.ts
 //
 // SEO decision, keep it: no hreflang and no cross-domain sitemap index. The
 // English site is not a translation of any other site and must not declare
@@ -170,6 +171,11 @@ function llmsTxt(entry: ServerEntry): string {
     line('/terms'),
     line('/privacy'),
     line('/cookies'),
+    line('/dpa'),
+    line('/subprocessors'),
+    line('/acceptable-use'),
+    line('/copyright'),
+    line('/security'),
     '',
   ]
     .filter((l, i, arr) => !(l === '' && arr[i - 1] === ''))

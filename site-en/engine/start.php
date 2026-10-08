@@ -63,6 +63,7 @@ input[type=email],input[type=password],input[type=text]{width:100%;height:44px;p
 .msg.err{display:block;background:var(--err-bg);color:var(--err)}
 .msg.ok{display:block;background:var(--ok-bg);color:var(--ok)}
 .switch{text-align:center;color:var(--muted);font-size:14px;margin-top:20px}
+.legal{text-align:center;color:var(--muted);font-size:13px;margin-top:14px}
 .ts{margin:4px 0 14px}
 .view{display:none}.view.on{display:block}
 footer{text-align:center;color:#94a3b8;font-size:13px;padding:16px}
@@ -103,10 +104,11 @@ footer a{color:#64748b;margin:0 8px}
       <div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
       <div class="field"><label for="s-email">Work email</label><input id="s-email" name="email" type="email" autocomplete="email" required></div>
       <div class="field"><label for="s-pwd">Password</label><input id="s-pwd" name="regpwd" type="password" autocomplete="new-password" minlength="8" required placeholder="At least 8 characters"></div>
-      <label class="check"><input type="checkbox" name="agree" value="1" required> <span>I agree to the <a href="/terms" target="_blank">Terms of Service</a> and the <a href="/privacy" target="_blank">Privacy Policy</a>.</span></label>
+      <label class="check"><input type="checkbox" name="agree" value="1" required> <span>I agree to the <a href="/terms" target="_blank">Terms of Service</a> and acknowledge the <a href="/privacy" target="_blank">Privacy Policy</a>.</span></label>
       <?php if($turnstile !== ''): ?><div class="ts cf-turnstile" data-sitekey="<?= $h($turnstile) ?>"></div><?php endif; ?>
       <button class="btn primary" type="submit">Create account</button>
     </form>
+    <p class="legal">By signing up you agree to the <a href="/terms" target="_blank">Terms of Service</a> and acknowledge the <a href="/privacy" target="_blank">Privacy Policy</a>.</p>
     <p class="switch">Already have an account? <a href="#login">Log in</a></p>
   </section>
 
@@ -123,7 +125,7 @@ footer a{color:#64748b;margin:0 8px}
   </section>
 </div>
 </main>
-<footer><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/contact">Contact</a></footer>
+<footer><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/cookies">Cookies</a><a href="/contact">Contact</a></footer>
 <script>
 (function () {
   'use strict';
@@ -218,7 +220,7 @@ footer a{color:#64748b;margin:0 8px}
     var email = f.email.value.trim();
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return show('Please enter a valid email address.');
     if (f.regpwd.value.length < 8) return show('The password must be at least 8 characters long.');
-    if (!f.agree.checked) return show('Please accept the Terms of Service and the Privacy Policy.');
+    if (!f.agree.checked) return show('Please accept the Terms of Service to continue.');
     busy(f, true);
     post('/my/register?JSON', f, { email: email, regpwd1: f.regpwd.value }).then(function (r) {
       busy(f, false); resetTurnstile(f);

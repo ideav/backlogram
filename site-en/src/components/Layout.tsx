@@ -119,6 +119,11 @@ const FOOTER_COLUMNS = [
       { label: 'Terms of Service', path: '/terms' },
       { label: 'Privacy Policy', path: '/privacy' },
       { label: 'Cookie Policy', path: '/cookies' },
+      { label: 'Data Processing Addendum', path: '/dpa' },
+      { label: 'Sub-processors', path: '/subprocessors' },
+      { label: 'Acceptable Use', path: '/acceptable-use' },
+      { label: 'Copyright / DMCA', path: '/copyright' },
+      { label: 'Security', path: '/security' },
     ],
   },
 ]
@@ -148,19 +153,23 @@ function Footer() {
                     </A>
                   </li>
                 ))}
+                {col.title === 'Legal' && (
+                  <li>
+                    <button
+                      type="button"
+                      className="text-left text-sm text-slate-600 hover:text-blue-700"
+                      onClick={() => window.dispatchEvent(new Event('integram-open-consent'))}
+                    >
+                      Cookie settings
+                    </button>
+                  </li>
+                )}
               </ul>
             </div>
           ))}
         </div>
         <div className="mt-10 flex flex-col gap-3 border-t border-slate-200 pt-6 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Integram. All rights reserved.</p>
-          <button
-            type="button"
-            className="self-start text-slate-500 underline-offset-2 hover:text-blue-700 hover:underline sm:self-auto"
-            onClick={() => window.dispatchEvent(new Event('integram-open-consent'))}
-          >
-            Cookie settings
-          </button>
         </div>
       </Container>
     </footer>
