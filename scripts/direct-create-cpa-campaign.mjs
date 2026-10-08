@@ -22,6 +22,8 @@
  *              фраз свои 4 кампании и свои объявления (issue #670)
  *   adept      /adept/, цель adept_click (issue #674)
  *   partner    /partner/, цель partner_click (issue #674)
+ *   praktikum-junk, adept-junk, partner-junk  те же посадочные и цели,
+ *              мусорные ключи без минус-слов, охват на всех (issue #688)
  *
  * Окружение:
  *   DIRECT_TOKEN     OAuth-токен Директа (обязателен для --apply)
@@ -204,6 +206,25 @@ PROFILES['praktikum-roles'] = {
   campaignPerGroup: true,
 }
 
+/**
+ * Мусорные ключи (issue #688): те же посадочные, цели и цены, что у практикума,
+ * адептов и партнёров, но фразы — абстрактные слова («кружка», «гитара»,
+ * «степлер»), а минус-слов нет совсем: кто ищет работу или реферат, тоже может
+ * интересоваться ИИ. Отдельные кампании, чтобы случайные показы без конверсий
+ * не мешали обучению стратегии основных. Фразы трёх профилей не пересекаются —
+ * docs/marketing/junk-cpa-campaign.md, scripts/junk-build-keywords.mjs.
+ */
+for (const [name, title] of [['praktikum', 'Практикум-мусор'], ['adept', 'Адепты-мусор'], ['partner', 'Партнёры-мусор']]) {
+  PROFILES[`${name}-junk`] = {
+    ...PROFILES[name],
+    title,
+    slug: `${name}-junk`,
+    keywordFiles: [marketing(`${name}-junk.keywords.json`)],
+    adsFile: marketing(`${name}-junk.ads.json`),
+    noNegatives: true,
+  }
+}
+
 export const PROFILE = PROFILES[process.env.CAMPAIGN_PROFILE ?? 'excel']
 
 const cfg = {
@@ -236,7 +257,11 @@ export function groupsFor(profile = PROFILE) {
   const groups = profile.keywordFiles.flatMap(file => JSON.parse(readFileSync(file, 'utf8')).groups)
   if (!profile.adsFile) return groups
   const adsByGroup = JSON.parse(readFileSync(profile.adsFile, 'utf8')).groups
-  return groups.map(group => (adsByGroup[group.slug] ? { ...group, ads: adsByGroup[group.slug] } : group))
+  // «*» — общий набор для групп, у которых своего нет (мусорные ключи, #688).
+  return groups.map(group => {
+    const ads = adsByGroup[group.slug] ?? adsByGroup['*']
+    return ads ? { ...group, ads } : group
+  })
 }
 
 /** Ограничения Директа на длину полей текстового объявления. */
@@ -299,6 +324,7 @@ export const CALLOUTS = PROFILE?.callouts ?? []
  * docs/marketing/excel-cpa-negatives.json (там же — что и почему НЕ минусуется).
  */
 export function negativesFor(profile = PROFILE) {
+  if (profile.noNegatives) return []
   return loadNegatives().filter(word => !profile.allowedNegatives.includes(word))
 }
 
@@ -307,6 +333,9 @@ export const CAMPAIGN_NEGATIVES = PROFILE ? negativesFor(PROFILE) : []
 /** Автотаргетинг поиска: только запросы, прямо совпадающие с тем, что мы продаём. */
 export const EXACT_ONLY = ['EXACT', 'ALTERNATIVE', 'COMPETITOR', 'BROADER', 'ACCESSORY']
   .map(Category => ({ Category, Value: Category === 'EXACT' ? 'YES' : 'NO' }))
+
+/** Автотаргетинг по всем категориям — для профилей, которым нужен весь охват (#688). */
+export const ALL_CATEGORIES = EXACT_ONLY.map(({ Category }) => ({ Category, Value: 'YES' }))
 
 /**
  * Смены по московскому времени (решение владельца 29.09.2026): днём с 8:00 до
@@ -338,10 +367,11 @@ export function payForConversion(shift = 'day') {
 }
 
 export function campaignPayload(name, slug, where, shift = 'day', profile = PROFILE) {
+  const negatives = negativesFor(profile)
   return {
     Name: name,
     StartDate: new Date().toISOString().slice(0, 10),
-    NegativeKeywords: { Items: negativesFor(profile) },
+    ...(negatives.length ? { NegativeKeywords: { Items: negatives } } : {}),
     TimeZone: 'Europe/Moscow',
     TimeTargeting: {
       Schedule: { Items: scheduleFor(shift) },
@@ -476,10 +506,10 @@ async function main() {
       idsOf(await call('keywords', 'resume', { SelectionCriteria: { Ids: autoIds } }), 'ResumeResults')
     } else if (autoIds.length) {
       idsOf(await call('keywords', 'update', {
-        Keywords: autoIds.map(Id => ({ Id, AutotargetingCategories: EXACT_ONLY })),
+        Keywords: autoIds.map(Id => ({ Id, AutotargetingCategories: PROFILE.noNegatives ? ALL_CATEGORIES : EXACT_ONLY })),
       }), 'UpdateResults')
     }
-    console.log(`  автотаргетинг: ${autotargeting ? 'включён' : 'только целевые запросы'} (${apply ? autoIds.length : '…'} групп)`)
+    console.log(`  автотаргетинг: ${autotargeting ? 'включён' : PROFILE.noNegatives ? 'все категории' : 'только целевые запросы'} (${apply ? autoIds.length : '…'} групп)`)
 
     if (apply) {
       // Кампания создаётся активной — останавливаем сразу, до того как
