@@ -99,3 +99,14 @@ test('closing CTA band leads to the file import; no Google/GitHub promise on pag
     assert.doesNotMatch(read(`site-en/src/pages/${p}.tsx`), /Google or GitHub/, p)
   }
 })
+
+test('/contact wording and lead source follow the button topic (#727)', () => {
+  const read = p => fs.readFileSync(path.join(ROOT, p), 'utf8')
+  const contact = read('site-en/src/pages/Contact.tsx')
+  for (const t of ['demo', 'build', "'self-hosted'", 'feedback']) assert.match(contact, new RegExp(`\\n  ${t}: \\{`), t)
+  assert.match(contact, /source=\{topic === 'demo' \? 'contact' : `contact-\$\{topic\}`\}/)
+  assert.match(read('site-en/src/pages/Compare.tsx'), /to="\/contact\?topic=feedback"/)
+  assert.match(read('site-en/src/pages/ExcelToApp.tsx'), /to="\/contact\?topic=build"/)
+  assert.match(read('site-en/src/data/pricing.ts'), /href: '\/contact\?topic=self-hosted'/)
+  assert.match(read('site-en/src/components/ContactForm.tsx'), /'Sending…' : submitLabel/)
+})

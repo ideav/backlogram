@@ -58,7 +58,7 @@ export default function Compare({ slug }: { slug?: string }) {
             {c.name} pricing <ExternalLink size={13} aria-hidden="true" />
           </A>{' '}
           for current numbers. Spotted something out of date?{' '}
-          <A to="/contact" className="font-medium text-blue-700 hover:underline">
+          <A to="/contact?topic=feedback" className="font-medium text-blue-700 hover:underline">
             Tell us
           </A>
           .

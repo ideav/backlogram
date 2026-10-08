@@ -88,7 +88,7 @@ export const PLANS: Plan[] = [
       'LDAP / Active Directory, SSO',
       'Support agreement',
     ],
-    cta: { label: 'Talk to us', href: '/contact' },
+    cta: { label: 'Talk to us', href: '/contact?topic=self-hosted' },
   },
 ]
 
