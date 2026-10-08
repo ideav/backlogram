@@ -112,6 +112,7 @@ const groups = [
     slugs: [
       '10-no-release-changes',
       '13-api-json-export',
+      '26-mcp-server-explained',
       '14-forms',
       '14a-reports',
       '14b-dashboards',
@@ -411,8 +412,47 @@ for (const article of knowledgeBaseArticles) {
           { '@type': 'ListItem', position: 3, name: breadcrumbName, item: url },
         ],
       },
+      ...(article.faq?.length
+        ? [
+            {
+              '@type': 'FAQPage',
+              '@id': `${url}#faq`,
+              mainEntity: article.faq.map((f) => ({
+                '@type': 'Question',
+                name: f.question,
+                acceptedAnswer: { '@type': 'Answer', text: f.answer },
+              })),
+            },
+          ]
+        : []),
     ],
   }
+
+  const table = article.comparisonTable
+  const tableHtml = table?.rows?.length
+    ? `<section class="kb-article__table">
+        <h2>${escape(table.title)}</h2>
+        ${table.description ? `<p>${escape(table.description)}</p>` : ''}
+        <table>
+          <thead><tr>${table.columns.map((c) => `<th scope="col">${escape(c)}</th>`).join('')}</tr></thead>
+          <tbody>${table.rows
+            .map(
+              (row) =>
+                `<tr>${row
+                  .map((cell, i) => (i === 0 ? `<th scope="row">${escape(cell)}</th>` : `<td>${escape(cell)}</td>`))
+                  .join('')}</tr>`
+            )
+            .join('')}</tbody>
+        </table>
+      </section>`
+    : ''
+
+  const faqHtml = article.faq?.length
+    ? `<section class="kb-article__faq">
+        <h2>Вопросы и ответы</h2>
+        ${article.faq.map((f) => `<h3>${escape(f.question)}</h3><p>${escape(f.answer)}</p>`).join('')}
+      </section>`
+    : ''
 
   const contextHtml = article.context
     ? `<section class="kb-article__context"><p>${escape(article.context)}</p></section>`
@@ -474,8 +514,10 @@ for (const article of knowledgeBaseArticles) {
   </header>
   <section class="kb-article__summary"><p>${escape(article.summary)}</p></section>
   ${contextHtml}
+  ${tableHtml}
   ${scenarioHtml}
   ${integramHtml}
+  ${faqHtml}
   ${ctaHtml}
   ${relatedHtml}
   <footer class="kb-prerender__footer">
@@ -509,6 +551,12 @@ for (const article of knowledgeBaseArticles) {
     border: 1px solid #e2e8f0; border-radius: 0.5rem; background: #0f172a; }
   #kb-prerender .kb-prerender__cover img { display: block; width: 100%; height: auto;
     aspect-ratio: 1200 / 630; object-fit: cover; }
+  #kb-prerender h3 { font-size: 1.05rem; margin: 1.2rem 0 0.3rem; }
+  #kb-prerender .kb-article__table { overflow-x: auto; }
+  #kb-prerender table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+  #kb-prerender th, #kb-prerender td { border: 1px solid #e2e8f0; padding: 0.5rem 0.65rem;
+    text-align: left; vertical-align: top; }
+  .dark #kb-prerender th, .dark #kb-prerender td { border-color: #1e293b; }
   #kb-prerender ul, #kb-prerender ol { padding-left: 1.5rem; }
   #kb-prerender li { margin-bottom: 0.4rem; }
   #kb-prerender .kb-prerender__footer { margin-top: 3rem; padding-top: 1.5rem;

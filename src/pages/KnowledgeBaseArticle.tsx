@@ -14,6 +14,7 @@ import {
   Link2,
   Info,
   Library,
+  HelpCircle,
 } from 'lucide-react'
 import {
   getArticleBySlug,
@@ -333,6 +334,60 @@ export default function KnowledgeBaseArticle() {
             </section>
           )}
 
+          {article.comparisonTable && (
+            <section className="mb-12">
+              <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
+                <GitCompare size={14} /> {article.comparisonTable.title}
+              </h2>
+              {article.comparisonTable.description && (
+                <p className="text-base text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
+                  {article.comparisonTable.description}
+                </p>
+              )}
+              <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+                <table className="w-full min-w-[32rem] text-sm text-left">
+                  <thead className="bg-slate-50/60 dark:bg-slate-900/40">
+                    <tr>
+                      {article.comparisonTable.columns.map((c, i) => (
+                        <th
+                          key={i}
+                          scope="col"
+                          className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-100"
+                        >
+                          {c}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {article.comparisonTable.rows.map((row, ri) => (
+                      <tr key={ri} className="border-t border-slate-200 dark:border-slate-800">
+                        {row.map((cell, ci) =>
+                          ci === 0 ? (
+                            <th
+                              key={ci}
+                              scope="row"
+                              className="px-4 py-3 align-top font-semibold text-slate-800 dark:text-slate-100"
+                            >
+                              {cell}
+                            </th>
+                          ) : (
+                            <td
+                              key={ci}
+                              className="px-4 py-3 align-top text-slate-700 dark:text-slate-300 leading-relaxed"
+                            >
+                              {cell}
+                            </td>
+                          ),
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
+
           <section className="mb-12">
             <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
               <CheckCircle2 size={14} /> Что делает Интеграм иначе
@@ -414,6 +469,29 @@ export default function KnowledgeBaseArticle() {
               </p>
             </div>
           </section>
+
+          {article.faq && article.faq.length > 0 && (
+            <section className="mb-12">
+              <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
+                <HelpCircle size={14} /> Вопросы и ответы
+              </h2>
+              <dl className="space-y-4">
+                {article.faq.map((item, i) => (
+                  <div
+                    key={i}
+                    className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40"
+                  >
+                    <dt className="font-semibold text-sm text-slate-800 dark:text-slate-100 mb-1">
+                      {item.question}
+                    </dt>
+                    <dd className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                      {item.answer}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          )}
 
           {article.sources && article.sources.length > 0 && (
             <section className="mb-12">
