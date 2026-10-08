@@ -15,7 +15,8 @@ import {
   BarChart3,
   Minus,
 } from 'lucide-react'
-import { A, Button, Container, CtaBand, Eyebrow, Faq, H2, Img, Lead, Section } from '../components/ui'
+import { A, Button, Container, CtaBand, Eyebrow, Faq, H2, Img, Lead, Section, Zoomable } from '../components/ui'
+import { getImageAlt } from '../content/imageAlt'
 import { PricingCards } from '../components/PricingCards'
 import { useCases } from '../content/usecases'
 import { HOME_FAQ } from '../data/faq'
@@ -277,25 +278,26 @@ export default function Home() {
         </div>
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {useCases.slice(0, 6).map((uc) => (
-            <A
+            <div
               key={uc.slug}
-              to={`/use-cases/${uc.slug}`}
-              className="group overflow-hidden rounded-2xl border border-slate-200 bg-white transition-shadow hover:shadow-md"
+              className="overflow-hidden rounded-2xl border border-slate-200 bg-white transition-shadow hover:shadow-md"
             >
-              <img
-                src={`${import.meta.env.BASE_URL}${uc.image.replace(/^\//, '')}`}
-                alt=""
-                width={1536}
-                height={1024}
-                loading="lazy"
-                decoding="async"
-                className="aspect-[3/2] w-full bg-slate-100 object-cover"
-              />
-              <div className="p-6">
+              <Zoomable src={uc.image} alt={getImageAlt(uc.image)}>
+                <img
+                  src={`${import.meta.env.BASE_URL}${uc.image.replace(/^\//, '')}`}
+                  alt=""
+                  width={1536}
+                  height={1024}
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-[3/2] w-full bg-slate-100 object-cover"
+                />
+              </Zoomable>
+              <A to={`/use-cases/${uc.slug}`} className="group block p-6">
                 <h3 className="font-semibold text-slate-900 group-hover:text-blue-700">{uc.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-slate-600">{uc.subheadline}</p>
-              </div>
-            </A>
+              </A>
+            </div>
           ))}
         </div>
       </Section>

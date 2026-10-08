@@ -1,4 +1,5 @@
-import { A, Breadcrumbs, CtaBand, Eyebrow, Lead, Section } from '../components/ui'
+import { A, Breadcrumbs, CtaBand, Eyebrow, Lead, Section, Zoomable } from '../components/ui'
+import { getImageAlt } from '../content/imageAlt'
 import { useCases } from '../content/usecases'
 import { href } from '../site'
 
@@ -22,26 +23,28 @@ export default function UseCases() {
       <Section>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {useCases.map((uc) => (
-            <A
+            <div
               key={uc.slug}
-              to={`/use-cases/${uc.slug}`}
-              className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition-shadow hover:shadow-md"
+              className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition-shadow hover:shadow-md"
             >
-              <img
-                src={href(uc.image)}
-                alt=""
-                width={1536}
-                height={1024}
-                loading="lazy"
-                decoding="async"
-                className="aspect-[3/2] w-full bg-slate-100 object-cover"
-              />
-              <div className="flex flex-1 flex-col p-6">
+              {/* The picture enlarges on click; the text below leads to the use case page. */}
+              <Zoomable src={uc.image} alt={getImageAlt(uc.image)}>
+                <img
+                  src={href(uc.image)}
+                  alt=""
+                  width={1536}
+                  height={1024}
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-[3/2] w-full bg-slate-100 object-cover"
+                />
+              </Zoomable>
+              <A to={`/use-cases/${uc.slug}`} className="group flex flex-1 flex-col p-6">
                 <h2 className="text-lg font-semibold text-slate-900 group-hover:text-blue-700">{uc.title}</h2>
                 <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">{uc.subheadline}</p>
                 <p className="mt-4 text-xs font-medium uppercase tracking-wider text-slate-500">For: {uc.audience}</p>
-              </div>
-            </A>
+              </A>
+            </div>
           ))}
         </div>
       </Section>
