@@ -18,6 +18,11 @@
  *   ORDER_EMAIL_FROM    envelope sender                 (default: noreply@<host>)
  *   TELEGRAM_BOT_TOKEN  optional duplicate notification
  *   TELEGRAM_CHAT_ID    optional duplicate notification
+ *   ORDER_CONTACT_EMAIL address shown to visitors in errors (default: hello@ideav.pro)
+ *
+ * Besides the visible fields the form sends `source` (which form), `page` and
+ * `utm` (campaign attribution captured on the landing page: utm_*, click ids,
+ * landing page, referrer). They are copied into the notification as-is.
  */
 
 header('Content-Type: application/json');
@@ -70,6 +75,17 @@ $email   = trim((string) ($data['email'] ?? ''));
 $company = trim((string) ($data['company'] ?? ''));
 $task    = trim((string) ($data['task'] ?? ''));
 $trap    = trim((string) ($data['website'] ?? ''));
+$source  = mb_substr(trim((string) ($data['source'] ?? '')), 0, 50);
+$page    = mb_substr(trim((string) ($data['page'] ?? '')), 0, 200);
+$utm     = [];
+if (isset($data['utm']) && is_array($data['utm'])) {
+    foreach ($data['utm'] as $k => $v) {
+        $k = preg_replace('/[^a-z_]/', '', strtolower((string) $k));
+        if ($k !== '' && is_scalar($v) && count($utm) < 12) {
+            $utm[$k] = mb_substr(trim((string) $v), 0, 300);
+        }
+    }
+}
 
 // Honeypot: a real visitor never sees this field, so anything in it is a bot.
 // Answer with success so the bot has nothing to learn from the response.
@@ -114,7 +130,13 @@ $lines = [
     '',
     'Task:',
     $task,
+    '',
+    'Form:    ' . ($source !== '' ? $source : '—'),
+    'Page:    ' . ($page !== '' ? $page : '—'),
 ];
+foreach ($utm as $k => $v) {
+    $lines[] = str_pad($k . ':', 9) . $v;
+}
 $body = implode("\n", $lines);
 
 $sent = false;
@@ -148,7 +170,7 @@ if ($token !== null && $chatId !== null) {
 if (!$sent) {
     // The message is lost otherwise — say so instead of showing a fake success.
     error_log('order.php: no delivery channel configured or delivery failed');
-    order_respond(500, ['ok' => false, 'error' => 'We could not deliver your message. Please email abc@integram.io directly.']);
+    order_respond(500, ['ok' => false, 'error' => 'We could not deliver your message. Please email ' . order_config('ORDER_CONTACT_EMAIL', 'hello@ideav.pro') . ' directly.']);
 }
 
 order_respond(200, ['ok' => true]);

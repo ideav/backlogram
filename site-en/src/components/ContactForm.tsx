@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { CONTACT_EMAIL, href } from '../site'
+import { trackLead } from '../lib/analytics'
+import { readUtm } from '../lib/utm'
 
 type FormState = 'idle' | 'sending' | 'success' | 'error'
 
@@ -7,11 +10,11 @@ type FormState = 'idle' | 'sending' | 'success' | 'error'
 const ENDPOINT = `${import.meta.env.BASE_URL}order.php`
 
 /**
- * The only conversion point on the site. There is no sign-up and no login: a
- * visitor can ask us to get in touch, nothing else (issue #524). The form posts
- * to `order.php`, which lives in `site-en/public/`.
+ * "Book a demo" / "build it for me" lead form. Posts JSON to `order.php`
+ * (site-en/public). Campaign attribution (UTM, click ids, landing page) is
+ * attached from sessionStorage, and a successful submit fires the `lead` goal.
  */
-export function ContactForm() {
+export function ContactForm({ source = 'contact' }: { source?: string }) {
   const [state, setState] = useState<FormState>('idle')
   const [error, setError] = useState('')
   const [consent, setConsent] = useState(false)
@@ -19,13 +22,17 @@ export function ContactForm() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const form = e.currentTarget
+    const field = (name: string) => (form.elements.namedItem(name) as HTMLInputElement | null)?.value ?? ''
     const payload = {
-      name: (form.elements.namedItem('name') as HTMLInputElement).value,
-      email: (form.elements.namedItem('email') as HTMLInputElement).value,
-      company: (form.elements.namedItem('company') as HTMLInputElement).value,
-      task: (form.elements.namedItem('task') as HTMLTextAreaElement).value,
+      name: field('name'),
+      email: field('email'),
+      company: field('company'),
+      task: field('task'),
       // Honeypot: bots fill every field they see, people never see this one.
-      website: (form.elements.namedItem('website') as HTMLInputElement).value,
+      website: field('website'),
+      source,
+      page: window.location.pathname,
+      utm: readUtm(),
     }
 
     setState('sending')
@@ -40,6 +47,7 @@ export function ContactForm() {
       const json = await res.json()
       if (json.ok) {
         setState('success')
+        trackLead(`form-${source}`)
         form.reset()
         setConsent(false)
       } else {
@@ -54,13 +62,13 @@ export function ContactForm() {
 
   if (state === 'success') {
     return (
-      <div className="rounded-2xl border border-blue-200 bg-blue-50 p-8 text-center">
-        <h3 className="text-xl font-semibold text-slate-900">Thank you — the request is in.</h3>
+      <div role="status" className="rounded-2xl border border-blue-200 bg-blue-50 p-8 text-center">
+        <h3 className="text-xl font-semibold text-slate-900">Thanks, your request is in.</h3>
         <p className="mt-3 text-slate-600">
-          We read every message ourselves and normally reply within one business day. If it is
+          A person from our team will reply within one business day with a few time slots for a call. If it is
           urgent, write to{' '}
-          <a className="font-medium text-blue-600 hover:underline" href="mailto:abc@integram.io">
-            abc@integram.io
+          <a className="font-medium text-blue-700 hover:underline" href={`mailto:${CONTACT_EMAIL}`}>
+            {CONTACT_EMAIL}
           </a>
           .
         </p>
@@ -72,17 +80,17 @@ export function ContactForm() {
     'w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20'
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" noValidate={false}>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-slate-700">
             Your name
           </label>
-          <input id="name" name="name" type="text" required autoComplete="name" className={inputClass} />
+          <input id="name" name="name" type="text" required maxLength={200} autoComplete="name" className={inputClass} />
         </div>
         <div>
           <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700">
-            Email
+            Work email
           </label>
           <input
             id="email"
@@ -98,26 +106,27 @@ export function ContactForm() {
 
       <div>
         <label htmlFor="company" className="mb-1.5 block text-sm font-medium text-slate-700">
-          Company <span className="font-normal text-slate-400">— optional</span>
+          Company <span className="font-normal text-slate-500">(optional)</span>
         </label>
-        <input id="company" name="company" type="text" autoComplete="organization" className={inputClass} />
+        <input id="company" name="company" type="text" maxLength={200} autoComplete="organization" className={inputClass} />
       </div>
 
       <div>
         <label htmlFor="task" className="mb-1.5 block text-sm font-medium text-slate-700">
-          What are you trying to get out of a spreadsheet?
+          What should the app do?
         </label>
         <textarea
           id="task"
           name="task"
           rows={5}
           required
-          placeholder="For example: five people edit the same stock file, nobody knows which copy is current, and the monthly report is assembled by hand."
+          maxLength={5000}
+          placeholder="For example: five people edit the same stock spreadsheet, nobody knows which copy is current, and the monthly report takes a day to build."
           className={inputClass}
         />
       </div>
 
-      {/* Honeypot — hidden from people, tempting to bots. */}
+      {/* Honeypot: hidden from people, tempting to bots. */}
       <div className="hidden" aria-hidden="true">
         <label htmlFor="website">Website</label>
         <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
@@ -132,16 +141,18 @@ export function ContactForm() {
           className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
         />
         <span>
-          I agree that Integram may store what I send here in order to reply. See{' '}
-          <a href="#privacy" className="font-medium text-blue-600 hover:underline">
-            how we handle it
+          I agree that Integram may store this information to reply to me, as described in the{' '}
+          <a href={href('/privacy')} className="font-medium text-blue-700 hover:underline">
+            Privacy Policy
           </a>
           .
         </span>
       </label>
 
       {state === 'error' && (
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+        <p role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </p>
       )}
 
       <button
@@ -149,11 +160,11 @@ export function ContactForm() {
         disabled={state === 'sending' || !consent}
         className="w-full rounded-lg bg-blue-600 px-6 py-3.5 font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300"
       >
-        {state === 'sending' ? 'Sending…' : 'Ask us to get in touch'}
+        {state === 'sending' ? 'Sending…' : 'Book a demo'}
       </button>
 
-      <p className="text-center text-xs text-slate-400">
-        No account, no credit card, no automated sales sequence — a person reads it and answers.
+      <p className="text-center text-xs text-slate-500">
+        A person reads every request. No newsletter, no automated sales sequence.
       </p>
     </form>
   )

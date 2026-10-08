@@ -51,15 +51,60 @@ test('the English entry page declares English and no Russian analytics', () => {
 
 // The site can be deployed to a web root or to a language subfolder (/en/,
 // /cn/, /pt/ …). Anything that spells out an absolute path or URL must be
-// derived from SITE_BASE/SITE_URL at build time, never hard-coded.
-test('canonical and OpenGraph URLs are filled in at build time', () => {
+// derived from SITE_BASE/SITE_URL at build time, never hard-coded. Since the
+// site became multi-page (#528), the head of every page is injected by the
+// prerender step, so the template only carries placeholders.
+test('the page template leaves the head and body to the prerender step', () => {
   const html = readFileSync(join(siteEn, 'index.html'), 'utf8')
-  assert.match(html, /<link rel="canonical" href="\{\{CANONICAL\}\}" \/>/)
-  assert.match(html, /<meta property="og:url" content="\{\{CANONICAL\}\}" \/>/)
-  assert.ok(
-    !/(canonical|og:url)[^>]*ideav\.pro/.test(html),
-    'the deploy URL must come from SITE_URL/SITE_BASE, not from the markup',
-  )
+  assert.match(html, /<!--app-head-->/)
+  assert.match(html, /<div id="root"><!--app-html--><\/div>/)
+  assert.ok(!/rel="canonical"[^>]*ideav\.pro/.test(html), 'canonical must come from SITE_URL/SITE_BASE')
+  assert.ok(!/<link[^>]+hreflang/i.test(html), 'no hreflang: the English site is not an alternate of another site')
+})
+
+test('every contract route is routed and prerendered with its own meta', () => {
+  const match = readFileSync(join(siteEn, 'src/match.ts'), 'utf8')
+  const routes = readFileSync(join(siteEn, 'src/routes.ts'), 'utf8')
+  for (const p of ['/', '/pricing', '/excel-to-app', '/ai', '/use-cases', '/knowledge-base', '/contact']) {
+    assert.ok(match.includes(`'${p}':`), `match.ts must route ${p}`)
+    assert.ok(routes.includes(`path: '${p}'`), `routes.ts must describe ${p}`)
+  }
+  assert.match(match, /compare\\\/\(airtable\|smartsheet\|notion\)/)
+  assert.match(match, /\(terms\|privacy\|cookies\)/)
+  // Dynamic routes come from the content modules, so new articles/use cases
+  // automatically get a page and a sitemap entry.
+  assert.match(routes, /articles\.map/)
+  assert.match(routes, /useCases\.map/)
+  const config = readFileSync(join(siteEn, 'vite.config.ts'), 'utf8')
+  for (const f of ['robots.txt', 'sitemap.xml', 'llms.txt']) assert.ok(config.includes(`'${f}'`), `build must write ${f}`)
+})
+
+test('content modules follow the shared contract', () => {
+  const types = readFileSync(join(siteEn, 'src/content/types.ts'), 'utf8')
+  for (const name of ['Block', 'KbArticle', 'UseCase']) assert.match(types, new RegExp(`interface ${name}\\b`))
+  assert.match(readFileSync(join(siteEn, 'src/content/kb/index.ts'), 'utf8'), /export const articles: KbArticle\[\]/)
+  assert.match(readFileSync(join(siteEn, 'src/content/usecases/index.ts'), 'utf8'), /export const useCases: UseCase\[\]/)
+  const blocks = readFileSync(join(siteEn, 'src/components/Blocks.tsx'), 'utf8')
+  for (const t of ['h2', 'h3', 'p', 'ul', 'ol', 'quote', 'code', 'callout']) {
+    assert.ok(blocks.includes(`case '${t}':`), `Blocks renderer must handle ${t}`)
+  }
+})
+
+test('analytics loads only after opt-in consent and records leads with UTM', () => {
+  const analytics = readFileSync(join(siteEn, 'src/lib/analytics.ts'), 'utf8')
+  assert.match(analytics, /if \(readConsent\(\) !== 'granted'\) return/, 'script injection must be gated by consent')
+  assert.match(analytics, /VITE_PLAUSIBLE_DOMAIN/, 'analytics domain must be configurable at build time')
+  const html = readFileSync(join(siteEn, 'index.html'), 'utf8')
+  assert.ok(!/plausible|googletagmanager|gtag\(/i.test(html), 'no analytics script in the static template')
+  const form = readFileSync(join(siteEn, 'src/components/ContactForm.tsx'), 'utf8')
+  assert.match(form, /utm: readUtm\(\)/)
+  assert.match(form, /trackLead\(/)
+})
+
+test('legal pages leave the operating entity as explicit placeholders', () => {
+  const legal = readFileSync(join(siteEn, 'src/data/legal.ts'), 'utf8')
+  assert.match(legal, /\[Legal entity name\]/)
+  assert.match(legal, /\[Governing law\]/)
 })
 
 test('the form posts relative to the deployment base', () => {
