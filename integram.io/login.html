@@ -88,14 +88,10 @@ a {
             </form>
             <form class="reset-pwd" style="display:none;" onsubmit="event.returnValue=false;event.preventDefault();resetPWD()">
                 <h5 class="card-title text-center mb-4 fw-light fs-4"><t9n>[RU]Сброс пароля[EN]Password reset</t9n></h5>
-                <p><t9n>[RU]Введите название базы данных (это поле можно оставить пустым) и имя или email пользователя, а мы пришлем вам новый пароль.[EN]Please enter the instance name (you may leave it blank) and your login or email to let us send you the new password.</t9n></p>
+                <p><t9n>[RU]Введите имя или email пользователя, а мы пришлем вам новый пароль. Базу можно не указывать&nbsp;&mdash; тогда придёт пароль от личного кабинета.[EN]Please enter your login or email to let us send you the new password. The database is optional&nbsp;&mdash; leave it blank to get the password to your personal space.</t9n></p>
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control t9n" id="dbReset" name="db" value="" placeholder="<t9n>Database</t9n>">
-                    <label for="dbReset"><t9n>[RU]База[EN]Database</t9n></label>
-                    <div class="invalid-feedback">
-                        <t9n>[RU]Для сброса пароля ЛК укажите[EN]To reset your private space password set</t9n>
-                            <a onclick="$('#dbReset').val('my').removeClass('is-invalid')" style="border-bottom: 1px dotted;">my</a>
-                    </div>
+                    <label for="dbReset"><t9n>[RU]База (можно не указывать)[EN]Database (optional)</t9n></label>
                 </div>
                 <div class="form-floating mb-3">
                     <input type="login" class="form-control t9n" id="reset" name="login" value="" placeholder="<t9n>[RU]Логин / email[EN]User / Email</t9n>">
@@ -268,16 +264,45 @@ function changePwd(i){
         return;
     intApi('POST',$('#dbc').val()+'/auth?JSON','change',gatherInput('change'));
 }
+// #691: базу при сбросе можно не указывать или ввести любую. Если такой базы у
+// пользователя нет, пароль высылается от личного кабинета (my), а имя базы
+// запоминается — ЛК при входе предложит её создать.
+var WANTED_DB_KEY='integram_wanted_db';
 function resetPWD(){
     $('input').removeClass('is-invalid');
-    if($('#dbReset').val()=='')
-        $('#dbReset').addClass('is-invalid');
-    if($('#reset').val()=='')
+    $('.reset-alert').hide();
+    if($('#reset').val().trim()=='')
         $('#reset').addClass('is-invalid');
     if($('.is-invalid').length>0)
         return;
-    intApi('POST',$('#dbReset').val()+'/auth?JSON&reset','reset',gatherInput('reset-pwd'));
-    $('.btn-reset').attr('disabled',false);
+    sendReset($('#dbReset').val().trim()||'my');
+}
+function sendReset(resetDb,wantedDb){
+    $('#dbReset').val(resetDb);
+    $('.btn-reset').attr('disabled',true);
+    intApi('POST',encodeURIComponent(resetDb)+'/auth?JSON&reset','reset',gatherInput('reset-pwd'),wantedDb);
+}
+// Базы нет вовсе (dBNotExists, 404 или «Invalid database» не-JSON-ом) либо
+// пользователя нет в этой базе (WRONG_DB, WRONG_CONT) — пробуем личный кабинет.
+function noSuchDbForUser(json){
+    if(json===undefined||Array.isArray(json))
+        return true;
+    return ':dBNotExists:WRONG_DB:WRONG_CONT:'.indexOf(':'+json.message+':')!==-1;
+}
+function rememberWantedDb(name){
+    try{
+        if(name)
+            localStorage.setItem(WANTED_DB_KEY,name);
+        else
+            localStorage.removeItem(WANTED_DB_KEY);
+    }
+    catch(e){}
+}
+function replyText(json){
+    if(json===undefined)
+        return t9n('[RU]Не удалось сбросить пароль[EN]Failed to reset the password');
+    var msg=Array.isArray(json)?(json[0]&&json[0].error):json.details;
+    return String(msg||json.message||'').replace(/ ?\[.+\]/,'');
 }
 function logIn(){
     $('.wrong-pwd').hide();
@@ -388,14 +413,32 @@ function intApi(m,u,b,vars,index){
                 break;
                 
             case 'reset':
-                if(':NEW_PWD:MAIL:SMS:'.indexOf(json.message)===-1){
+                // index — имя базы, которой не нашлось (задано при повторе в my)
+                var resetDb=$('#dbReset').val();
+                if(json===undefined||Array.isArray(json)||':NEW_PWD:MAIL:SMS:'.indexOf(':'+json.message+':')===-1){
+                    if(resetDb!=='my'&&noSuchDbForUser(json)){
+                        sendReset('my',resetDb);
+                        return;
+                    }
+                    if(index)
+                        $('#dbReset').val(index);
                     $('.reset-alert').removeClass('alert-success').addClass('alert-danger');
                     $('.btn-reset').attr('disabled',false);
-                    $('.reset-alert').html(json.details.replace(/ ?\[.+\]/,'')).show();
+                    $('.reset-alert').html(replyText(json)).show();
                 }
                 else{
+                    var h=replyText(json);
+                    rememberWantedDb(index);
+                    if(index){
+                        h=t9n('[RU]Базы «'+$('<div>').text(index).html()+'» у вас нет, поэтому прислали пароль от личного кабинета.'
+                            +' Войдите в него&nbsp;&mdash; и мы предложим создать эту базу.'
+                            +'[EN]You have no «'+$('<div>').text(index).html()+'» database, so we sent the password to your personal space.'
+                            +' Sign in there and we will offer to create this database.')+'<br />'+h;
+                        $('#db').val('my');
+                    }
                     $('.reset-alert').addClass('alert-success').removeClass('alert-danger');
-                    $('.login-alert').html(json.details.replace(/ ?\[.+\]/,'')).show();
+                    $('.btn-reset').attr('disabled',false);
+                    $('.login-alert').html(h).show();
                     toggleReset();
                     $('#pwd').focus().select();
                 }
