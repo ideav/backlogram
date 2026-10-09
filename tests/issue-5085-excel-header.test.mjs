@@ -59,7 +59,8 @@ test('якорь «Как это происходит» существует: с
 
 test('остальные цели меню существовали до этого и не переехали', () => {
   assert.match(read('../site-excel/src/Cases.tsx'), /id="keysy"/)
-  assert.match(read('../site-excel/src/Faq.tsx'), /id="voprosy"/)
+  // С issue #738 id — параметр (у кейсов свой блок вопросов), главная берёт значение по умолчанию.
+  assert.match(read('../site-excel/src/Faq.tsx'), /id = 'voprosy'/)
 })
 
 test('«Контакты» ведут в подвал: id и запас под липкую шапку', () => {

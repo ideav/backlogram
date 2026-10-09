@@ -808,6 +808,15 @@ export default function Landing() {
             </a>{' '}
             за {PRAKTIKUM.price} — что нужно уметь и как проходит час.
           </p>
+          {/* Посадочная о демонстрации (issue #738): без ссылки с главной она была
+              сиротой — краулер находил её только через sitemap. */}
+          <p className="mt-2 text-sm text-slate-600">
+            Что именно агент соберёт за 45 минут и что вы получите на выходе —{' '}
+            <a href={`${SITE_BASE}mgnovennyj-start/`} className="text-blue-600 font-medium hover:underline">
+              «Мгновенный старт с ИИ: приложение из Excel за 45 минут»
+            </a>
+            .
+          </p>
         </section>
 
         {/* Скрины результата */}

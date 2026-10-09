@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { ArrowRight, MessageSquare } from 'lucide-react'
 import { SiteFooter, SiteHeader } from '../Chrome'
-import { TELEGRAM_BOT_URL } from '../content'
+import { TELEGRAM_BOT_URL, type PageDates } from '../content'
 import { SITE_BASE } from '../site-base'
 
 /**
@@ -19,6 +19,9 @@ import { SITE_BASE } from '../site-base'
  *
  * `cta` заменяет нижний блок призыва, когда странице нужен свой: у практикума
  * (issue #659) кнопка ведёт на ту же форму, но с выбранным «практикумом».
+ *
+ * `dates` — строка «Опубликовано · обновлено» под врезкой (issue #738): та же
+ * дата, что в JSON-LD и sitemap, видна и читателю, и модели в тексте.
  */
 export function StaticPage({
   breadcrumb,
@@ -27,6 +30,7 @@ export function StaticPage({
   children,
   cta,
   hero,
+  dates,
 }: {
   breadcrumb: { href: string; title: string }[]
   h1: string
@@ -35,6 +39,7 @@ export function StaticPage({
   cta?: ReactNode
   /** Свой hero вместо стандартного (страницы рекрутинга, issue #671). */
   hero?: ReactNode
+  dates?: PageDates
 }) {
   return (
     <div className="min-h-screen bg-white text-slate-900">
@@ -58,6 +63,16 @@ export function StaticPage({
               </nav>
               <h1 className="mt-5 text-3xl sm:text-4xl font-bold tracking-tight leading-tight">{h1}</h1>
               <p className="mt-5 text-lg text-slate-600 leading-relaxed max-w-3xl">{lead}</p>
+              {dates && (
+                <p className="mt-4 text-sm text-slate-500">
+                  Опубликовано <time dateTime={dates.published}>{formatDate(dates.published)}</time>
+                  {dates.updated !== dates.published && (
+                    <>
+                      {' · '}обновлено <time dateTime={dates.updated}>{formatDate(dates.updated)}</time>
+                    </>
+                  )}
+                </p>
+              )}
             </div>
           </section>
         )}
@@ -111,4 +126,12 @@ export function StaticPage({
       <SiteFooter />
     </div>
   )
+}
+
+const MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
+
+/** `2026-10-09` → «9 октября 2026». Без Intl: снимок не должен зависеть от ICU сборочной машины. */
+function formatDate(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number)
+  return `${d} ${MONTHS[m - 1]} ${y}`
 }

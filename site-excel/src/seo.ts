@@ -9,11 +9,39 @@
  * `scripts/prerender-site-excel.mjs` (страницы кейсов и сравнения). Поэтому
  * здесь, как и в content.ts, не должно быть ни React, ни браузерных API.
  */
-import { ADEPT, CASES, COMPARE_PAGE, CONTACT_EMAIL, FAQ, PARTNER, PRAKTIKUM, PRICING_GROUPS, type Case, type Landing } from './content'
+import {
+  ADEPT,
+  CASES,
+  COMPARE_PAGE,
+  CONTACT_EMAIL,
+  FAQ,
+  HOME_DATES,
+  PAGES,
+  PARTNER,
+  PRAKTIKUM,
+  PRICING_GROUPS,
+  type Case,
+  type Landing,
+  type PageDates,
+} from './content'
 
 const ORG_NAME = 'АО «Интеграм»'
 const ORG_SITE = 'https://ideav.ru/'
 const SERVICE_NAME = 'Приложение из Excel-таблицы за 45 минут'
+
+/**
+ * Профили той же организации в других местах (issue #738): по `sameAs` ИИ и
+ * поисковик склеивают «Интеграм» с excel-to-app.ru, ideav.ru и реестровой
+ * записью в одну сущность. Список — тот же, что у ideav.ru
+ * (scripts/prerender-landing.mjs), плюс сам ideav.ru.
+ */
+const ORG_SAME_AS = [
+  'https://ideav.ru/',
+  'https://integram.io',
+  'https://reestr.digital.gov.ru/reestr/4638631/',
+  'https://rutube.ru/channel/41204904/videos/',
+  'https://ideav.ru/blog/',
+]
 
 /** `https://excel-to-app.ru/` → `https://excel-to-app.ru`. */
 function origin(canonical: string): string {
@@ -29,8 +57,14 @@ function organization(canonical: string): Record<string, unknown> {
     '@type': 'Organization',
     '@id': organizationId(canonical),
     name: ORG_NAME,
-    alternateName: 'Интеграм',
+    legalName: ORG_NAME,
+    // «Конструктор Интеграм» и описание — чтобы бренд не «исправляли» на «инстаграм»
+    // (так же на ideav.ru, issue #387).
+    alternateName: ['Интеграм', 'Integram', 'Конструктор Интеграм'],
+    description:
+      'Интеграм — российская платформа для бизнес-приложений и баз данных (не социальная сеть). ИИ-агент собирает из рабочих таблиц Excel веб-приложение с формами, правами доступа и отчётами.',
     url: ORG_SITE,
+    sameAs: ORG_SAME_AS,
     email: CONTACT_EMAIL,
     // ИНН и ОГРН — те же, что в подвале сайта (ч. 2 ст. 18.1 152-ФЗ).
     taxID: '9716002710',
@@ -113,6 +147,11 @@ function faqPage(canonical: string): Record<string, unknown> {
   }
 }
 
+/** `datePublished`/`dateModified` из дат страницы (issue #738). */
+function dates(page: PageDates): Record<string, string> {
+  return { datePublished: page.published, dateModified: page.updated }
+}
+
 function breadcrumbs(items: { name: string; item: string }[]): Record<string, unknown> {
   return {
     '@type': 'BreadcrumbList',
@@ -141,13 +180,30 @@ export function landingJsonLd(canonical: string): Record<string, unknown>[] {
         'ИИ-агент Интеграма строит из рабочих таблиц Excel веб-приложение с формами, ролями, правами доступа, отчётами и графиками. Демонстрация на ваших данных — бесплатно, примерно за 45 минут.',
       offers: offers(canonical),
     },
+    {
+      '@type': 'WebPage',
+      '@id': canonical,
+      url: canonical,
+      name: PAGES[0].title,
+      description: PAGES[0].description,
+      inLanguage: 'ru-RU',
+      about: { '@id': `${canonical}#service` },
+      publisher: { '@id': organizationId(canonical) },
+      ...dates(HOME_DATES),
+    },
     faqPage(canonical),
   ]
 }
 
-/** Страница кейса: WebPage со ссылкой на услугу и хлебные крошки. */
+/**
+ * Страница кейса: WebPage с крошками, `Article` с датами и автором и
+ * `FAQPage` из вопросов кейса (issue #738). Кейс — готовый ответ на запрос
+ * «как сделать X из Excel», и тип `Article` с датой ИИ-поиск берёт в источники
+ * охотнее, чем безымянный `WebPage`.
+ */
 export function caseJsonLd(canonical: string, item: Case): Record<string, unknown>[] {
   const url = `${canonical}keysy/${item.slug}/`
+  const images = (item.screens ?? []).map(shot => `${canonical}${shot.src}`)
   return [
     organization(canonical),
     {
@@ -160,12 +216,37 @@ export function caseJsonLd(canonical: string, item: Case): Record<string, unknow
       isPartOf: { '@id': canonical },
       about: { '@id': `${canonical}#service` },
       publisher: { '@id': organizationId(canonical) },
-      primaryImageOfPage: item.screens?.[0] ? `${canonical}${item.screens[0].src}` : undefined,
+      primaryImageOfPage: images[0],
+      mainEntity: { '@id': `${url}#article` },
+      ...dates(item),
       breadcrumb: breadcrumbs([
         { name: 'Excel → приложение', item: canonical },
         { name: 'Кейсы', item: `${canonical}#keysy` },
         { name: item.client, item: url },
       ]),
+    },
+    {
+      '@type': 'Article',
+      '@id': `${url}#article`,
+      headline: item.pageTitle,
+      description: item.pageDescription,
+      url,
+      inLanguage: 'ru-RU',
+      mainEntityOfPage: { '@id': url },
+      about: [{ '@id': `${canonical}#service` }, { '@type': 'Thing', name: item.industry }],
+      author: { '@id': organizationId(canonical) },
+      publisher: { '@id': organizationId(canonical) },
+      image: images.length > 0 ? images : undefined,
+      ...dates(item),
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${url}#faq`,
+      mainEntity: item.faq.map(({ q, a }) => ({
+        '@type': 'Question',
+        name: q,
+        acceptedAnswer: { '@type': 'Answer', text: a },
+      })),
     },
   ]
 }
@@ -185,6 +266,7 @@ export function compareJsonLd(canonical: string): Record<string, unknown>[] {
       isPartOf: { '@id': canonical },
       about: { '@id': `${canonical}#service` },
       publisher: { '@id': organizationId(canonical) },
+      ...dates(COMPARE_PAGE),
       mentions: CASES.map(item => ({
         '@type': 'WebPage',
         name: item.pageTitle,
@@ -220,6 +302,7 @@ export function landingPageJsonLd(
       isPartOf: { '@id': canonical },
       about: { '@id': `${canonical}#service` },
       publisher: { '@id': organizationId(canonical) },
+      ...dates(page),
       breadcrumb: breadcrumbs([
         { name: 'Excel → приложение', item: canonical },
         { name: page.crumb, item: url },
@@ -283,6 +366,7 @@ export function praktikumJsonLd(canonical: string): Record<string, unknown>[] {
       isPartOf: { '@id': canonical },
       about: { '@id': `${url}#course` },
       publisher: { '@id': organizationId(canonical) },
+      ...dates(PRAKTIKUM),
       breadcrumb: breadcrumbs([
         { name: 'Excel → приложение', item: canonical },
         { name: 'Практикум', item: url },
@@ -309,6 +393,7 @@ export function programJsonLd(canonical: string, program: typeof ADEPT | typeof 
       inLanguage: 'ru-RU',
       isPartOf: { '@id': canonical },
       publisher: { '@id': organizationId(canonical) },
+      ...dates(program),
       breadcrumb: breadcrumbs([
         { name: 'Excel → приложение', item: canonical },
         { name: program.crumb, item: url },

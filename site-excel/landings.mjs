@@ -128,6 +128,13 @@ export function validateLandings(pages, existing = [], publicDir = PUBLIC_DIR) {
     }
     need('group', v => Object.hasOwn(GROUPS, v), `одна из групп: ${Object.keys(GROUPS).join(', ')}`)
     for (const f of ['query', 'title', 'description', 'h1', 'lead', 'crumb']) need(f, str, 'обязательное поле')
+    // Даты (issue #738): lastmod в sitemap и dateModified в JSON-LD.
+    const day = v => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(v))
+    need('published', day, 'дата публикации YYYY-MM-DD')
+    need('updated', day, 'дата обновления YYYY-MM-DD')
+    if (day(page.published) && day(page.updated) && page.updated < page.published) {
+      fail(page, 'updated раньше published')
+    }
     for (const f of ['title', 'description', 'h1']) {
       if (str(page[f]) && page[f].length > LIMITS[f]) {
         fail(page, `${f} длиннее ${LIMITS[f]} символов (${page[f].length})`)
