@@ -128,7 +128,9 @@ test('JSON-LD: организация, услуга с ценами и вопр�
 })
 
 test('вопросы на странице и в разметке — из одного массива', () => {
-  assert.match(faq, /FAQ\.map\(\(\{ q, a \}\)/)
+  // С issue #738 блок принимает свои вопросы (кейсы); по умолчанию — FAQ главной.
+  assert.match(faq, /items = FAQ,/)
+  assert.match(faq, /items\.map\(\(\{ q, a \}\)/)
   assert.match(landing, /<Faq \/>/)
   assert.match(seo, /mainEntity: FAQ\.map/)
   assert.ok((content.match(/^\s{4}q: '/gm) ?? []).length >= 5, 'вопросов должно быть больше горстки')

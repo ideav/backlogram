@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react'
 import { ArrowUpRight, Check, Copy, Mail, Phone, Send } from 'lucide-react'
 import {
+  ADEPT,
   CONTACT_EMAIL,
   CONTACT_PHONE,
   CONTACT_PHONE_HOURS,
   CONTACT_PHONE_HREF,
   CONTACT_TELEGRAM_URL,
+  PARTNER,
   PRIVACY_URL,
 } from './content'
 import { Logo } from './Logo'
+import { SITE_BASE } from './site-base'
 
 // Шапка и подвал — общие у лендинга и статических страниц кейсов и сравнения
 // (issue #626). Подвал несёт обязательную справку оператора персональных
@@ -216,7 +219,20 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <p className="mt-10 text-xs text-slate-400">© {new Date().getFullYear()} АО «Интеграм»</p>
+        {/* Адептам и партнёрам (issue #738): люди приходят туда по прямым ссылкам,
+            клиенту эти страницы не нужны — поэтому мелко, в строке копирайта,
+            лишь бы страницы не были сиротами для краулера. */}
+        <p className="mt-10 text-xs text-slate-400">
+          © {new Date().getFullYear()} АО «Интеграм»
+          {[ADEPT, PARTNER].map(program => (
+            <span key={program.slug}>
+              {' · '}
+              <a href={`${SITE_BASE}${program.slug}/`} className="hover:text-slate-200 hover:underline">
+                {program.crumb}
+              </a>
+            </span>
+          ))}
+        </p>
       </div>
     </footer>
   )

@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react'
 import { CaseBody } from '../Cases'
+import { Faq } from '../Faq'
 import { BLOG_POST_URL, CASES, COMPARE_PAGE, type Case } from '../content'
 import { SITE_BASE } from '../site-base'
 import { StaticPage } from './StaticPage'
@@ -22,6 +23,7 @@ export function CasePage({ item }: { item: Case }) {
       ]}
       h1={`${item.industry}: из Excel в приложение`}
       lead={item.lead}
+      dates={item}
     >
       <section className="max-w-5xl mx-auto px-4 sm:px-6 py-4">
         <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-8 shadow-sm">
@@ -29,6 +31,11 @@ export function CasePage({ item }: { item: Case }) {
           <h2 className="mt-1 text-xl sm:text-2xl font-bold">Что было в таблицах и что стало в приложении</h2>
           <CaseBody item={item} />
         </div>
+      </section>
+
+      <Faq items={item.faq} id="voprosy-keysa" title={`Вопросы о кейсе ${item.client}`} />
+
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 py-4">
 
         <p className="mt-8 text-sm text-slate-500">
           Как агент разбирает такие файлы на таблицы, связи и роли —{' '}

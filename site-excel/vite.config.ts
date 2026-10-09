@@ -60,6 +60,8 @@ const SITE_PAGES = [
     path: `/${page.slug}/`,
     title: page.title as string,
     description: page.description as string,
+    published: page.published as string,
+    updated: page.updated as string,
   })),
 ]
 
@@ -106,6 +108,7 @@ function deploymentMeta(): Plugin {
           ...SITE_PAGES.flatMap(page => [
             '  <url>',
             `    <loc>${absolute(page.path)}</loc>`,
+            `    <lastmod>${page.updated}</lastmod>`,
             '    <changefreq>monthly</changefreq>',
             `    <priority>${page.path === '/' ? '1.0' : '0.8'}</priority>`,
             '  </url>',
@@ -241,6 +244,15 @@ function htaccess(): string {
     '  # www.excel-to-app.ru → excel-to-app.ru одним 301 (SEO, issue #626).',
     '  RewriteCond %{HTTP_HOST} ^www\\.(.+)$ [NC]',
     '  RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]',
+    '',
+    '  # http → https одним 301 (issue #738). Такое правило есть и в <Directory>',
+    '  # хостинга, но RewriteEngine On в этом файле отменяет правила родителя,',
+    '  # и http://excel-to-app.ru/ отдавал 200 — две версии каждой страницы.',
+    '  # Только GET/HEAD: POST после редиректа потерял бы тело формы.',
+    '  RewriteCond %{HTTPS} off',
+    '  RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$',
+    '  RewriteCond %{REQUEST_URI} !^/\\.well-known/',
+    '  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]',
     '</IfModule>',
     '',
     '<IfModule mod_mime.c>',

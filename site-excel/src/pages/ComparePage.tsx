@@ -1,5 +1,5 @@
 import { CompareBody, FormulasNote } from '../HowItWorks'
-import { CASES, COMPARE_PAGE } from '../content'
+import { CASES, COMPARE_PAGE, COMPARE_TABLE } from '../content'
 import { SITE_BASE } from '../site-base'
 import { StaticPage } from './StaticPage'
 
@@ -9,6 +9,9 @@ import { StaticPage } from './StaticPage'
  *
  * Про чужие продукты здесь только общеизвестное и без цен: цены и состав
  * тарифов у них меняются, а страница живёт долго.
+ *
+ * Таблица (issue #738) — тот же смысл построчно: её ИИ-ответы на «чем
+ * отличается» цитируют охотнее, чем карточки.
  */
 export function ComparePage() {
   return (
@@ -16,10 +19,42 @@ export function ComparePage() {
       breadcrumb={[{ href: SITE_BASE, title: 'Excel → приложение' }]}
       h1="Приложение из Excel: Интеграм, Power Apps, Quickbase и конструкторы"
       lead={COMPARE_PAGE.lead}
+      dates={COMPARE_PAGE}
     >
       <section className="max-w-5xl mx-auto px-4 sm:px-6 py-4">
         <h2 className="text-2xl sm:text-3xl font-bold">Чем отличаются подходы</h2>
         <CompareBody />
+
+        <h2 className="mt-12 text-2xl sm:text-3xl font-bold">Сравнение по пунктам</h2>
+        <div className="mt-6 overflow-x-auto rounded-2xl border border-slate-200">
+          <table className="w-full min-w-[44rem] text-sm text-left">
+            <caption className="sr-only">
+              Приложение из Excel: Интеграм, Power Apps, Quickbase и конструкторы Glide, Softr, Adalo
+            </caption>
+            <thead className="bg-slate-50 text-slate-900">
+              <tr>
+                <th scope="col" className="p-3 font-semibold">Что сравниваем</th>
+                {COMPARE_TABLE.columns.map((name, i) => (
+                  <th key={name} scope="col" className={`p-3 font-semibold ${i === 0 ? 'text-blue-700' : ''}`}>
+                    {name}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {COMPARE_TABLE.rows.map(row => (
+                <tr key={row.feature} className="border-t border-slate-200 align-top">
+                  <th scope="row" className="p-3 font-medium text-slate-900">{row.feature}</th>
+                  {row.values.map((value, i) => (
+                    <td key={COMPARE_TABLE.columns[i]} className={`p-3 ${i === 0 ? 'bg-blue-50/60 text-slate-900' : 'text-slate-600'}`}>
+                      {value}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         <h2 className="mt-12 text-2xl sm:text-3xl font-bold">
           Что именно получается из таблицы на выходе
