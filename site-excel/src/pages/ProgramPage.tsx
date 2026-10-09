@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
 import { ArrowRight, BadgePercent, Check, GraduationCap, Handshake, Mail, MessageSquare, Server, Sparkles, Users, Wallet } from 'lucide-react'
 import { ADEPT, BUSINESS_MODEL, CONTACT_EMAIL, CONTACT_TELEGRAM_URL, PARTNER, PRAKTIKUM } from '../content'
 import { SITE_BASE } from '../site-base'
@@ -158,25 +159,27 @@ function ProgramCta({ program, other, otherNote }: { program: Program; other: Pr
         <p className="mt-4 text-slate-700 leading-relaxed max-w-2xl">
           Напишите пару строк о себе — ответим, расскажем подробности и договоримся об условиях.
         </p>
+        {/*
+          Второй этап (как у практикума, #668): кнопка лишь раскрывает блок,
+          ссылки заявки лежат в <template> и появляются в разметке только после
+          клика — скликиватель, жмущий всё подряд, до цели не доходит.
+          Без JS кнопки нет, ссылки — в <noscript>.
+        */}
         <div className="mt-8 flex flex-wrap gap-4">
-          <a
-            href={CONTACT_TELEGRAM_URL}
-            data-program-go="telegram"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg shadow-lg shadow-blue-600/20 transition-colors"
-          >
-            <MessageSquare size={20} />
-            Написать в телеграм
-          </a>
-          <a
-            href={mailto}
-            data-program-go="mail"
-            className="inline-flex items-center gap-2 px-7 py-4 rounded-xl border border-slate-300 bg-white text-slate-700 font-semibold text-lg hover:border-blue-500 hover:text-blue-600 transition-colors"
-          >
-            <Mail size={18} />
-            {CONTACT_EMAIL}
-          </a>
+          <button type="button" data-program-open="" hidden className="btn-primary px-7 py-4 text-lg">
+            Оставить заявку
+            <ArrowRight size={20} />
+          </button>
+          <div id="program-step2" className="w-full flex flex-wrap gap-4 empty:hidden" />
+          <template
+            id="program-step2-tpl"
+            dangerouslySetInnerHTML={{
+              __html: renderToStaticMarkup(<ContactLinks mailto={mailto} tracked />),
+            }}
+          />
+          <noscript>
+            <ContactLinks mailto={mailto} />
+          </noscript>
         </div>
         <p className="mt-6 text-sm text-slate-500 leading-relaxed max-w-2xl">
           {otherNote}{' '}
@@ -187,6 +190,36 @@ function ProgramCta({ program, other, otherNote }: { program: Program; other: Pr
         </p>
       </div>
     </section>
+  )
+}
+
+/**
+ * Ссылки заявки: телеграм и почта. `tracked` — помеченные [data-program-go]
+ * для цели `<slug>_click` (второй этап); в <noscript> без пометки — без JS цель
+ * всё равно не уходит.
+ */
+function ContactLinks({ mailto, tracked = false }: { mailto: string; tracked?: boolean }) {
+  return (
+    <>
+      <a
+        href={CONTACT_TELEGRAM_URL}
+        data-program-go={tracked ? 'telegram' : undefined}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg shadow-lg shadow-blue-600/20 transition-colors"
+      >
+        <MessageSquare size={20} />
+        Написать в телеграм
+      </a>
+      <a
+        href={mailto}
+        data-program-go={tracked ? 'mail' : undefined}
+        className="inline-flex items-center gap-2 px-7 py-4 rounded-xl border border-slate-300 bg-white text-slate-700 font-semibold text-lg hover:border-blue-500 hover:text-blue-600 transition-colors"
+      >
+        <Mail size={18} />
+        {CONTACT_EMAIL}
+      </a>
+    </>
   )
 }
 

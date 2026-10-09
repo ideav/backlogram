@@ -105,11 +105,22 @@ test('адептам подработка и обучение не минусу�
 })
 
 test('цель: ссылки заявки помечены, пререндер шлёт <slug>_click или <slug>_blocked', () => {
-  assert.ok(programPage.includes('data-program-go="telegram"'))
-  assert.ok(programPage.includes('data-program-go="mail"'))
+  assert.ok(programPage.includes("data-program-go={tracked ? 'telegram' : undefined}"))
+  assert.ok(programPage.includes("data-program-go={tracked ? 'mail' : undefined}"))
   assert.match(prerender, /page\.program \? .*programScript\(page\.program\)/)
   assert.match(prerender, /\(ok\?'_click':'_blocked'\)/)
   assert.match(prerender, /e\.isTrusted/)
   assert.match(prerender, /navigator\.webdriver/)
   assert.match(prerender, />=2500/)
+})
+
+test('ссылки заявки — второй этап: в <template>, до клика их в разметке нет', () => {
+  const cta = programPage.slice(programPage.indexOf('function ProgramCta'), programPage.indexOf('function ContactLinks'))
+  assert.match(cta, /data-program-open="" hidden/)
+  assert.match(cta, /id="program-step2-tpl"[sS]*?<ContactLinks mailto={mailto} tracked />/)
+  assert.match(cta, /<noscript>s*<ContactLinks mailto={mailto} />/)
+  assert.equal(cta.split('<ContactLinks').length - 1, 2, 'кроме шаблона и noscript, ссылок заявки быть не должно')
+  const script = prerender.slice(prerender.indexOf('function programScript'))
+  assert.match(script, /tpl.content.cloneNode/)
+  assert.match(script, /[data-program-open]/)
 })
