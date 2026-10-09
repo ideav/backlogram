@@ -197,17 +197,21 @@ function praktikumScript() {
 }
 
 /**
- * Цель страниц рекрутинга (issue #674): клик по ссылке заявки [data-program-go]
- * (телеграм или почта) шлёт `<slug>_click` — за неё платят кампании Директа на
- * /adept/ и /partner/. Проверка на человека та же, что у `praktikum_click`:
- * настоящий (isTrusted) жест в сессии, 2,5 с на странице и не webdriver, иначе
- * уходит `<slug>_blocked`, за которую Директ не платит. Ссылки ведут наружу
- * (t.me, mailto), поэтому UTM к ним не дописываются — их видно в визите.
+ * Цель страниц рекрутинга (issue #674), двухэтапная, как у практикума:
+ *   • кнопка [data-program-open] видна только с JS и лишь раскрывает блок;
+ *   • ссылки заявки [data-program-go] (телеграм, почта) лежат в <template>
+ *     и появляются в разметке только после первого клика;
+ *   • клик по ним шлёт `<slug>_click`, если в сессии был настоящий (isTrusted)
+ *     жест, страница прожила 2,5 с и это не webdriver, иначе — `<slug>_blocked`,
+ *     за которую Директ не платит.
+ * Ссылки ведут наружу (t.me, mailto), поэтому UTM к ним не дописываются — их
+ * видно в визите. Без счётчика скрипт всё равно нужен: он раскрывает блок.
  */
 function programScript(slug) {
-  if (!METRIKA_ID) return ''
-  const goal = JSON.stringify(slug)
-  return `<script>(function(){var t=Date.now(),h=false;['pointerdown','pointermove','touchstart','keydown','wheel','scroll'].forEach(function(n){addEventListener(n,function(e){if(e.isTrusted)h=true},{passive:true})});document.querySelectorAll('a[data-program-go]').forEach(function(a){a.addEventListener('click',function(){var ok=h&&!navigator.webdriver&&Date.now()-t>=2500;try{ym(${METRIKA_ID},'reachGoal',${goal}+(ok?'_click':'_blocked'),{via:a.getAttribute('data-program-go'),dwell_ms:Date.now()-t})}catch(e){}})})})()</script>`
+  const goal = METRIKA_ID
+    ? `try{ym(${METRIKA_ID},'reachGoal',${JSON.stringify(slug)}+(ok?'_click':'_blocked'),{via:a.getAttribute('data-program-go'),dwell_ms:Date.now()-t})}catch(e){}`
+    : ''
+  return `<script>(function(){var t=Date.now(),h=false;['pointerdown','pointermove','touchstart','keydown','wheel','scroll'].forEach(function(n){addEventListener(n,function(e){if(e.isTrusted)h=true},{passive:true})});var slot=document.getElementById('program-step2'),tpl=document.getElementById('program-step2-tpl'),btns=document.querySelectorAll('[data-program-open]');function open(){if(!slot.firstChild){slot.appendChild(tpl.content.cloneNode(true));slot.querySelectorAll('a[data-program-go]').forEach(function(a){a.addEventListener('click',function(){var ok=h&&!navigator.webdriver&&Date.now()-t>=2500;${goal}})})}btns.forEach(function(b){b.hidden=true});slot.scrollIntoView({behavior:'smooth',block:'center'})}btns.forEach(function(b){b.hidden=false;b.addEventListener('click',open)})})()</script>`
 }
 
 const written = [indexPath]
