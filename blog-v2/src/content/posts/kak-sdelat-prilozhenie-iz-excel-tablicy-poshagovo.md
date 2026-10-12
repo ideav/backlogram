@@ -4,6 +4,7 @@ description: 'Как сделать приложение из Excel-таблиц
 pubDate: '2026-10-12'
 category: Обучение
 author: Команда Интеграм
+image: /uploads/excel-to-app-zayavki-formy.png
 tags:
 - ии-агент
 - no-code
