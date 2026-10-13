@@ -20,6 +20,8 @@ const BitrixAmoComparison = lazy(() => import('./pages/BitrixAmoComparison'))
 const Tokens = lazy(() => import('./pages/Tokens'))
 // #605: опросник «квинтеты / обычные таблицы / комбинация» из меморандума.
 const KvintetyIliTablicy = lazy(() => import('./pages/KvintetyIliTablicy'))
+// #745: квиз «оценка проекта за 2 минуты» с заготовки ideav.ru/victor/.
+const Quiz = lazy(() => import('./pages/Quiz'))
 // #553: персональная страница с контактами (требование поддержки Хабра к профилю).
 const AlexeySemenov = lazy(() => import('./pages/AlexeySemenov'))
 const AdImages = lazy(() => import('./pages/AdImages'))
@@ -106,6 +108,15 @@ export const router = createBrowserRouter([
       {
         path: 'kvintety-ili-tablicy',
         element: <KvintetyIliTablicy />,
+      },
+      // #745: квиз «оценка проекта за 2 минуты», перенесён с ideav.ru/victor/.
+      {
+        path: 'quiz.html',
+        element: <Quiz />,
+      },
+      {
+        path: 'quiz',
+        element: <Quiz />,
       },
       {
         path: 'alexey-semenov.html',
