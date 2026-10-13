@@ -472,9 +472,10 @@ test('фолд длинных строк тела: лимит exim — в бай
     `$lines = explode("\\r\\n", $mail['body']);`,
     `$max = 0; foreach ($lines as $l) { $max = max($max, strlen($l)); }`,
     `$orig = preg_replace('/\\r\\n|\\r/', "\\n", $long . "\\nвторой абзац");`,
+    `$bodyNorm = preg_replace('/\\r\\n|\\r/', "\\n", $mail['body']); // транспорт хранит CRLF`,
     `echo $ok ? 'sent' : 'fail', PHP_EOL;`,
     `echo $max, PHP_EOL;`,
-    `echo strcmp(str_replace("\\n", '', $orig), str_replace("\\n", '', $mail['body'])) === 0 ? 'lossless' : 'lossy', PHP_EOL;`,
+    `echo strcmp(str_replace("\\n", '', $orig), str_replace("\\n", '', $bodyNorm)) === 0 ? 'lossless' : 'lossy', PHP_EOL;`,
   ].join('\n')
   const out = execFileSync('php', ['-r', script], {
     encoding: 'utf8',
