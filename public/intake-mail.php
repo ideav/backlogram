@@ -118,6 +118,43 @@ if (!defined('INTAKE_MAIL_LOADED')) {
     }
 
     /**
+     * Разбить строки тела длиннее лимита — В БАЙТАХ.
+     *
+     * Exim отказывается отправлять сообщение, в котором есть строка длиннее
+     * ~998 БАЙТ («message has lines too long for transport»), — а mail()
+     * при этом возвращает успех: заявка помечается доставленной, письмо в
+     * никуда. Случилось 13.10.2026: блок «что внутри» пришёл от агента одной
+     * строкой на ~1900 байт. Фолд по символам не спасает: кириллица удваивает
+     * длину, и «900 символов» остаются >998 байт. Поэтому режем по байтам с
+     * откатом к границе символа UTF-8 и, если есть, по последнему пробелу;
+     * продолжение — с новой строки.
+     */
+    function intake_mail_fold_lines(string $text, int $limit = 900): string {
+        $out = [];
+        foreach (preg_split("/\r\n|\r|\n/", $text) ?: [] as $line) {
+            while (strlen($line) > $limit) {
+                // Откат от лимита к границе символа UTF-8 (0b10xxxxxx — байт продолжения).
+                $cut = $limit;
+                while ($cut > 0 && (ord($line[$cut]) & 0xC0) === 0x80) {
+                    $cut--;
+                }
+                if ($cut === 0) { // аномалия: нет границы символа — просто рвём по байту
+                    $cut = $limit;
+                }
+                // Если есть пробел до реза — рвём по нему, не посреди слова.
+                $space = strrpos(substr($line, 0, $cut), ' ');
+                if ($space !== false && $space > 0) {
+                    $cut = $space + 1;
+                }
+                $out[] = substr($line, 0, $cut);
+                $line  = ltrim(substr($line, $cut));
+            }
+            $out[] = $line;
+        }
+        return implode("\n", $out);
+    }
+
+    /**
      * Отправить письмо. false — не отправлено (звонящий решает, что делать).
      *
      * @param array{from?:string, from_name?:string, reply_to?:string, bcc?:string} $opts
@@ -129,8 +166,10 @@ if (!defined('INTAKE_MAIL_LOADED')) {
         }
         $mail = intake_mail_build($subject, $opts);
         // Нормализуем переводы строк: в письме — CRLF, иначе часть клиентов
-        // показывает тело одной строкой.
+        // показывает тело одной строкой. Попутно фолдим длинные строки —
+        // иначе exim отказывается вести такое письмо (см. intake_mail_fold_lines).
         $body = str_replace(["\r\n", "\r"], "\n", $body);
+        $body = intake_mail_fold_lines($body);
         $body = str_replace("\n", "\r\n", $body);
 
         $transport = strtolower((string) intake_config('INTAKE_MAIL_TRANSPORT', 'mail'));
