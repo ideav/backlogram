@@ -79,6 +79,7 @@ $SOURCE_LABELS = [
     'catalog-matching'    => 'Сопоставление каталогов',
     'excel-to-app'        => 'Excel → приложение',
     'excel-to-app-razbor' => 'Разбор ИИ-приложения — заказ звонка',
+    'quiz'                => 'Квиз: оценка проекта за 2 минуты',
 ];
 $source_label = $SOURCE_LABELS[$source] ?? $source;
 

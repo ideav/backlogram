@@ -51,6 +51,11 @@ DirectoryIndex index.html
   # front controller'ом в движок Интеграма как имя базы.
   RewriteRule ^kvintety-ili-tablicy/?$ /kvintety-ili-tablicy.html [R=301,L]
 
+  # /quiz → /quiz.html (issue #745): квиз «оценка проекта за 2 минуты» с
+  # заготовки ideav.ru/victor/. Тот же случай: без правила безрасширенный путь
+  # ушёл бы front controller'ом в движок Интеграма как имя базы.
+  RewriteRule ^quiz/?$ /quiz.html [R=301,L]
+
   # Кластер «автоматизация бизнеса с ИИ» (issue #642): тот же случай — без
   # правила безрасширенный путь ушёл бы front controller'ом в движок как имя базы.
   RewriteRule ^(avtomatizaciya-biznesa-s-ii|ii-agenty-dlya-biznesa|vnedrenie-ii-v-biznes|ii-v-1c-bitrix24-amocrm|lokalnyj-ii-dlya-biznesa|ii-dlya-integratorov)/?$ /$1.html [R=301,L]
