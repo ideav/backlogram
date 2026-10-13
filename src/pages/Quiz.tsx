@@ -16,6 +16,8 @@ import {
   CALL_SLOTS,
   FEATURES,
   HERO_CHIPS,
+  HERO_IMAGE,
+  HERO_INSTANT,
   HERO_LEAD,
   PROBLEMS,
   QUIZ_META,
@@ -270,11 +272,19 @@ export default function Quiz() {
   const progressPct = (STEP_INDEX[stage as Exclude<Stage, 'done'>] / TOTAL_STEPS) * 100
 
   return (
-    <div className="pt-28 lg:pt-36 pb-20">
-      {/* Hero */}
-      <section className="relative isolate overflow-hidden px-4 sm:px-6 lg:px-8">
+    <div className="pb-20">
+      {/* Hero: фон — иллюстрация про оценку разработки (issue #749), притушенная
+          и с растушёвкой к фону страницы, чтобы текст поверх читался в обеих темах. */}
+      <section className="relative isolate overflow-hidden px-4 sm:px-6 lg:px-8 pt-32 lg:pt-44 pb-16 lg:pb-20">
         <div className="absolute inset-0 -z-10">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(37,99,235,0.08)_0%,transparent_70%)]" />
+          <img
+            src={HERO_IMAGE}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover object-center opacity-[0.16] dark:opacity-30"
+          />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.7)_0%,transparent_65%)] dark:bg-[radial-gradient(circle_at_center,rgba(2,6,23,0.75)_0%,transparent_65%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-white dark:to-slate-950" />
         </div>
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
@@ -302,6 +312,11 @@ export default function Quiz() {
             Рассчитать за 2 минуты
             <ArrowRight size={18} aria-hidden="true" />
           </button>
+          <p className="mt-6 text-base sm:text-lg text-slate-600 dark:text-slate-300">
+            {HERO_INSTANT.before}
+            <strong className="font-bold text-slate-900 dark:text-white">{HERO_INSTANT.strong}</strong>
+            {HERO_INSTANT.after}
+          </p>
         </div>
       </section>
 

@@ -19,6 +19,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   HERO_CHIPS,
+  HERO_INSTANT,
   HERO_LEAD,
   AUDIENCE,
   PROBLEMS,
@@ -74,6 +75,7 @@ const bodyHtml = `
     <h1>${escape(QUIZ_META.h1)}</h1>
     <p class="qz-prerender__lead">${escape(HERO_LEAD)}</p>
     <p>${chipsHtml}</p>
+    <p class="qz-prerender__instant">${escape(HERO_INSTANT.before)}<strong>${escape(HERO_INSTANT.strong)}</strong>${escape(HERO_INSTANT.after)}</p>
   </header>
   <section class="qz-prerender__group">
     <h2>Как устроен расчёт</h2>

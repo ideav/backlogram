@@ -29,6 +29,8 @@ export interface ProjectEstimate {
 export declare const QUIZ_META: QuizMeta
 export declare const HERO_LEAD: string
 export declare const HERO_CHIPS: string[]
+export declare const HERO_INSTANT: { before: string; strong: string; after: string }
+export declare const HERO_IMAGE: string
 export declare const PROBLEMS: { h: string; p: string }[]
 export declare const STEPS: { h: string; duration: string; p: string }[]
 export declare const AUDIENCE: string[]
