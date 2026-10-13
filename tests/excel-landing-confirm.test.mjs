@@ -451,3 +451,44 @@ test('e2e: лимит писем-подтверждений на один адр
     stand.stop()
   }
 })
+
+/**
+ * Фолд длинных строк тела (issue #747): exim отсчитывает лимит строки в БАЙТАХ
+ * и отбивает сообщение («lines too long for transport»), когда в теле есть
+ * строка >998 байт — кириллица удваивает длину. mail() возвращает успех, поэтому
+ * проверяем транспорт-в-файл: после полного пути intake_mail_send ни одна строка
+ * тела не длиннее лимита, т.е. фолд применён, и содержимое не потеряно.
+ */
+test('фолд длинных строк тела: лимит exim — в байтах, фолдим в байтах', () => {
+  const mailFile = join(tmpdir(), `excel-fold-test-${process.pid}.json`)
+  rmSync(mailFile, { force: true })
+  const script = [
+    `require '${join(root, 'public', 'intake-shared.php').replace(/\\/g, '/')}';`,
+    `require '${join(root, 'public', 'intake-mail.php').replace(/\\/g, '/')}';`,
+    '$long = str_repeat(\'проверка \', 240); // одна строка ~1920 байт',
+    '$body = $long . "\\nвторой абзац";',
+    `$ok = intake_mail_send('fold@example.com', 'тест фолда', $body);`,
+    `$mail = json_decode(file_get_contents(getenv('INTAKE_MAIL_FILE')), true);`,
+    `$lines = explode("\\r\\n", $mail['body']);`,
+    `$max = 0; foreach ($lines as $l) { $max = max($max, strlen($l)); }`,
+    `$orig = preg_replace('/\\r\\n|\\r/', "\\n", $long . "\\nвторой абзац");`,
+    `echo $ok ? 'sent' : 'fail', PHP_EOL;`,
+    `echo $max, PHP_EOL;`,
+    `echo strcmp(str_replace("\\n", '', $orig), str_replace("\\n", '', $mail['body'])) === 0 ? 'lossless' : 'lossy', PHP_EOL;`,
+  ].join('\n')
+  const out = execFileSync('php', ['-r', script], {
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      INTAKE_MAIL_TRANSPORT: 'file',
+      INTAKE_MAIL_FILE: mailFile.replace(/\\/g, '/'),
+      SYSTEMROOT: process.env.SYSTEMROOT,
+    },
+    windowsHide: true,
+  })
+  const [status, maxLine, lossless] = out.trim().split('\n')
+  assert.equal(status, 'sent', out)
+  assert.ok(Number(maxLine) <= 900, `строка тела после фолда ${maxLine} байт — exim отбивает с 998`)
+  assert.equal(lossless, 'lossless', 'фолд не должен терять содержимое')
+  rmSync(mailFile, { force: true })
+})
