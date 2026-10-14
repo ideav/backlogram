@@ -4,6 +4,7 @@ import { Header } from './components/Header'
 import { Footer } from './components/Footer'
 import { CookieConsent } from './components/CookieConsent'
 import { ThemeProvider } from './context/ThemeContext'
+import { installTypography } from './lib/install-typography'
 
 function ScrollToRouteTarget() {
   const { pathname, search, hash } = useLocation()
@@ -40,6 +41,11 @@ function RouteFallback() {
 }
 
 export default function App() {
+  // Живая микротипографика смонтированной страницы — правила те же, что и в
+  // постпроходе dist (issue #753). Ставится один раз: дальше DOM наблюдает
+  // MutationObserver, маршруты и тексты перерисовываются без нашего ведома.
+  useEffect(() => installTypography(), [])
+
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 selection:bg-blue-500/30">
