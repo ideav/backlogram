@@ -212,7 +212,7 @@ export default function Home() {
     // «скелет» страницы для поисковика размывался. Тест — tests/issue-514-headings.
     <div className="overflow-hidden">
       {/* 1. Hero Section */}
-      <section className="relative isolate overflow-hidden pt-32 pb-20 lg:pt-48 lg:pb-32">
+      <section id="hero" className="scroll-mt-24 relative isolate overflow-hidden pt-32 pb-20 lg:pt-48 lg:pb-32">
         <div className="absolute inset-0 -z-10 overflow-hidden">
           <div
             className="hero-background-flicker"
@@ -305,7 +305,7 @@ export default function Home() {
       </section>
 
       {/* 1b. Excel → app promo */}
-      <section className="py-12 border-t border-slate-200 dark:border-slate-900">
+      <section id="excel-promo" className="scroll-mt-24 py-12 border-t border-slate-200 dark:border-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             to="/excel-to-app.html"
@@ -348,7 +348,7 @@ export default function Home() {
       </section>
 
       {/* 2. Problem Section */}
-      <section className="py-24 bg-slate-50 dark:bg-slate-900/50 relative">
+      <section id="problem" className="scroll-mt-24 py-24 bg-slate-50 dark:bg-slate-900/50 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
@@ -629,7 +629,7 @@ export default function Home() {
       </section>
 
       {/* 5. Analysts not Programmers */}
-      <section className="py-24 border-y border-slate-200 dark:border-slate-900">
+      <section id="analysts" className="scroll-mt-24 py-24 border-y border-slate-200 dark:border-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="order-2 lg:order-1 grid grid-cols-2 gap-4">
@@ -750,7 +750,7 @@ export default function Home() {
       </section>
 
       {/* 7. Integration Section */}
-      <section className="py-24 relative overflow-hidden">
+      <section id="integration" className="scroll-mt-24 py-24 relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-600/5 blur-[120px] rounded-full -z-10" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1049,7 +1049,7 @@ export default function Home() {
       <ClientLogos />
 
       {/* 9. Ready Projects Types */}
-      <section className="py-24">
+      <section id="project-types" className="scroll-mt-24 py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <p className="text-3xl md:text-4xl font-bold mb-4">Готовые типы проектов: описание и анализ бизнес-процессов</p>
@@ -1155,9 +1155,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 9d. Свежие статьи блога (issue #512) — данные из src/data/blogPosts.mjs */}
-      <BlogSlider />
-
       {/* 10. Pricing Section */}
       <section id="pricing" className="py-24 bg-slate-50 dark:bg-slate-900/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1260,7 +1257,7 @@ export default function Home() {
       </section>
 
       {/* 11. Team Roles Section */}
-      <section className="py-24 border-t border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950/30">
+      <section id="team" className="scroll-mt-24 py-24 border-t border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <p className="text-3xl md:text-4xl font-bold mb-4">Кто работает над вашей задачей</p>
@@ -1452,7 +1449,7 @@ export default function Home() {
       </section>
 
       {/* 13. Try it yourself link */}
-      <section className="py-16 border-t border-slate-200 dark:border-slate-900">
+      <section id="try" className="scroll-mt-24 py-16 border-t border-slate-200 dark:border-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <a
             href="https://ideav.ru/start.html"
@@ -1655,6 +1652,10 @@ export default function Home() {
           </dl>
         </div>
       </section>
+      {/* 15b. Свежие статьи блога (issue #512) — данные из src/data/blogPosts.mjs.
+          Предпоследний блок, перед SEO-текстом (issue #754). */}
+      <BlogSlider />
+
       {/* 16. SEO-текст в подвал (af.md блок 14).
 
           Был одним абзацем-перечислением на 100 слов — со стороны выглядело
@@ -1663,7 +1664,7 @@ export default function Home() {
           главной закрыт (issue #514, ровно 10 H2), а ключевые фразы
           «информационная система» и «управление бизнес-процессами» уже стоят
           в H2 разделов «Для кого» и «Масштабируемые информационные системы». */}
-      <section className="py-16 border-t border-slate-200 dark:border-slate-900">
+      <section id="about" className="scroll-mt-24 py-16 border-t border-slate-200 dark:border-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
             <span className="font-semibold text-slate-700 dark:text-slate-200">Интеграм — российская no-code платформа для создания информационных систем, внутренних бизнес-приложений и баз данных без программирования.</span> Что на ней собирают:

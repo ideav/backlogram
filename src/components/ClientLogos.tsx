@@ -77,7 +77,7 @@ export default function ClientLogos() {
   }
 
   return (
-    <section className="py-16 border-t border-slate-200 dark:border-slate-800">
+    <section id="clients" className="scroll-mt-24 py-16 border-t border-slate-200 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <p className="text-center text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-10">
           Воспользовались опытом команды и нашими решениями
