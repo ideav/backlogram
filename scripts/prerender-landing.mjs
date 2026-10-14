@@ -199,8 +199,8 @@ const bodyHtml = `
   </header>
   ${sectionsHtml}
   ${casesHtml}
-  ${blogHtml}
   ${faqHtml}
+  ${blogHtml}
   <footer class="lp-prerender__footer">
     <p class="lp-prerender__seo">${escape(SEO_FOOTER)}</p>
     <p class="lp-prerender__registry">
