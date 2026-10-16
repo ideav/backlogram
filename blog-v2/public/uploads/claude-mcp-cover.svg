@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="t d">
+<title id="t">Подключаем Claude к базе данных через MCP</title>
+<desc id="d">Клиент Claude соединяется через MCP-сервер integram-mcp с базой Интеграма; у агента роль с ограниченными правами, опасные операции подтверждаются.</desc>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0" stop-color="#060d20"/><stop offset="0.55" stop-color="#0a1c47"/><stop offset="1" stop-color="#123a8f"/>
+ </linearGradient>
+ <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+  <stop offset="0" stop-color="#60a5fa" stop-opacity="0.40"/><stop offset="1" stop-color="#60a5fa" stop-opacity="0"/>
+ </radialGradient>
+ <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
+  <circle cx="2" cy="2" r="1.3" fill="#8ab4f8" fill-opacity="0.12"/>
+ </pattern>
+ <marker id="arrA" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#7dd3fc"/></marker>
+ <marker id="arrB" markerWidth="9" markerHeight="9" refX="1" refY="3" orient="auto"><path d="M7,0 L0,3 L7,6 Z" fill="#7dd3fc"/></marker>
+ <style>
+  .node{fill:#0d2557;stroke:#38bdf8;stroke-opacity:0.5;stroke-width:1.8}
+  .ttl{fill:#ffffff;font:700 52px Arial,sans-serif}
+  .ttl2{fill:#7dd3fc;font:700 52px Arial,sans-serif}
+  .brow{fill:#ffffff;font:700 20px Arial,sans-serif;letter-spacing:1px}
+  .tag{fill:#bfd7ff;font:400 8px Arial,sans-serif;letter-spacing:1.2px}
+  .sub{fill:#cfe0ff;fill-opacity:0.85;font:400 17px Arial,sans-serif}
+  .code{fill:#7dd3fc;font:400 16px Consolas,'Courier New',monospace}
+  .lbl{fill:#e0f2fe;font:700 14px Arial,sans-serif}
+  .lbl2{fill:#cfe0ff;fill-opacity:0.7;font:400 11.5px Arial,sans-serif}
+  .mono{fill:#7dd3fc;fill-opacity:0.85;font:400 11px Consolas,'Courier New',monospace}
+ </style>
+</defs>
+
+<rect width="1200" height="630" fill="url(#bg)"/>
+<rect width="1200" height="630" fill="url(#dots)"/>
+<circle cx="890" cy="320" r="310" fill="url(#glow)"/>
+<circle cx="230" cy="140" r="230" fill="url(#glow)" opacity="0.5"/>
+
+<!-- заголовочный блок -->
+<text x="64" y="136" font-family="Arial" font-size="15" font-weight="700" letter-spacing="3" fill="#7dd3fc" fill-opacity="0.9">ИНСТРУКЦИЯ • Claude Code и Claude Desktop</text>
+<text class="ttl" x="64" y="204">Подключаем Claude</text>
+<text class="ttl" x="64" y="266">к базе данных</text>
+<text class="ttl2" x="64" y="328">через MCP</text>
+<text class="sub" x="64" y="382">Отдельный пользователь для агента, конфиг,</text>
+<text class="sub" x="64" y="408">проверка — и подтверждение опасных операций.</text>
+<rect x="64" y="440" width="264" height="42" rx="10" fill="#050b1c" fill-opacity="0.8" stroke="#38bdf8" stroke-opacity="0.35" stroke-width="1.2"/>
+<text class="code" x="80" y="467">claude mcp add integram</text>
+
+<!-- узел: Claude -->
+<g>
+ <rect class="node" x="648" y="256" width="122" height="122" rx="20"/>
+ <path d="M709,282 C715,304 717,306 739,312 C717,318 715,320 709,342 C703,320 701,318 679,312 C701,306 703,304 709,282 Z" fill="#e0f2fe"/>
+ <circle cx="742" cy="286" r="4.5" fill="#7dd3fc"/>
+</g>
+<text class="lbl" x="709" y="412" text-anchor="middle">Claude</text>
+<text class="lbl2" x="709" y="432" text-anchor="middle">Claude Code / Claude Desktop</text>
+
+<!-- связь Claude — MCP -->
+<line x1="774" y1="317" x2="856" y2="317" stroke="#7dd3fc" stroke-width="2.4" marker-end="url(#arrA)" marker-start="url(#arrB)"/>
+<g>
+ <rect x="804" y="276" width="22" height="16" rx="3" fill="none" stroke="#cfe0ff" stroke-opacity="0.8" stroke-width="1.8"/>
+ <path d="M808,276 v-5 a7,7 0 0 1 14,0 v5" fill="none" stroke="#cfe0ff" stroke-opacity="0.8" stroke-width="1.8"/>
+</g>
+<text class="lbl2" x="815" y="262" text-anchor="middle">роль агента</text>
+
+<!-- узел: MCP-сервер -->
+<g>
+ <rect class="node" x="860" y="262" width="172" height="110" rx="18"/>
+ <text x="946" y="308" font-family="Arial" font-size="30" font-weight="700" fill="#ffffff" text-anchor="middle">MCP</text>
+ <text x="946" y="336" font-family="Arial" font-size="12" fill="#cfe0ff" fill-opacity="0.75" text-anchor="middle">протокол инструментов</text>
+</g>
+<text class="lbl" x="946" y="412" text-anchor="middle">сервер integram-mcp</text>
+<text class="mono" x="946" y="432" text-anchor="middle">npx integram-mcp@0.7.124</text>
+
+<!-- связь MCP — база -->
+<line x1="1036" y1="317" x2="1062" y2="317" stroke="#7dd3fc" stroke-width="2.4" marker-end="url(#arrA)"/>
+<g>
+ <path d="M1049,282 l14,6 v11 c0,9 -8,14 -14,17 c-6,-3 -14,-8 -14,-17 v-11 z" fill="none" stroke="#fbbf24" stroke-width="2"/>
+ <path d="M1042,298 l5,5 l9,-10" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"/>
+</g>
+
+<!-- узел: база -->
+<g>
+ <path d="M1066,300 L1066,362 A46,15 0 0 0 1158,362 L1158,300" fill="#0d2557" stroke="#38bdf8" stroke-opacity="0.55" stroke-width="1.8"/>
+ <ellipse cx="1112" cy="300" rx="46" ry="15" fill="#0d2557" stroke="#38bdf8" stroke-opacity="0.55" stroke-width="1.8"/>
+ <path d="M1066,320 A46,15 0 0 0 1158,320" fill="none" stroke="#7dd3fc" stroke-opacity="0.35" stroke-width="1.2"/>
+ <path d="M1066,340 A46,15 0 0 0 1158,340" fill="none" stroke="#7dd3fc" stroke-opacity="0.35" stroke-width="1.2"/>
+</g>
+<text class="lbl" x="1112" y="412" text-anchor="middle">База Интеграма</text>
+<text class="lbl2" x="1112" y="432" text-anchor="middle">права как у сотрудника</text>
+
+<!-- бейдж -->
+<g transform="translate(946,538) scale(0.47)">
+ <rect width="120" height="120" rx="24" fill="#1447E6"/>
+ <path d="M43.8 85.2 12 74.7V45.3l31.8-10.5 11.7 12.4-7.1 7.4-8.1-8.6-17.7 5.8v16.4L40.3 74 77.6 34.8 108 45.3v29.4L76.2 85.2 64.5 72.8l7.1-7.4 8.1 8.6 17.7-5.8V51.8L79.7 46 43.8 85.2Z" fill="#FFFFFF"/>
+ <path d="M42.4 63.5 33 53.8l7.2-7.4 9.4 9.8-7.2 7.3ZM79.8 73.6l-9.4-9.8 7.2-7.3 9.4 9.7-7.2 7.4Z" fill="#BFD7FF"/>
+</g>
+<text class="brow" x="1008" y="570">ИНТЕГРАМ</text>
+<text class="tag" x="1009" y="588">СИСТЕМА ИНТЕГРАЦИИ ДАННЫХ</text>
+</svg>

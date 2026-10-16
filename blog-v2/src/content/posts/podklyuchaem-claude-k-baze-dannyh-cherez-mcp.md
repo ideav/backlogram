@@ -2,6 +2,7 @@
 title: 'Подключаем Claude к базе данных через MCP: инструкция'
 description: 'Как подключить Claude Desktop и Claude Code к базе Интеграма через MCP-сервер integram-mcp: конфиг, команды, проверка и что делать, если сервер не добавился.'
 pubDate: '2026-10-20'
+image: /uploads/claude-mcp-cover.png
 category: Обучение
 author: Команда Интеграм
 tags:
