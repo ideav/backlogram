@@ -1214,7 +1214,7 @@ export default function Home() {
                 <span className="text-slate-400 dark:text-slate-500 text-xl font-bold">₽</span>
               </div>
               <ul className="space-y-4 mb-8 flex-1">
-                {['Неограниченное количество записей', 'Полный функционал интеграции', 'Приоритетная поддержка', 'Любые коннекторы'].map((item, i) => (
+                {['Неограниченное количество записей', 'Полный функционал интеграции', 'Безлимитное количество пользователей', 'Любые коннекторы'].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
                     <CheckCircle2 size={14} className="text-blue-500" />
                     {item}
