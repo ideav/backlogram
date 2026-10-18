@@ -319,7 +319,7 @@ test('e2e: подтверждённая заявка доходит до сбо�
       request_id: requestId,
       app_url: 'https://ideav.ru/nteaclub/',
       admin_login: 'nteaclub',
-      admin_password: 'NteaAdmin2026',
+      admin_password: 'DemoPass-0000',
       topic_short: 'интернет-магазина',
       what_inside: '— Каталог: 198 товаров.',
     })
@@ -331,14 +331,14 @@ test('e2e: подтверждённая заявка доходит до сбо�
     assert.equal(mail.length, 2, 'должны уйти два письма: подтверждение и результат')
     assert.match(decodeSubject(mail[1].subject), /Ваше приложение для интернет-магазина готово/)
     assert.match(mail[1].body, /https:\/\/ideav\.ru\/nteaclub\//)
-    assert.match(mail[1].body, /NteaAdmin2026/)
+    assert.match(mail[1].body, /DemoPass-0000/)
 
     const twice = await (await buildCall(stand.appPort, {
       action: 'deliver',
       request_id: requestId,
       app_url: 'https://ideav.ru/nteaclub/',
       admin_login: 'nteaclub',
-      admin_password: 'NteaAdmin2026',
+      admin_password: 'DemoPass-0000',
     })).json()
     assert.equal(twice.already, true, 'повторный deliver должен быть идемпотентным')
     assert.equal(stand.mail().length, 2, 'второго письма с результатом быть не должно')
