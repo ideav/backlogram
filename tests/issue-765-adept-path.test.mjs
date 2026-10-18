@@ -109,8 +109,9 @@ test('партнёрская ссылка — в личном кабинете �
   // ЛК (crm templates/my/info.html) сам выдаёт ссылку ?aff=<user_id> на карточке «Рефералы».
   assert.match(STEPS[4].p, /личном кабинете/)
   assert.match(STEPS[4].p, /Рефералы/)
-  // проценты — по владельцу (#766): 15% с оплаты проекта, 40% с оплаты лицензии
-  assert.match(STEPS[4].p, /15% от оплаты проекта и 40% от оплаты лицензии/)
+  // проценты — по владельцу (#766): 15% со всех оплат, 40% с лицензии только после аттестации партнёра
+  assert.match(STEPS[4].p, /15% со всех оплат/)
+  assert.match(STEPS[4].p, /после аттестации партнёра — 40% от оплаты лицензии/)
   assert.equal(STEPS[4].cta.href, REGISTER_URL)
   assert.equal(REGISTER_URL, 'https://ideav.ru/start.html#reg')
   assert.ok(out.includes(REGISTER_URL), 'снапшот без ссылки на регистрацию')
