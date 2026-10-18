@@ -22,6 +22,8 @@ const Tokens = lazy(() => import('./pages/Tokens'))
 const KvintetyIliTablicy = lazy(() => import('./pages/KvintetyIliTablicy'))
 // #745: квиз «оценка проекта за 2 минуты» с заготовки ideav.ru/victor/.
 const Quiz = lazy(() => import('./pages/Quiz'))
+// #765: «Путь адепта Интеграм» — два проекта, пять шагов и заявка в разработчики.
+const AdeptPath = lazy(() => import('./pages/AdeptPath'))
 // #553: персональная страница с контактами (требование поддержки Хабра к профилю).
 const AlexeySemenov = lazy(() => import('./pages/AlexeySemenov'))
 const AdImages = lazy(() => import('./pages/AdImages'))
@@ -117,6 +119,14 @@ export const router = createBrowserRouter([
       {
         path: 'quiz',
         element: <Quiz />,
+      },
+      {
+        path: 'put-adepta.html',
+        element: <AdeptPath />,
+      },
+      {
+        path: 'put-adepta',
+        element: <AdeptPath />,
       },
       {
         path: 'alexey-semenov.html',

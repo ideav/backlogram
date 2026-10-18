@@ -56,6 +56,10 @@ DirectoryIndex index.html
   # ушёл бы front controller'ом в движок Интеграма как имя базы.
   RewriteRule ^quiz/?$ /quiz.html [R=301,L]
 
+  # /put-adepta → /put-adepta.html (issue #765): «Путь адепта Интеграм». Тот же
+  # случай — без правила безрасширенный путь ушёл бы в движок как имя базы.
+  RewriteRule ^put-adepta/?$ /put-adepta.html [R=301,L]
+
   # Кластер «автоматизация бизнеса с ИИ» (issue #642): тот же случай — без
   # правила безрасширенный путь ушёл бы front controller'ом в движок как имя базы.
   RewriteRule ^(avtomatizaciya-biznesa-s-ii|ii-agenty-dlya-biznesa|vnedrenie-ii-v-biznes|ii-v-1c-bitrix24-amocrm|lokalnyj-ii-dlya-biznesa|ii-dlya-integratorov)/?$ /$1.html [R=301,L]
