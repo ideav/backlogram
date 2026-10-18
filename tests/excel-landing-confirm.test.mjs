@@ -381,7 +381,7 @@ test('e2e: заявка на разбор и телеграм-контакт и�
     assert.equal(razbor.res.status, 200, JSON.stringify(razbor.json))
     assert.equal(razbor.json.status, undefined, 'заявке на разбор подтверждение не нужно')
 
-    const telegram = await submitOrder(stand.appPort, { kind: 'demo', contact: '@ivanov', task: 'Учёт заказов' }, [])
+    const telegram = await submitOrder(stand.appPort, { kind: 'demo', contact: '@ivanov', task: 'Учёт заказов из трёх Excel-файлов, ведём вдвоём с менеджером' }, [])
     assert.equal(telegram.res.status, 200, JSON.stringify(telegram.json))
     assert.equal(telegram.json.status, undefined)
 
