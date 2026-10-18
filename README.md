@@ -1,24 +1,26 @@
-# Vite + React + TypeScript Template
+# backlogram — сайты продукта Интеграм
 
-This is a template project with Vite, React, TypeScript, Tailwind CSS, and shadcn/ui components.
+Исходники публичных сайтов и лендингов no-code платформы [Интеграм](https://ideav.ru).
 
-## Features
+| Каталог | Что это |
+|---|---|
+| `src/`, `scripts/`, `public/` | [ideav.ru](https://ideav.ru): Vite + React SPA с пререндером страниц для поисковиков |
+| `site-en/` | [integram-ai.online](https://integram-ai.online): англоязычный сайт |
+| `site-excel/` | [excel-to-app.ru](https://excel-to-app.ru): лендинги «приложение из таблицы» |
+| `blog-v2/` | блог на Astro |
+| `content/` | статьи для внешних площадок |
+| `integram.io/` | статические страницы integram.io |
+| `tests/` | тесты сборки, SEO-инварианты, типографика (`npm test`) |
 
-- ⚡️ Vite for fast development and building
-- ⚛️ React 18 with TypeScript
-- 🎨 Tailwind CSS for styling
-- 🧩 shadcn/ui components
-- 📁 Path aliases (@/ for src/)
+## Запуск
 
-## Project Structure
+```bash
+npm install
+npm run dev        # ideav.ru локально
+npm run build      # полная сборка с пререндером
+npm test           # node --test tests/*.test.mjs
+```
 
-\`\`\`
-src/
-├── components/
-│   └── ui/          # shadcn/ui components
-├── lib/
-│   └── utils.ts     # Utility functions
-├── App.tsx          # Main application component
-├── main.tsx         # Entry point
-└── index.css        # Global styles with Tailwind
-\`\`\`
+Англоязычный сайт и excel-to-app собираются отдельно: `npm run build:en`, `npm run build:excel`.
+
+Все учётные данные в тестах и документации — вымышленные или от демо-баз.

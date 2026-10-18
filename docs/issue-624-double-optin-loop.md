@@ -132,7 +132,7 @@ curl -sS -X POST https://ideav.ru/excel-to-app-build.php \
   -H 'X-Build-Token: ***' -H 'Content-Type: application/json' \
   -d '{"action":"deliver","request_id":"20260929-210000-1a2b3c4d",
        "app_url":"https://ideav.ru/nteaclub/","admin_login":"nteaclub",
-       "admin_password":"NteaAdmin2026","topic_short":"интернет-магазина",
+       "admin_password":"DemoPass-0000","topic_short":"интернет-магазина",
        "what_inside":"— Каталог: 198 товаров из вашего прайса…"}'
 ```
 

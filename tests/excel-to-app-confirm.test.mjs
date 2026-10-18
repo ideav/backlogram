@@ -292,7 +292,7 @@ test('e2e: подтверждённая заявка доходит до сбо�
       request_id: requestId,
       app_url: 'https://ideav.ru/nteaclub/',
       admin_login: 'nteaclub',
-      admin_password: 'NteaAdmin2026',
+      admin_password: 'DemoPass-0000',
       topic_short: 'интернет-магазина',
       what_inside: '— Каталог: 198 товаров.',
     })
@@ -307,7 +307,7 @@ test('e2e: подтверждённая заявка доходит до сбо�
     assert.match(decodeSubject(result.subject), /Ваше приложение для интернет-магазина готово/)
     assert.match(result.body, /https:\/\/ideav\.ru\/nteaclub\//)
     assert.match(result.body, /nteaclub/)
-    assert.match(result.body, /NteaAdmin2026/)
+    assert.match(result.body, /DemoPass-0000/)
     assert.match(result.body, /Каталог: 198 товаров/)
     // Форма #622: пароли ролей в письме не перечисляем.
     assert.match(result.body, /главной странице приложения/)
@@ -318,7 +318,7 @@ test('e2e: подтверждённая заявка доходит до сбо�
       request_id: requestId,
       app_url: 'https://ideav.ru/nteaclub/',
       admin_login: 'nteaclub',
-      admin_password: 'NteaAdmin2026',
+      admin_password: 'DemoPass-0000',
     })).json()
     assert.equal(twice.already, true, 'повторный deliver должен быть идемпотентным')
     assert.equal(readMail(stand.mailLog).length, 2, 'второго письма с результатом быть не должно')
