@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { ArrowRight, Check, CheckCircle2, Clock, ExternalLink, Send, Wallet } from 'lucide-react'
+import { ArrowRight, Bot, Briefcase, Check, CheckCircle2, Clock, ExternalLink, Lightbulb, MessagesSquare, Send, Wallet } from 'lucide-react'
 import { reachGoal } from '../lib/metrika'
 import {
   ADEPT_META,
   CASES,
+  COMMUNITY,
   FORM_HINTS,
   HERO_CHIPS,
   HERO_LEAD,
@@ -39,6 +40,9 @@ const INPUT_CLASS =
   'mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all'
 
 type FormStage = 'form' | 'sending' | 'done'
+
+/** Иконки преимуществ сообщества (#769) — по ключу из COMMUNITY.perks. */
+const PERK_ICONS = { consult: MessagesSquare, agents: Bot, orders: Briefcase, tips: Lightbulb } as const
 
 /**
  * «Путь адепта Интеграм» — /put-adepta.html (issue #765). Мотивирует пройти
@@ -203,7 +207,7 @@ export default function AdeptPath() {
               onClick={() => goTo('#zayavka')}
               className="inline-flex items-center gap-2 px-8 py-4 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 font-bold rounded-xl transition-all"
             >
-              Сразу к заявке
+              Присоединиться
             </button>
           </div>
         </div>
@@ -427,6 +431,42 @@ export default function AdeptPath() {
           <p className="mt-6 text-center text-slate-600 dark:text-slate-300">
             Узнали себя хотя бы в трёх пунктах — переходите ко второму шагу и соберите первое приложение.
           </p>
+        </div>
+      </section>
+
+      {/* Сообщество (#769): что даёт вступление после собеседования */}
+      <section id="soobshchestvo" className="mt-24 px-4 sm:px-6 lg:px-8 scroll-mt-24">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-white">{COMMUNITY.h}</h2>
+          <p className="mt-4 text-center text-slate-600 dark:text-slate-300">{COMMUNITY.lead}</p>
+          <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {COMMUNITY.perks.map(perk => {
+              const Icon = PERK_ICONS[perk.key as keyof typeof PERK_ICONS] ?? Check
+              return (
+                <li
+                  key={perk.key}
+                  className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6"
+                >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600/10 text-blue-600 dark:text-blue-400">
+                    <Icon size={20} aria-hidden="true" />
+                  </span>
+                  <h3 className="mt-4 font-semibold text-slate-900 dark:text-white">{perk.h}</h3>
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{perk.p}</p>
+                </li>
+              )
+            })}
+          </ul>
+          <div className="mt-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 p-6 text-center">
+            <p className="text-slate-700 dark:text-slate-200 leading-relaxed">{COMMUNITY.solo}</p>
+            <a
+              href={COMMUNITY.soloCta.href}
+              target={LINK_TARGET}
+              className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              {COMMUNITY.soloCta.label}
+              <ArrowRight size={14} aria-hidden="true" />
+            </a>
+          </div>
         </div>
       </section>
 

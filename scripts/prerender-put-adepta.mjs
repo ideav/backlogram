@@ -19,6 +19,7 @@ import { fileURLToPath } from 'node:url'
 import {
   ADEPT_META,
   CASES,
+  COMMUNITY,
   HERO_CHIPS,
   HERO_LEAD,
   HOURS_LESSON,
@@ -98,6 +99,8 @@ const casesHtml = CASES.map((c) => {
 
 const selfCheckHtml = SELF_CHECK.map((a) => `<li>${escape(a)}</li>`).join('\n        ')
 
+const communityHtml = COMMUNITY.perks.map((p) => `<li><strong>${escape(p.h)}</strong> — ${escape(p.p)}</li>`).join('\n        ')
+
 const bodyHtml = `
 <article id="ap-prerender">
   <header>
@@ -119,6 +122,14 @@ const bodyHtml = `
     <ul>
         ${selfCheckHtml}
     </ul>
+  </section>
+  <section class="ap-prerender__group" id="soobshchestvo">
+    <h2>${escape(COMMUNITY.h)}</h2>
+    <p>${escape(COMMUNITY.lead)}</p>
+    <ul>
+        ${communityHtml}
+    </ul>
+    <p>${escape(COMMUNITY.solo)} ${a(COMMUNITY.soloCta.href, COMMUNITY.soloCta.label)}</p>
   </section>
   <section class="ap-prerender__group">
     <h2>Заявка в команду адептов</h2>

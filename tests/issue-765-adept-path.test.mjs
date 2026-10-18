@@ -114,7 +114,7 @@ test('все ссылки страницы открываются в одной 
   assert.ok(!/target="_blank"/.test(page), 'на странице осталась ссылка в новое окно')
   // rel="noopener"/"noreferrer" заставили бы браузер открывать каждую ссылку в новой вкладке
   assert.ok(!/rel="noopener|rel="noreferrer/.test(page))
-  assert.equal((page.match(/target=\{LINK_TARGET\}/g) || []).length, 4, 'ссылки шагов пути, кнопка приложения, кнопка шага, политика ПДн')
+  assert.equal((page.match(/target=\{LINK_TARGET\}/g) || []).length, 5, 'ссылки шагов пути, кнопка приложения, кнопка шага, регистрация в сообществе (#769), политика ПДн')
 })
 
 test('скриншоты переписки в шагах ПакЛайна: Telegram с заказчиком и бот сборки', () => {
@@ -227,4 +227,25 @@ test('маршрут, сборка, редирект, sitemap, llms.txt и ме�
 test('страница и снапшот читают общий источник данных', () => {
   assert.match(page, /from '\.\.\/data\/adeptPath'/)
   assert.match(prerenderScript, /from '\.\.\/src\/data\/adeptPath\.mjs'/)
+})
+
+// ── issue #769: секция «Сообщество» и кнопка «Присоединиться» ───────────
+test('#769: сообщество после собеседования — консультации, время ИИ-агентов, заказы, лайфхаки', async () => {
+  const { COMMUNITY } = await import('../src/data/adeptPath.mjs')
+  assert.match(COMMUNITY.lead, /после собеседования/)
+  const perks = COMMUNITY.perks.map((p) => p.h).join(' | ')
+  for (const re of [/консультаци/i, /бесплатное время ИИ-агентов/i, /заказ/i, /лайфхак/i]) assert.match(perks, re)
+  assert.match(COMMUNITY.solo, /полностью самостоятельно/)
+  assert.match(COMMUNITY.solo, /личном кабинете/)
+  assert.equal(COMMUNITY.soloCta.href, REGISTER_URL)
+  assert.ok(out.includes(COMMUNITY.h), 'снапшот без секции сообщества')
+  for (const p of COMMUNITY.perks) assert.ok(out.includes(p.h), `снапшот без «${p.h}»`)
+  assert.ok(page.includes('COMMUNITY.perks'), 'страница не рисует сообщество')
+  // секция стоит перед заявкой: сначала что даёт вступление, потом форма
+  assert.ok(out.indexOf(COMMUNITY.h) < out.indexOf('Заявка в команду адептов'))
+})
+
+test('#769: кнопка hero к заявке — «Присоединиться»', () => {
+  assert.match(page, /Присоединиться/)
+  assert.ok(!page.includes('Сразу к заявке'))
 })
