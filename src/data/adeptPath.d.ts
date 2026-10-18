@@ -5,6 +5,17 @@ export interface AdeptImage {
   alt: string
 }
 
+export interface AdeptLink {
+  label: string
+  href: string
+}
+
+export interface AdeptTimelineStep {
+  t: string
+  links?: AdeptLink[]
+  shot?: AdeptImage
+}
+
 export interface AdeptCase {
   key: string
   name: string
@@ -14,10 +25,10 @@ export interface AdeptCase {
   hoursBilled: number | null
   hoursSpent: number
   phases: { name: string; budget: number | null; note: string }[]
-  timeline: string[]
+  app: AdeptLink
+  timeline: AdeptTimelineStep[]
   result: string
-  image: AdeptImage
-  extraImage?: AdeptImage
+  images: AdeptImage[]
 }
 
 export interface AdeptStep {
@@ -39,6 +50,8 @@ export const HERO_CHIPS: string[]
 export const HOURLY_RATE: number
 export const RATE_NOTE: string
 export const REGISTER_URL: string
+export const LINK_TARGET: string
+export const LINKS: Record<string, string>
 export const CASES: AdeptCase[]
 export const HOURS_LESSON: string
 export const SELF_CHECK: string[]

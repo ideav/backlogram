@@ -19,6 +19,8 @@ import {
   CASES,
   HERO_CHIPS,
   HOURLY_RATE,
+  LINK_TARGET,
+  LINKS,
   RATE_NOTE,
   REGISTER_URL,
   SELF_CHECK,
@@ -57,7 +59,7 @@ test('ПакЛайн: 37 500 ₽ двумя счетами по 18 750 ₽, ок
   assert.equal(c.hoursBilled * HOURLY_RATE, c.budget, 'ставка не сходится с бюджетом')
   assert.match(c.origin, /Хабр/)
   // путь из задачи: excel-to-app → мало данных → Telegram → ТЗ по промпту → бот → ИИ-чат
-  const t = c.timeline.join(' ')
+  const t = c.timeline.map((s) => s.t).join(' ')
   for (const re of [/excel-to-app/, /мало/, /Telegram/, /ТЗ/, /бот/, /ИИ-чат/, /около 3/]) {
     assert.match(t, re, `в пути ПакЛайна нет ${re}`)
   }
@@ -70,22 +72,67 @@ test('СПЗ: 206 250 ₽, три фазы 25+25+8 часов, по рекоме
   assert.equal(c.hoursSpent, 25 + 25 + 8)
   assert.equal(c.phases.length, 3)
   assert.match(c.origin, /рекомендации/)
-  const t = c.timeline.join(' ')
+  const t = c.timeline.map((s) => s.t).join(' ')
   for (const re of [/Битрикс24/, /Google-таблиц/, /вручную/, /задачами и вакансиями/, /двойной ввод/]) {
     assert.match(t, re, `в пути СПЗ нет ${re}`)
   }
 })
 
-test('имена заказчиков обезличены: ни настоящего названия, ни ссылок на их базы', () => {
+test('в тексте — только псевдонимы ПакЛайн и СПЗ', () => {
   for (const [name, source] of [['данные', data], ['страница', page], ['снапшот', out]]) {
     assert.ok(!/петфуд|ламистр|спортзани/i.test(source), `${name}: настоящее имя заказчика`)
-    assert.ok(!source.includes('db13417569248up') && !source.includes('/spz/'), `${name}: ссылка на базу заказчика`)
   }
+})
+
+// Владелец (#765, после первой выкладки): «скрины переписки… дают ощущение
+// реальности. И ссылки куда убрал?» — история должна быть проверяемой.
+test('ссылки-доказательства из задачи на месте и попали в снапшот', () => {
+  const expected = {
+    excelToApp: 'https://excel-to-app.ru/',
+    tzPrompt: 'https://github.com/ideav/crm/issues/4703',
+    tz: 'https://github.com/ideav/crm/blob/main/docs/petfood_checklist_tz.md',
+    paklineApp: 'https://ideav.ru/db13417569248up/',
+    spzApp: 'https://ideav.ru/spz/',
+  }
+  for (const [k, href] of Object.entries(expected)) assert.equal(LINKS[k], href, `ссылка ${k}`)
+  for (const href of Object.values(LINKS)) assert.ok(out.includes(`href="${href}"`), `снапшот без ${href}`)
+  const pak = byKey.pakline.timeline.flatMap((s) => (s.links || []).map((l) => l.href))
+  for (const href of [LINKS.paklineExcel, LINKS.tzPrompt, LINKS.tz, LINKS.botResult, LINKS.paklineApp]) {
+    assert.ok(pak.includes(href), `в пути ПакЛайна нет ${href}`)
+  }
+  assert.equal(byKey.spz.app.href, LINKS.spzApp)
+})
+
+test('все ссылки страницы открываются в одной общей вкладке «put»', () => {
+  assert.equal(LINK_TARGET, 'put')
+  const anchors = out.match(/<a [^>]*href="[^"#][^"]*"[^>]*>/g) || []
+  const inArticle = out.slice(out.indexOf('<article id="ap-prerender">'), out.indexOf('</article>'))
+  const own = inArticle.match(/<a [^>]*>/g) || []
+  assert.ok(own.length >= 10, 'мало ссылок в снапшоте')
+  for (const tag of own) assert.match(tag, /target="put"/, `ссылка не в окне put: ${tag}`)
+  assert.ok(anchors.length >= own.length)
+  assert.ok(!/target="_blank"/.test(page), 'на странице осталась ссылка в новое окно')
+  // rel="noopener"/"noreferrer" заставили бы браузер открывать каждую ссылку в новой вкладке
+  assert.ok(!/rel="noopener|rel="noreferrer/.test(page))
+  assert.equal((page.match(/target=\{LINK_TARGET\}/g) || []).length, 4, 'ссылки шагов пути, кнопка приложения, кнопка шага, политика ПДн')
+})
+
+test('скриншоты переписки в шагах ПакЛайна: Telegram с заказчиком и бот сборки', () => {
+  const shots = byKey.pakline.timeline.filter((s) => s.shot).map((s) => s.shot.src)
+  assert.deepEqual(shots, ['/adept/pakline-telegram.webp', '/adept/pakline-bot.webp'])
+})
+
+test('проекты — две вкладки, а не одна простыня', () => {
+  assert.ok(page.includes('role="tablist"'))
+  assert.ok(page.includes('role="tab"'))
+  assert.ok(page.includes('role="tabpanel"'))
+  assert.match(page, /hidden=\{activeCase !== c\.key\}/)
+  assert.match(page, /aria-selected=\{activeCase === c\.key\}/)
 })
 
 test('скриншоты проектов лежат в public/adept и описаны alt-текстом', () => {
   for (const c of CASES) {
-    for (const img of [c.image, c.extraImage].filter(Boolean)) {
+    for (const img of [...c.images, ...c.timeline.filter((s) => s.shot).map((s) => s.shot)]) {
       assert.ok(existsSync(resolve(repo, 'public', img.src.slice(1))), `нет файла ${img.src}`)
       assert.ok(img.alt.length > 20, `пустой alt у ${img.src}`)
       assert.ok(out.includes(img.src), `снапшот без ${img.src}`)
