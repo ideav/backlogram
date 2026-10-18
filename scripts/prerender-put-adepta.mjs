@@ -22,6 +22,7 @@ import {
   HERO_CHIPS,
   HERO_LEAD,
   HOURS_LESSON,
+  LINK_TARGET,
   RATE_NOTE,
   SELF_CHECK,
   STEPS,
@@ -54,36 +55,44 @@ const canonical = `${SITE}${PATH}`
 // ───────────────────────────────────────────────────────────────────────────
 const chipsHtml = HERO_CHIPS.map((c) => `<span class="ap-prerender__chip">${escape(c)}</span>`).join(' ')
 
+const a = (href, label) => `<a href="${escape(href)}" target="${LINK_TARGET}">${escape(label)}</a>`
+
 const stepsHtml = STEPS.map(
   (s) => `
       <li><h3>${escape(s.h)}</h3><p>${escape(s.p)}</p>${
-        s.cta && !s.cta.href.startsWith('#') ? `<p><a href="${escape(s.cta.href)}">${escape(s.cta.label)}</a></p>` : ''
+        s.cta && !s.cta.href.startsWith('#') ? `<p>${a(s.cta.href, s.cta.label)}</p>` : ''
       }</li>`,
 ).join('')
 
+const figure = (img) =>
+  `<figure><img src="${escape(img.src)}" width="${img.width}" height="${img.height}" alt="${escape(img.alt)}" loading="lazy" /><figcaption>${escape(img.alt)}</figcaption></figure>`
+
+// В снапшоте обе вкладки идут подряд: краулеру и читателю без JS нужны оба проекта.
 const casesHtml = CASES.map((c) => {
   const phases = c.phases
     .map((ph, i) => `<li>Фаза ${i + 1}: ${escape(ph.name)}${ph.budget ? ` — ${rub(ph.budget)}` : ''}, ${escape(ph.note)}</li>`)
     .join('')
-  const timeline = c.timeline.map((t) => `<li>${escape(t)}</li>`).join('')
-  const images = [c.image, c.extraImage]
-    .filter(Boolean)
-    .map(
-      (img) =>
-        `<figure><img src="${escape(img.src)}" width="${img.width}" height="${img.height}" alt="${escape(img.alt)}" loading="lazy" /><figcaption>${escape(img.alt)}</figcaption></figure>`,
-    )
+  const timeline = c.timeline
+    .map((step) => {
+      const links = step.links ? `<p>${step.links.map((l) => a(l.href, l.label)).join(' · ')}</p>` : ''
+      const shot = step.shot ? figure(step.shot) : ''
+      return `<li><p>${escape(step.t)}</p>${links}${shot}</li>`
+    })
     .join('')
+  const lesson = c.key === 'pakline' ? `<aside><h4>Почему мы не торгуемся за часы</h4><p>${escape(HOURS_LESSON)}</p></aside>` : ''
   return `
-    <section class="ap-prerender__group">
+    <section class="ap-prerender__group" id="case-${c.key}">
       <h3>История ${escape(c.name)}</h3>
       <p>${escape(c.tagline)}</p>
       <p><strong>Бюджет: ${rub(c.budget)}, работы около ${c.hoursSpent} ч.</strong> Откуда пришёл: ${escape(c.origin)}.</p>
       <ul>${phases}</ul>
       <h4>Как шёл проект</h4>
       <ol>${timeline}</ol>
+      ${lesson}
       <h4>Что получил заказчик</h4>
       <p>${escape(c.result)}</p>
-      ${images}
+      ${c.images.map(figure).join('')}
+      <p>${a(c.app.href, c.app.label)}</p>
     </section>`
 }).join('')
 
@@ -104,10 +113,6 @@ const bodyHtml = `
   <section class="ap-prerender__group">
     <h2>Два проекта: путь от первого письма до работающей системы</h2>
     <p>${escape(RATE_NOTE)}</p>${casesHtml}
-    <aside>
-      <h3>Почему мы не торгуемся за часы</h3>
-      <p>${escape(HOURS_LESSON)}</p>
-    </aside>
   </section>
   <section class="ap-prerender__group">
     <h2>Справитесь ли вы с подобным</h2>
@@ -117,7 +122,7 @@ const bodyHtml = `
   </section>
   <section class="ap-prerender__group">
     <h2>Заявка в команду адептов</h2>
-    <p>Имя, Telegram и пара строк об опыте — дальше короткое собеседование. Форма заявки работает в JavaScript-версии страницы; без JS напишите в Telegram <a href="https://t.me/qdmadept">@qdmadept</a>.</p>
+    <p>Имя, Telegram и пара строк об опыте — дальше короткое собеседование. Форма заявки работает в JavaScript-версии страницы; без JS напишите в Telegram <a href="https://t.me/qdmadept" target="${LINK_TARGET}">@qdmadept</a>.</p>
   </section>
 </article>`
 
