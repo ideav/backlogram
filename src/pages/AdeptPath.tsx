@@ -7,9 +7,8 @@ import {
   FORM_HINTS,
   HERO_CHIPS,
   HERO_LEAD,
-  HOURLY_RATE,
   HOURS_LESSON,
-  ROLES,
+  RATE_NOTE,
   SELF_CHECK,
   STEPS,
 } from '../data/adeptPath'
@@ -38,21 +37,20 @@ const rub = (n: number) => `${n.toLocaleString('ru-RU')} ₽`
 const INPUT_CLASS =
   'mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all'
 
-type Role = 'developer' | 'partner'
 type FormStage = 'form' | 'sending' | 'done'
 
 /**
  * «Путь адепта Интеграм» — /put-adepta.html (issue #765). Мотивирует пройти
  * пять шагов: изучить два реальных проекта (ПакЛайн и СПЗ — имена заменены),
  * собрать своё приложение, зарегистрироваться разработчиком, найти заказчика,
- * стать партнёром. Заявка — тем же механизмом, что форма на главной и квиз
+ * стать партнёром (ссылка — в личном кабинете после регистрации). Заявка в
+ * разработчики — тем же механизмом, что форма на главной и квиз
  * (/telegram-notify.php, капча для анонимов, согласие на ПДн).
  *
  * Тексты и цифры — общий источник src/data/adeptPath.mjs со снапшотом
  * scripts/prerender-put-adepta.mjs.
  */
 export default function AdeptPath() {
-  const [role, setRole] = useState<Role>('developer')
   const [name, setName] = useState('')
   const [telegram, setTelegram] = useState('')
   const [experience, setExperience] = useState('')
@@ -117,8 +115,7 @@ export default function AdeptPath() {
     }
   }, [idbCookieFound])
 
-  function goTo(href: string, nextRole?: Role) {
-    if (nextRole) setRole(nextRole)
+  function goTo(href: string) {
     document.getElementById(href.slice(1))?.scrollIntoView({ behavior: 'smooth' })
   }
 
@@ -137,9 +134,8 @@ export default function AdeptPath() {
       return
     }
 
-    const roleDef = ROLES.find(r => r.value === role) ?? ROLES[0]
     const summary = [
-      `Путь адепта /put-adepta.html — хочет стать ${roleDef.label.toLowerCase()}`,
+      'Путь адепта /put-adepta.html — заявка в разработчики',
       experience.trim() ? `Опыт: ${experience.trim()}` : 'Опыт: не указан',
     ].join('\n')
 
@@ -147,7 +143,7 @@ export default function AdeptPath() {
     data.set('name', name.trim())
     data.set('contact', `Telegram: ${telegram.trim()}`)
     data.set('task', summary)
-    data.set('source', roleDef.source)
+    data.set('source', 'adept')
     if (CAPTCHA_CLIENT_KEY && !idbCookieFound) data.set('captcha_token', captchaToken)
 
     setStage('sending')
@@ -157,7 +153,7 @@ export default function AdeptPath() {
       .then(res => res.json())
       .then(json => {
         if (json.ok) {
-          reachGoal('lead', { source: roleDef.source })
+          reachGoal('lead', { source: 'adept' })
           setStage('done')
         } else {
           setStage('form')
@@ -231,7 +227,7 @@ export default function AdeptPath() {
                 {s.cta && (s.cta.href.startsWith('#') ? (
                   <button
                     type="button"
-                    onClick={() => goTo(s.cta!.href, i === 4 ? 'partner' : i === 2 ? 'developer' : undefined)}
+                    onClick={() => goTo(s.cta!.href)}
                     className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline text-left"
                   >
                     {s.cta.label}
@@ -259,7 +255,7 @@ export default function AdeptPath() {
             Два проекта: путь от первого письма до работающей системы
           </h2>
           <p className="mt-4 text-center text-slate-600 dark:text-slate-300">
-            Имена заказчиков изменены, цифры — настоящие. Ставка в обоих — {rub(HOURLY_RATE)} за час.
+            {RATE_NOTE}
           </p>
 
           <div className="mt-12 space-y-16">
@@ -382,28 +378,8 @@ export default function AdeptPath() {
                 После заявки — короткое собеседование в Telegram: расскажете о себе, мы покажем проекты изнутри.
               </p>
 
-              <fieldset className="mt-6">
-                <legend className="text-sm font-medium text-slate-700 dark:text-slate-300">Хочу стать</legend>
-                <div className="mt-2 flex gap-2 flex-wrap">
-                  {ROLES.map(r => (
-                    <button
-                      key={r.value}
-                      type="button"
-                      aria-pressed={role === r.value}
-                      onClick={() => setRole(r.value)}
-                      className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
-                        role === r.value
-                          ? 'border-blue-600 bg-blue-600/5 text-blue-600 dark:text-blue-400'
-                          : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-500 dark:hover:border-blue-400'
-                      }`}
-                    >
-                      {r.label}
-                    </button>
-                  ))}
-                </div>
-              </fieldset>
 
-              <div className="mt-5 space-y-5">
+              <div className="mt-6 space-y-5">
                 <div>
                   <label htmlFor="adept-name" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                     Имя

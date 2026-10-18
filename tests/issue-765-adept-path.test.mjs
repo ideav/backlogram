@@ -17,8 +17,10 @@ import { fileURLToPath } from 'node:url'
 import {
   ADEPT_META,
   CASES,
+  HERO_CHIPS,
   HOURLY_RATE,
-  ROLES,
+  RATE_NOTE,
+  REGISTER_URL,
   SELF_CHECK,
   STEPS,
 } from '../src/data/adeptPath.mjs'
@@ -103,6 +105,23 @@ test('пять шагов по порядку задачи', () => {
   for (const s of STEPS) assert.ok(out.includes(s.h), `снапшот без шага «${s.h}»`)
 })
 
+test('партнёрская ссылка — в личном кабинете после регистрации, а не через заявку', () => {
+  // ЛК (crm templates/my/info.html) сам выдаёт ссылку ?aff=<user_id> на карточке «Рефералы».
+  assert.match(STEPS[4].p, /личном кабинете/)
+  assert.match(STEPS[4].p, /Рефералы/)
+  assert.equal(STEPS[4].cta.href, REGISTER_URL)
+  assert.equal(REGISTER_URL, 'https://ideav.ru/start.html#reg')
+  assert.ok(out.includes(REGISTER_URL), 'снапшот без ссылки на регистрацию')
+  assert.ok(!page.includes('adept-partner'), 'партнёрская заявка осталась в форме')
+})
+
+test('ставка команды — не ставка адепта: в hero её нет, свою адепт назначает сам', () => {
+  assert.ok(!HERO_CHIPS.some((c) => /3[\s ]?750/.test(c)), 'ставка команды в hero')
+  assert.match(RATE_NOTE, /назначает сам/)
+  assert.ok(out.includes(RATE_NOTE))
+  assert.equal(HOURLY_RATE, 3750)
+})
+
 test('самопроверка к первому шагу есть и попала в снапшот', () => {
   assert.ok(SELF_CHECK.length >= 3)
   for (const s of SELF_CHECK) assert.ok(out.includes(s))
@@ -118,13 +137,11 @@ test('форма: имя, Telegram, опыт работы и согласие н
   assert.match(page, /disabled=\{stage === 'sending' \|\| !consentChecked\}/)
 })
 
-test('заявка уходит на telegram-notify.php, разработчик и партнёр — разными источниками', () => {
+test('заявка в разработчики уходит на telegram-notify.php с source=adept', () => {
   assert.ok(page.includes("fetch('/telegram-notify.php'"))
-  assert.ok(page.includes("data.set('source', roleDef.source)"))
-  assert.deepEqual(ROLES.map((r) => r.source), ['adept', 'adept-partner'])
+  assert.ok(page.includes("data.set('source', 'adept')"))
   const php = read('public/telegram-notify.php')
   assert.match(php, /'adept'\s+=>\s+'Путь адепта: заявка в разработчики'/)
-  assert.match(php, /'adept-partner'\s+=>\s+'Путь адепта: заявка в партнёры'/)
   assert.match(page, /if \(CAPTCHA_CLIENT_KEY && !idbCookieFound && !captchaToken\)/)
 })
 

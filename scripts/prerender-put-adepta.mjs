@@ -21,8 +21,8 @@ import {
   CASES,
   HERO_CHIPS,
   HERO_LEAD,
-  HOURLY_RATE,
   HOURS_LESSON,
+  RATE_NOTE,
   SELF_CHECK,
   STEPS,
 } from '../src/data/adeptPath.mjs'
@@ -103,7 +103,7 @@ const bodyHtml = `
   </section>
   <section class="ap-prerender__group">
     <h2>Два проекта: путь от первого письма до работающей системы</h2>
-    <p>Имена заказчиков изменены, цифры — настоящие. Ставка в обоих — ${rub(HOURLY_RATE)} за час.</p>${casesHtml}
+    <p>${escape(RATE_NOTE)}</p>${casesHtml}
     <aside>
       <h3>Почему мы не торгуемся за часы</h3>
       <p>${escape(HOURS_LESSON)}</p>

@@ -37,9 +37,10 @@ export const ADEPT_META: {
 export const HERO_LEAD: string
 export const HERO_CHIPS: string[]
 export const HOURLY_RATE: number
+export const RATE_NOTE: string
+export const REGISTER_URL: string
 export const CASES: AdeptCase[]
 export const HOURS_LESSON: string
 export const SELF_CHECK: string[]
 export const STEPS: AdeptStep[]
-export const ROLES: { value: 'developer' | 'partner'; label: string; source: string }[]
 export const FORM_HINTS: { experience: string }
