@@ -49,6 +49,11 @@ export const GOALS = {
   praktikum: 'praktikum_lead',
   /** К заявке прикреплён файл (issue #657). Наблюдение, не оплата. */
   fileAttach: 'file_attach',
+  /**
+   * Заявку не отправили: без файлов описание задачи короче минимума (issue #763).
+   * Наблюдение — сколько людей отсекает требование описать задачу.
+   */
+  leadShort: 'lead_short',
 } as const
 
 const MIN_DWELL_MS = 2500

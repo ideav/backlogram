@@ -38,6 +38,14 @@ export const MAX_FILES = 5
 export const MAX_FILE_BYTES = 10 * 1024 * 1024
 export const FILE_ACCEPT = '.xlsx,.xls,.csv,.ods,.doc,.docx,.pdf,.txt'
 
+// Без файлов описание задачи не короче — зеркалит order.php (issue #763):
+// «работа иксель» проходила обязательное поле, а искала работу, не продукт.
+export const MIN_TASK_CHARS = 40
+export const TASK_PLACEHOLDER =
+  'Например: заявки клиентов ведём в Excel втроём и теряем, кто кому перезвонил. Нужно видеть этап каждой заявки и напоминания.'
+export const TASK_TOO_SHORT =
+  'Опишите задачу чуть подробнее — что ведёте в Excel и что должно получиться. Или приложите файл.'
+
 export type Shot = { src: string; alt: string; caption: string }
 
 /**

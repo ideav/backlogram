@@ -27,8 +27,11 @@ import {
   FILE_ACCEPT,
   MAX_FILES,
   MAX_FILE_BYTES,
+  MIN_TASK_CHARS,
   PRAKTIKUM,
   PRIVACY_URL,
+  TASK_PLACEHOLDER,
+  TASK_TOO_SHORT,
   TELEGRAM_BOT_URL,
 } from './content'
 import { Faq } from './Faq'
@@ -320,6 +323,13 @@ function OrderForm({
     if (source.utm) data.set('utm', source.utm)
     if (format) data.set('format', format)
     for (const f of files) data.append('files[]', f, f.name)
+    // «работа иксель» проходила обязательное поле и квалифицировалась только
+    // звонком (issue #763). Без файлов просим описать задачу по-человечески.
+    if (kind !== 'razbor' && files.length === 0 && String(data.get('task') ?? '').trim().length < MIN_TASK_CHARS) {
+      reachGoal(GOALS.leadShort, { kind, page: source.page || 'main' })
+      setError(TASK_TOO_SHORT)
+      return
+    }
     setBusy(true)
     setError('')
     try {
@@ -454,8 +464,14 @@ function OrderForm({
             required
             rows={4}
             maxLength={5000}
+            placeholder={kind === 'razbor' ? undefined : TASK_PLACEHOLDER}
             className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          {kind !== 'razbor' && (
+            <span className="mt-1 block text-xs text-slate-500">
+              Пара предложений: что сейчас ведёте в Excel, кто с этим работает и что должно получиться.
+            </span>
+          )}
         </label>
 
         {withFiles && (
