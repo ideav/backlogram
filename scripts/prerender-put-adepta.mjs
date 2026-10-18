@@ -123,6 +123,10 @@ const bodyHtml = `
         ${selfCheckHtml}
     </ul>
   </section>
+  <section class="ap-prerender__group">
+    <h2>Заявка в команду адептов</h2>
+    <p>Имя, Telegram и пара строк об опыте — дальше короткое собеседование. Форма заявки работает в JavaScript-версии страницы; без JS напишите в Telegram <a href="https://t.me/qdmadept" target="${LINK_TARGET}">@qdmadept</a>.</p>
+  </section>
   <section class="ap-prerender__group" id="soobshchestvo">
     <h2>${escape(COMMUNITY.h)}</h2>
     <p>${escape(COMMUNITY.lead)}</p>
@@ -130,10 +134,6 @@ const bodyHtml = `
         ${communityHtml}
     </ul>
     <p>${escape(COMMUNITY.solo)} ${a(COMMUNITY.soloCta.href, COMMUNITY.soloCta.label)}</p>
-  </section>
-  <section class="ap-prerender__group">
-    <h2>Заявка в команду адептов</h2>
-    <p>Имя, Telegram и пара строк об опыте — дальше короткое собеседование. Форма заявки работает в JavaScript-версии страницы; без JS напишите в Telegram <a href="https://t.me/qdmadept" target="${LINK_TARGET}">@qdmadept</a>.</p>
   </section>
 </article>`
 

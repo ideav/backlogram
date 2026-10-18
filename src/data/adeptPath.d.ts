@@ -8,6 +8,8 @@ export interface AdeptImage {
 export interface AdeptLink {
   label: string
   href: string
+  /** Открывать в модальном окне вместо перехода (#769). */
+  modal?: 'botReport'
 }
 
 export interface AdeptTimelineStep {
