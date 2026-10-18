@@ -394,6 +394,31 @@ export default function AdeptPath() {
                 </aside>
               )}
 
+              {c.rework && (
+                <>
+                  <h4 className="mt-8 font-semibold text-slate-900 dark:text-white">Как делались доработки</h4>
+                  <p className="mt-2 text-slate-700 dark:text-slate-200 leading-relaxed">{c.rework.intro}</p>
+                  <ul className="mt-3 list-disc space-y-1 pl-6 text-slate-700 dark:text-slate-200">
+                    {c.rework.wishes.map(w => <li key={w}>{w}</li>)}
+                  </ul>
+                  <p className="mt-3 text-slate-700 dark:text-slate-200 leading-relaxed">{c.rework.how}</p>
+                  <p className="mt-3 text-slate-700 dark:text-slate-200 leading-relaxed">{c.rework.note}</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {c.rework.links.map(l => (
+                      <a
+                        key={l.href}
+                        href={l.href}
+                        target={LINK_TARGET}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-blue-500/30 bg-blue-500/5 px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:border-blue-500 transition-colors"
+                      >
+                        {l.label}
+                        <ExternalLink size={13} aria-hidden="true" />
+                      </a>
+                    ))}
+                  </div>
+                </>
+              )}
+
               <h4 className="mt-8 font-semibold text-slate-900 dark:text-white">Что получил заказчик</h4>
               <p className="mt-2 text-slate-700 dark:text-slate-200 leading-relaxed">{c.result}</p>
 
