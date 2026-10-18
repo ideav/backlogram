@@ -24,14 +24,18 @@
  *   partner    /partner/, цель partner_click (issue #674)
  *   praktikum-junk, adept-junk, partner-junk  те же посадочные и цели,
  *              мусорные ключи без минус-слов, охват на всех (issue #688)
+ *   put-adepta ideav.ru/put-adepta.html, фразы адептов, оплата за клики —
+ *              проверка гипотезы «реальные проекты с цифрами привлекают
+ *              адептов лучше, чем /adept/»
  *
  * Окружение:
  *   DIRECT_TOKEN     OAuth-токен Директа (обязателен для --apply)
  *   SITE_URL         адрес лендинга, например https://example.ru
  *   METRIKA_ID       счётчик Метрики нового домена
- *   CAMPAIGN_PROFILE excel | praktikum | praktikum-roles | adept | partner
+ *   CAMPAIGN_PROFILE excel | praktikum | praktikum-roles | adept | partner | put-adepta
  *                    (по умолчанию excel)
- *   GOAL_ID          id целевой цели профиля в этом счётчике
+ *   GOAL_ID          id целевой цели профиля в этом счётчике (у профилей
+ *                    с оплатой за клики необязателен)
  *   CPA_RUB          цена конверсии днём, ₽ (по умолчанию — у профиля, иначе 500)
  *   NIGHT_CPA_RUB    цена конверсии ночью, ₽ (по умолчанию — у профиля, иначе CPA_RUB / 10)
  *   WEEKLY_RUB       недельный лимит расхода, ₽ (по умолчанию 10000)
@@ -228,6 +232,37 @@ for (const [name, title] of [['praktikum', 'Практикум-мусор'], ['a
   }
 }
 
+/**
+ * Путь адепта: та же аудитория, что у /adept/ (фразы и минус-слова — оттуда),
+ * но посадочная — ideav.ru/put-adepta.html с двумя настоящими проектами,
+ * часами и бюджетами. Гипотеза: такая страница приводит адептов лучше, чем
+ * обещания /adept/. Сравнивать с кампаниями «Адепты-CPA» (715167867…976).
+ *
+ * Стратегия — максимум кликов, как у всего кабинета с 09.10.2026
+ * (direct-switch-to-clicks.mjs): оплата за конверсии без истории цели не
+ * входит в аукцион. Целевая цель страницы — `lead` с source=adept (отправка
+ * формы «Оставить заявку»), она в счётчике ideav.ru, а не excel-to-app.ru.
+ */
+PROFILES['put-adepta'] = {
+  ...PROFILES.adept,
+  title: 'Путь адепта',
+  slug: 'put-adepta',
+  path: '/put-adepta.html',
+  goalName: 'lead',
+  adsFile: marketing('put-adepta.ads.json'),
+  strategy: 'clicks',
+  weeklyRub: 300,
+  clickCeilingRub: { search: 25, network: 10 },
+  // Цифры и обещания — ровно со страницы (src/data/adeptPath.mjs).
+  sitelinks: [
+    { Title: 'Пять шагов', Description: 'От первого приложения до своих заказчиков', anchor: 'steps' },
+    { Title: 'Два проекта с цифрами', Description: 'ПакЛайн и СПЗ: часы, бюджеты и что получил заказчик', anchor: 'cases' },
+    { Title: 'Оставить заявку', Description: 'Имя, Telegram и пара строк об опыте', anchor: 'zayavka' },
+    { Title: 'Сообщество адептов', Description: 'Заказы, консультации и бесплатное время ИИ-агентов', anchor: 'soobshchestvo' },
+  ],
+  callouts: ['Ставку назначаете сами', 'Код пишет ИИ-агент', 'Заказчиков даёт команда', 'Партнёрам 15–40%'],
+}
+
 export const PROFILE = PROFILES[process.env.CAMPAIGN_PROFILE ?? 'excel']
 
 const cfg = {
@@ -237,7 +272,7 @@ const cfg = {
   goalId: Number(process.env.GOAL_ID ?? 0),
   cpaRub: Number(process.env.CPA_RUB ?? PROFILE?.cpaRub ?? 500),
   nightCpaRub: Number(process.env.NIGHT_CPA_RUB ?? (process.env.CPA_RUB ? Number(process.env.CPA_RUB) / 10 : PROFILE?.nightCpaRub ?? 50)),
-  weeklyRub: Number(process.env.WEEKLY_RUB ?? 10000),
+  weeklyRub: Number(process.env.WEEKLY_RUB ?? PROFILE?.weeklyRub ?? 10000),
   goalValueRub: Number(process.env.GOAL_VALUE_RUB ?? PROFILE?.goalValueRub ?? 0),
 }
 
@@ -247,7 +282,7 @@ export function configProblems(config = cfg, willApply = apply) {
   if (!PROFILE) problems.push(`CAMPAIGN_PROFILE: нет профиля «${process.env.CAMPAIGN_PROFILE}», есть ${Object.keys(PROFILES).join(', ')}`)
   if (!config.siteUrl.startsWith('https://')) problems.push('SITE_URL: нужен адрес лендинга с https')
   if (!config.counterId) problems.push('METRIKA_ID: нужен счётчик нового домена')
-  if (!config.goalId) problems.push(`GOAL_ID: нужен id цели ${PROFILE?.goalName ?? 'профиля'}`)
+  if (!config.goalId && PROFILE?.strategy !== 'clicks') problems.push(`GOAL_ID: нужен id цели ${PROFILE?.goalName ?? 'профиля'}`)
   if (willApply && !config.token) problems.push('DIRECT_TOKEN: без токена создавать нечем')
   return problems
 }
@@ -369,6 +404,25 @@ export function payForConversion(shift = 'day') {
   }
 }
 
+/**
+ * Максимум кликов (с 09.10.2026 так работает весь кабинет, см.
+ * direct-switch-to-clicks.mjs): недельный лимит и потолок цены клика.
+ */
+export function maximumClicks(where, profile = PROFILE, weeklyRub = cfg.weeklyRub) {
+  return {
+    BiddingStrategyType: 'WB_MAXIMUM_CLICKS',
+    WbMaximumClicks: {
+      WeeklySpendLimit: Math.round(weeklyRub * MICRO),
+      BidCeiling: Math.round(profile.clickCeilingRub[where] * MICRO),
+    },
+  }
+}
+
+/** Стратегия площадки: у профиля с strategy: 'clicks' — клики, иначе конверсии. */
+export function biddingFor(where, shift, profile = PROFILE) {
+  return profile.strategy === 'clicks' ? maximumClicks(where, profile) : payForConversion(shift)
+}
+
 export function campaignPayload(name, slug, where, shift = 'day', profile = PROFILE) {
   const negatives = negativesFor(profile)
   return {
@@ -382,13 +436,15 @@ export function campaignPayload(name, slug, where, shift = 'day', profile = PROF
     },
     TextCampaign: {
       BiddingStrategy: {
-        Search: where === 'search' ? payForConversion(shift) : { BiddingStrategyType: 'SERVING_OFF' },
-        Network: where === 'network' ? payForConversion(shift) : { BiddingStrategyType: 'SERVING_OFF' },
+        Search: where === 'search' ? biddingFor(where, shift, profile) : { BiddingStrategyType: 'SERVING_OFF' },
+        Network: where === 'network' ? biddingFor(where, shift, profile) : { BiddingStrategyType: 'SERVING_OFF' },
       },
       CounterIds: { Items: [cfg.counterId] },
-      PriorityGoals: {
-        Items: [{ GoalId: cfg.goalId, Value: Math.round(cfg.goalValueRub * MICRO) }],
-      },
+      ...(cfg.goalId ? {
+        PriorityGoals: {
+          Items: [{ GoalId: cfg.goalId, Value: Math.round(cfg.goalValueRub * MICRO) }],
+        },
+      } : {}),
       Settings: [{ Option: 'ADD_METRICA_TAG', Value: 'YES' }],
     },
     _slug: slug,
@@ -444,7 +500,9 @@ async function main() {
 
   console.log(apply ? 'Создаю кампании в боевом кабинете (всё остановленным).' : 'Сухой прогон: ничего не отправляю.')
   console.log(`Лендинг: ${cfg.siteUrl}${PROFILE.path} | счётчик: ${cfg.counterId} | цель: ${cfg.goalId}`)
-  console.log(`Цена конверсии: днём ${cfg.cpaRub} ₽, ночью ${cfg.nightCpaRub} ₽ | недельный лимит: ${cfg.weeklyRub} ₽ на кампанию`)
+  console.log(PROFILE.strategy === 'clicks'
+    ? `Максимум кликов: потолок ${PROFILE.clickCeilingRub.search} ₽ на поиске, ${PROFILE.clickCeilingRub.network} ₽ в сетях | недельный лимит: ${cfg.weeklyRub} ₽ на кампанию`
+    : `Цена конверсии: днём ${cfg.cpaRub} ₽, ночью ${cfg.nightCpaRub} ₽ | недельный лимит: ${cfg.weeklyRub} ₽ на кампанию`)
 
   // Уточнения — общие для аккаунта, заводятся один раз на все объявления.
   const calloutsAdded = await call('adextensions', 'add', {
