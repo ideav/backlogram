@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { ArrowRight, Check, CheckCircle2, Clock, ExternalLink, Send, Wallet } from 'lucide-react'
+import { ArrowRight, Bot, Briefcase, Check, CheckCircle2, Clock, ExternalLink, LayoutGrid, Lightbulb, MessagesSquare, Send, Wallet, X } from 'lucide-react'
 import { reachGoal } from '../lib/metrika'
+import { parseTelegramMessage } from '../lib/telegramMessage'
+import { BOT_REPORT } from '../data/adeptBotReport'
 import {
   ADEPT_META,
   CASES,
+  COMMUNITY,
   FORM_HINTS,
   HERO_CHIPS,
   HERO_LEAD,
@@ -40,6 +43,9 @@ const INPUT_CLASS =
 
 type FormStage = 'form' | 'sending' | 'done'
 
+/** Иконки преимуществ сообщества (#769) — по ключу из COMMUNITY.perks. */
+const PERK_ICONS = { examples: LayoutGrid, consult: MessagesSquare, agents: Bot, orders: Briefcase, tips: Lightbulb } as const
+
 /**
  * «Путь адепта Интеграм» — /put-adepta.html (issue #765). Мотивирует пройти
  * пять шагов: изучить два реальных проекта (ПакЛайн и СПЗ — имена заменены),
@@ -63,6 +69,7 @@ export default function AdeptPath() {
   const [errorMsg, setErrorMsg] = useState('')
   const captchaContainerRef = useRef<HTMLDivElement>(null)
   const captchaWidgetIdRef = useRef<number | null>(null)
+  const reportDialogRef = useRef<HTMLDialogElement>(null)
 
   useEffect(() => {
     document.title = ADEPT_META.title
@@ -203,7 +210,7 @@ export default function AdeptPath() {
               onClick={() => goTo('#zayavka')}
               className="inline-flex items-center gap-2 px-8 py-4 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 font-bold rounded-xl transition-all"
             >
-              Сразу к заявке
+              Присоединиться
             </button>
           </div>
         </div>
@@ -339,7 +346,17 @@ export default function AdeptPath() {
                       <p className="text-slate-700 dark:text-slate-200 leading-relaxed">{step.t}</p>
                       {step.links && (
                         <div className="mt-2 flex flex-wrap gap-2">
-                          {step.links.map(l => (
+                          {step.links.map(l => l.modal ? (
+                            <button
+                              key={l.href}
+                              type="button"
+                              onClick={() => reportDialogRef.current?.showModal()}
+                              className="inline-flex items-center gap-1.5 rounded-lg border border-blue-500/30 bg-blue-500/5 px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:border-blue-500 transition-colors"
+                            >
+                              {l.label}
+                              <Send size={13} aria-hidden="true" />
+                            </button>
+                          ) : (
                             <a
                               key={l.href}
                               href={l.href}
@@ -528,6 +545,95 @@ export default function AdeptPath() {
           )}
         </div>
       </section>
+
+      {/* Сообщество (#769): что даёт вступление после собеседования; последняя секция по просьбе владельца */}
+      <section id="soobshchestvo" className="mt-24 px-4 sm:px-6 lg:px-8 scroll-mt-24">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-white">{COMMUNITY.h}</h2>
+          <p className="mt-4 text-center text-slate-600 dark:text-slate-300">{COMMUNITY.lead}</p>
+          <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+            {COMMUNITY.perks.map(perk => {
+              const Icon = PERK_ICONS[perk.key as keyof typeof PERK_ICONS] ?? Check
+              return (
+                <li
+                  key={perk.key}
+                  className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6"
+                >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600/10 text-blue-600 dark:text-blue-400">
+                    <Icon size={20} aria-hidden="true" />
+                  </span>
+                  <h3 className="mt-4 font-semibold text-slate-900 dark:text-white">{perk.h}</h3>
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{perk.p}</p>
+                </li>
+              )
+            })}
+          </ul>
+          <div className="mt-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 p-6 text-center">
+            <p className="text-slate-700 dark:text-slate-200 leading-relaxed">{COMMUNITY.solo}</p>
+            <a
+              href={COMMUNITY.soloCta.href}
+              target={LINK_TARGET}
+              className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              {COMMUNITY.soloCta.label}
+              <ArrowRight size={14} aria-hidden="true" />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Отчёт бота о сборке (#769): модальное окно в виде сообщения Telegram */}
+      <dialog
+        ref={reportDialogRef}
+        aria-labelledby="bot-report-title"
+        onClick={e => { if (e.target === e.currentTarget) e.currentTarget.close() }}
+        className="m-auto w-[min(42rem,calc(100vw-2rem))] max-h-[calc(100vh-2rem)] rounded-2xl p-0 bg-transparent backdrop:bg-slate-900/60 backdrop:backdrop-blur-sm"
+      >
+        <div className="flex max-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-2xl bg-[#c8dbb0] dark:bg-[#0e1621] shadow-2xl">
+          <div className="flex items-center gap-3 bg-white dark:bg-[#17212b] px-4 py-3 border-b border-slate-200 dark:border-slate-800">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-white">
+              <Bot size={18} aria-hidden="true" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <div id="bot-report-title" className="font-semibold text-slate-900 dark:text-white">Отчёт бота о сборке</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">бот сборки приложений · сообщение в Telegram</div>
+            </div>
+            <button
+              type="button"
+              onClick={() => reportDialogRef.current?.close()}
+              aria-label="Закрыть"
+              className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <X size={18} aria-hidden="true" />
+            </button>
+          </div>
+          <div className="overflow-y-auto p-3 sm:p-5">
+            <div className="rounded-2xl rounded-tl-sm bg-white dark:bg-[#182533] px-4 py-3 text-[15px] leading-relaxed text-slate-900 dark:text-slate-100 shadow break-words">
+              {parseTelegramMessage(BOT_REPORT).map((line, i) =>
+                'hr' in line ? (
+                  <hr key={i} className="my-3 border-slate-200 dark:border-slate-700" />
+                ) : line.segs.length === 0 ? (
+                  <div key={i} className="h-3" />
+                ) : (
+                  <p key={i} className="whitespace-pre-wrap">
+                    {line.segs.map((seg, j) =>
+                      seg.href ? (
+                        <a key={j} href={seg.href} target={LINK_TARGET} className="text-blue-600 dark:text-blue-400 hover:underline break-all">
+                          {seg.t}
+                        </a>
+                      ) : seg.b ? (
+                        <strong key={j}>{seg.t}</strong>
+                      ) : (
+                        <span key={j}>{seg.t}</span>
+                      ),
+                    )}
+                  </p>
+                ),
+              )}
+            </div>
+          </div>
+        </div>
+      </dialog>
     </div>
   )
 }

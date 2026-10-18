@@ -114,7 +114,7 @@ test('все ссылки страницы открываются в одной 
   assert.ok(!/target="_blank"/.test(page), 'на странице осталась ссылка в новое окно')
   // rel="noopener"/"noreferrer" заставили бы браузер открывать каждую ссылку в новой вкладке
   assert.ok(!/rel="noopener|rel="noreferrer/.test(page))
-  assert.equal((page.match(/target=\{LINK_TARGET\}/g) || []).length, 4, 'ссылки шагов пути, кнопка приложения, кнопка шага, политика ПДн')
+  assert.equal((page.match(/target=\{LINK_TARGET\}/g) || []).length, 6, 'ссылки шагов пути, кнопка приложения, кнопка шага, регистрация в сообществе и ссылки в отчёте бота (#769), политика ПДн')
 })
 
 test('скриншоты переписки в шагах ПакЛайна: Telegram с заказчиком и бот сборки', () => {
@@ -227,4 +227,66 @@ test('маршрут, сборка, редирект, sitemap, llms.txt и ме�
 test('страница и снапшот читают общий источник данных', () => {
   assert.match(page, /from '\.\.\/data\/adeptPath'/)
   assert.match(prerenderScript, /from '\.\.\/src\/data\/adeptPath\.mjs'/)
+})
+
+// ── issue #769: секция «Сообщество» и кнопка «Присоединиться» ───────────
+test('#769: сообщество после собеседования — консультации, время ИИ-агентов, заказы, лайфхаки', async () => {
+  const { COMMUNITY } = await import('../src/data/adeptPath.mjs')
+  assert.match(COMMUNITY.lead, /после собеседования/)
+  const perks = COMMUNITY.perks.map((p) => p.h).join(' | ')
+  for (const re of [/консультаци/i, /бесплатное время ИИ-агентов/i, /заказ/i, /лайфхак/i]) assert.match(perks, re)
+  assert.match(COMMUNITY.solo, /полностью самостоятельно/)
+  assert.match(COMMUNITY.solo, /личном кабинете/)
+  assert.equal(COMMUNITY.soloCta.href, REGISTER_URL)
+  assert.ok(out.includes(COMMUNITY.h), 'снапшот без секции сообщества')
+  for (const p of COMMUNITY.perks) assert.ok(out.includes(p.h), `снапшот без «${p.h}»`)
+  assert.ok(page.includes('COMMUNITY.perks'), 'страница не рисует сообщество')
+  // по просьбе владельца — последняя секция, после формы заявки
+  assert.ok(out.indexOf(COMMUNITY.h) > out.indexOf('Заявка в команду адептов'))
+  assert.ok(page.indexOf('COMMUNITY.perks.map') > page.indexOf('id="zayavka"'))
+  // доступ к примерам приложений: к этим двум и к десяткам других
+  const ex = COMMUNITY.perks.find((p) => p.key === 'examples')
+  assert.match(ex.h, /Примеры приложений/)
+  assert.match(ex.p, /ПакЛайна и СПЗ/)
+  assert.match(ex.p, /десяткам других/)
+})
+
+test('#769: кнопка hero к заявке — «Присоединиться»', () => {
+  assert.match(page, /Присоединиться/)
+  assert.ok(!page.includes('Сразу к заявке'))
+})
+
+test('#769: отчёт бота о сборке — модальное окно-сообщение, в снапшоте без JS — ссылка', async () => {
+  const link = byKey.pakline.timeline.flatMap((s) => s.links ?? []).find((l) => l.label === 'Отчёт бота о сборке')
+  assert.equal(link.modal, 'botReport')
+  assert.equal(link.href, LINKS.botResult)
+  assert.ok(out.includes(LINKS.botResult), 'без JS отчёт недоступен')
+  assert.match(page, /<dialog/)
+  assert.match(page, /showModal\(\)/)
+  assert.match(page, /parseTelegramMessage\(BOT_REPORT\)/)
+  const { BOT_REPORT } = await import('../src/data/adeptBotReport.mjs')
+  assert.match(BOT_REPORT, /^✅ Чек-лист производства ПакЛайн/)
+  assert.match(BOT_REPORT, /Доступы и пароли/)
+  assert.ok(!/вход: \S+ \/ (?!\*+$)\S+$/m.test(BOT_REPORT), 'в отчёте открытый пароль')
+  assert.ok(!/петфуд|ламистр/i.test(BOT_REPORT), 'настоящее имя заказчика')
+})
+
+test('#769: разметка сообщения Telegram — заголовки, роли, капс, ссылки, разделитель', async () => {
+  const { parseTelegramMessage } = await import('../src/lib/telegramMessage.mjs')
+  const lines = parseTelegramMessage([
+    '✅ Готово!',
+    '📋 Бизнес-процесс:',
+    'Текст ОГРАНИЧЕНИЯ И ШАГИ: 1) раз',
+    '🔗 Приложение: https://ideav.ru/db1/',
+    '-----',
+    '• Мастер — создаёт задания',
+    '',
+  ].join('\n'))
+  assert.deepEqual(lines[0].segs, [{ t: '✅ Готово!', b: true }])
+  assert.deepEqual(lines[1].segs, [{ t: '📋 Бизнес-процесс:', b: true }])
+  assert.deepEqual(lines[2].segs, [{ t: 'Текст ' }, { t: 'ОГРАНИЧЕНИЯ И ШАГИ:', b: true }, { t: ' 1) раз' }])
+  assert.deepEqual(lines[3].segs.at(-1), { t: 'https://ideav.ru/db1/', href: 'https://ideav.ru/db1/' })
+  assert.deepEqual(lines[4], { hr: true })
+  assert.deepEqual(lines[5].segs, [{ t: '• Мастер', b: true }, { t: ' — создаёт задания' }])
+  assert.deepEqual(lines[6].segs, [])
 })

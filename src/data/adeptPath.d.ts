@@ -8,6 +8,8 @@ export interface AdeptImage {
 export interface AdeptLink {
   label: string
   href: string
+  /** Открывать в модальном окне вместо перехода (#769). */
+  modal?: 'botReport'
 }
 
 export interface AdeptTimelineStep {
@@ -57,3 +59,10 @@ export const HOURS_LESSON: string
 export const SELF_CHECK: string[]
 export const STEPS: AdeptStep[]
 export const FORM_HINTS: { experience: string }
+export const COMMUNITY: {
+  h: string
+  lead: string
+  perks: { key: string; h: string; p: string }[]
+  solo: string
+  soloCta: AdeptLink
+}
