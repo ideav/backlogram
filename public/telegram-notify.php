@@ -80,6 +80,8 @@ $SOURCE_LABELS = [
     'excel-to-app'        => 'Excel → приложение',
     'excel-to-app-razbor' => 'Разбор ИИ-приложения — заказ звонка',
     'quiz'                => 'Квиз: оценка проекта за 2 минуты',
+    'adept'               => 'Путь адепта: заявка в разработчики',
+    'adept-partner'       => 'Путь адепта: заявка в партнёры',
 ];
 $source_label = $SOURCE_LABELS[$source] ?? $source;
 

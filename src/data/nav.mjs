@@ -43,7 +43,9 @@ export const headerMoreLinks = [
   // сверху вниз, и новое заметнее в конце, чем в середине (issue #605).
   { name: 'Квинтеты или таблицы', href: '/kvintety-ili-tablicy.html' },
   // #642: хаб кластера «автоматизация бизнеса с ИИ».
-  { name: 'Автоматизация бизнеса с ИИ', href: '/avtomatizaciya-biznesa-s-ii.html', badge: 'New' },
+  { name: 'Автоматизация бизнеса с ИИ', href: '/avtomatizaciya-biznesa-s-ii.html' },
+  // #765: страница для будущих адептов — свежий пункт, «New» переехал сюда.
+  { name: 'Путь адепта', href: '/put-adepta.html', badge: 'New' },
 ]
 
 /**
@@ -78,6 +80,8 @@ export const footerNavGroups = [
       { name: 'Автоматизация бизнеса с ИИ', href: '/avtomatizaciya-biznesa-s-ii.html' },
       // #605: опросник по архитектуре хранения — приложение к меморандуму.
       { name: 'Квинтеты или таблицы', href: '/kvintety-ili-tablicy.html' },
+      // #765: путь адепта — как присоединиться к сообществу и зарабатывать.
+      { name: 'Путь адепта', href: '/put-adepta.html' },
       // Соглашение живёт на ideav.ru: раньше пункт уводил на чужой домен integram.io.
       { name: 'Правила использования', href: '/terms.html' },
       // Политика по 152-ФЗ должна быть общедоступна с любой страницы (issue #542).

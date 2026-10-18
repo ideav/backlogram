@@ -40,14 +40,15 @@ test('«Ещё» menu links to the Платформы с ИИ-агентами p
   )
 })
 
-test('«Ещё» menu holds exactly 9 items', () => {
+test('«Ещё» menu holds exactly 10 items', () => {
   // Сравнение с Битрикс24/AmoCRM вынесено в верхнее меню как «Больше CRM»
   // (issue #4264); в «Ещё» осталось 6 пунктов, седьмым добавлены платформы с
   // ИИ-агентами (issue #559, п. 8), восьмым — опросник «Квинтеты или таблицы»
   // (issue #605). Проверка стояла на 7 и этого пункта не заметила: на Windows
   // файл не читался из-за «C:\C:\…» и тест не запускался вовсе (issue #627).
-  // Девятым — хаб «Автоматизация бизнеса с ИИ» (issue #642).
+  // Девятым — хаб «Автоматизация бизнеса с ИИ» (issue #642), десятым —
+  // «Путь адепта» (issue #765).
   const block = moreLinksBlock()
   const count = (block.match(/href:/g) || []).length
-  assert.equal(count, 9, 'the «Ещё» dropdown must have 9 entries')
+  assert.equal(count, 10, 'the «Ещё» dropdown must have 10 entries')
 })
