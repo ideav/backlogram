@@ -18,6 +18,15 @@ export interface AdeptTimelineStep {
   shot?: AdeptImage
 }
 
+/** Как делались доработки по пожеланиям заказчика (#771). */
+export interface AdeptRework {
+  intro: string
+  wishes: string[]
+  how: string
+  note: string
+  links: AdeptLink[]
+}
+
 export interface AdeptCase {
   key: string
   name: string
@@ -29,6 +38,7 @@ export interface AdeptCase {
   phases: { name: string; budget: number | null; note: string }[]
   app: AdeptLink
   timeline: AdeptTimelineStep[]
+  rework?: AdeptRework
   result: string
   images: AdeptImage[]
 }

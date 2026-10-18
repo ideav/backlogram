@@ -81,6 +81,15 @@ const casesHtml = CASES.map((c) => {
     })
     .join('')
   const lesson = c.key === 'pakline' ? `<aside><h4>Почему мы не торгуемся за часы</h4><p>${escape(HOURS_LESSON)}</p></aside>` : ''
+  const r = c.rework
+  const rework = r
+    ? `<h4>Как делались доработки</h4>
+      <p>${escape(r.intro)}</p>
+      <ul>${r.wishes.map((w) => `<li>${escape(w)}</li>`).join('')}</ul>
+      <p>${escape(r.how)}</p>
+      <p>${escape(r.note)}</p>
+      <p>${r.links.map((l) => a(l.href, l.label)).join(' · ')}</p>`
+    : ''
   return `
     <section class="ap-prerender__group" id="case-${c.key}">
       <h3>История ${escape(c.name)}</h3>
@@ -90,6 +99,7 @@ const casesHtml = CASES.map((c) => {
       <h4>Как шёл проект</h4>
       <ol>${timeline}</ol>
       ${lesson}
+      ${rework}
       <h4>Что получил заказчик</h4>
       <p>${escape(c.result)}</p>
       ${c.images.map(figure).join('')}
