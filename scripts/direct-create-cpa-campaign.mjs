@@ -491,6 +491,36 @@ function idsOf(result, key) {
   return items.map(item => item.Id).filter(Boolean)
 }
 
+/**
+ * Уточнения общие для аккаунта: те, что уже есть в кабинете, берём по тексту,
+ * недостающие заводим. 18.10.2026 adextensions.add ответил «Нет прав» при
+ * живом EDIT_CAMPAIGNS — тогда кампании создаются без уточнений, их можно
+ * добавить в интерфейсе.
+ */
+async function calloutIdsFor(texts) {
+  if (!apply) {
+    await call('adextensions', 'add', { AdExtensions: texts.map(CalloutText => ({ Callout: { CalloutText } })) })
+    return ['<id уточнений>']
+  }
+  const found = await apiCall('adextensions', 'get', {
+    SelectionCriteria: { Types: ['CALLOUT'], States: ['ON'] },
+    FieldNames: ['Id'],
+    CalloutFieldNames: ['CalloutText'],
+  }, cfg.token)
+  const byText = new Map((found?.AdExtensions ?? []).map(ext => [ext.Callout?.CalloutText, ext.Id]))
+  const missing = texts.filter(text => !byText.has(text))
+  if (missing.length) {
+    try {
+      const added = await call('adextensions', 'add', { AdExtensions: missing.map(CalloutText => ({ Callout: { CalloutText } })) })
+      idsOf(added, 'AddResults')
+      ;(added?.AddResults ?? []).forEach((item, i) => item.Id && byText.set(missing[i], item.Id))
+    } catch (error) {
+      console.warn(`уточнения не созданы (${error.message}) — кампании пойдут без них`)
+    }
+  }
+  return texts.map(text => byText.get(text)).filter(Boolean)
+}
+
 async function main() {
   const problems = configProblems()
   if (problems.length) {
@@ -504,11 +534,7 @@ async function main() {
     ? `Максимум кликов: потолок ${PROFILE.clickCeilingRub.search} ₽ на поиске, ${PROFILE.clickCeilingRub.network} ₽ в сетях | недельный лимит: ${cfg.weeklyRub} ₽ на кампанию`
     : `Цена конверсии: днём ${cfg.cpaRub} ₽, ночью ${cfg.nightCpaRub} ₽ | недельный лимит: ${cfg.weeklyRub} ₽ на кампанию`)
 
-  // Уточнения — общие для аккаунта, заводятся один раз на все объявления.
-  const calloutsAdded = await call('adextensions', 'add', {
-    AdExtensions: CALLOUTS.map(CalloutText => ({ Callout: { CalloutText } })),
-  })
-  const calloutIds = apply ? idsOf(calloutsAdded, 'AddResults') : ['<id уточнений>']
+  const calloutIds = await calloutIdsFor(CALLOUTS)
 
   const groups = groupsFor()
   for (const campaign of campaignsFor()) {
@@ -547,7 +573,7 @@ async function main() {
       const adsAdded = await call('ads', 'add', {
         Ads: adsFor(slug, cfg.siteUrl, PROFILE, group, campaignIndex).map(ad => ({
           AdGroupId: groupId,
-          TextAd: { ...ad, SitelinkSetId: sitelinkSetId, AdExtensionIds: calloutIds },
+          TextAd: { ...ad, SitelinkSetId: sitelinkSetId, ...(calloutIds.length ? { AdExtensionIds: calloutIds } : {}) },
         })),
       })
       if (apply) idsOf(adsAdded, 'AddResults')
