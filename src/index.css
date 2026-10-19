@@ -62,6 +62,15 @@
     border-color: var(--color-border);
   }
 
+  /* Tailwind 4 снял cursor: pointer с кнопок в preflight — кликабельные кнопки
+     выглядели как текст (SEO-разбор /put-adepta.html, #778). В слое base, чтобы
+     утилиты cursor-* и disabled:cursor-not-allowed по-прежнему побеждали. */
+  button:not(:disabled),
+  [role='button'],
+  [role='tab'] {
+    cursor: pointer;
+  }
+
   html {
     background-color: oklch(100% 0 0);
   }

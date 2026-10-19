@@ -50,6 +50,12 @@ function escape(s) {
 const rub = (n) => `${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} ₽`
 
 const canonical = `${SITE}${PATH}`
+// Карточка рисуется scripts/generate-og-images.mjs (slug put-adepta), 1200×630.
+const ogImage = `${SITE}/og/put-adepta.png`
+
+// «Откуда пришёл: клиент прочитал…» — после двоеточия со строчной; на странице
+// origin стоит отдельной карточкой и пишется с заглавной.
+const lowerFirst = (s) => s.charAt(0).toLowerCase() + s.slice(1)
 
 // ───────────────────────────────────────────────────────────────────────────
 //  Static snapshot — mirrors src/pages/AdeptPath.tsx section headings.
@@ -94,7 +100,7 @@ const casesHtml = CASES.map((c) => {
     <section class="ap-prerender__group" id="case-${c.key}">
       <h3>История ${escape(c.name)}</h3>
       <p>${escape(c.tagline)}</p>
-      <p><strong>Бюджет: ${rub(c.budget)}, работы около ${c.hoursSpent} ч.</strong> Откуда пришёл: ${escape(c.origin)}.</p>
+      <p><strong>Бюджет: ${rub(c.budget)}, работы около ${c.hoursSpent} ч.</strong> Откуда пришёл: ${escape(lowerFirst(c.origin))}.</p>
       <ul>${phases}</ul>
       <h4>Как шёл проект</h4>
       <ol>${timeline}</ol>
@@ -128,7 +134,7 @@ const bodyHtml = `
     <p>${escape(RATE_NOTE)}</p>${casesHtml}
   </section>
   <section class="ap-prerender__group">
-    <h2>Справитесь ли вы с подобным</h2>
+    <h2>Справитесь ли вы с подобным?</h2>
     <ul>
         ${selfCheckHtml}
     </ul>
@@ -148,7 +154,8 @@ const bodyHtml = `
 </article>`
 
 // ───────────────────────────────────────────────────────────────────────────
-//  JSON-LD: WebPage + BreadcrumbList (как у соседних страниц).
+//  JSON-LD: WebPage + Article + HowTo (пять шагов) + BreadcrumbList.
+//  Article с датами и автором и HowTo — по SEO-разбору 19.10.2026 (#778).
 // ───────────────────────────────────────────────────────────────────────────
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -162,14 +169,55 @@ const jsonLd = {
       inLanguage: 'ru',
       isPartOf: { '@id': `${SITE}/#website` },
       publisher: { '@id': `${SITE}/#organization` },
+      datePublished: ADEPT_META.publishedAt,
       dateModified: ADEPT_META.updatedAt,
+      primaryImageOfPage: { '@id': `${canonical}#primaryimage` },
+      mainEntity: { '@id': `${canonical}#article` },
     },
     {
+      // Узел организации нужен здесь же: ссылки author/publisher по @id
+      // разрешаются внутри графа одной страницы, иначе автор просто теряется.
       '@type': 'Organization',
       '@id': `${SITE}/#organization`,
       name: PUBLISHER,
       url: `${SITE}/`,
       logo: { '@type': 'ImageObject', url: `${SITE}/logos/integram-og.png` },
+    },
+    {
+      '@type': 'Article',
+      '@id': `${canonical}#article`,
+      headline: ADEPT_META.h1,
+      description: ADEPT_META.description,
+      url: canonical,
+      mainEntityOfPage: { '@id': `${canonical}#webpage` },
+      inLanguage: 'ru',
+      datePublished: ADEPT_META.publishedAt,
+      dateModified: ADEPT_META.updatedAt,
+      author: { '@id': `${SITE}/#organization` },
+      publisher: { '@id': `${SITE}/#organization` },
+      image: { '@id': `${canonical}#primaryimage` },
+      keywords: ADEPT_META.keywords,
+    },
+    {
+      '@type': 'HowTo',
+      '@id': `${canonical}#howto`,
+      name: 'Пять шагов пути адепта',
+      inLanguage: 'ru',
+      step: STEPS.map((s, i) => ({
+        '@type': 'HowToStep',
+        position: i + 1,
+        name: s.h,
+        text: s.p,
+        ...(s.cta && !s.cta.href.startsWith('#') ? { url: new URL(s.cta.href, SITE).href } : {}),
+      })),
+    },
+    {
+      '@type': 'ImageObject',
+      '@id': `${canonical}#primaryimage`,
+      url: ogImage,
+      contentUrl: ogImage,
+      width: 1200,
+      height: 630,
     },
     {
       '@type': 'BreadcrumbList',
@@ -190,7 +238,11 @@ const headTags = [
   `<meta property="og:description" content="${escape(ADEPT_META.description)}" />`,
   `<meta property="og:locale" content="ru_RU" />`,
   `<meta property="og:site_name" content="${PUBLISHER}" />`,
-  `<meta name="twitter:card" content="summary" />`,
+  `<meta property="og:image" content="${escape(ogImage)}" />`,
+  `<meta property="og:image:width" content="1200" />`,
+  `<meta property="og:image:height" content="630" />`,
+  `<meta name="twitter:card" content="summary_large_image" />`,
+  `<meta name="twitter:image" content="${escape(ogImage)}" />`,
   `<meta name="twitter:title" content="${escape(ADEPT_META.title)}" />`,
   `<meta name="twitter:description" content="${escape(ADEPT_META.description)}" />`,
   `<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`,

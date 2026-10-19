@@ -39,7 +39,7 @@ function setCanonical(href: string) {
 const rub = (n: number) => `${n.toLocaleString('ru-RU')} ₽`
 
 const INPUT_CLASS =
-  'mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all'
+  'mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors'
 
 type FormStage = 'form' | 'sending' | 'done'
 
@@ -83,14 +83,17 @@ export default function AdeptPath() {
     setMetaTag('meta[property="og:url"]', 'property', 'og:url', canonical)
     setMetaTag('meta[property="og:site_name"]', 'property', 'og:site_name', 'Интеграм')
     setMetaTag('meta[property="og:locale"]', 'property', 'og:locale', 'ru_RU')
-    setMetaTag('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary')
+    setMetaTag('meta[property="og:image"]', 'property', 'og:image', `${SITE}/og/put-adepta.png`)
+    setMetaTag('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary_large_image')
+    setMetaTag('meta[name="twitter:image"]', 'name', 'twitter:image', `${SITE}/og/put-adepta.png`)
     setMetaTag('meta[name="twitter:title"]', 'name', 'twitter:title', ADEPT_META.title)
     setMetaTag('meta[name="twitter:description"]', 'name', 'twitter:description', ADEPT_META.description)
     setCanonical(canonical)
   }, [])
 
-  // Капча — как у квиза: виджет рисуется сразу (форма на странице всегда),
-  // вошедшим в Интеграм (cookie idb_*) проверка не нужна.
+  // Капча — как у квиза, вошедшим в Интеграм (cookie idb_*) проверка не нужна.
+  // Скрипт грузится, только когда форма близко: он тянет свою копию React,
+  // которая сыпала в консоль ошибки #418/#423 на каждом заходе (#778).
   useEffect(() => {
     if (!CAPTCHA_CLIENT_KEY || idbCookieFound) return
 
@@ -105,18 +108,32 @@ export default function AdeptPath() {
       })
     }
 
-    if (window.smartCaptcha) {
-      initCaptcha()
-      return
+    function loadCaptcha() {
+      if (window.smartCaptcha) {
+        initCaptcha()
+        return
+      }
+      const script = document.createElement('script')
+      script.src = 'https://smartcaptcha.yandexcloud.net/captcha.js'
+      script.defer = true
+      script.onload = initCaptcha
+      document.head.appendChild(script)
     }
 
-    const script = document.createElement('script')
-    script.src = 'https://smartcaptcha.yandexcloud.net/captcha.js'
-    script.defer = true
-    script.onload = initCaptcha
-    document.head.appendChild(script)
+    let observer: IntersectionObserver | null = null
+    if (captchaContainerRef.current && 'IntersectionObserver' in window) {
+      observer = new IntersectionObserver(entries => {
+        if (!entries.some(e => e.isIntersecting)) return
+        observer?.disconnect()
+        loadCaptcha()
+      }, { rootMargin: '600px 0px' })
+      observer.observe(captchaContainerRef.current)
+    } else {
+      loadCaptcha()
+    }
 
     return () => {
+      observer?.disconnect()
       if (captchaWidgetIdRef.current !== null && window.smartCaptcha && captchaContainerRef.current) {
         window.smartCaptcha.destroy(captchaWidgetIdRef.current)
         captchaWidgetIdRef.current = null
@@ -200,7 +217,7 @@ export default function AdeptPath() {
             <button
               type="button"
               onClick={() => goTo('#cases')}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-colors"
             >
               Посмотреть два проекта
               <ArrowRight size={18} aria-hidden="true" />
@@ -208,7 +225,7 @@ export default function AdeptPath() {
             <button
               type="button"
               onClick={() => goTo('#zayavka')}
-              className="inline-flex items-center gap-2 px-8 py-4 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 font-bold rounded-xl transition-all"
+              className="inline-flex items-center gap-2 px-8 py-4 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 font-bold rounded-xl transition-colors"
             >
               Присоединиться
             </button>
@@ -278,7 +295,7 @@ export default function AdeptPath() {
                 aria-selected={activeCase === c.key}
                 aria-controls={`case-${c.key}`}
                 onClick={() => setActiveCase(c.key)}
-                className={`px-5 py-3 rounded-xl border text-left transition-all ${
+                className={`px-5 py-3 rounded-xl border text-left transition-colors ${
                   activeCase === c.key
                     ? 'border-blue-600 bg-blue-600 text-white shadow-lg shadow-blue-600/20'
                     : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-blue-500 dark:hover:border-blue-400'
@@ -379,7 +396,7 @@ export default function AdeptPath() {
                             loading="lazy"
                             className="w-full h-auto rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md"
                           />
-                          <figcaption className="mt-2 text-xs text-slate-500 dark:text-slate-400">{step.shot.alt}</figcaption>
+                          <figcaption className="mt-2 text-sm text-slate-500 dark:text-slate-400">{step.shot.alt}</figcaption>
                         </figure>
                       )}
                     </div>
@@ -432,14 +449,14 @@ export default function AdeptPath() {
                     loading="lazy"
                     className="w-full h-auto rounded-2xl border border-slate-200 dark:border-slate-800"
                   />
-                  <figcaption className="mt-2 text-xs text-slate-500 dark:text-slate-400">{img.alt}</figcaption>
+                  <figcaption className="mt-2 text-sm text-slate-500 dark:text-slate-400">{img.alt}</figcaption>
                 </figure>
               ))}
 
               <a
                 href={c.app.href}
                 target={LINK_TARGET}
-                className="mt-8 inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition-all"
+                className="mt-8 inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition-colors"
               >
                 {c.app.label}
                 <ExternalLink size={16} aria-hidden="true" />
@@ -453,7 +470,7 @@ export default function AdeptPath() {
       <section className="mt-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-white">
-            Справитесь ли вы с подобным
+            Справитесь ли вы с подобным?
           </h2>
           <ul className="mt-10 grid gap-3 sm:grid-cols-2">
             {SELF_CHECK.map(item => (
@@ -473,8 +490,10 @@ export default function AdeptPath() {
       </section>
 
       {/* Заявка */}
-      <section id="zayavka" className="mt-24 px-4 sm:px-6 lg:px-8 scroll-mt-24">
-        <div className="max-w-2xl mx-auto rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl shadow-slate-900/5 p-6 sm:p-10">
+      {/* На телефоне карточка во всю ширину: iframe капчи шириной ровно 300 px
+          не помещался в отступы секции и карточки и двигал страницу вбок на 320 px (#778) */}
+      <section id="zayavka" className="mt-24 sm:px-6 lg:px-8 scroll-mt-24">
+        <div className="max-w-2xl mx-auto sm:rounded-3xl border-y sm:border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl shadow-slate-900/5 px-4 py-6 sm:p-10">
           {stage === 'done' ? (
             <div className="py-8 text-center">
               <CheckCircle2 size={48} className="mx-auto text-green-500" aria-hidden="true" />
@@ -561,7 +580,7 @@ export default function AdeptPath() {
               <button
                 type="submit"
                 disabled={stage === 'sending' || !consentChecked}
-                className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition-all"
+                className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition-colors"
               >
                 {stage === 'sending' ? 'Отправляем…' : 'Отправить заявку'}
                 {stage !== 'sending' && <Send size={16} aria-hidden="true" />}

@@ -47,6 +47,8 @@ const dataUrl =
 const { knowledgeBaseArticles } = await import(dataUrl)
 // #642: кластер «автоматизация бизнеса с ИИ» — plain ESM, импортируется без сборки.
 const { AI_PAGES } = await import('../src/data/aiPages.mjs')
+const { ADEPT_META } = await import('../src/data/adeptPath.mjs')
+const { nbspText } = await import('../src/lib/typography.mjs')
 
 // ── Card template ─────────────────────────────────────────────────────────
 function cardJSX({ eyebrow, title, subtitle }) {
@@ -328,6 +330,14 @@ const landingCards = [
     title: 'Токены Интеграма — оплата за реальные действия',
     subtitle:
       'Большинство действий стоит 1 токен, тяжёлые операции дороже. Вы платите за реальную работу, а не за число пользователей и гигабайты места.',
+  },
+  {
+    // Ссылку на набор адептов пересылают в Telegram — без картинки превью
+    // было пустым (SEO-разбор 19.10.2026, #778). Цифры — те же, что в description.
+    slug: 'put-adepta',
+    eyebrow: 'Путь адепта · заработок на приложениях',
+    title: nbspText(ADEPT_META.title),
+    subtitle: nbspText(ADEPT_META.description),
   },
   // #642: страницы кластера «ИИ для бизнеса» — тексты из src/data/aiPages.mjs.
   ...AI_PAGES.map((p) => ({ slug: p.slug, eyebrow: p.badge, title: p.ogTitle, subtitle: p.ogDescription })),
