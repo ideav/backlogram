@@ -55,6 +55,7 @@ export const ADEPT_META: {
   h1: string
   description: string
   keywords: string
+  publishedAt: string
   updatedAt: string
 }
 export const HERO_LEAD: string
