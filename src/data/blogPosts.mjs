@@ -18,16 +18,6 @@ export const SLIDER_LIMIT = 9
 
 export const BLOG_POSTS = [
   {
-    slug: 'gartner-obem-ne-cennost-cena-pilota',
-    url: 'https://ideav.ru/blog/posts/gartner-obem-ne-cennost-cena-pilota/',
-    title: 'Объём ≠ ценность: почему дешёвый пилот важнее дисциплины',
-    description: 'Gartner опросил 2 002 ИТ-директора: значительную ценность от ИИ получили 13%, взлетает один сценарий из пяти. Разбираем, почему дело в цене пилота, а не в дисциплине, и как держать ИИ-агента под контролем.',
-    date: '2026-10-28',
-    dateLabel: '28 октября 2026',
-    category: 'Технологии',
-    image: 'https://ideav.ru/blog/abstract/blog-material-1.svg',
-  },
-  {
     slug: '10-priznakov-chto-tablice-pora-stat-bazoj-dannyh',
     url: 'https://ideav.ru/blog/posts/10-priznakov-chto-tablice-pora-stat-bazoj-dannyh/',
     title: '10 признаков, что таблице пора стать базой данных',
@@ -36,6 +26,16 @@ export const BLOG_POSTS = [
     dateLabel: '24 октября 2026',
     category: 'Обучение',
     image: 'https://ideav.ru/blog/uploads/10-priznakov-tablica-baza-cover.png',
+  },
+  {
+    slug: 'gartner-obem-ne-cennost-cena-pilota',
+    url: 'https://ideav.ru/blog/posts/gartner-obem-ne-cennost-cena-pilota/',
+    title: 'Объём ≠ ценность: почему дешёвый пилот важнее дисциплины',
+    description: 'Gartner опросил 2 002 ИТ-директора: значительную ценность от ИИ получили 13%, взлетает один сценарий из пяти. Разбираем, почему дело в цене пилота, а не в дисциплине, и как держать ИИ-агента под контролем.',
+    date: '2026-10-21',
+    dateLabel: '21 октября 2026',
+    category: 'Технологии',
+    image: 'https://ideav.ru/blog/abstract/blog-material-2.svg',
   },
   {
     slug: 'podklyuchaem-claude-k-baze-dannyh-cherez-mcp',
@@ -116,16 +116,6 @@ export const BLOG_POSTS = [
     dateLabel: '28 июля 2026',
     category: 'Разработка',
     image: 'https://ideav.ru/blog/uploads/trudoemkost-90-deistvii-cover.png',
-  },
-  {
-    slug: 'pravila-kotorye-nelzya-narushit',
-    url: 'https://ideav.ru/blog/posts/pravila-kotorye-nelzya-narushit/',
-    title: 'Правила, которые нельзя нарушить: как сделать разработку сходящейся',
-    description: 'Почему одни и те же дефекты возвращаются тикетами, даже когда задачи поставлены внятно, и как перестроить процесс — реестр инвариантов, единая граница записи, тест «входы × правила» и обязательный гейт. Практика из наших проектов и типовых случаев.',
-    date: '2026-07-27',
-    dateLabel: '27 июля 2026',
-    category: 'Разработка',
-    image: 'https://ideav.ru/blog/uploads/pravila-invarianty-cover.png',
   },
 ]
 
