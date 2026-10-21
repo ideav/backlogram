@@ -12,11 +12,21 @@
 export const BLOG_URL = 'https://ideav.ru/blog'
 
 /** День сборки: список собран «на него» (tests/issue-512-blog-slider.test.mjs). */
-export const BLOG_POSTS_AS_OF = '2026-10-08'
+export const BLOG_POSTS_AS_OF = '2026-10-21'
 
 export const SLIDER_LIMIT = 9
 
 export const BLOG_POSTS = [
+  {
+    slug: 'gartner-obem-ne-cennost-cena-pilota',
+    url: 'https://ideav.ru/blog/posts/gartner-obem-ne-cennost-cena-pilota/',
+    title: 'Объём ≠ ценность: почему дешёвый пилот важнее дисциплины',
+    description: 'Gartner опросил 2 002 ИТ-директора: значительную ценность от ИИ получили 13%, взлетает один сценарий из пяти. Разбираем, почему дело в цене пилота, а не в дисциплине, и как держать ИИ-агента под контролем.',
+    date: '2026-10-28',
+    dateLabel: '28 октября 2026',
+    category: 'Технологии',
+    image: 'https://ideav.ru/blog/abstract/blog-material-1.svg',
+  },
   {
     slug: '10-priznakov-chto-tablice-pora-stat-bazoj-dannyh',
     url: 'https://ideav.ru/blog/posts/10-priznakov-chto-tablice-pora-stat-bazoj-dannyh/',
@@ -25,7 +35,7 @@ export const BLOG_POSTS = [
     date: '2026-10-24',
     dateLabel: '24 октября 2026',
     category: 'Обучение',
-    image: 'https://ideav.ru/blog/abstract/blog-material-1.svg',
+    image: 'https://ideav.ru/blog/uploads/10-priznakov-tablica-baza-cover.png',
   },
   {
     slug: 'podklyuchaem-claude-k-baze-dannyh-cherez-mcp',
@@ -35,7 +45,7 @@ export const BLOG_POSTS = [
     date: '2026-10-20',
     dateLabel: '20 октября 2026',
     category: 'Обучение',
-    image: 'https://ideav.ru/blog/abstract/blog-material-2.svg',
+    image: 'https://ideav.ru/blog/uploads/claude-mcp-cover.png',
   },
   {
     slug: 'google-tablicy-2026-riski-i-kuda-perenesti',
@@ -45,7 +55,7 @@ export const BLOG_POSTS = [
     date: '2026-10-16',
     dateLabel: '16 октября 2026',
     category: 'О платформе',
-    image: 'https://ideav.ru/blog/abstract/blog-material-3.svg',
+    image: 'https://ideav.ru/blog/uploads/google-tablicy-cover.png',
   },
   {
     slug: 'kak-sdelat-prilozhenie-iz-excel-tablicy-poshagovo',
@@ -55,7 +65,7 @@ export const BLOG_POSTS = [
     date: '2026-10-12',
     dateLabel: '12 октября 2026',
     category: 'Обучение',
-    image: 'https://ideav.ru/blog/abstract/blog-material-4.svg',
+    image: 'https://ideav.ru/blog/uploads/og/excel-to-app-zayavki-formy.jpg',
   },
   {
     slug: 'dashbordy-integram-prodazhi-personal-byudzhet',
@@ -75,7 +85,7 @@ export const BLOG_POSTS = [
     date: '2026-10-03',
     dateLabel: '3 октября 2026',
     category: 'О платформе',
-    image: 'https://ideav.ru/blog/abstract/blog-material-6.svg',
+    image: 'https://ideav.ru/blog/abstract/blog-material-1.svg',
   },
   {
     slug: 'ierarhicheskii-oltp-izmeryaem-sleduyushchii-uroven-unifikacii',
@@ -85,7 +95,7 @@ export const BLOG_POSTS = [
     date: '2026-09-10',
     dateLabel: '10 сентября 2026',
     category: 'Технологии',
-    image: 'https://ideav.ru/blog/abstract/blog-material-1.svg',
+    image: 'https://ideav.ru/blog/abstract/blog-material-2.svg',
   },
   {
     slug: 'odin-kontragent-tri-vzglyada',
@@ -116,36 +126,6 @@ export const BLOG_POSTS = [
     dateLabel: '27 июля 2026',
     category: 'Разработка',
     image: 'https://ideav.ru/blog/uploads/pravila-invarianty-cover.png',
-  },
-  {
-    slug: 'pure-business-design-chistoe-biznes-proektirovanie',
-    url: 'https://ideav.ru/blog/posts/pure-business-design-chistoe-biznes-proektirovanie/',
-    title: 'Pure Business Design: приложение по описанию задачи, без блоков и кубиков',
-    description: 'Чистое бизнес-проектирование — когда пользователь думает только о логике своего дела, а структуру базы, связи, роли, меню и интерфейс проектирует ИИ-агент. Чем это отличается от визуальных конструкторов и от ИИ-ассистентов, которым нужен человек на каждой итерации.',
-    date: '2026-07-24',
-    dateLabel: '24 июля 2026',
-    category: 'О платформе',
-    image: 'https://ideav.ru/blog/uploads/og/hero-ai-background.jpg',
-  },
-  {
-    slug: 'semeynyi-byudzhet-v-integrame',
-    url: 'https://ideav.ru/blog/posts/semeynyi-byudzhet-v-integrame/',
-    title: 'Семейный бюджет в Интеграме: от Excel к приложению за один запрос',
-    description: 'Как собрать семейный бюджет в Интеграме — разбор готового приложения по экранам. Счета с автоподсчётом остатка, план и факт по категориям, цели накопления, долги и рассрочки, регулярные платежи одной кнопкой и фото чека к операции. Со скриншотами каждого экрана и объяснением, как это устроено.',
-    date: '2026-07-17',
-    dateLabel: '17 июля 2026',
-    category: 'Проекты',
-    image: 'https://ideav.ru/blog/uploads/og/semeynyi-byudzhet-svodka.jpg',
-  },
-  {
-    slug: 'bezopasnost-i-otkazoustoichivost-dlya-krupnogo-biznesa',
-    url: 'https://ideav.ru/blog/posts/bezopasnost-i-otkazoustoichivost-dlya-krupnogo-biznesa/',
-    title: 'Безопасность и отказоустойчивость Интеграма: данные крупного бизнеса под контролем',
-    description: 'Как в Интеграме устроена защита данных от посторонних и от потери: обычная СУБД, гибкая топология развёртывания, шифрование и георезервирование, а главное — выгрузка данных в Excel и реляционную БД без вендор-лока.',
-    date: '2026-07-16',
-    dateLabel: '16 июля 2026',
-    category: 'О платформе',
-    image: 'https://ideav.ru/blog/abstract/blog-material-1.svg',
   },
 ]
 
