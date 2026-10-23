@@ -24,6 +24,8 @@ const KvintetyIliTablicy = lazy(() => import('./pages/KvintetyIliTablicy'))
 const Quiz = lazy(() => import('./pages/Quiz'))
 // #765: «Путь адепта Интеграм» — два проекта, пять шагов и заявка в разработчики.
 const AdeptPath = lazy(() => import('./pages/AdeptPath'))
+// ideav/crm#5247: описание API ядра с примерами curl.
+const ApiDocs = lazy(() => import('./pages/ApiDocs'))
 // #553: персональная страница с контактами (требование поддержки Хабра к профилю).
 const AlexeySemenov = lazy(() => import('./pages/AlexeySemenov'))
 const AdImages = lazy(() => import('./pages/AdImages'))
@@ -163,6 +165,15 @@ export const router = createBrowserRouter([
       // Соглашение об использовании сервиса. Раньше страница лежала статикой в
       // public/ (копия integram.io/terms.html в вёрстке старого сайта) — теперь
       // её собирает сам сайт; URL /terms.html сохранён, он в индексе.
+      // ideav/crm#5247: описание API — раньше футер вёл на integram.io/api.html.
+      {
+        path: 'api.html',
+        element: <ApiDocs />,
+      },
+      {
+        path: 'api',
+        element: <ApiDocs />,
+      },
       {
         path: 'terms.html',
         element: <Terms />,

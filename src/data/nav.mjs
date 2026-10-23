@@ -74,7 +74,7 @@ export const footerNavGroups = [
       { name: 'Решения вместо Excel', href: '/resheniya.html' },
       { name: 'Конструктор вместо Excel', href: '/konstruktor-prilozhenij.html' },
       { name: 'Интеграм vs Битрикс24 / AmoCRM', href: '/sravnenie-s-bitrix-amocrm.html' },
-      { name: 'Интеграции', href: 'https://integram.io/api.html', external: true },
+      { name: 'API для разработчиков', href: '/api.html' },
       { name: 'Токены', href: '/tokens.html' },
       // #642: хаб кластера «автоматизация бизнеса с ИИ».
       { name: 'Автоматизация бизнеса с ИИ', href: '/avtomatizaciya-biznesa-s-ii.html' },
