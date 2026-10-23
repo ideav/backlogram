@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Check, Code2, Copy } from 'lucide-react'
 import Breadcrumbs from '../components/Breadcrumbs'
 import { API_META, API_INTRO, API_SECTIONS } from '../data/apiDocs'
@@ -101,6 +101,26 @@ function Block({ block }: { block: ApiBlock }) {
   }
 }
 
+/** Список разделов и тем со ссылками на якоря. */
+function Toc({ onPick }: { onPick?: () => void }) {
+  return (
+    <ol className="space-y-3">
+      {API_SECTIONS.map(section => (
+        <li key={section.id}>
+          <a href={`#${section.id}`} onClick={onPick} className="font-medium text-slate-700 dark:text-slate-200 hover:text-blue-500">{section.title}</a>
+          <ul className="mt-1 space-y-1 pl-3 border-l border-slate-200 dark:border-slate-800">
+            {section.topics.map(topic => (
+              <li key={topic.id}>
+                <a href={`#${topic.id}`} onClick={onPick} className="text-slate-500 dark:text-slate-400 hover:text-blue-500">{topic.title}</a>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ol>
+  )
+}
+
 /**
  * Описание API Интеграма — страница /api.html. Команды ядра с примерами curl:
  * авторизация, структура, записи, пользователи, роли, доступы и запросы.
@@ -108,6 +128,8 @@ function Block({ block }: { block: ApiBlock }) {
  * (scripts/prerender-api.mjs).
  */
 export default function ApiDocs() {
+  const mobileToc = useRef<HTMLDetailsElement>(null)
+
   useEffect(() => {
     document.title = API_META.title
     const canonical = `${SITE}${API_META.path}`
@@ -135,7 +157,8 @@ export default function ApiDocs() {
   }, [])
 
   return (
-    <div className="overflow-hidden">
+    // overflow-x-clip, а не overflow-hidden: hidden на предке ломает sticky у содержания.
+    <div className="overflow-x-clip">
       <section className="pt-28 pb-10 lg:pt-36 lg:pb-12 border-b border-slate-200 dark:border-slate-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumbs
@@ -159,33 +182,34 @@ export default function ApiDocs() {
 
       <section className="py-10 lg:py-14">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-10">
-          <nav aria-label="Содержание" className="mb-10 lg:mb-0">
-            <div className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto text-sm">
+          {/* Телефон: свёрнутая полоса «Содержание» под шапкой (h-16), раскрывается списком. */}
+          <details
+            ref={mobileToc}
+            className="lg:hidden sticky top-16 z-30 -mx-4 sm:-mx-6 mb-8 border-y border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md"
+          >
+            <summary className="px-4 sm:px-6 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 cursor-pointer select-none">
+              Содержание
+            </summary>
+            <nav aria-label="Содержание" className="px-4 sm:px-6 pb-4 max-h-[calc(100vh-9rem)] overflow-y-auto text-sm">
+              <Toc onPick={() => mobileToc.current?.removeAttribute('open')} />
+            </nav>
+          </details>
+
+          {/* Десктоп: колонка слева прилипает под шапкой и прокручивается сама. */}
+          <nav aria-label="Содержание" className="hidden lg:block">
+            <div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto pb-6 text-sm">
               <div className="font-semibold text-slate-700 dark:text-slate-200 mb-3">Содержание</div>
-              <ol className="space-y-3">
-                {API_SECTIONS.map(section => (
-                  <li key={section.id}>
-                    <a href={`#${section.id}`} className="font-medium text-slate-700 dark:text-slate-200 hover:text-blue-500">{section.title}</a>
-                    <ul className="mt-1 space-y-1 pl-3 border-l border-slate-200 dark:border-slate-800">
-                      {section.topics.map(topic => (
-                        <li key={topic.id}>
-                          <a href={`#${topic.id}`} className="text-slate-500 dark:text-slate-400 hover:text-blue-500">{topic.title}</a>
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
-                ))}
-              </ol>
+              <Toc />
             </div>
           </nav>
 
           <div className="space-y-14 min-w-0">
             {API_SECTIONS.map(section => (
-              <section key={section.id} id={section.id} className="scroll-mt-24">
+              <section key={section.id} id={section.id} className="scroll-mt-32 lg:scroll-mt-24">
                 <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-6">{section.title}</h2>
                 <div className="space-y-10">
                   {section.topics.map(topic => (
-                    <article key={topic.id} id={topic.id} className="scroll-mt-24 space-y-4">
+                    <article key={topic.id} id={topic.id} className="scroll-mt-32 lg:scroll-mt-24 space-y-4">
                       <h3 className="text-xl font-semibold">{topic.title}</h3>
                       {topic.blocks.map((block, i) => <Block key={i} block={block} />)}
                     </article>
