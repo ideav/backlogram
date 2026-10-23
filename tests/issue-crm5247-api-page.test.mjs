@@ -75,6 +75,26 @@ test('примеры с заголовком токена несут парам�
   }
 })
 
+test('обращение по именам: адрес, fields, NAMED, пакет и _d_schema', () => {
+  for (const id of ['names', 'schema-json']) assert.ok(allTopics.some((t) => t.id === id), `нет темы ${id}`)
+  const examples = allTopics.flatMap((t) => t.blocks.filter((b) => b.t === 'code').map((b) => b.code)).join('\n')
+  for (const s of ['metadata/Пользователь', 'object/Роль?JSON_OBJ&F_Роль=', 'report/Клиенты%20по%20категориям', 'edit_obj/Роль/admin', 'JSON_OBJ&NAMED', '_m_set/Клиент/АО%20Ромашка', '"id":"Заказ"', '_d_schema?JSON=1']) {
+    assert.ok(examples.includes(s), `нет примера «${s}»`)
+  }
+})
+
+test('описания в примерах — валидный JSON: fields, ops и json для _d_schema', () => {
+  const codes = allTopics.flatMap((t) => t.blocks.filter((b) => b.t === 'code' && b.lang === 'bash').map((b) => b.code))
+  let checked = 0
+  for (const code of codes) {
+    for (const m of code.matchAll(/--form-string '(fields|ops|json)=([\s\S]*?)'/g)) {
+      assert.doesNotThrow(() => JSON.parse(m[2]), `${m[1]} не JSON: ${m[2].slice(0, 80)}`)
+      checked++
+    }
+  }
+  assert.ok(checked >= 6, `проверено только ${checked} JSON-описаний`)
+})
+
 test('prerender-api пишет crawlable dist/api.html со всем справочником', () => {
   const work = makeWorkspace('api-prerender-')
   execFileSync('node', ['scripts/prerender-api.mjs'], { cwd: work })
