@@ -48,6 +48,7 @@ const { knowledgeBaseArticles } = await import(dataUrl)
 // #642: кластер «автоматизация бизнеса с ИИ» — plain ESM, импортируется без сборки.
 const { AI_PAGES } = await import('../src/data/aiPages.mjs')
 const { ADEPT_META } = await import('../src/data/adeptPath.mjs')
+const { API_META } = await import('../src/data/apiDocs.mjs')
 const { nbspText } = await import('../src/lib/typography.mjs')
 
 // ── Card template ─────────────────────────────────────────────────────────
@@ -338,6 +339,13 @@ const landingCards = [
     eyebrow: 'Путь адепта · заработок на приложениях',
     title: nbspText(ADEPT_META.title),
     subtitle: nbspText(ADEPT_META.description),
+  },
+  // ideav/crm#5247: описание API — ссылку пересылают разработчикам.
+  {
+    slug: 'api',
+    eyebrow: 'API · для разработчиков',
+    title: nbspText(API_META.h1),
+    subtitle: nbspText(API_META.description),
   },
   // #642: страницы кластера «ИИ для бизнеса» — тексты из src/data/aiPages.mjs.
   ...AI_PAGES.map((p) => ({ slug: p.slug, eyebrow: p.badge, title: p.ogTitle, subtitle: p.ogDescription })),
