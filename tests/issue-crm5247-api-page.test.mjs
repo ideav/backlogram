@@ -75,6 +75,18 @@ test('примеры с заголовком токена несут парам�
   }
 })
 
+test('обращение по именам: тема есть, после имени таблицы в адресе нет косой черты', () => {
+  assert.ok(allTopics.some((t) => t.id === 'names'), 'нет темы «Имена вместо кодов»')
+  const codes = allTopics.flatMap((t) => t.blocks.filter((b) => b.t === 'code').map((b) => b.code))
+  // object/Роль/?JSON_OBJ читает запись с пустым именем и отдаёт [] — в примерах только object/Роль?…
+  const named = codes.flatMap((c) => [...c.matchAll(/\/mydb\/[a-z_]+\/([^/?"\s]+)\/\?/g)])
+    .map((m) => m[1]).filter((seg) => !/^\d+$/.test(seg))
+  assert.deepEqual(named, [], 'имя таблицы с косой чертой перед ?')
+  for (const s of ['metadata/Пользователь', 'object/Роль?JSON_OBJ&F_Роль=', 'report/Клиенты%20по%20категориям', 'edit_obj/Роль/admin']) {
+    assert.ok(allText.includes(s), `нет примера «${s}»`)
+  }
+})
+
 test('prerender-api пишет crawlable dist/api.html со всем справочником', () => {
   const work = makeWorkspace('api-prerender-')
   execFileSync('node', ['scripts/prerender-api.mjs'], { cwd: work })
