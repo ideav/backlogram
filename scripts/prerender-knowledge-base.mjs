@@ -71,7 +71,7 @@ const groups = [
     title: 'Замена Excel и Google Sheets',
     blurb:
       'Когда таблица упирается в лимиты строк, теряется в десятках копий или ломается при одновременной работе нескольких сотрудников.',
-    slugs: ['01-google-sheets-150k', '02-excel-row-limit', '03-excel-file-versions', '17-smart-google-import'],
+    slugs: ['01-google-sheets-150k', '02-excel-row-limit', '03-excel-file-versions', '17-smart-google-import', '30-universal-import-excel'],
   },
   {
     title: 'Реляционные данные: Airtable и Notion',
