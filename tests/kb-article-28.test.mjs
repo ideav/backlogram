@@ -1,10 +1,10 @@
-// issue #793 — статья базы знаний № 28 «Универсальный импорт из Excel».
+// crm#5270 — статья базы знаний № 28 «Запросы Интеграма: что умеет движок
+// отчётов» по docs/query-engine-capabilities.md из ideav/crm.
 //
-// Проверяем, что статья на месте и держит фактуру из templates/upload.html
-// (ideav/crm): три способа подачи, форматы и кодировки, сетка диапазона 60×40,
-// порция 1000 записей, формулы — JavaScript, импорт только создаёт записи;
-// ссылки на первоисточник (код) и vc.ru-разбор; попадание в группу, sitemap,
-// llms.txt и OG.
+// Проверяем, что статья на месте, держит ключевые тезисы (компиляция в один
+// SQL, автосоединения по метаданным, подзапросы и WITH RECURSIVE, параметры
+// URL, форматы JSON, потребители от кнопок до DWH), ссылается на
+// первоисточник, спутована со статьёй 29 и попадает в sitemap/llms.txt/OG.
 
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
@@ -27,92 +27,79 @@ function extractArticleBlock(slug) {
   return kbDataSource.slice(start, end)
 }
 
-test('article #28 publishes the universal-import article', () => {
-  const block = extractArticleBlock('28-universal-import-excel')
+test('article #28 publishes the query-engine capabilities article', () => {
+  const block = extractArticleBlock('28-query-engine-capabilities')
 
   assert.match(block, /number: '28'/)
-  assert.match(block, /Универсальный импорт из Excel/)
-  assert.match(block, /publishedAt: '2026-10-24'/)
+  assert.match(block, /что умеет движок/i)
 })
 
-test('article #28 keeps the facts: форматы, кодировки, 60×40, 1000 записей', () => {
-  const block = extractArticleBlock('28-universal-import-excel')
+test('article #28 keeps the key theses: один SQL, автосоединения, рекурсия', () => {
+  const block = extractArticleBlock('28-query-engine-capabilities')
 
-  assert.match(block, /XLSX\/XLSM\/XLSB\/XLS/)
-  assert.match(block, /CSV/)
-  assert.match(block, /JSON/)
-  assert.match(block, /Windows-1251/)
-  assert.match(block, /UTF-8/)
-  assert.match(block, /60×40/)
-  assert.match(block, /1000/)
-  assert.match(block, /Shift\+клик/)
-  assert.match(block, /«Создать новую таблицу из файла»/)
+  // компиляция декларативного определения в SQL
+  assert.match(block, /компилирует/i)
+  assert.match(block, /LEFT JOIN/)
+  // соединения выводятся из метаданных, JOIN руками не пишут
+  assert.match(block, /метаданн/i)
+  assert.match(block, /сам[ао]? находит путь/i)
+  // аналитический охват
+  assert.match(block, /HAVING/)
+  assert.match(block, /WITH RECURSIVE/)
+  assert.match(block, /подзапрос/i)
+  // параметры URL и форматы
+  assert.match(block, /FR_/)
+  assert.match(block, /JSON_KV/)
+  assert.match(block, /X-Query-Id/)
 })
 
-test('article #28 keeps the mechanics: справочники, подчинённые, формулы, статистика', () => {
-  const block = extractArticleBlock('28-universal-import-excel')
+test('article #28 lists the consumers: кнопки, дашборды, MCP, планировщик', () => {
+  const block = extractArticleBlock('28-query-engine-capabilities')
 
-  assert.match(block, /справочник/i)
-  assert.match(block, /«Создавать родителя, если его нет»/)
-  assert.match(block, /по значению или #ID/)
-  assert.match(block, /\[Кол-во\]\*\[Цена\]/)
-  assert.match(block, /JavaScript/)
-  assert.match(block, /Math\.round/)
-  assert.match(block, /avg\/sum/)
-  assert.match(block, /min\/max/)
-  assert.match(block, /TSV/)
+  assert.match(block, /дашборд/i)
+  assert.match(block, /integram-mcp/)
+  assert.match(block, /Airflow|планировщик/i)
+  // SET-механика и права — не здесь, а в статье 29
+  assert.match(block, /29-query-as-stored-procedure/)
 })
 
-test('article #28 states the honest limitations: только создание, один лист, не Excel-функции', () => {
-  const block = extractArticleBlock('28-universal-import-excel')
+test('article #28 is honest about the limits: не OLAP, тяжёлая агрегация — в DWH', () => {
+  const block = extractArticleBlock('28-query-engine-capabilities')
 
-  assert.match(block, /создаёт записи/)
-  assert.match(block, /обновления существующих строк|Обновить существующие строки/i)
-  assert.match(block, /Один лист Excel за загрузку/)
-  assert.match(block, /а не Excel-функции/)
-  assert.match(block, /проверяет сервер/)
+  assert.match(block, /OLAP/i)
+  assert.match(block, /колоночн/i)
+  assert.match(block, /накопител/i)
 })
 
-test('article #28 has FAQ, flowDiagram, scenario and the comparison table', () => {
-  const block = extractArticleBlock('28-universal-import-excel')
+test('article #28 cites the crm source document', () => {
+  const block = extractArticleBlock('28-query-engine-capabilities')
 
-  assert.match(block, /faq: \[/)
-  assert.match(block, /question: 'Как загрузить Excel в Интеграм\?'/)
-  assert.match(block, /question: 'Импорт обновляет существующие записи или только создаёт новые\?'/)
-  assert.match(block, /flowDiagram:/)
-  assert.match(block, /scenario:/)
-  assert.match(block, /comparisonTable:/)
-  assert.match(block, /integramScenario:/)
-})
-
-test('article #28 cites the code source and the vc.ru walkthrough', () => {
-  const block = extractArticleBlock('28-universal-import-excel')
-
-  assert.match(block, /github\.com\/ideav\/crm\/blob\/main\/templates\/upload\.html/)
-  assert.match(block, /vc\.ru\/dev\/1046757-normalizaciya-dannyh-iz-tablic-excel-v-integrale/)
   assert.match(
     block,
-    /sourceUrl: 'https:\/\/github\.com\/ideav\/crm\/blob\/main\/templates\/upload\.html'/,
+    /github\.com\/ideav\/crm\/blob\/main\/docs\/query-engine-capabilities\.md/,
+  )
+  assert.match(
+    block,
+    /sourceUrl: 'https:\/\/github\.com\/ideav\/crm\/blob\/main\/docs\/query-engine-capabilities\.md'/,
   )
 })
 
-test('article #28 is grouped, sitemapped, listed in llms.txt and has an OG card', () => {
+test('article #28 is grouped, sitemapped and listed in llms.txt with an OG card', () => {
   const prerenderSource = readFileSync(
     new URL('../scripts/prerender-knowledge-base.mjs', import.meta.url),
     'utf8',
   )
 
-  // группа «Замена Excel и Google Sheets»
-  const excelGroup = prerenderSource.slice(
-    prerenderSource.indexOf("'01-google-sheets-150k'"),
-    prerenderSource.indexOf('Реляционные данные: Airtable и Notion'),
+  // группа «Релизы, отчёты, формы и интеграции»
+  const reportsGroup = prerenderSource.slice(
+    prerenderSource.indexOf('Релизы, отчёты, формы и интеграции'),
+    prerenderSource.indexOf('Бизнес-практика no-code'),
   )
-  assert.match(excelGroup, /'28-universal-import-excel'/)
-  assert.match(sitemap, /knowledge-base\/28-universal-import-excel\.html/)
-  assert.match(llms, /knowledge-base\/28-universal-import-excel\.html/)
-  assert.match(llms, /серия из 31 материала/)
+  assert.match(reportsGroup, /'28-query-engine-capabilities'/)
+  assert.match(sitemap, /knowledge-base\/28-query-engine-capabilities\.html/)
+  assert.match(llms, /knowledge-base\/28-query-engine-capabilities\.html/)
   assert.ok(
-    existsSync(new URL('../public/og/28-universal-import-excel.png', import.meta.url)),
-    'expected public/og/28-universal-import-excel.png to be committed',
+    existsSync(new URL('../public/og/28-query-engine-capabilities.png', import.meta.url)),
+    'expected public/og/28-query-engine-capabilities.png to be committed',
   )
 })
