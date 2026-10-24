@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="t d">
+<title id="t">Универсальный импорт из Excel в Интеграме</title>
+<desc id="d">Слева миниатюра Excel-листа с выбранным диапазоном ячеек, стрелка ведёт к строкам базы данных; над ними формула из колонок, внизу показатели статистики: сумма, среднее, ошибки видны до записи.</desc>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0" stop-color="#060d20"/>
+  <stop offset="0.55" stop-color="#0a1738"/>
+  <stop offset="1" stop-color="#0e2450"/>
+ </linearGradient>
+ <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+  <path d="M0,0 L10,5 L0,10 z" fill="#4d8dff"/>
+ </marker>
+</defs>
+<rect width="1200" height="630" fill="url(#bg)"/>
+<text x="80" y="112" font-family="Segoe UI, Arial, sans-serif" font-size="52" font-weight="700" fill="#eef3ff">Универсальный импорт из Excel</text>
+<text x="80" y="162" font-family="Segoe UI, Arial, sans-serif" font-size="25" fill="#9fb3d9">диапазон мышкой · формулы · подчинённые таблицы · статистика</text>
+
+<!-- Excel sheet -->
+<g font-family="Segoe UI, Arial, sans-serif">
+ <rect x="100" y="220" width="456" height="300" rx="10" fill="#0c1836" stroke="#22335f"/>
+ <rect x="100" y="220" width="456" height="28" rx="10" fill="#16244b"/>
+ <rect x="100" y="238" width="456" height="10" fill="#16244b"/>
+ <!-- column labels -->
+ <g font-size="13" fill="#7e93c4" text-anchor="middle">
+  <text x="136" y="239">A</text><text x="220" y="239">B</text><text x="304" y="239">C</text><text x="388" y="239">D</text><text x="472" y="239">E</text>
+ </g>
+ <!-- selected range B3:D7 -->
+ <rect x="178" y="316" width="294" height="170" fill="#4d8dff" opacity="0.16"/>
+ <rect x="178" y="316" width="84" height="34" fill="none" stroke="#4d8dff" stroke-width="3"/>
+ <rect x="388" y="452" width="84" height="34" fill="none" stroke="#34c98e" stroke-width="3"/>
+ <!-- grid lines -->
+ <g stroke="#1b2b57" stroke-width="1">
+  <path d="M136,248 V520 M220,248 V520 M304,248 V520 M388,248 V520"/>
+  <path d="M100,282 H556 M100,316 H556 M100,350 H556 M100,384 H556 M100,418 H556 M100,452 H556 M100,486 H556"/>
+ </g>
+ <!-- row numbers -->
+ <g font-size="13" fill="#7e93c4" text-anchor="middle">
+  <text x="118" y="271">1</text><text x="118" y="305">2</text><text x="118" y="339">3</text><text x="118" y="373">4</text><text x="118" y="407">5</text><text x="118" y="441">6</text><text x="118" y="475">7</text><text x="118" y="509">8</text>
+ </g>
+ <!-- cell contents -->
+ <g font-size="14" fill="#b9c7e8">
+  <text x="112" y="271">Товар</text><text x="232" y="271">Кол-во</text><text x="316" y="271">Цена</text><text x="400" y="271">Сумма</text><text x="484" y="271">Статус</text>
+  <text x="112" y="305">Кабель</text><text x="244" y="305">12</text><text x="332" y="305">340</text><text x="418" y="305">4080</text><text x="490" y="305">ок</text>
+  <text x="112" y="339">Щиток</text><text x="244" y="339">3</text><text x="332" y="339">1250</text>
+ </g>
+</g>
+
+<!-- arrow -->
+<path d="M585,370 H695" stroke="#4d8dff" stroke-width="4" marker-end="url(#arr)"/>
+
+<!-- formula pill -->
+<rect x="730" y="160" width="390" height="46" rx="23" fill="#0c1836" stroke="#34c98e"/>
+<text x="925" y="190" font-family="Consolas, monospace" font-size="20" fill="#7ee2b8" text-anchor="middle">[Кол-во] * [Цена] → [Сумма]</text>
+
+<!-- database rows -->
+<g>
+ <g>
+  <rect x="730" y="228" width="390" height="46" rx="8" fill="#101c3d" stroke="#22335f"/>
+  <circle cx="754" cy="251" r="7" fill="#34c98e"/>
+  <rect x="772" y="241" width="220" height="10" rx="5" fill="#2a3f73"/>
+  <rect x="772" y="257" width="130" height="8" rx="4" fill="#1c2c55"/>
+ </g>
+ <g>
+  <rect x="730" y="286" width="390" height="46" rx="8" fill="#101c3d" stroke="#22335f"/>
+  <circle cx="754" cy="309" r="7" fill="#34c98e"/>
+  <rect x="772" y="299" width="180" height="10" rx="5" fill="#2a3f73"/>
+  <rect x="772" y="315" width="150" height="8" rx="4" fill="#1c2c55"/>
+ </g>
+ <g>
+  <rect x="730" y="344" width="390" height="46" rx="8" fill="#101c3d" stroke="#22335f"/>
+  <circle cx="754" cy="367" r="7" fill="#34c98e"/>
+  <rect x="772" y="357" width="240" height="10" rx="5" fill="#2a3f73"/>
+  <rect x="772" y="373" width="110" height="8" rx="4" fill="#1c2c55"/>
+ </g>
+ <g>
+  <rect x="730" y="402" width="390" height="46" rx="8" fill="#101c3d" stroke="#8a5a2b"/>
+  <circle cx="754" cy="425" r="7" fill="#ffb454"/>
+  <rect x="772" y="415" width="200" height="10" rx="5" fill="#2a3f73"/>
+  <rect x="772" y="431" width="170" height="8" rx="4" fill="#54371c"/>
+ </g>
+</g>
+
+<!-- stats chips -->
+<g font-family="Segoe UI, Arial, sans-serif" font-size="16">
+ <rect x="730" y="478" width="180" height="36" rx="18" fill="#0c1836" stroke="#34c98e"/>
+ <text x="820" y="501" fill="#7ee2b8" text-anchor="middle">sum · avg · min/max</text>
+ <rect x="924" y="478" width="120" height="36" rx="18" fill="#241708" stroke="#ffb454"/>
+ <text x="984" y="501" fill="#ffc879" text-anchor="middle">ошибок: 1</text>
+</g>
+</svg>
