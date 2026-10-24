@@ -171,14 +171,30 @@ if (!defined('ORDER_LIB_LOADED')) {
         @rmdir($dir);
     }
 
-    /** Почтовый дубль (без гарантий: у доменов нет DMARC, письма часто в спаме). */
+    /**
+     * Почтовый дубль уведомления оператору (ORDER_EMAIL_TO; не задан — молчим).
+     *
+     * Идёт общим транспортом intake_mail_send(): конверт и From — welcome@ideav.ru
+     * (у ideav.ru есть SPF, DKIM и DMARC; у excel-to-app.ru записей нет, и
+     * неподписанное «noreply@<host>» уходило бы в спам), длинные строки
+     * режутся — иначе exim отказывается вести письмо целиком. $host не нужен,
+     * оставлен ради прежних вызовов.
+     */
     function order_mail_copy(string $subject, string $name, string $body, string $host): void {
         $to = order_config('ORDER_EMAIL_TO');
         if ($to === null) {
             return;
         }
-        $from    = order_config('ORDER_EMAIL_FROM', 'noreply@' . $host);
-        $headers = ['From: Excel-лендинг <' . $from . '>', 'Content-Type: text/plain; charset=UTF-8'];
-        @mail($to, $subject . ': ' . $name, $body, implode("\r\n", $headers));
+        $subject = $name !== '' ? $subject . ': ' . $name : $subject;
+        // Подключаем до вызова, но после сборки темы: файл исполняется в области
+        // видимости функции и затирает локальные $name/$value своим foreach.
+        if (!function_exists('intake_mail_send')) {
+            require_once __DIR__ . '/order-intake.php';
+        }
+        intake_mail_send($to, $subject, $body, [
+            'from'      => order_config('ORDER_EMAIL_FROM', 'welcome@ideav.ru'),
+            'from_name' => 'Excel-лендинг',
+            'reply_to'  => '',
+        ]);
     }
 }
