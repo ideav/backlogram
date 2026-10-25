@@ -75,6 +75,8 @@ export const footerNavGroups = [
       { name: 'Конструктор вместо Excel', href: '/konstruktor-prilozhenij.html' },
       { name: 'Интеграм vs Битрикс24 / AmoCRM', href: '/sravnenie-s-bitrix-amocrm.html' },
       { name: 'API для разработчиков', href: '/api.html' },
+      // python2node#866: триггеры кнопок — продолжение справочника API.
+      { name: 'Триггеры кнопок', href: '/triggers.html' },
       { name: 'Токены', href: '/tokens.html' },
       // #642: хаб кластера «автоматизация бизнеса с ИИ».
       { name: 'Автоматизация бизнеса с ИИ', href: '/avtomatizaciya-biznesa-s-ii.html' },

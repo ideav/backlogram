@@ -49,6 +49,7 @@ const { knowledgeBaseArticles } = await import(dataUrl)
 const { AI_PAGES } = await import('../src/data/aiPages.mjs')
 const { ADEPT_META } = await import('../src/data/adeptPath.mjs')
 const { API_META } = await import('../src/data/apiDocs.mjs')
+const { TRIGGER_META } = await import('../src/data/triggerDocs.mjs')
 const { nbspText } = await import('../src/lib/typography.mjs')
 
 // ── Card template ─────────────────────────────────────────────────────────
@@ -346,6 +347,13 @@ const landingCards = [
     eyebrow: 'API · для разработчиков',
     title: nbspText(API_META.h1),
     subtitle: nbspText(API_META.description),
+  },
+  // python2node#866: триггеры кнопок — ссылку пересылают внедренцам.
+  {
+    slug: 'triggers',
+    eyebrow: 'Автоматизация · триггеры',
+    title: nbspText(TRIGGER_META.h1),
+    subtitle: nbspText(TRIGGER_META.description),
   },
   // #642: страницы кластера «ИИ для бизнеса» — тексты из src/data/aiPages.mjs.
   ...AI_PAGES.map((p) => ({ slug: p.slug, eyebrow: p.badge, title: p.ogTitle, subtitle: p.ogDescription })),
