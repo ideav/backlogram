@@ -26,6 +26,8 @@ const Quiz = lazy(() => import('./pages/Quiz'))
 const AdeptPath = lazy(() => import('./pages/AdeptPath'))
 // ideav/crm#5247: описание API ядра с примерами curl.
 const ApiDocs = lazy(() => import('./pages/ApiDocs'))
+// python2node#866: триггеры кнопок — событие записи запускает действие.
+const TriggerDocs = lazy(() => import('./pages/TriggerDocs'))
 // #553: персональная страница с контактами (требование поддержки Хабра к профилю).
 const AlexeySemenov = lazy(() => import('./pages/AlexeySemenov'))
 const AdImages = lazy(() => import('./pages/AdImages'))
@@ -173,6 +175,15 @@ export const router = createBrowserRouter([
       {
         path: 'api',
         element: <ApiDocs />,
+      },
+      // python2node#866: триггеры кнопок — продолжение справочника API.
+      {
+        path: 'triggers.html',
+        element: <TriggerDocs />,
+      },
+      {
+        path: 'triggers',
+        element: <TriggerDocs />,
       },
       {
         path: 'terms.html',

@@ -20,7 +20,7 @@ function setCanonical(href: string) {
 const INLINE_CODE = 'px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-[0.9em] font-mono text-slate-800 dark:text-slate-200'
 
 /** Строка с фрагментами в обратных кавычках: `x` — код, остальное — текст. */
-function Inline({ text }: { text: string }) {
+export function Inline({ text }: { text: string }) {
   const parts = text.split('`')
   return (
     <>
@@ -57,7 +57,7 @@ function CodeBlock({ code, label }: { code: string; label?: string }) {
   )
 }
 
-function Block({ block }: { block: ApiBlock }) {
+export function Block({ block }: { block: ApiBlock }) {
   switch (block.t) {
     case 'p':
       return <p className="text-slate-600 dark:text-slate-300 leading-relaxed"><Inline text={block.text} /></p>
