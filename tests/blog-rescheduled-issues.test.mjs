@@ -45,8 +45,8 @@ test('articles formerly numbered 51 and 52 are scheduled for March and April 202
 test('blog issue numbers follow the rescheduled publication order', () => {
   const posts = publishedPosts()
 
-  assert.equal(issueNumber(posts, onPremiseFile), '050')
-  assert.equal(issueNumber(posts, selfHostedFile), '051')
-  assert.equal(issueNumber(posts, welcomeFile), '052')
-  assert.equal(issueNumber(posts, geoFile), '053')
+  assert.equal(issueNumber(posts, onPremiseFile), '049')
+  assert.equal(issueNumber(posts, selfHostedFile), '050')
+  assert.equal(issueNumber(posts, welcomeFile), '051')
+  assert.equal(issueNumber(posts, geoFile), '052')
 })
