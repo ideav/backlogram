@@ -31,6 +31,7 @@ import { dirname, resolve } from 'node:path'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import { assertLandings, countWords, CTA_LABEL, loadLandings } from '../site-excel/landings.mjs'
+import { assertTplPages, loadTplPages } from '../site-excel/tpl-pages.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -78,7 +79,7 @@ await build({
   logLevel: 'error',
 })
 
-const { PAGES, renderLanding, renderLandingPages, renderStaticPages } = createRequire(import.meta.url)(entryOut)
+const { PAGES, renderLanding, renderLandingPages, renderTplPages, renderStaticPages } = createRequire(import.meta.url)(entryOut)
 
 // ── Посадочные (issue #657): проверка данных до отрисовки ───────────────────
 // Длины и уникальность title/description/H1, строки блока формул, заглушки,
@@ -87,6 +88,22 @@ const { PAGES, renderLanding, renderLandingPages, renderStaticPages } = createRe
 let landings
 try {
   landings = assertLandings(loadLandings(), PAGES)
+} catch (err) {
+  console.error(err.message)
+  process.exit(1)
+}
+
+// ── Страницы «нужна табличка» (issue #790) ──────────────────────────────────
+// Схема та же: брак в данных валит сборку. Существующие страницы — и посадочные,
+// и tpl-страницы: перелинковка между всеми адресами домена должна сходиться.
+let tplPages
+try {
+  tplPages = loadTplPages()
+  tplPages = assertTplPages(
+    tplPages,
+    [...PAGES, ...landings.map(l => ({ path: `/${l.slug}/`, title: l.title, description: l.description }))],
+    tplPages.map(p => `/${p.slug}/`),
+  )
 } catch (err) {
   console.error(err.message)
   process.exit(1)
@@ -157,7 +174,7 @@ function pageHtml(page) {
     ${page.jsonLd}
   </head>
   <body>
-    <div id="page">${page.body}</div>${page.landing ? `\n    ${landingScript(page.landing)}` : ''}${page.praktikum ? `\n    ${praktikumScript()}` : ''}${page.program ? `\n    ${programScript(page.program)}` : ''}
+    <div id="page">${page.body}</div>${page.landing ? `\n    ${landingScript(page.landing)}` : ''}${page.tpl ? `\n    ${tplScript(page.tpl, tplPromise(page.tpl))}` : ''}${page.praktikum ? `\n    ${praktikumScript()}` : ''}${page.program ? `\n    ${programScript(page.program)}` : ''}
     ${metrikaBlock}
   </body>
 </html>
@@ -176,6 +193,29 @@ function landingScript(slug) {
     ? `try{ym(${METRIKA_ID},'reachGoal','landing_cta',{page:${JSON.stringify(slug)}})}catch(e){}`
     : ''
   return `<script>(function(){var q=new URLSearchParams(location.search),k=[];q.forEach(function(v,n){if(/^utm_|^yclid$/.test(n))k.push([n,v])});document.querySelectorAll('a[data-cta]').forEach(function(a){var u=new URL(a.getAttribute('href'),location.href);k.forEach(function(x){u.searchParams.set(x[0],x[1])});a.href=u.pathname+u.search+u.hash;a.addEventListener('click',function(){${goal}})})})()</script>`
+}
+
+/**
+ * Встроенный скрипт страницы «нужна табличка» (issue #790). Цели воронки —
+ * раздел 5 плана template-seekers-plan.md:
+ *   • `tpl_view` — загрузка страницы;
+ *   • `tpl_download` — клик по «Скачать Excel», `tpl_demo_open` — по
+ *     «Открыть онлайн» (обе кнопки: первый экран и блок боли);
+ *   • UTM и yclid из адреса дописываются к ссылкам на онлайн-версию и
+ *     главную — как у посадочных; клик по главной шлёт `landing_cta`;
+ *   • форма `kind=copy` отправляется fetch'ем, успех — цель `lead`, та же,
+ *     что у главной формы: заявка на копию и есть заявка. Без JS форма
+ *     уходит обычным POST — order.php его принимает.
+ */
+function tplScript(slug, promise) {
+  const s = JSON.stringify(slug)
+  const g = METRIKA_ID ? `function g(n,p){try{ym(${METRIKA_ID},'reachGoal',n,p)}catch(e){}}` : 'function g(){}'
+  const view = METRIKA_ID ? `g('tpl_view',{page:${s}})` : ''
+  const lead = METRIKA_ID
+    ? `g('lead',{source:${JSON.stringify(`tpl-copy-${slug}`)},page:${s},dwell_ms:Date.now()-t})`
+    : ''
+  const okMsg = JSON.stringify(`Принято. ${promise} — придёт сообщение на указанный контакт.`)
+  return `<script>(function(){var t=Date.now();${g};var q=new URLSearchParams(location.search),k=[];q.forEach(function(v,n){if(/^utm_|^yclid$/.test(n))k.push([n,v])});document.querySelectorAll('a[data-tpl-demo],a[data-cta]').forEach(function(a){var u=new URL(a.getAttribute('href'),location.href);k.forEach(function(x){u.searchParams.set(x[0],x[1])});a.href=u.pathname+u.search+u.hash});document.querySelectorAll('a[data-tpl-demo]').forEach(function(a){a.addEventListener('click',function(){g('tpl_demo_open',{page:${s}})})});document.querySelectorAll('a[data-tpl-download]').forEach(function(a){a.addEventListener('click',function(){g('tpl_download',{page:${s}})})});document.querySelectorAll('a[data-cta]').forEach(function(a){a.addEventListener('click',function(){g('landing_cta',{page:${s}})})});${view};var f=document.querySelector('form[data-tpl-form]');if(!f)return;var uf=f.querySelector('input[name=utm]');if(uf)uf.value=k.map(function(x){return x[0]+'='+x[1]}).join(' ');f.addEventListener('submit',function(e){e.preventDefault();var m=f.querySelector('[data-tpl-msg]');var b=f.querySelector('button[type=submit]');if(b)b.disabled=true;fetch(f.action,{method:'POST',body:new FormData(f)}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok){${lead};f.reset();if(m){m.textContent=${okMsg};m.hidden=false;m.className='text-sm font-medium text-emerald-800'}}else{if(m){m.textContent=(j&&j.error)||'Не отправилось — напишите в телеграм @Integrammbot.';m.hidden=false;m.className='text-sm font-medium text-red-700'}if(b)b.disabled=false}}).catch(function(){f.submit()})})})()</script>`
 }
 
 /**
@@ -215,7 +255,10 @@ function programScript(slug) {
 }
 
 const written = [indexPath]
-const pages = [...renderStaticPages(CANONICAL), ...renderLandingPages(CANONICAL, landings)]
+const pages = [...renderStaticPages(CANONICAL), ...renderLandingPages(CANONICAL, landings), ...renderTplPages(CANONICAL, tplPages, landings)]
+
+/** Обещание по сроку копии — уходит в сообщение об успехе формы (issue #790). */
+const tplPromise = slug => tplPages.find(p => p.slug === slug)?.copyPromise ?? 'Ссылка придёт на указанный контакт'
 for (const page of pages) {
   const dir = resolve(dist, page.dir)
   mkdirSync(dir, { recursive: true })

@@ -20,7 +20,8 @@ test('порог описания задачи один на форме и в or
 })
 
 test('order.php режет короткое описание без файлов, разбор не трогает', () => {
-  assert.match(orderPhp, /\$kind !== 'razbor' && !\$attachments && mb_strlen\(\$task\) < \d+/)
+  // copy (issue #790) освобождён от описания: у заявки на копию есть шаблон.
+  assert.match(orderPhp, /!in_array\(\$kind, \['razbor', 'copy'\], true\) && !\$attachments && mb_strlen\(\$task\) < \d+/)
 })
 
 test('«работа иксель» короче порога', () => {

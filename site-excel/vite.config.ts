@@ -7,6 +7,7 @@ import { CASES, CONTACT_EMAIL, FAQ, PAGES, PRAKTIKUM, PRICING_GROUPS, TELEGRAM_B
 import { metrikaSnippet } from './src/metrika'
 import { jsonLdScript, landingJsonLd } from './src/seo'
 import { loadLandings } from './landings.mjs'
+import { loadTplPages } from './tpl-pages.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -52,11 +53,19 @@ const SITE_HOST = (() => { try { return new URL(ORIGIN).hostname } catch { retur
 // в Директе это выглядит как работающая цель с нулём конверсий.
 const METRIKA_ID = (process.env.METRIKA_ID ?? '').trim().replace(/\D/g, '')
 
-// Все адреса домена: страницы из content.ts и посадочные из landings/*.json
-// (issue #657). Проверяет посадочные пререндер — здесь только список адресов.
+// Все адреса домена: страницы из content.ts, посадочные из landings/*.json
+// (issue #657) и страницы «нужна табличка» из tpl/*.json (issue #790).
+// Проверяет данные пререндер — здесь только список адресов.
 const SITE_PAGES = [
   ...PAGES,
   ...loadLandings(path.resolve(__dirname, 'landings')).map(page => ({
+    path: `/${page.slug}/`,
+    title: page.title as string,
+    description: page.description as string,
+    published: page.published as string,
+    updated: page.updated as string,
+  })),
+  ...loadTplPages(path.resolve(__dirname, 'tpl')).map(page => ({
     path: `/${page.slug}/`,
     title: page.title as string,
     description: page.description as string,
