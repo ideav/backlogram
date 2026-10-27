@@ -30,6 +30,8 @@ const ApiDocs = lazy(() => import('./pages/ApiDocs'))
 const TriggerDocs = lazy(() => import('./pages/TriggerDocs'))
 // ideav/crm#5260: запрос как хранимая процедура — защищённые изменения данных.
 const ProcDocs = lazy(() => import('./pages/ProcDocs'))
+// backlogram#798: шаблонизатор — HTML рабочих мест и вставка данных.
+const TemplaterDocs = lazy(() => import('./pages/TemplaterDocs'))
 // #553: персональная страница с контактами (требование поддержки Хабра к профилю).
 const AlexeySemenov = lazy(() => import('./pages/AlexeySemenov'))
 const AdImages = lazy(() => import('./pages/AdImages'))
@@ -195,6 +197,14 @@ export const router = createBrowserRouter([
       {
         path: 'stored-procedures',
         element: <ProcDocs />,
+      // backlogram#798: шаблонизатор — продолжение раздела «Файлы» справочника API.
+      {
+        path: 'templater.html',
+        element: <TemplaterDocs />,
+      },
+      {
+        path: 'templater',
+        element: <TemplaterDocs />,
       },
       {
         path: 'terms.html',

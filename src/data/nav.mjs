@@ -79,6 +79,8 @@ export const footerNavGroups = [
       { name: 'Триггеры кнопок', href: '/triggers.html' },
       // ideav/crm#5260: запрос как хранимая процедура.
       { name: 'Хранимые процедуры', href: '/stored-procedures.html' },
+      // backlogram#798: шаблонизатор рабочих мест.
+      { name: 'Шаблонизатор', href: '/templater.html' },
       { name: 'Токены', href: '/tokens.html' },
       // #642: хаб кластера «автоматизация бизнеса с ИИ».
       { name: 'Автоматизация бизнеса с ИИ', href: '/avtomatizaciya-biznesa-s-ii.html' },

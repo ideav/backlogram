@@ -15,7 +15,7 @@ export interface ApiMeta {
  */
 export type ApiBlock =
   | { t: 'p'; text: string }
-  | { t: 'note'; text: string }
+  | { t: 'note'; text: string; link?: { href: string; text: string } }
   | { t: 'list'; items: string[] }
   | { t: 'code'; lang: 'bash' | 'json' | 'text'; label?: string; code: string }
   | { t: 'table'; head: string[]; rows: string[][] }
