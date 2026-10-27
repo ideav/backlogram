@@ -16,6 +16,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { TRIGGER_META, TRIGGER_INTRO, TRIGGER_SECTIONS } from '../src/data/triggerDocs.mjs'
+import { docsRingHtml } from '../src/data/docsRing.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -103,6 +104,7 @@ const bodyHtml = `
     <p class="api-prerender__eyebrow">Автоматизация</p>
     <h1>${escape(TRIGGER_META.h1)}</h1>
     ${TRIGGER_INTRO.map((p) => `<p class="api-prerender__lead">${inline(p)}</p>`).join('\n    ')}
+    ${docsRingHtml(PATH)}
   </header>
   <nav class="api-prerender__toc" aria-label="Содержание">
     <ol>${tocHtml}</ol>
@@ -135,6 +137,8 @@ const bodyHtml = `
   #${ID} .api-prerender__lead { font-size: 1.05rem; color: #475569; }
   #${ID} .api-prerender__label { font-size: 0.8rem; color: #64748b; margin-bottom: 0; }
   #${ID} .api-prerender__note { border-left: 3px solid #f59e0b; padding-left: 0.75rem; }
+  #${ID} .docs-see-also { font-size: 0.92rem; margin: 1rem 0 0; }
+  #${ID} .docs-see-also span { color: #64748b; }
   #${ID} .api-prerender__footer { margin-top: 2rem; padding-top: 1.5rem;
     border-top: 1px solid #e2e8f0; font-size: 0.92rem; color: #475569; }
   /* Тёмная тема идёт от .dark на <html>, как в остальных снапшотах. */

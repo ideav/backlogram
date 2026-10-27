@@ -50,6 +50,7 @@ const { AI_PAGES } = await import('../src/data/aiPages.mjs')
 const { ADEPT_META } = await import('../src/data/adeptPath.mjs')
 const { API_META } = await import('../src/data/apiDocs.mjs')
 const { TRIGGER_META } = await import('../src/data/triggerDocs.mjs')
+const { TEMPLATER_META } = await import('../src/data/templaterDocs.mjs')
 const { nbspText } = await import('../src/lib/typography.mjs')
 
 // ── Card template ─────────────────────────────────────────────────────────
@@ -354,6 +355,13 @@ const landingCards = [
     eyebrow: 'Автоматизация · триггеры',
     title: nbspText(TRIGGER_META.h1),
     subtitle: nbspText(TRIGGER_META.description),
+  },
+  // backlogram#798: шаблонизатор рабочих мест.
+  {
+    slug: 'templater',
+    eyebrow: 'Для разработчиков · шаблоны',
+    title: nbspText(TEMPLATER_META.h1),
+    subtitle: nbspText(TEMPLATER_META.description),
   },
   // #642: страницы кластера «ИИ для бизнеса» — тексты из src/data/aiPages.mjs.
   ...AI_PAGES.map((p) => ({ slug: p.slug, eyebrow: p.badge, title: p.ogTitle, subtitle: p.ogDescription })),

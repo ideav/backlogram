@@ -22,6 +22,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { API_META, API_INTRO, API_SECTIONS } from '../src/data/apiDocs.mjs'
+import { docsRingHtml } from '../src/data/docsRing.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -53,7 +54,7 @@ function blockHtml(b) {
     case 'p':
       return `<p>${inline(b.text)}</p>`
     case 'note':
-      return `<p class="api-prerender__note">${inline(b.text)}</p>`
+      return `<p class="api-prerender__note">${inline(b.text)}${b.link ? ` <a href="${escape(b.link.href)}">${escape(b.link.text)}</a>` : ''}</p>`
     case 'list':
       return `<ul>${b.items.map((i) => `<li>${inline(i)}</li>`).join('')}</ul>`
     case 'code':
@@ -103,6 +104,7 @@ const bodyHtml = `
     <p class="api-prerender__eyebrow">Для разработчиков</p>
     <h1>${escape(API_META.h1)}</h1>
     ${API_INTRO.map((p) => `<p class="api-prerender__lead">${inline(p)}</p>`).join('\n    ')}
+    ${docsRingHtml(PATH)}
   </header>
   <nav class="api-prerender__toc" aria-label="Содержание">
     <ol>${tocHtml}</ol>
@@ -135,6 +137,8 @@ const bodyHtml = `
   #api-prerender .api-prerender__lead { font-size: 1.05rem; color: #475569; }
   #api-prerender .api-prerender__label { font-size: 0.8rem; color: #64748b; margin-bottom: 0; }
   #api-prerender .api-prerender__note { border-left: 3px solid #f59e0b; padding-left: 0.75rem; }
+  #api-prerender .docs-see-also { font-size: 0.92rem; margin: 1rem 0 0; }
+  #api-prerender .docs-see-also span { color: #64748b; }
   #api-prerender .api-prerender__footer { margin-top: 2rem; padding-top: 1.5rem;
     border-top: 1px solid #e2e8f0; font-size: 0.92rem; color: #475569; }
   /* Тёмная тема идёт от .dark на <html>, как в остальных снапшотах. */

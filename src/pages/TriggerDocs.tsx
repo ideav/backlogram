@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Check, Copy, Hammer } from 'lucide-react'
 import Breadcrumbs from '../components/Breadcrumbs'
+import DocsSeeAlso from '../components/DocsSeeAlso'
 import { Block, Inline } from './ApiDocs'
 import { TRIGGER_META, TRIGGER_INTRO, TRIGGER_SECTIONS } from '../data/triggerDocs'
 import type { TriggerSection } from '../data/triggerDocs'
@@ -308,6 +309,7 @@ export default function TriggerDocs() {
               <p key={i} className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed"><Inline text={p} /></p>
             ))}
           </div>
+          <DocsSeeAlso path={TRIGGER_META.path} />
         </div>
       </section>
 
