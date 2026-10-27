@@ -28,6 +28,8 @@ const AdeptPath = lazy(() => import('./pages/AdeptPath'))
 const ApiDocs = lazy(() => import('./pages/ApiDocs'))
 // python2node#866: триггеры кнопок — событие записи запускает действие.
 const TriggerDocs = lazy(() => import('./pages/TriggerDocs'))
+// ideav/crm#5260: запрос как хранимая процедура — защищённые изменения данных.
+const ProcDocs = lazy(() => import('./pages/ProcDocs'))
 // #553: персональная страница с контактами (требование поддержки Хабра к профилю).
 const AlexeySemenov = lazy(() => import('./pages/AlexeySemenov'))
 const AdImages = lazy(() => import('./pages/AdImages'))
@@ -184,6 +186,15 @@ export const router = createBrowserRouter([
       {
         path: 'triggers',
         element: <TriggerDocs />,
+      },
+      // ideav/crm#5260: запрос как хранимая процедура — продолжение справочника API.
+      {
+        path: 'stored-procedures.html',
+        element: <ProcDocs />,
+      },
+      {
+        path: 'stored-procedures',
+        element: <ProcDocs />,
       },
       {
         path: 'terms.html',

@@ -50,6 +50,7 @@ const { AI_PAGES } = await import('../src/data/aiPages.mjs')
 const { ADEPT_META } = await import('../src/data/adeptPath.mjs')
 const { API_META } = await import('../src/data/apiDocs.mjs')
 const { TRIGGER_META } = await import('../src/data/triggerDocs.mjs')
+const { PROC_META } = await import('../src/data/procDocs.mjs')
 const { nbspText } = await import('../src/lib/typography.mjs')
 
 // ── Card template ─────────────────────────────────────────────────────────
@@ -354,6 +355,13 @@ const landingCards = [
     eyebrow: 'Автоматизация · триггеры',
     title: nbspText(TRIGGER_META.h1),
     subtitle: nbspText(TRIGGER_META.description),
+  },
+  // ideav/crm#5260: запрос как хранимая процедура.
+  {
+    slug: 'stored-procedures',
+    eyebrow: 'Серверная логика · права',
+    title: nbspText(PROC_META.h1),
+    subtitle: nbspText(PROC_META.description),
   },
   // #642: страницы кластера «ИИ для бизнеса» — тексты из src/data/aiPages.mjs.
   ...AI_PAGES.map((p) => ({ slug: p.slug, eyebrow: p.badge, title: p.ogTitle, subtitle: p.ogDescription })),
