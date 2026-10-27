@@ -73,12 +73,17 @@ $consent = (string) ($data['consent'] ?? '');
 $trap    = trim((string) ($data['website'] ?? ''));
 // Вид заявки (issue #596): demo — «пришлите Excel, соберём приложение»,
 // razbor — запись на платный разбор заготовки, express — модальная заявка на
-// экспресс-разработку из карточек цен (issue #619).
-$kind    = in_array($data['kind'] ?? '', ['demo', 'express'], true) ? $data['kind'] : 'razbor';
+// экспресс-разработку из карточек цен (issue #619), copy — «сделайте копию
+// шаблона под нас» со страниц «нужна табличка» (issue #790).
+$kind    = in_array($data['kind'] ?? '', ['demo', 'express', 'copy'], true) ? $data['kind'] : 'razbor';
 // Посадочная, с которой пришла заявка (issue #657): `page` — адрес страницы
 // (`?from=<slug>`), `utm` — метки рекламы. Только для учёта.
 $page    = preg_replace('/[^a-z0-9-]/', '', mb_substr((string) ($data['page'] ?? ''), 0, 80));
 $utm     = mb_substr(trim(preg_replace('/[\x00-\x1F]+/', ' ', (string) ($data['utm'] ?? ''))), 0, 500);
+// Шаблон и роль заявившегося (issue #790): копию делают по образцу демо-базы,
+// роль подсказывает, кем человек работает — оператору и будущей аналитике.
+$tpl     = preg_replace('/[^a-z0-9-]/', '', mb_substr((string) ($data['tpl'] ?? ''), 0, 80));
+$who     = mb_substr(trim(preg_replace('/[\x00-\x1F]+/', ' ', (string) ($data['who'] ?? ''))), 0, 100);
 // Отметка формы демонстрации (issue #659): человек хочет не только ссылку на
 // приложение, но и практикум — час разбора с ведущим. Для сборки это та же
 // заявка demo; меняются только тема и строка в тексте для оператора.
@@ -159,12 +164,13 @@ $hits[] = $now;
 @file_put_contents($stamp, json_encode(array_values($hits)), LOCK_EX);
 
 // Демонстрации и экспресс-разработке нужен материал: файл или хотя бы пара слов о задаче.
-if ($kind !== 'razbor' && $task === '' && !$attachments) {
+// Заявке на копию шаблона (issue #790) материал не нужен: у неё есть шаблон.
+if (!in_array($kind, ['razbor', 'copy'], true) && $task === '' && !$attachments) {
     order_respond(400, ['ok' => false, 'error' => 'Приложите файл или напишите пару слов о задаче.']);
 }
 // Без файлов два слова о задаче — не заявка (issue #763, «работа иксель»);
 // порог зеркалит MIN_TASK_CHARS в content.ts.
-if ($kind !== 'razbor' && !$attachments && mb_strlen($task) < 40) {
+if (!in_array($kind, ['razbor', 'copy'], true) && !$attachments && mb_strlen($task) < 40) {
     order_respond(400, ['ok' => false, 'error' => 'Опишите задачу чуть подробнее — что ведёте в Excel и что должно получиться. Или приложите файл.']);
 }
 
@@ -173,6 +179,7 @@ $subject = [
     'demo'    => 'Заявка на демонстрацию (Excel → приложение)',
     'express' => 'Заявка на экспресс-разработку приложений',
     'razbor'  => 'Заявка на разбор',
+    'copy'    => 'Заявка на копию шаблона (Excel → приложение)',
 ][$kind];
 if ($praktikum) {
     $subject = 'Заявка на практикум «Свой первый ИИ-проект за час»';
@@ -194,6 +201,12 @@ if ($utm !== '') {
 }
 if ($praktikum) {
     $lines[] = 'Формат: практикум — собрать приложение и согласовать час разбора';
+}
+if ($kind === 'copy' && $tpl !== '') {
+    $lines[] = 'Шаблон: /' . $tpl . '/';
+}
+if ($kind === 'copy' && $who !== '') {
+    $lines[] = 'Кто: ' . $who;
 }
 array_push($lines,
     '',

@@ -53,7 +53,8 @@ test('цель express_lead проходит проверку на челове�
 })
 
 test('order.php принимает вид express и карточку', () => {
-  assert.match(orderPhp, /in_array\(\$data\['kind'\] \?\? '', \['demo', 'express'\], true\)/)
+  // copy (issue #790) добавлен в белый список позже; express остаётся на месте.
+  assert.match(orderPhp, /in_array\(\$data\['kind'\] \?\? '', \['demo', 'express', 'copy'\], true\)/)
   assert.match(orderPhp, /'express' => 'Заявка на экспресс-разработку приложений'/)
   assert.match(orderPhp, /'Карточка: ' \. \$plan/)
 })

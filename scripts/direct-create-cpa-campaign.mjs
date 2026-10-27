@@ -27,6 +27,8 @@
  *   put-adepta ideav.ru/put-adepta.html, фразы адептов, оплата за клики —
  *              проверка гипотезы «реальные проекты с цифрами привлекают
  *              адептов лучше, чем /adept/»
+ *   tpl        страницы «нужна табличка» (issue #790): своя посадочная у
+ *              каждой группы, максимум кликов, только поиск по будням днём
  *
  * Окружение:
  *   DIRECT_TOKEN     OAuth-токен Директа (обязателен для --apply)
@@ -263,6 +265,42 @@ PROFILES['put-adepta'] = {
   callouts: ['Ставку назначаете сами', 'Код пишет ИИ-агент', 'Заказчиков даёт команда', 'Партнёрам 15–40%'],
 }
 
+/**
+ * «Шаблоны» (issue #790): люди, которые ищут готовую таблицу — табель,
+ * приход-расход, журнал выдачи. У каждой группы своя посадочная страница
+ * (path в template-seekers.keywords.json) и своя метка utm_campaign=tpl-<slug>.
+ * Стратегия — максимум кликов (план §5): 1 000 ₽ в неделю на группу, потолок
+ * 15 ₽. Только поиск и только будни 8:00–20:00: ночью клик вчетверо дороже,
+ * а заявок ноль (отчёт 25.08–23.10). Минус-слова — свой список
+ * template-seekers.negatives.json: общий excel-cpa-negatives.json в нём
+ * нельзя, там минусуются «шаблон» и «скачать» — слова этой аудитории.
+ */
+PROFILES.tpl = {
+  title: 'Шаблоны',
+  slug: 'tpl',
+  path: '/',
+  goalName: 'lead',
+  strategy: 'clicks',
+  weeklyRub: 1000,
+  clickCeilingRub: { search: 15, network: 15 },
+  campaignPerGroup: true,
+  places: ['search'],
+  shifts: ['day'],
+  days: [1, 2, 3, 4, 5],
+  dayHours: { from: 8, to: 20 },
+  keywordFiles: [marketing('template-seekers.keywords.json')],
+  adsFile: marketing('template-seekers.ads.json'),
+  negativesFile: marketing('template-seekers.negatives.json'),
+  ads: [],
+  sitelinks: [
+    { Title: 'Что внутри шаблона', Description: 'Коды, праздники и итоги — считаются сами', anchor: 'shablon' },
+    { Title: 'Онлайн-версия', Description: 'Тот же учёт, но с телефона и без пересылки файла', anchor: 'onlayn' },
+    { Title: 'Своя копия', Description: 'Скопируем демо-базу под вас, бесплатно', anchor: 'kopiya' },
+    { Title: 'Вопросы и ответы', Description: 'Бесплатно ли, где хранятся данные, что дальше', anchor: 'faq' },
+  ],
+  callouts: ['Скачивание без формы', 'Онлайн с телефона', 'Без регистрации', 'Сервер в России'],
+}
+
 export const PROFILE = PROFILES[process.env.CAMPAIGN_PROFILE ?? 'excel']
 
 const cfg = {
@@ -311,16 +349,17 @@ export const AD_LIMITS = { Title: 56, Title2: 30, Text: 81 }
  */
 export const AD_TITLES_TOTAL = 56
 
-/** Ссылка объявления с UTM; {ad_id}/{keyword} подставляет сам Директ. */
-export function href(campaignSlug, siteUrl = cfg.siteUrl, profile = PROFILE) {
+/** Ссылка объявления с UTM; {ad_id}/{keyword} подставляет сам Директ.
+ *  У группы с своей посадочной (issue #790) — свой путь и своя метка. */
+export function href(campaignSlug, siteUrl = cfg.siteUrl, profile = PROFILE, group = undefined) {
   const utm = [
     'utm_source=yandex',
     'utm_medium=cpc',
-    `utm_campaign=${campaignSlug}`,
+    `utm_campaign=${group?.utm ?? campaignSlug}`,
     'utm_content={ad_id}',
     'utm_term={keyword}',
   ].join('&')
-  return `${siteUrl}${profile.path}?${utm}`
+  return `${siteUrl}${group?.path ?? profile.path}?${utm}`
 }
 
 /**
@@ -341,7 +380,7 @@ export const ADS_PER_GROUP = 3
 export function adsFor(campaignSlug, siteUrl = cfg.siteUrl, profile = PROFILE, group = undefined, campaignIndex = 0) {
   const pool = group?.ads ?? profile.ads
   const start = (campaignIndex * ADS_PER_GROUP) % pool.length
-  return pool.slice(start, start + ADS_PER_GROUP).map(ad => ({ ...ad, Href: href(campaignSlug, siteUrl, profile) }))
+  return pool.slice(start, start + ADS_PER_GROUP).map(ad => ({ ...ad, Href: href(campaignSlug, siteUrl, profile, group) }))
 }
 
 /** Ограничения Директа на быстрые ссылки и уточнения. */
@@ -349,8 +388,8 @@ export const SITELINK_LIMITS = { Title: 30, Description: 60, TitlesTotal: 66 }
 export const CALLOUT_LIMIT = 25
 
 /** Быстрые ссылки — на якоря разделов, которые есть на странице без клика. */
-export function sitelinksFor(campaignSlug, siteUrl = cfg.siteUrl, profile = PROFILE) {
-  return profile.sitelinks.map(({ anchor, ...link }) => ({ ...link, Href: `${href(campaignSlug, siteUrl, profile)}#${anchor}` }))
+export function sitelinksFor(campaignSlug, siteUrl = cfg.siteUrl, profile = PROFILE, group = undefined) {
+  return profile.sitelinks.map(({ anchor, ...link }) => ({ ...link, Href: `${href(campaignSlug, siteUrl, profile, group)}#${anchor}` }))
 }
 
 export const CALLOUTS = PROFILE?.callouts ?? []
@@ -363,6 +402,12 @@ export const CALLOUTS = PROFILE?.callouts ?? []
  */
 export function negativesFor(profile = PROFILE) {
   if (profile.noNegatives) return []
+  // Свой файл минус-слов (issue #790): формат тот же, что у
+  // excel-cpa-negatives.json, но список другой — категории в файле.
+  if (profile.negativesFile) {
+    const data = JSON.parse(readFileSync(profile.negativesFile, 'utf8'))
+    return Object.values(data.categories).flat()
+  }
   return loadNegatives().filter(word => !profile.allowedNegatives.includes(word))
 }
 
@@ -383,13 +428,16 @@ export const ALL_CATEGORIES = EXACT_ONLY.map(({ Category }) => ({ Category, Valu
  */
 export const DAY_HOURS = { from: 8, to: 21 }
 
-/** Строки расписания Директа: «день недели,ставка на час 0,…,час 23»; 100 — показ, 0 — нет. */
-export function scheduleFor(shift) {
+/** Строки расписания Директа: «день недели,ставка на час 0,…,час 23»; 100 — показ, 0 — нет.
+ *  Часы и дни — из профиля (issue #790: tpl работает по будням 8:00–20:00). */
+export function scheduleFor(shift, profile = PROFILE) {
+  const { from, to } = profile.dayHours ?? DAY_HOURS
+  const days = profile.days ?? [1, 2, 3, 4, 5, 6, 7]
   const hours = Array.from({ length: 24 }, (_, h) => {
-    const isDay = h >= DAY_HOURS.from && h < DAY_HOURS.to
+    const isDay = h >= from && h < to
     return (shift === 'day') === isDay ? 100 : 0
   })
-  return [1, 2, 3, 4, 5, 6, 7].map(day => [day, ...hours].join(','))
+  return days.map(day => [day, ...hours].join(','))
 }
 
 /** Стратегия оплаты за конверсии для одной площадки (поиск или сети). */
@@ -408,11 +456,18 @@ export function payForConversion(shift = 'day') {
  * Максимум кликов (с 09.10.2026 так работает весь кабинет, см.
  * direct-switch-to-clicks.mjs): недельный лимит и потолок цены клика.
  */
-export function maximumClicks(where, profile = PROFILE, weeklyRub = cfg.weeklyRub) {
+export function maximumClicks(where, profile = PROFILE, weeklyRub) {
+  // Лимит: окружение сильнее профиля, профиль сильнее глобального дефолта.
+  // До issue #790 профильный weeklyRub игнорировался — лимит профилей
+  // put-adepta и tpl брался из модульного PROFILE (excel).
+  const limit = weeklyRub
+    ?? (process.env.WEEKLY_RUB ? Number(process.env.WEEKLY_RUB) : undefined)
+    ?? profile.weeklyRub
+    ?? cfg.weeklyRub
   return {
     BiddingStrategyType: 'WB_MAXIMUM_CLICKS',
     WbMaximumClicks: {
-      WeeklySpendLimit: Math.round(weeklyRub * MICRO),
+      WeeklySpendLimit: Math.round(limit * MICRO),
       BidCeiling: Math.round(profile.clickCeilingRub[where] * MICRO),
     },
   }
@@ -462,7 +517,10 @@ export function campaignPayload(name, slug, where, shift = 'day', profile = PROF
 export function campaignsFor(profile = PROFILE) {
   const where = { search: 'поиск', network: 'сети' }
   const shift = { day: 'день', night: 'ночь' }
-  const four = (title, slug, extra = {}) => Object.keys(where).flatMap(w => Object.keys(shift).map(sh =>
+  // Профиль может собрать не все четыре: tpl — только поиск и день (issue #790).
+  const places = profile.places ?? Object.keys(where)
+  const shifts = profile.shifts ?? Object.keys(shift)
+  const four = (title, slug, extra = {}) => places.flatMap(w => shifts.map(sh =>
     ({ ...campaignPayload(`${title} ${where[w]} ${shift[sh]}`, `${slug}-${w}-${sh}`, w, sh, profile), ...extra })))
     .map((campaign, _index) => ({ ...campaign, _index }))
   if (!profile.campaignPerGroup) return four(profile.title, profile.slug)
@@ -547,8 +605,10 @@ async function main() {
     if (!campaignId) throw new Error('кампания не создана — см. ошибку выше')
     console.log(`кампания: ${campaignId}`)
 
-    // Набор быстрых ссылок свой на кампанию: в ссылках её UTM.
-    const setAdded = await call('sitelinks', 'add', { SitelinksSets: [{ Sitelinks: sitelinksFor(slug) }] })
+    // Набор быстрых ссылок свой на кампанию: в ссылках её UTM. У профилей
+    // с кампанией на группу группа известна — в ссылках её посадочная.
+    const group = onlyGroup ? groups.find(g => g.slug === onlyGroup) : undefined
+    const setAdded = await call('sitelinks', 'add', { SitelinksSets: [{ Sitelinks: sitelinksFor(slug, cfg.siteUrl, PROFILE, group) }] })
     const [sitelinkSetId] = apply ? idsOf(setAdded, 'AddResults') : [`<id ссылок ${slug}>`]
     if (!sitelinkSetId) throw new Error('быстрые ссылки не созданы — см. ошибку выше')
 

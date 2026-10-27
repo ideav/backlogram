@@ -39,8 +39,9 @@ export const CTA_LABEL = 'Прислать таблицу — получить �
 
 // Заглушки (раздел 11.2) и формулировки, запрещённые разделами 3.1, 3.2, 3.3
 // и 9.1 ТЗ. Сравнение — без учёта регистра, по нормализованному тексту.
-const PLACEHOLDERS = [/lorem/i, /\bTODO\b/, /\bXXX\b/, /\bTBD\b/, /\?\?\?/]
-const FORBIDDEN = [
+// Списки переиспользует tpl-pages.mjs (страницы шаблонов, issue #790).
+export const PLACEHOLDERS = [/lorem/i, /\bTODO\b/, /\bXXX\b/, /\bTBD\b/, /\?\?\?/]
+export const FORBIDDEN = [
   'не переносятся',
   'не переносится',
   'ограничени',
@@ -57,10 +58,10 @@ const FORBIDDEN = [
   'овладеете ии',
 ]
 
-const norm = s => String(s).toLowerCase().replace(/ё/g, 'е').replace(/\s+/g, ' ').trim()
+export const norm = s => String(s).toLowerCase().replace(/ё/g, 'е').replace(/\s+/g, ' ').trim()
 
 /** Все строки страницы — для поиска заглушек и запрещённых слов. */
-function strings(value, out = []) {
+export function strings(value, out = []) {
   if (typeof value === 'string') out.push(value)
   else if (Array.isArray(value)) value.forEach(v => strings(v, out))
   else if (value && typeof value === 'object') Object.values(value).forEach(v => strings(v, out))

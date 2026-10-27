@@ -6,6 +6,7 @@ import { ComparePage } from './pages/ComparePage'
 import { LandingPage, type LandingLink } from './pages/LandingPage'
 import { PraktikumPage } from './pages/PraktikumPage'
 import { AdeptPage, PartnerPage } from './pages/ProgramPage'
+import { TplPage, type TplPageData, type TplPageLink } from './pages/TplPage'
 import { caseJsonLd, compareJsonLd, jsonLdScript, landingPageJsonLd, praktikumJsonLd, programJsonLd } from './seo'
 import { SITE_BASE } from './site-base'
 
@@ -31,6 +32,11 @@ export type StaticPage = {
   body: string
   /** Посадочная (issue #657): пререндер добавит скрипт UTM и цели CTA. */
   landing?: string
+  /**
+   * Страница «нужна табличка» (issue #790): пререндер добавит скрипт с целями
+   * воронки tpl_view / tpl_download / tpl_demo_open / lead и отправкой формы.
+   */
+  tpl?: string
   /** Практикум (issue #668): пререндер добавит двухэтапную целевую кнопку. */
   praktikum?: boolean
   /**
@@ -103,13 +109,14 @@ export function renderStaticPages(canonical: string): StaticPage[] {
  * Подписи соседних страниц (блок 11 посадочных, issue #657): посадочные —
  * по своему `crumb`, кейсы и сравнение — по клиенту и предмету.
  */
-function linkTitles(landings: LandingData[]): Map<string, string> {
+function linkTitles(landings: LandingData[], tplPages: TplPageData[] = []): Map<string, string> {
   const titles = new Map<string, string>([
     ['/', 'Главная: приложение из вашего Excel за 45 минут'],
     [`/${COMPARE_PAGE.slug}/`, 'Чем это отличается от других платформ'],
   ])
   for (const c of CASES) titles.set(`/keysy/${c.slug}/`, `Кейс ${c.client}: ${c.industry.toLowerCase()}`)
   for (const l of landings) titles.set(`/${l.slug}/`, l.crumb)
+  for (const p of tplPages) titles.set(`/${p.slug}/`, p.crumb)
   return titles
 }
 
@@ -130,6 +137,37 @@ export function renderLandingPages(canonical: string, landings: LandingData[]): 
       jsonLd: jsonLdScript(landingPageJsonLd(canonical, page, [...page.faq, ...LANDING_FAQ_COMMON])),
       body: renderToStaticMarkup(<LandingPage page={page} related={related} />),
       landing: page.slug,
+    }
+  })
+}
+
+/**
+ * Страницы «нужна табличка» (issue #790), данные — `tpl/*.json`. JSON-LD тот
+ * же, что у посадочных: страница отвечает той же схемой WebPage + FAQPage,
+ * поэтому tpl-данные отдаются как подмножество посадочных.
+ */
+export function renderTplPages(canonical: string, tplPages: TplPageData[], landings: LandingData[]): StaticPage[] {
+  const titles = linkTitles(landings, tplPages)
+  return tplPages.map(page => {
+    const related: TplPageLink[] = page.related.map(target => {
+      const path = target.startsWith('/') ? target : `/${target}/`
+      return { href: SITE_BASE + path.replace(/^\/+/, ''), title: titles.get(path) ?? path }
+    })
+    return {
+      dir: page.slug,
+      path: `${SITE_BASE}${page.slug}/`,
+      title: page.title,
+      description: page.description,
+      ogImage: `${canonical}og/excel-to-app.png`,
+      jsonLd: jsonLdScript(
+        landingPageJsonLd(
+          canonical,
+          page as unknown as LandingData,
+          [...page.faq, ...LANDING_FAQ_COMMON] as unknown as LandingData['faq'],
+        ),
+      ),
+      body: renderToStaticMarkup(<TplPage page={page} related={related} />),
+      tpl: page.slug,
     }
   })
 }
