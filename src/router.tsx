@@ -197,6 +197,7 @@ export const router = createBrowserRouter([
       {
         path: 'stored-procedures',
         element: <ProcDocs />,
+      },
       // backlogram#798: шаблонизатор — продолжение раздела «Файлы» справочника API.
       {
         path: 'templater.html',
