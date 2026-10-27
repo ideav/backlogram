@@ -68,6 +68,9 @@ DirectoryIndex index.html
   # безрасширенный путь ушёл бы в движок как имя базы «triggers» (такой базы нет).
   RewriteRule ^triggers/?$ /triggers.html [R=301,L]
 
+  # /stored-procedures → /stored-procedures.html (ideav/crm#5260): запрос как
+  # хранимая процедура. Без правила путь ушёл бы в движок как имя базы.
+  RewriteRule ^stored-procedures/?$ /stored-procedures.html [R=301,L]
   # /templater → /templater.html (backlogram#798): шаблонизатор рабочих мест.
   RewriteRule ^templater/?$ /templater.html [R=301,L]
 

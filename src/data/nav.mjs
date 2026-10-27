@@ -77,6 +77,8 @@ export const footerNavGroups = [
       { name: 'API для разработчиков', href: '/api.html' },
       // python2node#866: триггеры кнопок — продолжение справочника API.
       { name: 'Триггеры кнопок', href: '/triggers.html' },
+      // ideav/crm#5260: запрос как хранимая процедура.
+      { name: 'Хранимые процедуры', href: '/stored-procedures.html' },
       // backlogram#798: шаблонизатор рабочих мест.
       { name: 'Шаблонизатор', href: '/templater.html' },
       { name: 'Токены', href: '/tokens.html' },

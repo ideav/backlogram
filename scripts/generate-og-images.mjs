@@ -50,6 +50,7 @@ const { AI_PAGES } = await import('../src/data/aiPages.mjs')
 const { ADEPT_META } = await import('../src/data/adeptPath.mjs')
 const { API_META } = await import('../src/data/apiDocs.mjs')
 const { TRIGGER_META } = await import('../src/data/triggerDocs.mjs')
+const { PROC_META } = await import('../src/data/procDocs.mjs')
 const { TEMPLATER_META } = await import('../src/data/templaterDocs.mjs')
 const { nbspText } = await import('../src/lib/typography.mjs')
 
@@ -356,6 +357,12 @@ const landingCards = [
     title: nbspText(TRIGGER_META.h1),
     subtitle: nbspText(TRIGGER_META.description),
   },
+  // ideav/crm#5260: запрос как хранимая процедура.
+  {
+    slug: 'stored-procedures',
+    eyebrow: 'Серверная логика · права',
+    title: nbspText(PROC_META.h1),
+    subtitle: nbspText(PROC_META.description),
   // backlogram#798: шаблонизатор рабочих мест.
   {
     slug: 'templater',
