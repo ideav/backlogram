@@ -363,6 +363,7 @@ const landingCards = [
     eyebrow: 'Серверная логика · права',
     title: nbspText(PROC_META.h1),
     subtitle: nbspText(PROC_META.description),
+  },
   // backlogram#798: шаблонизатор рабочих мест.
   {
     slug: 'templater',
