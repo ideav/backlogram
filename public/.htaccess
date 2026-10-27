@@ -73,6 +73,8 @@ DirectoryIndex index.html
   RewriteRule ^stored-procedures/?$ /stored-procedures.html [R=301,L]
   # /templater → /templater.html (backlogram#798): шаблонизатор рабочих мест.
   RewriteRule ^templater/?$ /templater.html [R=301,L]
+  # /queries → /queries.html (backlogram#802): справочник запросов.
+  RewriteRule ^queries/?$ /queries.html [R=301,L]
 
   # Кластер «автоматизация бизнеса с ИИ» (issue #642): тот же случай — без
   # правила безрасширенный путь ушёл бы front controller'ом в движок как имя базы.

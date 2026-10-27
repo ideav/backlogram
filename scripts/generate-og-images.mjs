@@ -51,6 +51,7 @@ const { ADEPT_META } = await import('../src/data/adeptPath.mjs')
 const { API_META } = await import('../src/data/apiDocs.mjs')
 const { TRIGGER_META } = await import('../src/data/triggerDocs.mjs')
 const { PROC_META } = await import('../src/data/procDocs.mjs')
+const { QUERY_META } = await import('../src/data/queryDocs.mjs')
 const { TEMPLATER_META } = await import('../src/data/templaterDocs.mjs')
 const { nbspText } = await import('../src/lib/typography.mjs')
 
@@ -349,6 +350,13 @@ const landingCards = [
     eyebrow: 'API · для разработчиков',
     title: nbspText(API_META.h1),
     subtitle: nbspText(API_META.description),
+  },
+  // backlogram#802: запросы — движок отчётов для разработчиков.
+  {
+    slug: 'queries',
+    eyebrow: 'Запросы · для разработчиков',
+    title: nbspText(QUERY_META.h1),
+    subtitle: nbspText(QUERY_META.description),
   },
   // python2node#866: триггеры кнопок — ссылку пересылают внедренцам.
   {

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { ShieldCheck } from 'lucide-react'
 import Breadcrumbs from '../components/Breadcrumbs'
+import DocsSeeAlso from '../components/DocsSeeAlso'
 import { Block, Inline } from './ApiDocs'
 import { PROC_META, PROC_INTRO, PROC_SECTIONS } from '../data/procDocs'
 import type { ProcSection } from '../data/procDocs'
@@ -92,6 +93,7 @@ export default function ProcDocs() {
               <p key={i} className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed"><Inline text={p} /></p>
             ))}
           </div>
+          <DocsSeeAlso path={PROC_META.path} />
         </div>
       </section>
 

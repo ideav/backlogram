@@ -8,7 +8,7 @@
 
 export const DOCS_RING = [
   { href: '/api.html', name: 'Справочник API', hint: 'команды ядра и curl' },
-  { href: '/knowledge-base/28-query-engine-capabilities.html', name: 'Запросы', hint: 'что умеет движок отчётов' },
+  { href: '/queries.html', name: 'Запросы', hint: 'отчёты и данные одним адресом' },
   { href: '/triggers.html', name: 'Триггеры кнопок', hint: 'действие по событию записи' },
   { href: '/stored-procedures.html', name: 'Хранимые процедуры', hint: 'запрос, который пишет данные' },
   { href: '/templater.html', name: 'Шаблонизатор', hint: 'HTML рабочих мест' },
