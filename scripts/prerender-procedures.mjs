@@ -16,6 +16,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { PROC_META, PROC_INTRO, PROC_SECTIONS } from '../src/data/procDocs.mjs'
+import { docsRingHtml } from '../src/data/docsRing.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -98,6 +99,7 @@ const bodyHtml = `
     <p class="api-prerender__eyebrow">Серверная логика</p>
     <h1>${escape(PROC_META.h1)}</h1>
     ${PROC_INTRO.map((p) => `<p class="api-prerender__lead">${inline(p)}</p>`).join('\n    ')}
+    ${docsRingHtml(PATH)}
   </header>
   <nav class="api-prerender__toc" aria-label="Содержание">
     <ol>${tocHtml}</ol>

@@ -75,6 +75,8 @@ export const footerNavGroups = [
       { name: 'Конструктор вместо Excel', href: '/konstruktor-prilozhenij.html' },
       { name: 'Интеграм vs Битрикс24 / AmoCRM', href: '/sravnenie-s-bitrix-amocrm.html' },
       { name: 'API для разработчиков', href: '/api.html' },
+      // backlogram#802: запросы — движок отчётов: адрес, форматы, параметры.
+      { name: 'Запросы', href: '/queries.html' },
       // python2node#866: триггеры кнопок — продолжение справочника API.
       { name: 'Триггеры кнопок', href: '/triggers.html' },
       // ideav/crm#5260: запрос как хранимая процедура.
