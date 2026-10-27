@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Check, Code2, Copy } from 'lucide-react'
 import Breadcrumbs from '../components/Breadcrumbs'
+import DocsSeeAlso from '../components/DocsSeeAlso'
 import { API_META, API_INTRO, API_SECTIONS } from '../data/apiDocs'
 import type { ApiBlock } from '../data/apiDocs'
 
@@ -65,6 +66,7 @@ export function Block({ block }: { block: ApiBlock }) {
       return (
         <p className="rounded-xl border border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
           <Inline text={block.text} />
+          {block.link && <> <a href={block.link.href} className="font-medium text-blue-600 dark:text-blue-400 hover:underline">{block.link.text}</a></>}
         </p>
       )
     case 'list':
@@ -177,6 +179,7 @@ export default function ApiDocs() {
               <p key={i} className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed"><Inline text={p} /></p>
             ))}
           </div>
+          <DocsSeeAlso path={API_META.path} />
         </div>
       </section>
 

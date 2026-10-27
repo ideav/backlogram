@@ -77,6 +77,8 @@ export const footerNavGroups = [
       { name: 'API для разработчиков', href: '/api.html' },
       // python2node#866: триггеры кнопок — продолжение справочника API.
       { name: 'Триггеры кнопок', href: '/triggers.html' },
+      // backlogram#798: шаблонизатор рабочих мест.
+      { name: 'Шаблонизатор', href: '/templater.html' },
       { name: 'Токены', href: '/tokens.html' },
       // #642: хаб кластера «автоматизация бизнеса с ИИ».
       { name: 'Автоматизация бизнеса с ИИ', href: '/avtomatizaciya-biznesa-s-ii.html' },
