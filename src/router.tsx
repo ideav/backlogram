@@ -24,6 +24,7 @@ const KvintetyIliTablicy = lazy(() => import('./pages/KvintetyIliTablicy'))
 const Quiz = lazy(() => import('./pages/Quiz'))
 // #765: «Путь адепта Интеграм» — два проекта, пять шагов и заявка в разработчики.
 const AdeptPath = lazy(() => import('./pages/AdeptPath'))
+const ErpSistema = lazy(() => import('./pages/ErpSistema'))
 // ideav/crm#5247: описание API ядра с примерами curl.
 const ApiDocs = lazy(() => import('./pages/ApiDocs'))
 // python2node#866: триггеры кнопок — событие записи запускает действие.
@@ -137,6 +138,15 @@ export const router = createBrowserRouter([
       {
         path: 'put-adepta',
         element: <AdeptPath />,
+      },
+      // #817: рекламный раздел «ERP со 100% кастомизацией», в меню не выводится.
+      {
+        path: 'erp-sistema.html',
+        element: <ErpSistema />,
+      },
+      {
+        path: 'erp-sistema',
+        element: <ErpSistema />,
       },
       {
         path: 'alexey-semenov.html',

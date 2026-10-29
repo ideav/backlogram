@@ -48,6 +48,7 @@ const { knowledgeBaseArticles } = await import(dataUrl)
 // #642: кластер «автоматизация бизнеса с ИИ» — plain ESM, импортируется без сборки.
 const { AI_PAGES } = await import('../src/data/aiPages.mjs')
 const { ADEPT_META } = await import('../src/data/adeptPath.mjs')
+const { ERP_META } = await import('../src/data/erpSistema.mjs')
 const { API_META } = await import('../src/data/apiDocs.mjs')
 const { TRIGGER_META } = await import('../src/data/triggerDocs.mjs')
 const { PROC_META } = await import('../src/data/procDocs.mjs')
@@ -343,6 +344,13 @@ const landingCards = [
     eyebrow: 'Путь адепта · заработок на приложениях',
     title: nbspText(ADEPT_META.title),
     subtitle: nbspText(ADEPT_META.description),
+  },
+  // #817: рекламный раздел ERP — превью для ссылок из Директа и мессенджеров.
+  {
+    slug: 'erp-sistema',
+    eyebrow: 'ERP · 100% кастомизация',
+    title: nbspText(ERP_META.h1),
+    subtitle: nbspText(ERP_META.description),
   },
   // ideav/crm#5247: описание API — ссылку пересылают разработчикам.
   {

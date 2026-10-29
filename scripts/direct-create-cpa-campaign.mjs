@@ -29,6 +29,8 @@
  *              адептов лучше, чем /adept/»
  *   tpl        страницы «нужна табличка» (issue #790): своя посадочная у
  *              каждой группы, максимум кликов, только поиск по будням днём
+ *   erp        ideav.ru/erp-sistema.html (issue #817), цель erp_lead, максимум
+ *              кликов, поиск и сети по будням днём
  *
  * Окружение:
  *   DIRECT_TOKEN     OAuth-токен Директа (обязателен для --apply)
@@ -299,6 +301,39 @@ PROFILES.tpl = {
     { Title: 'Вопросы и ответы', Description: 'Бесплатно ли, где хранятся данные, что дальше', anchor: 'faq' },
   ],
   callouts: ['Скачивание без формы', 'Онлайн с телефона', 'Без регистрации', 'Сервер в России'],
+}
+
+/**
+ * «ERP-кастомизация» (issue #817): ideav.ru/erp-sistema.html, своя цель
+ * erp_lead. Три группы фраз — общий спрос, «под себя», замена 1С/SAP.
+ * Вход на поиск дорогой (прогноз 29.10.2026: гарантия 100–600 ₽, у «erp
+ * система» — 400+ ₽), поэтому максимум кликов с потолком — показываемся,
+ * где клик дешевле потолка, — и сети рядом. B2B: только будни 8:00–20:00,
+ * ночной смены нет. Минус-слова свои: в общем списке есть «программа».
+ */
+PROFILES.erp = {
+  title: 'ERP-кастомизация',
+  slug: 'erp',
+  path: '/erp-sistema.html',
+  goalName: 'erp_lead',
+  strategy: 'clicks',
+  weeklyRub: 2000,
+  clickCeilingRub: { search: 100, network: 15 },
+  shifts: ['day'],
+  days: [1, 2, 3, 4, 5],
+  dayHours: { from: 8, to: 20 },
+  keywordFiles: [marketing('erp.keywords.json')],
+  adsFile: marketing('erp.ads.json'),
+  negativesFile: marketing('erp.negatives.json'),
+  ads: [],
+  // Якоря — секции src/pages/ErpSistema.tsx, они же есть в снапшоте без JS.
+  sitelinks: [
+    { Title: 'Как это работает', Description: 'Лучшие практики, подгонка под вас и своё сверху', anchor: 'formula' },
+    { Title: 'Контуры ERP', Description: 'Продажи, склад, производство, финансы, отчёты', anchor: 'kontury' },
+    { Title: 'Этапы и цены', Description: 'Разбор с ТЗ — 20 000 ₽, пилот за 2 недели', anchor: 'etapy' },
+    { Title: 'Обсудить вашу ERP', Description: 'Расскажите о процессах — предложим первый контур', anchor: 'zayavka' },
+  ],
+  callouts: ['Пилот за 2 недели', 'Облако или свой сервер', 'Изменения без релизов', 'Обмен с 1С'],
 }
 
 export const PROFILE = PROFILES[process.env.CAMPAIGN_PROFILE ?? 'excel']

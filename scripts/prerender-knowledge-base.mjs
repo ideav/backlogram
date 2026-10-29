@@ -101,6 +101,7 @@ const groups = [
       '11-ai-interface-data-safety',
       '12-ai-prototype-rewrite',
       '19-ai-agent-app-build',
+      '32-erp-customization',
       '21-catalog-matching',
       '24-pure-business-design',
     ],
