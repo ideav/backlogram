@@ -282,7 +282,7 @@ PROFILES.tpl = {
   goalName: 'lead',
   strategy: 'clicks',
   weeklyRub: 1000,
-  clickCeilingRub: { search: 15, network: 15 },
+  clickCeilingRub: { search: 25, network: 15 },
   campaignPerGroup: true,
   places: ['search'],
   shifts: ['day'],
@@ -389,7 +389,13 @@ export const CALLOUT_LIMIT = 25
 
 /** Быстрые ссылки — на якоря разделов, которые есть на странице без клика. */
 export function sitelinksFor(campaignSlug, siteUrl = cfg.siteUrl, profile = PROFILE, group = undefined) {
-  return profile.sitelinks.map(({ anchor, ...link }) => ({ ...link, Href: `${href(campaignSlug, siteUrl, profile, group)}#${anchor}` }))
+  // «Что внутри шаблона» у каждой группы своё (insideNote, #806): общее описание
+  // табеля у журнала и карточки СИЗ было бы неправдой.
+  return profile.sitelinks.map(({ anchor, ...link }) => ({
+    ...link,
+    ...(anchor === 'shablon' && group?.insideNote ? { Description: group.insideNote } : {}),
+    Href: `${href(campaignSlug, siteUrl, profile, group)}#${anchor}`,
+  }))
 }
 
 export const CALLOUTS = PROFILE?.callouts ?? []
@@ -524,8 +530,17 @@ export function campaignsFor(profile = PROFILE) {
     ({ ...campaignPayload(`${title} ${where[w]} ${shift[sh]}`, `${slug}-${w}-${sh}`, w, sh, profile), ...extra })))
     .map((campaign, _index) => ({ ...campaign, _index }))
   if (!profile.campaignPerGroup) return four(profile.title, profile.slug)
+  // keepNegatives (#806): общий минус «личный» резал «личная карточка сиз» —
+  // группа перечисляет слова общего списка, которые ей не применять.
   return groupsFor(profile).flatMap(group =>
-    four(`${profile.title} ${group.name.split(':')[0].toLowerCase()}`, `${profile.slug}-${group.slug}`, { _group: group.slug }))
+    four(`${profile.title} ${group.name.split(':')[0].toLowerCase()}`, `${profile.slug}-${group.slug}`, { _group: group.slug })
+      .map(campaign => {
+        const keep = group.keepNegatives ?? []
+        const items = campaign.NegativeKeywords?.Items.filter(word => !keep.includes(word))
+        if (!keep.length || !items) return campaign
+        const { NegativeKeywords, ...rest } = campaign
+        return items.length ? { ...rest, NegativeKeywords: { Items: items } } : rest
+      }))
 }
 
 async function call(service, method, params) {

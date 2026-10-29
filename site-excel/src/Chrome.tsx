@@ -15,9 +15,10 @@ import { SITE_BASE } from './site-base'
 import tabel from '../tpl/tabel-ucheta-rabochego-vremeni.json'
 import sklad from '../tpl/uchet-prihoda-rashoda-materialov.json'
 import zhurnal from '../tpl/zhurnal-vydachi-materialov.json'
+import siz from '../tpl/kartochka-ucheta-vydachi-siz.json'
 
 // Бесплатные шаблоны (#790): без ссылки отсюда до них не дойти с главной (#806).
-const TPL = [tabel, sklad, zhurnal].sort((a, b) => a.order - b.order)
+const TPL = [tabel, sklad, zhurnal, siz].sort((a, b) => a.order - b.order)
 
 // Шапка и подвал — общие у лендинга и статических страниц кейсов и сравнения
 // (issue #626). Подвал несёт обязательную справку оператора персональных
