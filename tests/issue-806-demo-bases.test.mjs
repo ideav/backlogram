@@ -2,6 +2,8 @@
 // которую можно создать в ЛК, и на её таблицу, а не на пустую стартовую.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+import vm from 'node:vm'
 import { fileURLToPath } from 'node:url'
 import ExcelJS from 'exceljs'
 
@@ -26,4 +28,22 @@ test('журнал выдачи: примеры не затирают колон
     assert.ok(ws.getCell(r, 2).value instanceof Date, `B${r}: дата под шапкой «Дата»`)
     assert.equal(typeof ws.getCell(r, 3).value, 'string', `C${r}: «Кому выдано»`)
   }
+})
+
+// Скрипт страницы шаблона дописывает UTM к ссылкам; внешняя ссылка на демо
+// должна остаться на ideav.ru, а не стать путём на excel-to-app.ru.
+test('UTM к «Открыть онлайн» не уводит ссылку с ideav.ru', () => {
+  const src = readFileSync(new URL('../scripts/prerender-site-excel.mjs', import.meta.url), 'utf8')
+  const fn = src.match(/function tplScript\([\s\S]*?\n}\n/)[0]
+  const html = new Function('METRIKA_ID', `${fn}; return tplScript('t', 'p')`)('1')
+  const code = html.replace(/^<script>|<\/script>$/g, '')
+  const mk = (href, attr) => ({ attr, h: href, getAttribute() { return this.h },
+    set href(v) { this.h = String(v) }, get href() { return this.h }, addEventListener() {} })
+  const demo = mk('https://ideav.ru/tabelt13/table/471', 'data-tpl-demo')
+  const cta = mk('/', 'data-cta')
+  const document = { querySelectorAll: (q) => [demo, cta].filter((a) => q.includes(a.attr)), querySelector: () => null }
+  const location = { search: '?utm_source=yandex&yclid=7', href: 'https://excel-to-app.ru/tabel-ucheta-rabochego-vremeni/?utm_source=yandex&yclid=7' }
+  vm.runInNewContext(code, { document, location, URL, URLSearchParams, Date, ym() {} })
+  assert.equal(demo.h, 'https://ideav.ru/tabelt13/table/471?utm_source=yandex&yclid=7')
+  assert.equal(new URL(cta.h, location.href).href, 'https://excel-to-app.ru/?utm_source=yandex&yclid=7')
 })
