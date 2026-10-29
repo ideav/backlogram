@@ -1011,7 +1011,7 @@ export default function Home() {
                 </div>
                 <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 text-center shadow-sm dark:shadow-none">
                   <div className="text-3xl font-black text-blue-500 mb-2">590к</div>
-                  <div className="text-xs text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest">₽ под ключ</div>
+                  <div className="text-xs text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest">₽ лицензия в год</div>
                 </div>
               </div>
             </div>
