@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url'
 import ExcelJS from 'exceljs'
 
 import { loadTplPages } from '../site-excel/tpl-pages.mjs'
+import { PROFILES, campaignsFor, groupsFor, sitelinksFor } from '../scripts/direct-create-cpa-campaign.mjs'
 
 const tplPages = loadTplPages()
 
@@ -46,4 +47,21 @@ test('UTM к «Открыть онлайн» не уводит ссылку с i
   vm.runInNewContext(code, { document, location, URL, URLSearchParams, Date, ym() {} })
   assert.equal(demo.h, 'https://ideav.ru/tabelt13/table/471?utm_source=yandex&yclid=7')
   assert.equal(new URL(cta.h, location.href).href, 'https://excel-to-app.ru/?utm_source=yandex&yclid=7')
+})
+
+// Кампания на группу: общий список минус-слов не должен резать её же ключи
+// («личный» убивал «личная карточка сиз»), а «Что внутри шаблона» — описывать
+// свой шаблон, а не табель.
+test('tpl: минус-слова не режут ключи группы, «Что внутри» — про свой шаблон', () => {
+  const P = PROFILES.tpl
+  const groups = groupsFor(P)
+  for (const c of campaignsFor(P)) {
+    const g = groups.find((x) => x.slug === c._group)
+    const minus = c.NegativeKeywords?.Items ?? []
+    for (const kw of g.keywords) for (const m of minus) {
+      assert.ok(!kw.split(' ').some((w) => w.slice(0, 4) === m.slice(0, 4) && m.length > 3), `${g.slug}: минус «${m}» режет «${kw}»`)
+    }
+  }
+  const inside = new Set(groups.map((g) => sitelinksFor(`tpl-${g.slug}`, 'https://excel-to-app.ru', P, g).find((l) => l.Href.endsWith('#shablon')).Description))
+  assert.equal(inside.size, groups.length)
 })

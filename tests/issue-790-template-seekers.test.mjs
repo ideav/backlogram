@@ -27,7 +27,7 @@ const existing = [
 // ── Страницы: отдать таблицу сразу, контакт — за копию ──────────────────────
 
 test('три страницы «нужна табличка» проходят проверку данных', () => {
-  assert.equal(tplPages.length, 3)
+  assert.equal(tplPages.length, 4)
   const errors = validateTplPages(tplPages, existing, tplPages.map(p => `/${p.slug}/`))
   assert.deepEqual(errors, [])
 })
@@ -41,7 +41,7 @@ test('каждой странице соответствует файл шабл
 
 test('у каждой страницы своя демо-база на ideav.ru', () => {
   const demos = new Set(tplPages.map(p => p.demo))
-  assert.equal(demos.size, 3)
+  assert.equal(demos.size, tplPages.length)
 })
 
 // ── Кампания: клики, поиск, будни днём ──────────────────────────────────────
@@ -53,7 +53,7 @@ test('профиль tpl: максимум кликов, только поиск
   assert.deepEqual(P.days, [1, 2, 3, 4, 5])
   assert.deepEqual(P.dayHours, { from: 8, to: 20 })
   assert.equal(P.weeklyRub, 1000)
-  assert.equal(P.clickCeilingRub.search, 15)
+  assert.equal(P.clickCeilingRub.search, 25) // 29.10.2026: при 15 ₽ вход в аукцион недоступен (прогноз: 20–35 ₽), #806
 })
 
 test('расписание: будни, 8:00–20:00 по московскому времени', () => {
@@ -63,12 +63,12 @@ test('расписание: будни, 8:00–20:00 по московскому
   hours.forEach((v, h) => assert.equal(v, h >= 8 && h < 20 ? 100 : 0, `час ${h}: ожидалась ${h >= 8 && h < 20 ? 100 : 0}`))
 })
 
-test('по кампании на группу, каждая — поиск-день с потолком 15 ₽ и лимитом 1000 ₽', () => {
+test('по кампании на группу, каждая — поиск-день с потолком 25 ₽ и лимитом 1000 ₽', () => {
   assert.equal(campaigns.length, groups.length)
   for (const c of campaigns) {
     const search = c.TextCampaign.BiddingStrategy.Search
     assert.equal(search.BiddingStrategyType, 'WB_MAXIMUM_CLICKS')
-    assert.equal(search.WbMaximumClicks.BidCeiling, 15_000_000)
+    assert.equal(search.WbMaximumClicks.BidCeiling, 25_000_000)
     assert.equal(search.WbMaximumClicks.WeeklySpendLimit, 1_000_000_000)
     assert.equal(c.TextCampaign.BiddingStrategy.Network.BiddingStrategyType, 'SERVING_OFF')
     assert.ok(!('PriorityGoals' in c.TextCampaign), 'у кликов нет целевой конверсии')

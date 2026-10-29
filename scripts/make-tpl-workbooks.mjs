@@ -255,12 +255,107 @@ function buildZhurnal() {
   return wb
 }
 
-// ── Запуск ──────────────────────────────────────────────────────────────────
+// ── 4. Личная карточка учёта выдачи СИЗ ─────────────────────────────────────
+// Лицевая и оборотная стороны по форме Правил обеспечения работников СИЗ
+// (приказ Минтруда № 766н); справа от оборотной — «Заменить не позднее».
+function buildSiz() {
+  const wb = new ExcelJS.Workbook()
+  wb.creator = 'excel-to-app.ru'
+  const ws = wb.addWorksheet('Лицевая сторона')
+  ws.columns = [{ width: 34 }, { width: 18 }, { width: 14 }, { width: 18 }]
+  const t = ws.getCell(1, 1)
+  t.value = 'Личная карточка учёта выдачи СИЗ № ____'
+  t.font = { bold: true, size: 13 }
+  const person = [
+    ['Фамилия, имя, отчество', 'Иванов Иван Иванович (пример)'], ['Табельный номер', '001'],
+    ['Структурное подразделение', 'Цех №2'], ['Профессия (должность)', 'Слесарь-ремонтник'],
+    ['Дата поступления на работу', new Date('2026-03-02')],
+    ['Дата изменения профессии (должности) или перевода', null],
+    ['Пол', 'М'], ['Рост', 176], ['Размер одежды', 50], ['Размер обуви', 42],
+    ['Размер головного убора', 57], ['Размер СИЗ органов дыхания', 2], ['Размер СИЗ рук', 9],
+  ]
+  for (const [i, [label, v]] of person.entries()) {
+    const r = 3 + i
+    ws.getCell(r, 1).value = label
+    ws.getCell(r, 1).font = { bold: true }
+    ws.mergeCells(r, 2, r, 4)
+    ws.getCell(r, 2).value = v
+    if (v instanceof Date) ws.getCell(r, 2).numFmt = 'DD.MM.YYYY'
+    box(ws, r, 1, r, 4)
+  }
+  const n0 = 3 + person.length + 1
+  ws.getCell(n0, 1).value = 'Предусмотрено нормами выдачи'
+  ws.getCell(n0, 1).font = { bold: true, size: 12 }
+  const nh = ['Наименование СИЗ', 'Пункт норм', 'Единица измерения', 'Количество на период']
+  for (const [i, h] of nh.entries()) {
+    ws.getCell(n0 + 1, i + 1).value = h
+    headerStyle(ws.getCell(n0 + 1, i + 1))
+  }
+  const norms = [
+    ['Костюм для защиты от общих производственных загрязнений', '', 'шт', '1 на год'],
+    ['Перчатки трикотажные с полимерным покрытием', '', 'пар', '12 на год'],
+    ['Ботинки кожаные с защитным подноском', '', 'пар', '1 на год'],
+  ]
+  for (let r = 0; r < 12; r++) {
+    for (const [j, v] of (norms[r] || []).entries()) ws.getCell(n0 + 2 + r, j + 1).value = v || null
+    box(ws, n0 + 2 + r, 1, n0 + 2 + r, 4)
+  }
+  box(ws, n0 + 1, 1, n0 + 1, 4)
+
+  // Оборотная сторона: шапка в две строки, данные с 4-й.
+  const back = wb.addWorksheet('Оборотная сторона')
+  const NROWS = 60
+  back.columns = [
+    { width: 34 }, { width: 24 }, { width: 12 }, { width: 8 }, { width: 22 }, { width: 14 },
+    { width: 12 }, { width: 8 }, { width: 22 }, { width: 22 }, { width: 12 }, { width: 14 },
+  ]
+  back.getCell(1, 1).value = 'Выдача и возврат СИЗ'
+  back.getCell(1, 1).font = { bold: true, size: 13 }
+  const top = [[1, 1, 'Наименование СИЗ'], [2, 2, 'Модель, марка, артикул, сертификат или декларация'],
+    [3, 6, 'Выдано'], [7, 10, 'Возвращено'], [11, 12, 'Подсказка (не входит в форму)']]
+  const sub = ['Дата', 'Кол-во', 'ФИО и подпись выдавшего', 'Подпись получившего',
+    'Дата', 'Кол-во', 'ФИО и подпись сдавшего', 'ФИО и подпись принявшего', 'Срок носки, мес', 'Заменить не позднее']
+  for (const [c1, c2, h] of top) {
+    if (c1 === c2) back.mergeCells(2, c1, 3, c1); else back.mergeCells(2, c1, 2, c2)
+    back.getCell(2, c1).value = h
+    headerStyle(back.getCell(2, c1))
+  }
+  for (const [i, h] of sub.entries()) {
+    back.getCell(3, i + 3).value = h
+    headerStyle(back.getCell(3, i + 3))
+  }
+  box(back, 2, 1, 3, 12)
+  for (let r = 4; r < 4 + NROWS; r++) {
+    back.getCell(r, 12).value = { formula: `IF(OR(C${r}="",K${r}=""),"",EDATE(C${r},K${r}))` }
+    box(back, r, 1, r, 12)
+  }
+  for (const c of [3, 7, 12]) back.getColumn(c).numFmt = 'DD.MM.YYYY'
+  const sample = [
+    ['Костюм для защиты от общих производственных загрязнений', 'Модель К-01, декларация ЕАЭС', new Date('2026-03-02'), 1, 'Петрова А. С.', null, null, null, null, null, 12],
+    ['Перчатки трикотажные с полимерным покрытием', 'Арт. П-15, сертификат ЕАЭС', new Date('2026-03-02'), 6, 'Петрова А. С.', null, null, null, null, null, 6],
+    ['Ботинки кожаные с защитным подноском', 'Модель Б-200, сертификат ЕАЭС', new Date('2026-03-02'), 1, 'Петрова А. С.', null, null, null, null, null, 12],
+  ]
+  for (const [i, row] of sample.entries()) {
+    for (const [j, v] of row.entries()) if (v !== null) back.getCell(4 + i, j + 1).value = v
+  }
+  back.views = [{ state: 'frozen', ySplit: 3 }]
+  howTo(wb, 'Как заполнять', [
+    '1. Карточка заводится на каждого работника, которому по нормам положены СИЗ. Лицевая сторона — данные работника, размеры и что положено по нормам.',
+    '2. Оборотная сторона — одна выдача или возврат в строке: что выдано, модель и документ о соответствии, дата, количество, подписи.',
+    '3. «Срок носки» в месяцах — из норм; «Заменить не позднее» посчитается сам от даты выдачи.',
+    '4. Карточку можно вести в электронном виде — так разрешают Правила обеспечения работников СИЗ (приказ Минтруда № 766н).',
+    '5. Строки с примером замените своими. Файл откроется в Excel, LibreOffice и Google Таблицах.',
+  ])
+  return wb
+}
+
+
 mkdirSync(OUT_DIR, { recursive: true })
 const files = [
   ['tabel-t13-2026.xlsx', buildTabel()],
   ['prihod-rashod-ostatok.xlsx', buildSklad()],
   ['zhurnal-vydachi-materialov.xlsx', buildZhurnal()],
+  ['kartochka-ucheta-vydachi-siz.xlsx', buildSiz()],
 ]
 for (const [name, wb] of files) {
   writeFileSync(resolve(OUT_DIR, name), Buffer.from(await wb.xlsx.writeBuffer()))
