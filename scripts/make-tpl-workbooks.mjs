@@ -243,7 +243,7 @@ function buildZhurnal() {
   ]
   for (const [i, row] of sample.entries()) {
     const r = 3 + i
-    for (const [j, v] of row.entries()) ws.getCell(r, j + 1).value = v
+    for (const [j, v] of row.entries()) ws.getCell(r, j + 2).value = v
   }
   howTo(wb, 'Как вести', [
     '1. Одна выдача — одна строка: дата, кому, что и сколько.',
