@@ -112,7 +112,7 @@ test('article #30 is grouped, sitemapped, listed in llms.txt and has an OG card'
   assert.doesNotMatch(prerenderSource, /'28-universal-import-excel'/)
   assert.match(sitemap, /knowledge-base\/30-universal-import-excel\.html/)
   assert.match(llms, /knowledge-base\/30-universal-import-excel\.html/)
-  assert.match(llms, /серия из 33 материалов/)
+  assert.match(llms, /серия из 34 материалов/)
   assert.ok(
     existsSync(new URL('../public/og/30-universal-import-excel.png', import.meta.url)),
     'expected public/og/30-universal-import-excel.png to be committed',
