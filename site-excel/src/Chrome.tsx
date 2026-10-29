@@ -12,6 +12,12 @@ import {
 } from './content'
 import { Logo } from './Logo'
 import { SITE_BASE } from './site-base'
+import tabel from '../tpl/tabel-ucheta-rabochego-vremeni.json'
+import sklad from '../tpl/uchet-prihoda-rashoda-materialov.json'
+import zhurnal from '../tpl/zhurnal-vydachi-materialov.json'
+
+// Бесплатные шаблоны (#790): без ссылки отсюда до них не дойти с главной (#806).
+const TPL = [tabel, sklad, zhurnal].sort((a, b) => a.order - b.order)
 
 // Шапка и подвал — общие у лендинга и статических страниц кейсов и сравнения
 // (issue #626). Подвал несёт обязательную справку оператора персональных
@@ -219,10 +225,22 @@ export function SiteFooter() {
           </div>
         </div>
 
+        <p className="mt-10 text-sm text-slate-400">
+          Бесплатные шаблоны Excel:
+          {TPL.map((page, i) => (
+            <span key={page.slug}>
+              {i ? ' · ' : ' '}
+              <a href={`${SITE_BASE}${page.slug}/`} className="text-slate-200 hover:text-white hover:underline">
+                {page.crumb}
+              </a>
+            </span>
+          ))}
+        </p>
+
         {/* Адептам и партнёрам (issue #738): люди приходят туда по прямым ссылкам,
             клиенту эти страницы не нужны — поэтому мелко, в строке копирайта,
             лишь бы страницы не были сиротами для краулера. */}
-        <p className="mt-10 text-xs text-slate-400">
+        <p className="mt-4 text-xs text-slate-400">
           © {new Date().getFullYear()} АО «Интеграм»
           {[ADEPT, PARTNER].map(program => (
             <span key={program.slug}>

@@ -278,14 +278,29 @@ for (const page of pages) {
 // Каждый href, начинающийся с пути сайта, должен вести на файл в dist-excel.
 // Якорь и параметры отбрасываются: проверяется сам адрес страницы.
 const broken = []
+const links = new Map()
 for (const file of written) {
   const html = readFileSync(file, 'utf8')
+  links.set(file, [])
   for (const [, href] of html.matchAll(/href="([^"]+)"/g)) {
     if (!href.startsWith(BASE) || href.startsWith('//')) continue
     const path = href.slice(BASE.length).replace(/[?#].*$/, '')
     const target = path === '' || path.endsWith('/') ? resolve(dist, path, 'index.html') : resolve(dist, path)
     if (!existsSync(target)) broken.push(`${file.slice(dist.length + 1)} → ${href}`)
+    else links.get(file).push(target)
   }
+}
+// Сироты (#806): страница, до которой не дойти по ссылкам от главной, видна
+// только из рекламы и карты сайта — посетитель сайта о ней не узнает.
+const home = resolve(dist, 'index.html')
+const reached = new Set([home])
+for (const queue = [home]; queue.length > 0;) {
+  for (const t of links.get(queue.shift()) ?? []) if (!reached.has(t)) { reached.add(t); queue.push(t) }
+}
+const orphans = written.filter(f => !reached.has(f))
+if (orphans.length > 0) {
+  console.error(`Страницы, недостижимые по ссылкам от главной (${orphans.length}):\n  - ${orphans.map(f => f.slice(dist.length + 1)).join('\n  - ')}`)
+  process.exit(1)
 }
 if (broken.length > 0) {
   console.error(`Битые внутренние ссылки (${broken.length}):\n  - ${broken.join('\n  - ')}`)
