@@ -239,12 +239,12 @@ test('e2e: заявка на демонстрацию с email ждёт подт
 test('e2e: переход по ссылке отправляет заявку оператору, повторный — нет', async () => {
   const stand = await startStand()
   try {
-    const { json } = await submitOrder(stand.appPort, {
+    const { res, json } = await submitOrder(stand.appPort, {
       kind: 'demo',
       contact: 'ivan@example.com',
       task: 'Учёт заказов',
     })
-    assert.equal(json.status, 'pending_confirmation')
+    assert.equal(json.status, 'pending_confirmation', `${res.status} ${JSON.stringify(json)}`)
 
     const url = confirmUrlFromMail(stand.mail()[0])
     const page = await fetch(url)
@@ -440,7 +440,8 @@ test('e2e: просроченная заявка не подтверждаетс
 test('e2e: лимит писем-подтверждений на один адрес', async () => {
   const stand = await startStand({ ORDER_CONFIRM_MAX_PER_EMAIL: '2' })
   try {
-    const fields = { kind: 'demo', contact: 'spam@example.com', task: 'Учёт' }
+    // Без файла задача короче 40 символов отбивается раньше лимита (#763).
+    const fields = { kind: 'demo', contact: 'spam@example.com', task: 'Учёт заказов из трёх Excel-файлов, ведём вдвоём' }
     assert.equal((await submitOrder(stand.appPort, fields, [])).res.status, 200)
     assert.equal((await submitOrder(stand.appPort, fields, [])).res.status, 200)
     const third = await submitOrder(stand.appPort, fields, [])
@@ -487,7 +488,8 @@ test('фолд длинных строк тела: лимит exim — в бай
     },
     windowsHide: true,
   })
-  const [status, maxLine, lossless] = out.trim().split('\n')
+  // PHP_EOL на Windows — CRLF.
+  const [status, maxLine, lossless] = out.trim().split(/\r?\n/)
   assert.equal(status, 'sent', out)
   assert.ok(Number(maxLine) <= 900, `строка тела после фолда ${maxLine} байт — exim отбивает с 998`)
   assert.equal(lossless, 'lossless', 'фолд не должен терять содержимое')
