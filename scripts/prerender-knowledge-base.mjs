@@ -116,6 +116,7 @@ const groups = [
       '27-text-to-sql-russian',
       '28-query-engine-capabilities',
       '29-query-as-stored-procedure',
+      '31-1c-wrappers',
       '14-forms',
       '14a-reports',
       '14b-dashboards',
