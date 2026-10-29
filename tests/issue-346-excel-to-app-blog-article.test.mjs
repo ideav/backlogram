@@ -25,7 +25,8 @@ test('blog publishes the Excel to app AI-agent article requested in issue 346', 
 
   assert.match(post, /\[странице «Excel → приложение»\]\(https:\/\/ideav\.ru\/excel-to-app\.html\)/)
   assert.match(post, /примерно за 45 минут/)
-  assert.match(post, /12 500 ₽/)
+  assert.match(post, /разбор процесса с ТЗ за 20 000 ₽/)
+  assert.doesNotMatch(post, /12 500 ₽/)
   assert.match(post, /Тематика приложения/)
   assert.match(post, /существующие файлы клиента/)
   assert.match(post, /сайт клиента/)
