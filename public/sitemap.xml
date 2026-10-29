@@ -181,6 +181,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://ideav.ru/erp-sistema.html</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://ideav.ru/alexey-semenov.html</loc>
     <lastmod>2026-08-06</lastmod>
     <changefreq>yearly</changefreq>
@@ -424,6 +430,12 @@
   </url>
   <url>
     <loc>https://ideav.ru/knowledge-base/31-1c-wrappers.html</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ideav.ru/knowledge-base/32-erp-customization.html</loc>
     <lastmod>2026-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
