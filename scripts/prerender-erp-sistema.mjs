@@ -28,6 +28,8 @@ import {
   PROCESS,
   READ_MORE,
   RELATED,
+  SECTIONS,
+  SELLER,
 } from '../src/data/erpSistema.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -77,33 +79,38 @@ const bodyHtml = `
     <p>${chipsHtml}</p>
   </header>
   <section id="formula">
-    <h2>Лучшие практики + ваши процессы + своё сверху</h2>
+    <h2>${escape(SECTIONS.formula)}</h2>
     <ol>${formulaHtml}</ol>
   </section>
   <section id="kontury">
-    <h2>Контуры ERP: что берём из практики и как подстраиваем</h2>
+    <h2>${escape(SECTIONS.kontury)}</h2>
     <ul>${modulesHtml}</ul>
   </section>
   <section id="sravnenie">
-    <h2>Коробка, заказная разработка или сборка под процесс</h2>
+    <h2>${escape(SECTIONS.sravnenie)}</h2>
     ${compareHtml}
   </section>
   <section id="etapy">
-    <h2>Как идёт проект и сколько стоит</h2>
+    <h2>${escape(SECTIONS.etapy)}</h2>
     <ol>${processHtml}</ol>
   </section>
   <section id="pochitat">
-    <h2>Почитать подробнее</h2>
+    <h2>${escape(SECTIONS.pochitat)}</h2>
     <ul>${READ_MORE.map((l) => `<li>${a(l.href, l.label)}</li>`).join('')}</ul>
     <p>Смежное: ${RELATED.map((l) => a(l.href, l.label)).join(' · ')}</p>
   </section>
   <section id="faq">
-    <h2>Частые вопросы</h2>
+    <h2>${escape(SECTIONS.faq)}</h2>
     ${faqHtml}
   </section>
   <section id="zayavka">
-    <h2>Обсудить вашу ERP</h2>
-    <p>Форма заявки работает в JavaScript-версии страницы; без JS напишите в Telegram <a href="https://t.me/qdmadept">@qdmadept</a>.</p>
+    <h2>${escape(SECTIONS.zayavka)}</h2>
+    <p>Форма заявки работает в JavaScript-версии страницы; без JS позвоните по телефону ${a(`tel:${SELLER.phoneHref}`, SELLER.phone)}, напишите на ${a(`mailto:${SELLER.email}`, SELLER.email)} или в Telegram ${a(`https://t.me/${SELLER.telegram}`, `@${SELLER.telegram}`)}.</p>
+  </section>
+  <section id="ispolnitel">
+    <h2>${escape(SECTIONS.seller)}</h2>
+    <p>${escape(SELLER.name)}, ИНН ${escape(SELLER.inn)}, ОГРН ${escape(SELLER.ogrn)}</p>
+    <p>${a(`tel:${SELLER.phoneHref}`, SELLER.phone)} · ${a(`mailto:${SELLER.email}`, SELLER.email)} · ${a('/privacy.html', 'Обработка персональных данных')}</p>
   </section>
 </article>`
 
@@ -132,6 +139,10 @@ const jsonLd = {
       '@type': 'Organization',
       '@id': `${SITE}/#organization`,
       name: PUBLISHER,
+      legalName: SELLER.name,
+      taxID: SELLER.inn,
+      email: SELLER.email,
+      telephone: SELLER.phone,
       url: `${SITE}/`,
       logo: { '@type': 'ImageObject', url: `${SITE}/logos/integram-og.png` },
     },

@@ -29,6 +29,25 @@ export const ERP_META: {
   publishedAt: string
   updatedAt: string
 }
+export const SECTIONS: {
+  formula: string
+  kontury: string
+  sravnenie: string
+  etapy: string
+  pochitat: string
+  faq: string
+  zayavka: string
+  seller: string
+}
+export const SELLER: {
+  name: string
+  inn: string
+  ogrn: string
+  email: string
+  phone: string
+  phoneHref: string
+  telegram: string
+}
 export const HERO_LEAD: string
 export const HERO_CHIPS: string[]
 export const READ_MORE: ErpLink[]

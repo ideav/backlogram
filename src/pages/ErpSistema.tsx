@@ -13,6 +13,8 @@ import {
   PROCESS,
   READ_MORE,
   RELATED,
+  SECTIONS,
+  SELLER,
 } from '../data/erpSistema'
 
 const SITE = 'https://ideav.ru'
@@ -232,7 +234,7 @@ export default function ErpSistema() {
       <section id="formula" className="mt-12 px-4 sm:px-6 lg:px-8 scroll-mt-24">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-white">
-            Лучшие практики + ваши процессы + своё сверху
+            {SECTIONS.formula}
           </h2>
           <ol className="mt-10 grid gap-6 md:grid-cols-3">
             {FORMULA.map((s, i) => (
@@ -255,7 +257,7 @@ export default function ErpSistema() {
       <section id="kontury" className="mt-24 px-4 sm:px-6 lg:px-8 scroll-mt-24">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-white">
-            Контуры ERP: что берём из практики и как подстраиваем
+            {SECTIONS.kontury}
           </h2>
           <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {MODULES.map(m => (
@@ -288,7 +290,7 @@ export default function ErpSistema() {
       <section id="sravnenie" className="mt-24 px-4 sm:px-6 lg:px-8 scroll-mt-24">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-white">
-            Коробка, заказная разработка или сборка под процесс
+            {SECTIONS.sravnenie}
           </h2>
           <div className="mt-10 overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
             <table className="w-full min-w-[640px] text-sm text-left">
@@ -334,7 +336,7 @@ export default function ErpSistema() {
       <section id="etapy" className="mt-24 px-4 sm:px-6 lg:px-8 scroll-mt-24">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-white">
-            Как идёт проект и сколько стоит
+            {SECTIONS.etapy}
           </h2>
           <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {PROCESS.map((s, i) => (
@@ -355,7 +357,7 @@ export default function ErpSistema() {
       {/* Та же мысль под другим углом (#817): база знаний и блог */}
       <section id="pochitat" className="mt-24 px-4 sm:px-6 lg:px-8 scroll-mt-24">
         <div className="max-w-4xl mx-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 p-6 sm:p-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Почитать подробнее</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{SECTIONS.pochitat}</h2>
           <p className="mt-2 text-slate-600 dark:text-slate-300">
             Если формулировки выше показались слишком рекламными — тот же подход разобран спокойно и с ограничениями:
           </p>
@@ -384,7 +386,7 @@ export default function ErpSistema() {
       {/* FAQ */}
       <section id="faq" className="mt-24 px-4 sm:px-6 lg:px-8 scroll-mt-24">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-white">Частые вопросы</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-white">{SECTIONS.faq}</h2>
           <div className="mt-10 space-y-3">
             {FAQ.map(item => (
               <details
@@ -412,7 +414,7 @@ export default function ErpSistema() {
             </div>
           ) : (
             <form onSubmit={submitLead} noValidate>
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Обсудить вашу ERP</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{SECTIONS.zayavka}</h2>
               <p className="mt-2 text-slate-600 dark:text-slate-300">
                 Расскажите, что хотите автоматизировать, — предложим, с какого контура начать и во что обойдётся пилот.
               </p>
@@ -473,6 +475,23 @@ export default function ErpSistema() {
               </button>
             </form>
           )}
+        </div>
+      </section>
+
+      {/* Исполнитель: реквизиты и контакты для модерации Директа (#5312) */}
+      <section id="ispolnitel" className="mt-16 mb-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-2xl mx-auto text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+          <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300">{SECTIONS.seller}</h2>
+          <p className="mt-2">
+            {SELLER.name}, ИНН {SELLER.inn}, ОГРН {SELLER.ogrn}
+          </p>
+          <p className="mt-1">
+            <a href={`tel:${SELLER.phoneHref}`} className="underline hover:text-blue-500 transition-colors">{SELLER.phone}</a>
+            {' · '}
+            <a href={`mailto:${SELLER.email}`} className="underline hover:text-blue-500 transition-colors">{SELLER.email}</a>
+            {' · '}
+            <a href={`https://t.me/${SELLER.telegram}`} className="underline hover:text-blue-500 transition-colors">Telegram @{SELLER.telegram}</a>
+          </p>
         </div>
       </section>
     </div>
