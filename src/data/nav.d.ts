@@ -9,6 +9,8 @@ export interface NavLink {
   badge?: string
   /** Иконка у пункта подвала: 'external' — стрелка «ссылка наружу». */
   icon?: 'external'
+  /** Пункт подвала свёрнут под «Ещё…» (#820). */
+  more?: boolean
 }
 
 export interface NavGroup {
@@ -19,5 +21,6 @@ export interface NavGroup {
 export const headerNavLinks: NavLink[]
 export const headerMoreLinks: NavLink[]
 export const footerNavGroups: NavGroup[]
+export const footerLegalLinks: NavLink[]
 export const staticExtraLinks: NavLink[]
 export function staticNavLinks(): { name: string; href: string }[]
