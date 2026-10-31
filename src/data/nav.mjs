@@ -68,11 +68,13 @@ export const footerNavGroups = [
   },
   {
     title: 'Ресурсы',
-    // #820: группа разрослась до 19 пунктов. Клики по подвалу в Метрике
-    // посмотреть не удалось (счётчик на чужом аккаунте), поэтому сокращено по
-    // релевантности: на виду — документация, справочники и сравнение, остальное
-    // свёрнуто под «Ещё…» (`more: true`). Свёрнутые ссылки остаются в DOM —
-    // для краулера и статического блока ничего не теряется.
+    // #820: группа разрослась до 19 пунктов. Метрика за 01.08–30.10.2026:
+    // наружу из подвала кликают RUTUBE (12) и Документацию (6+), внутрь — База
+    // знаний, сравнение и решения (с главной); справочник API (запросы,
+    // триггеры, процедуры, шаблонизатор) открывают почти только из самого
+    // справочника, на правила и политику переходов не было. На виду — то, что
+    // кликают, остальное свёрнуто под «Ещё…» (`more: true`). Свёрнутые ссылки
+    // остаются в DOM — для краулера и статического блока ничего не теряется.
     links: [
       { name: 'Документация', href: 'https://help.integram.io/', external: true, icon: 'external' },
       { name: 'База знаний', href: '/knowledge-base.html' },
@@ -80,6 +82,8 @@ export const footerNavGroups = [
       { name: 'Интеграм vs Битрикс24 / AmoCRM', href: '/sravnenie-s-bitrix-amocrm.html' },
       { name: 'API для разработчиков', href: '/api.html' },
       { name: 'Блог', href: 'https://ideav.ru/blog/', external: true, icon: 'external' },
+      // Самая кликаемая внешняя ссылка подвала (#820) — ставится только здесь.
+      { name: 'RUTUBE', href: 'https://rutube.ru/channel/41204904/videos/', external: true },
       { name: 'Конструктор вместо Excel', href: '/konstruktor-prilozhenij.html', more: true },
       // backlogram#802: запросы — движок отчётов: адрес, форматы, параметры.
       { name: 'Запросы', href: '/queries.html', more: true },
@@ -98,7 +102,6 @@ export const footerNavGroups = [
       { name: 'Путь адепта', href: '/put-adepta.html', more: true },
       // #817: раздел для рекламы — в шапку не выводим, только неприметно в подвал.
       { name: 'ERP под ваш бизнес', href: '/erp-sistema.html', more: true },
-      { name: 'RUTUBE', href: 'https://rutube.ru/channel/41204904/videos/', external: true, more: true },
     ],
   },
 ]

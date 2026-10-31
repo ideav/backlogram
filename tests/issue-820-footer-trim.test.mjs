@@ -17,9 +17,14 @@ test('в «Ресурсах» на виду не больше 7 пунктов, 
   assert.match(footer, /Ещё…/)
 })
 
-test('справочники на виду: документация, база знаний, API', () => {
+test('на виду то, что кликают по Метрике: RUTUBE, документация, база знаний, сравнение', () => {
   const shown = resources.links.filter((l) => !l.more).map((l) => l.href)
-  for (const href of ['https://help.integram.io/', '/knowledge-base.html', '/api.html']) {
+  for (const href of [
+    'https://rutube.ru/channel/41204904/videos/',
+    'https://help.integram.io/',
+    '/knowledge-base.html',
+    '/sravnenie-s-bitrix-amocrm.html',
+  ]) {
     assert.ok(shown.includes(href), `${href} должен быть на виду`)
   }
 })
