@@ -470,7 +470,9 @@ export const ALL_CATEGORIES = EXACT_ONLY.map(({ Category }) => ({ Category, Valu
 export const DAY_HOURS = { from: 8, to: 21 }
 
 /** Строки расписания Директа: «день недели,ставка на час 0,…,час 23»; 100 — показ, 0 — нет.
- *  Часы и дни — из профиля (issue #790: tpl работает по будням 8:00–20:00). */
+ *  Часы и дни — из профиля (issue #790: tpl работает по будням 8:00–20:00).
+ *  Строки идут на все семь дней: день, которого нет в расписании, Директ показывает
+ *  круглые сутки, поэтому нерабочие дни передаются явными нулями. */
 export function scheduleFor(shift, profile = PROFILE) {
   const { from, to } = profile.dayHours ?? DAY_HOURS
   const days = profile.days ?? [1, 2, 3, 4, 5, 6, 7]
@@ -478,7 +480,8 @@ export function scheduleFor(shift, profile = PROFILE) {
     const isDay = h >= from && h < to
     return (shift === 'day') === isDay ? 100 : 0
   })
-  return days.map(day => [day, ...hours].join(','))
+  const off = Array(24).fill(0)
+  return [1, 2, 3, 4, 5, 6, 7].map(day => [day, ...(days.includes(day) ? hours : off)].join(','))
 }
 
 /** Стратегия оплаты за конверсии для одной площадки (поиск или сети). */

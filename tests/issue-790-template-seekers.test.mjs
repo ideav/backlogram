@@ -58,9 +58,14 @@ test('профиль tpl: максимум кликов, только поиск
 
 test('расписание: будни, 8:00–20:00 по московскому времени', () => {
   const rows = scheduleFor('day', P)
-  assert.equal(rows.length, 5, 'будни — пять строк расписания')
+  // все семь дней: пропущенный день Директ крутит круглые сутки (так ERP и tpl шли в выходные)
+  assert.equal(rows.length, 7, 'строка расписания на каждый день недели')
   const hours = rows[0].split(',').slice(1).map(Number)
   hours.forEach((v, h) => assert.equal(v, h >= 8 && h < 20 ? 100 : 0, `час ${h}: ожидалась ${h >= 8 && h < 20 ? 100 : 0}`))
+  for (const day of [6, 7]) {
+    const row = rows.find(r => r.startsWith(`${day},`)).split(',').slice(1).map(Number)
+    assert.ok(row.every(v => v === 0), `день ${day}: выходной, показов нет`)
+  }
 })
 
 test('по кампании на группу, каждая — поиск-день с потолком 25 ₽ и лимитом 1000 ₽', () => {
