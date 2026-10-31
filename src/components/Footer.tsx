@@ -3,6 +3,7 @@ import { Send, Mail, Phone, ExternalLink } from 'lucide-react'
 import { Logo } from './Logo'
 import { footerNavGroups } from '../data/nav'
 import type { NavLink } from '../data/nav'
+import { visitParams } from '../lib/metrika'
 
 const LINK_CLASS =
   'text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 text-sm transition-colors'
@@ -10,12 +11,16 @@ const LINK_CLASS =
 // Пункт подвала. Внутренние адреса — через Link (роутер, без перезагрузки),
 // внешние — обычной <a> в новой вкладке. Сами ссылки лежат в src/data/nav.mjs:
 // оттуда их же берёт статический блок навигации в сыром HTML (issue #627, п. 3).
-function FooterLink({ link }: { link: NavLink }) {
+// Клик пишется в параметры визита {footer_click: {группа: пункт}} — по ним
+// подвал можно будет сокращать по данным (issue #820).
+function FooterLink({ link, group }: { link: NavLink; group: string }) {
+  const track = () => visitParams({ footer_click: { [group]: link.name } })
   const icon = link.icon === 'external' ? <ExternalLink size={12} /> : null
   if (link.external) {
     return (
       <a
         href={link.href}
+        onClick={track}
         target="_blank"
         rel="noopener noreferrer"
         className={icon ? `${LINK_CLASS} flex items-center gap-2` : LINK_CLASS}
@@ -29,13 +34,13 @@ function FooterLink({ link }: { link: NavLink }) {
   // документа, и <a> отрабатывает её сама.
   if (link.href.startsWith('/#')) {
     return (
-      <a href={link.href} className={LINK_CLASS}>
+      <a href={link.href} onClick={track} className={LINK_CLASS}>
         {link.name}
       </a>
     )
   }
   return (
-    <Link to={link.href} className={LINK_CLASS}>
+    <Link to={link.href} onClick={track} className={LINK_CLASS}>
       {link.name}
     </Link>
   )
@@ -63,19 +68,42 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Группы ссылок: «Продукт» и «Ресурсы» из src/data/nav.mjs */}
-          {footerNavGroups.map((group) => (
-            <div key={group.title}>
-              <p className="text-slate-800 dark:text-slate-100 font-semibold mb-6">{group.title}</p>
-              <ul className="space-y-4">
-                {group.links.map((link) => (
-                  <li key={link.href}>
-                    <FooterLink link={link} />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {/* Группы ссылок: «Продукт» и «Ресурсы» из src/data/nav.mjs. Пункты с
+              `more: true` свёрнуты под «Ещё…» (#820). <details> держит их в DOM —
+              краулер видит ссылки, а раскрытие работает и без JS. */}
+          {footerNavGroups.map((group) => {
+            const shown = group.links.filter((l) => !l.more)
+            const more = group.links.filter((l) => l.more)
+            return (
+              <div key={group.title}>
+                <p className="text-slate-800 dark:text-slate-100 font-semibold mb-6">{group.title}</p>
+                <ul className="space-y-4">
+                  {shown.map((link) => (
+                    <li key={link.href}>
+                      <FooterLink link={link} group={group.title} />
+                    </li>
+                  ))}
+                  {more.length > 0 && (
+                    <li>
+                      <details className="group">
+                        <summary className={`${LINK_CLASS} cursor-pointer list-none select-none [&::-webkit-details-marker]:hidden`}>
+                          <span className="group-open:hidden">Ещё…</span>
+                          <span className="hidden group-open:inline">Свернуть</span>
+                        </summary>
+                        <ul className="mt-4 space-y-4">
+                          {more.map((link) => (
+                            <li key={link.href}>
+                              <FooterLink link={link} group={group.title} />
+                            </li>
+                          ))}
+                        </ul>
+                      </details>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            )
+          })}
 
           {/* Contacts */}
           <div id="contacts">
@@ -104,6 +132,16 @@ export function Footer() {
           <div className="text-slate-400 dark:text-slate-500 text-xs">
             {/* Реквизиты на каждой странице — коммерческий сигнал для Яндекса (issue #578). */}
             © {currentYear} АО «Интеграм». Все права защищены. · ИНН 9716002710 · ОГРН 1247700757590
+            {/* #820: юридические ссылки переехали из «Ресурсов» сюда, к реквизитам.
+                Тот же список — footerLegalLinks в src/data/nav.mjs (статический блок). */}
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+              <Link to="/terms.html" onClick={() => visitParams({ footer_click: { legal: 'Правила использования' } })} className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
+                Правила использования
+              </Link>
+              <Link to="/privacy.html" onClick={() => visitParams({ footer_click: { legal: 'Обработка персональных данных' } })} className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
+                Обработка персональных данных
+              </Link>
+            </div>
           </div>
           <div className="text-slate-400 dark:text-slate-500 text-xs italic">
             Не только замена Excel. Промышленный инструмент ускорения разработки.

@@ -68,38 +68,53 @@ export const footerNavGroups = [
   },
   {
     title: 'Ресурсы',
+    // #820: группа разрослась до 19 пунктов. Метрика за 01.08–30.10.2026:
+    // наружу из подвала кликают RUTUBE (12) и Документацию (6+), внутрь — База
+    // знаний, сравнение и решения (с главной); справочник API (запросы,
+    // триггеры, процедуры, шаблонизатор) открывают почти только из самого
+    // справочника, на правила и политику переходов не было. На виду — то, что
+    // кликают, остальное свёрнуто под «Ещё…» (`more: true`). Свёрнутые ссылки
+    // остаются в DOM — для краулера и статического блока ничего не теряется.
     links: [
       { name: 'Документация', href: 'https://help.integram.io/', external: true, icon: 'external' },
       { name: 'База знаний', href: '/knowledge-base.html' },
       { name: 'Решения вместо Excel', href: '/resheniya.html' },
-      { name: 'Конструктор вместо Excel', href: '/konstruktor-prilozhenij.html' },
       { name: 'Интеграм vs Битрикс24 / AmoCRM', href: '/sravnenie-s-bitrix-amocrm.html' },
       { name: 'API для разработчиков', href: '/api.html' },
-      // backlogram#802: запросы — движок отчётов: адрес, форматы, параметры.
-      { name: 'Запросы', href: '/queries.html' },
-      // python2node#866: триггеры кнопок — продолжение справочника API.
-      { name: 'Триггеры кнопок', href: '/triggers.html' },
-      // ideav/crm#5260: запрос как хранимая процедура.
-      { name: 'Хранимые процедуры', href: '/stored-procedures.html' },
-      // backlogram#798: шаблонизатор рабочих мест.
-      { name: 'Шаблонизатор', href: '/templater.html' },
-      { name: 'Токены', href: '/tokens.html' },
-      // #642: хаб кластера «автоматизация бизнеса с ИИ».
-      { name: 'Автоматизация бизнеса с ИИ', href: '/avtomatizaciya-biznesa-s-ii.html' },
-      // #605: опросник по архитектуре хранения — приложение к меморандуму.
-      { name: 'Квинтеты или таблицы', href: '/kvintety-ili-tablicy.html' },
-      // #765: путь адепта — как присоединиться к сообществу и зарабатывать.
-      { name: 'Путь адепта', href: '/put-adepta.html' },
-      // #817: раздел для рекламы — в шапку не выводим, только неприметно в подвал.
-      { name: 'ERP под ваш бизнес', href: '/erp-sistema.html' },
-      // Соглашение живёт на ideav.ru: раньше пункт уводил на чужой домен integram.io.
-      { name: 'Правила использования', href: '/terms.html' },
-      // Политика по 152-ФЗ должна быть общедоступна с любой страницы (issue #542).
-      { name: 'Обработка персональных данных', href: '/privacy.html' },
-      { name: 'RUTUBE', href: 'https://rutube.ru/channel/41204904/videos/', external: true },
       { name: 'Блог', href: 'https://ideav.ru/blog/', external: true, icon: 'external' },
+      // Самая кликаемая внешняя ссылка подвала (#820) — ставится только здесь.
+      { name: 'RUTUBE', href: 'https://rutube.ru/channel/41204904/videos/', external: true },
+      { name: 'Конструктор вместо Excel', href: '/konstruktor-prilozhenij.html', more: true },
+      // backlogram#802: запросы — движок отчётов: адрес, форматы, параметры.
+      { name: 'Запросы', href: '/queries.html', more: true },
+      // python2node#866: триггеры кнопок — продолжение справочника API.
+      { name: 'Триггеры кнопок', href: '/triggers.html', more: true },
+      // ideav/crm#5260: запрос как хранимая процедура.
+      { name: 'Хранимые процедуры', href: '/stored-procedures.html', more: true },
+      // backlogram#798: шаблонизатор рабочих мест.
+      { name: 'Шаблонизатор', href: '/templater.html', more: true },
+      { name: 'Токены', href: '/tokens.html', more: true },
+      // #642: хаб кластера «автоматизация бизнеса с ИИ».
+      { name: 'Автоматизация бизнеса с ИИ', href: '/avtomatizaciya-biznesa-s-ii.html', more: true },
+      // #605: опросник по архитектуре хранения — приложение к меморандуму.
+      { name: 'Квинтеты или таблицы', href: '/kvintety-ili-tablicy.html', more: true },
+      // #765: путь адепта — как присоединиться к сообществу и зарабатывать.
+      { name: 'Путь адепта', href: '/put-adepta.html', more: true },
+      // #817: раздел для рекламы — в шапку не выводим, только неприметно в подвал.
+      { name: 'ERP под ваш бизнес', href: '/erp-sistema.html', more: true },
     ],
   },
+]
+
+/**
+ * Юридические ссылки — в нижней строке подвала рядом с реквизитами (#820):
+ * из колонки «Ресурсы» они уехали, но остаются на каждой странице на виду.
+ * Политика по 152-ФЗ должна быть общедоступна с любой страницы (issue #542);
+ * соглашение живёт на ideav.ru, а не на чужом integram.io.
+ */
+export const footerLegalLinks = [
+  { name: 'Правила использования', href: '/terms.html' },
+  { name: 'Обработка персональных данных', href: '/privacy.html' },
 ]
 
 /**
@@ -135,6 +150,7 @@ export function staticNavLinks() {
     ...headerNavLinks,
     ...headerMoreLinks,
     ...footerNavGroups.flatMap((g) => g.links),
+    ...footerLegalLinks,
     ...staticExtraLinks,
   ]
   const seen = new Set()
