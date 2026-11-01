@@ -6,6 +6,7 @@ import { SITE, SITE_SECTIONS, siteSectionBySlug } from '../data/siteSections'
 import type { SectionCta, SectionLink } from '../data/siteSections'
 import { SERVICES, formatPrice } from '../data/services'
 import NotFound from './NotFound'
+import { reachGoal, visitParams, rememberLeadFrom } from '../lib/metrika'
 
 function setMetaTag(selector: string, attr: 'name' | 'property', key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(selector)
@@ -19,17 +20,27 @@ function setCanonical(href: string) {
 }
 
 /** Внутренняя ссылка — через роутер, внешняя (песочница, документация) — обычная. */
-function SmartLink({ href, external, className, children }: { href: string; external?: boolean; className: string; children: ReactNode }) {
-  if (external) return <a href={href} target="_blank" rel="noopener noreferrer" className={className}>{children}</a>
-  return <Link to={href} className={className}>{children}</Link>
+function SmartLink({ href, external, className, onClick, children }: { href: string; external?: boolean; className: string; onClick?: () => void; children: ReactNode }) {
+  if (external) return <a href={href} target="_blank" rel="noopener noreferrer" className={className} onClick={onClick}>{children}</a>
+  return <Link to={href} className={className} onClick={onClick}>{children}</Link>
 }
 
-function Cta({ cta, primary }: { cta: SectionCta; primary?: boolean }) {
+/**
+ * Клик по главной кнопке раздела — цель `section_cta` (#825), по ней Директ
+ * оптимизирует рекламу раздела. Если кнопка ведёт на форму главной, раздел
+ * запоминается источником заявки `lead`.
+ */
+function trackSectionCta(slug: string, cta: SectionCta, place: 'top' | 'bottom') {
+  reachGoal('section_cta', { section: slug, place })
+  if (cta.href.startsWith('/#cta')) rememberLeadFrom(slug)
+}
+
+function Cta({ cta, primary, onClick }: { cta: SectionCta; primary?: boolean; onClick?: () => void }) {
   const cls = primary
     ? 'px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl inline-flex items-center gap-2'
     : 'px-6 py-3 border border-slate-300 dark:border-slate-700 font-bold rounded-xl inline-flex items-center gap-2'
   return (
-    <SmartLink href={cta.href} external={cta.external} className={cls}>
+    <SmartLink href={cta.href} external={cta.external} className={cls} onClick={onClick}>
       {cta.text} {cta.external ? <ExternalLink size={16} /> : <ArrowRight size={16} />}
     </SmartLink>
   )
@@ -72,6 +83,8 @@ export default function SiteSection({ slug }: { slug: string }) {
     setMetaTag('meta[property="og:description"]', 'property', 'og:description', page.ogDescription)
     setMetaTag('meta[property="og:url"]', 'property', 'og:url', canonical)
     setCanonical(canonical)
+    // Параметр визита: визиты и лиды режутся по разделам без отдельных целей (#825).
+    visitParams({ section: page.slug })
   }, [page])
 
   if (!page) return <NotFound />
@@ -92,7 +105,7 @@ export default function SiteSection({ slug }: { slug: string }) {
           </h1>
           <p className="text-lg text-slate-500 dark:text-slate-400 leading-relaxed max-w-4xl">{page.lead}</p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Cta cta={page.cta} primary />
+            <Cta cta={page.cta} primary onClick={() => trackSectionCta(page.slug, page.cta, 'top')} />
             <Cta cta={page.cta2} />
           </div>
         </div>
@@ -141,7 +154,7 @@ export default function SiteSection({ slug }: { slug: string }) {
         <section className="my-12 p-8 rounded-3xl bg-blue-600 text-white">
           <h2 className="text-2xl md:text-3xl font-bold mb-3">{page.cta.text}</h2>
           <p className="text-blue-100 leading-relaxed mb-6 max-w-3xl">{page.ogDescription}</p>
-          <SmartLink href={page.cta.href} external={page.cta.external} className="px-6 py-3 bg-white text-blue-700 font-bold rounded-xl inline-flex items-center gap-2">
+          <SmartLink href={page.cta.href} external={page.cta.external} onClick={() => trackSectionCta(page.slug, page.cta, 'bottom')} className="px-6 py-3 bg-white text-blue-700 font-bold rounded-xl inline-flex items-center gap-2">
             {page.cta.text} {page.cta.external ? <ExternalLink size={16} /> : <ArrowRight size={16} />}
           </SmartLink>
         </section>

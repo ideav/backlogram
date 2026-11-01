@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { reachGoal } from '../lib/metrika'
+import { reachGoal, leadSource, forgetLeadFrom } from '../lib/metrika'
 import {
   Zap,
   Code2,
@@ -186,7 +186,10 @@ export default function Home() {
       const json = await res.json()
       if (json.ok) {
         setFormState('success')
-        reachGoal('lead', { source: 'home' })
+        // Из раздела «Автоматизация бизнеса» кнопка ведёт сюда же — заявку
+        // относим к разделу (#825).
+        reachGoal('lead', { source: leadSource('home') })
+        forgetLeadFrom()
         form.reset()
         setAttachedFiles([])
         setCaptchaToken('')
@@ -281,6 +284,7 @@ export default function Home() {
                     <Link
                       key={section.slug}
                       to={`/${section.slug}.html`}
+                      onClick={() => reachGoal('section_choice', { section: section.slug })}
                       className="group flex md:flex-col items-start gap-4 md:gap-0 h-full p-4 md:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/80 backdrop-blur hover:border-blue-500 dark:hover:border-blue-500 shadow-lg shadow-slate-900/5 transition-colors"
                     >
                       <span className="w-11 h-11 shrink-0 rounded-xl bg-blue-600/10 text-blue-600 dark:text-blue-400 flex items-center justify-center md:mb-3">
