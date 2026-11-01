@@ -40,7 +40,7 @@ test('in-page CTA link stays in the current tab and lands below the fixed header
 test('moved home anchors (ads link /#ai) redirect to the same block in a section', async () => {
   assert.match(homeSource, /ai: '\/avtomatizaciya-biznesa\.html#ai'/)
   assert.match(homeSource, /const target = MOVED_ANCHORS\[hash\.slice\(1\)\]/)
-  assert.match(homeSource, /navigate\(target, \{ replace: true \}\)/)
+  assert.match(homeSource, /navigate\(movedAnchorTarget\(target, search\), \{ replace: true \}\)/)
   const { SITE_SECTIONS } = await import('../src/data/siteSections.mjs')
   const ids = new Map(SITE_SECTIONS.map((s) => [`/${s.slug}.html`, new Set(s.blocks.map((b) => b.id))]))
   const map = homeSource.slice(homeSource.indexOf('MOVED_ANCHORS'), homeSource.indexOf('export default function Home'))
@@ -55,4 +55,28 @@ test('moved home anchors (ads link /#ai) redirect to the same block in a section
   for (const key of [...map.matchAll(/^\s+'?([a-z-]+)'?: '/gm)].map((m) => m[1])) {
     assert.doesNotMatch(homeSource, new RegExp(`<section id="${key}"`), `#${key} всё ещё на главной`)
   }
+})
+
+// #830: переадресация не должна терять UTM — иначе второй просмотр (в разделе)
+// Метрика запишет без меток.
+test('moved anchor redirect keeps the query string (UTM) before the section hash', async () => {
+  const { movedAnchorTarget } = await import('../src/lib/movedAnchor.mjs')
+  const utm = '?utm_source=yandex&utm_campaign=826&yclid=1'
+  assert.deepEqual(movedAnchorTarget('/avtomatizaciya-biznesa.html#pricing', utm), {
+    pathname: '/avtomatizaciya-biznesa.html',
+    search: utm,
+    hash: '#pricing',
+  })
+  assert.deepEqual(movedAnchorTarget('/zamena-excel.html', utm), {
+    pathname: '/zamena-excel.html',
+    search: utm,
+    hash: '',
+  })
+  assert.deepEqual(movedAnchorTarget('/razrabotchikam.html#start', ''), {
+    pathname: '/razrabotchikam.html',
+    search: '',
+    hash: '#start',
+  })
+  assert.match(homeSource, /const \{ hash, search \} = useLocation\(\)/)
+  assert.match(homeSource, /\[hash, search, navigate\]/)
 })

@@ -16,6 +16,7 @@ import {
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { SITE_SECTIONS, CONTACTS } from '../data/siteSections'
 import { HOME_FAQ } from '../data/home-faq'
+import { movedAnchorTarget } from '../lib/movedAnchor'
 import ClientLogos from '@/components/ClientLogos'
 import BlogSlider from '@/components/BlogSlider'
 import LeadForm from '@/components/LeadForm'
@@ -49,13 +50,13 @@ export const MOVED_ANCHORS: Record<string, string> = {
 
 export default function Home() {
   const [isHeroTeaserActive, setIsHeroTeaserActive] = React.useState(false)
-  const { hash } = useLocation()
+  const { hash, search } = useLocation()
   const navigate = useNavigate()
 
   React.useEffect(() => {
     const target = MOVED_ANCHORS[hash.slice(1)]
-    if (target) navigate(target, { replace: true })
-  }, [hash, navigate])
+    if (target) navigate(movedAnchorTarget(target, search), { replace: true })
+  }, [hash, search, navigate])
 
   return (
     // Бюджет заголовков (issue #514): один H1, до 10 H2 — только смысловые
