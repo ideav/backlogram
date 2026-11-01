@@ -10,12 +10,6 @@ function getHeroSection(source) {
   return match[0]
 }
 
-function getPromoSection(source) {
-  const match = source.match(/\{\/\* 1b\. Excel.*?promo \*\/\}[\s\S]*?<\/section>/)
-  assert.ok(match, 'Expected the excel promo section (1b) to exist')
-  return match[0]
-}
-
 // issue #488 (af.md, блок 1): hero переписан ДОСЛОВНО из af.md под семантическое ядро —
 // бренд + «no-code конструктор приложений и баз данных: замена Excel и аналог Airtable».
 // Тест пинит новый заголовок и лид (заменил прежний #319-гвард), чтобы копия не «уплыла».
@@ -42,7 +36,10 @@ test('hero primary CTA points to #cta contact form', () => {
   assert.match(hero, /Отправить задачу из очереди задач/)
 })
 
-test('excel-to-app promo link is preserved below the hero (section 1b)', () => {
-  const promo = getPromoSection(homeSource)
-  assert.match(promo, /to="\/excel-to-app\.html"/)
+// #827: промо-блок 1b «Загрузите Excel» переехал с главной в раздел «Заменить
+// Excel» — путь к загрузке теперь: карточка раздела в hero → кнопка раздела.
+test('hero leads to the section pages instead of the removed 1b promo', () => {
+  const hero = getHeroSection(homeSource)
+  assert.match(hero, /SITE_SECTIONS\.map/)
+  assert.doesNotMatch(homeSource, /id="excel-promo"/)
 })

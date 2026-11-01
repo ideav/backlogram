@@ -29,8 +29,15 @@ test('start.html activates the registration tab when #reg hash is present', () =
   )
 })
 
-test('registration-intent CTAs in Home use start.html#reg', () => {
-  const regIntentLabels = ['Попробовать самому', 'Начать бесплатно']
+test('registration-intent CTAs in Home use start.html#reg', async () => {
+  // #827: облачные тарифы с кнопкой «Начать бесплатно» переехали в разделы
+  // (src/data/siteSections.mjs, CLOUD_PLANS) — кнопка песочницы ведёт туда же.
+  const { CLOUD_PLANS, SANDBOX_URL } = await import('../src/data/siteSections.mjs')
+  assert.equal(SANDBOX_URL, 'https://ideav.ru/start.html#reg')
+  const free = CLOUD_PLANS.find((p) => p.cta.text === 'Начать бесплатно')
+  assert.equal(free?.cta.href, SANDBOX_URL)
+
+  const regIntentLabels = ['Попробовать самому']
 
   for (const label of regIntentLabels) {
     const labelPos = homeSource.indexOf(label)

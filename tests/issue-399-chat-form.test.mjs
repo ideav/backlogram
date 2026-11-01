@@ -20,21 +20,22 @@ import net from 'node:net'
 const root = fileURLToPath(new URL('..', import.meta.url))
 const read = (p) => readFileSync(join(root, p), 'utf8')
 
-const homeTsx = read('src/pages/Home.tsx')
+// #827: форма вынесена из Home.tsx в src/components/LeadForm.tsx.
+const homeTsx = read('src/components/LeadForm.tsx')
 const notifyPhp = read('public/telegram-notify.php')
 const sharedPhp = read('public/intake-shared.php')
 
 const hasPhp = spawnSync('php', ['--version'], { stdio: 'ignore' }).error === undefined
 
 // ── 1. Фронт: чат-форма с вложениями ─────────────────────────────────────
-test('Home.tsx: скрытый file input (multiple) и кнопка «Прикрепить файлы»', () => {
+test('LeadForm.tsx: скрытый file input (multiple) и кнопка «Прикрепить файлы»', () => {
   assert.ok(homeTsx.includes('type="file"'), 'нет file input')
   assert.ok(homeTsx.includes('multiple'), 'input должен принимать несколько файлов')
   assert.ok(homeTsx.includes('Прикрепить файлы'), 'нет кнопки прикрепления')
   assert.ok(homeTsx.includes('Paperclip'), 'нет иконки скрепки')
 })
 
-test('Home.tsx: заявка уходит как FormData c files[], без JSON-заголовка', () => {
+test('LeadForm.tsx: заявка уходит как FormData c files[], без JSON-заголовка', () => {
   assert.ok(homeTsx.includes(`data.append('files[]', f, f.name)`), 'файлы не кладутся в FormData')
   assert.ok(homeTsx.includes('new FormData()'), 'нет FormData')
   const submitChunk = homeTsx.slice(homeTsx.indexOf('async function handleSubmit'), homeTsx.indexOf('async function handleSubmit') + 2000)

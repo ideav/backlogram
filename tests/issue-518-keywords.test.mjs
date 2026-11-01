@@ -17,6 +17,7 @@ import { cpSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import { HOME_FAQ } from '../src/data/home-faq.mjs'
+import { SITE_SECTIONS } from '../src/data/siteSections.mjs'
 
 const repo = new URL('..', import.meta.url).pathname
 const read = (path) => readFileSync(resolve(repo, path), 'utf8')
@@ -33,9 +34,16 @@ function headings(source) {
 }
 
 const homeHeadings = headings(homeTsx)
-const h2Text = homeHeadings.filter((h) => h.tag === 'h2').map((h) => h.text).join(' | ')
+// #827: подробности по темам переехали с главной в разделы — ключ должен
+// стоять в H2 главной или раздела «Автоматизация бизнеса».
+const auto = SITE_SECTIONS.find((s) => s.slug === 'avtomatizaciya-biznesa')
+const sectionText = JSON.stringify(auto)
+const h2Text = [
+  ...homeHeadings.filter((h) => h.tag === 'h2').map((h) => h.text),
+  ...auto.blocks.map((b) => b.h2),
+].join(' | ')
 
-test('высокочастотные ключи стоят в H2 главной', () => {
+test('высокочастотные ключи стоят в H2 главной и раздела', () => {
   for (const phrase of [
     'информационные системы',
     'управление бизнес-процессами',
@@ -48,10 +56,10 @@ test('высокочастотные ключи стоят в H2 главной'
   }
 })
 
-test('процессные ключи есть в тексте главной', () => {
+test('процессные ключи есть в тексте главной и раздела', () => {
   // В текстах стоят неразрывные пробелы (issue #41) — для поиска фраз
   // приводим их к обычным, иначе «и анализ» не совпадёт с «и анализ».
-  const text = homeTsx.replace(/ /g, ' ').toLowerCase()
+  const text = (homeTsx + sectionText).replace(/ /g, ' ').toLowerCase()
   for (const phrase of [
     'описание и анализ бизнес-процессов',
     'описываем бизнес-процессы',
@@ -64,7 +72,8 @@ test('процессные ключи есть в тексте главной', 
 test('бюджет заголовков из issue #514 не нарушен', () => {
   const count = (tag) => homeHeadings.filter((h) => h.tag === tag).length
   assert.equal(count('h1'), 1)
-  assert.equal(count('h2'), 10, 'ровно 10 H2 — как договорились в issue #514')
+  // #827: главная сокращена до общих блоков — H2 стало меньше, потолок прежний.
+  assert.ok(count('h2') >= 2 && count('h2') <= 10, `H2: ${count('h2')}`)
   assert.ok(count('h3') <= 15)
   assert.equal(count('h4') + count('h5') + count('h6'), 0)
 })
@@ -108,7 +117,9 @@ test('снапшот главной несёт те же ключи в заго�
     .map((m) => m[1].replace(/<[^>]+>/g, '').trim())
     .join(' | ')
 
-  for (const phrase of ['информационные системы', 'управление бизнес-процессами', 'бизнес-процессов']) {
+  // «Управление бизнес-процессами» — в снапшоте раздела «Автоматизация бизнеса»
+  // (его проверяет tests/issue-827-section-pages.test.mjs).
+  for (const phrase of ['информационные системы', 'бизнес-процессов']) {
     assert.ok(
       snapshotH2.toLowerCase().includes(phrase.toLowerCase()),
       `ключ «${phrase}» не доехал до снапшота. Сейчас: ${snapshotH2}`,

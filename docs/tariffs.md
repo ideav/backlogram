@@ -58,7 +58,7 @@
 
 ## Где живут цены
 
-- ideav.ru: `src/data/services.mjs` (каталог, JSON-LD, llms.txt), `src/pages/Home.tsx` (#pricing),
+- ideav.ru: `src/data/services.mjs` (каталог, JSON-LD, llms.txt), `src/data/siteSections.mjs` (облачные тарифы `CLOUD_PLANS`, FAQ разделов; #827),
   `src/data/knowledgeBase.ts` (статья о ценовой политике), `src/data/adeptPath.mjs`.
 - excel-to-app: `src/pages/ExcelToApp.tsx` + `scripts/prerender-excel-to-app.mjs` (ideav.ru),
   `site-excel/src/content.ts` (excel-to-app.ru).

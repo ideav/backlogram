@@ -2,7 +2,8 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 
-const homeSource = readFileSync(new URL('../src/pages/Home.tsx', import.meta.url), 'utf8')
+// #827: форма заявки вынесена из Home.tsx в общий компонент.
+const homeSource = readFileSync(new URL('../src/components/LeadForm.tsx', import.meta.url), 'utf8')
 
 test('CTA captcha is hidden until the contact field receives user input', () => {
   assert.match(

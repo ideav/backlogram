@@ -23,8 +23,9 @@ test('главная кнопка раздела — сверху и в сине
   assert.match(section, /reachGoal\('section_cta', \{ section: slug, place \}\)/)
   assert.match(section, /<Cta cta=\{page\.cta\} primary onClick=\{\(\) => trackSectionCta\(page\.slug, page\.cta, 'top'\)\}/)
   assert.match(section, /onClick=\{\(\) => trackSectionCta\(page\.slug, page\.cta, 'bottom'\)\}/)
-  // Обе ссылки (внутренняя и внешняя, как у песочницы) передают onClick.
-  assert.equal((section.match(/className=\{className\} onClick=\{onClick\}/g) ?? []).length, 2)
+  // Все три вида ссылок (роутер, внешняя как у песочницы, якорь своей
+  // страницы как #zayavka) передают onClick.
+  assert.equal((section.match(/className=\{className\} onClick=\{onClick\}/g) ?? []).length, 3)
 })
 
 test('вход на страницу раздела пишет параметр визита section', () => {
@@ -32,12 +33,18 @@ test('вход на страницу раздела пишет параметр 
   assert.match(effect, /visitParams\(\{ section: page\.slug \}\)/)
 })
 
-test('заявка с /#cta из раздела уходит с source раздела, а не home', () => {
+test('заявка из раздела уходит с source раздела, а не home', () => {
+  // #827: форма стоит прямо в разделе «Автоматизация бизнеса» и получает его slug.
   const auto = SITE_SECTIONS.find((s) => s.slug === 'avtomatizaciya-biznesa')
-  assert.ok(auto.cta.href.startsWith('/#cta'), 'кнопка раздела ведёт на форму главной')
+  assert.equal(auto.cta.href, '#zayavka', 'кнопка раздела ведёт на форму на той же странице')
+  assert.ok(auto.blocks.some((b) => b.type === 'form' && b.id === 'zayavka'))
+  assert.match(section, /<LeadForm source=\{slug\} \/>/)
+  // Кнопка раздела, ведущая на форму главной, по-прежнему запоминает раздел.
   assert.match(section, /if \(cta\.href\.startsWith\('\/#cta'\)\) rememberLeadFrom\(slug\)/)
-  assert.match(home, /reachGoal\('lead', \{ source: leadSource\('home'\) \}\)\s*\n\s*forgetLeadFrom\(\)/)
-  assert.doesNotMatch(home, /reachGoal\('lead', \{ source: 'home' \}\)/)
+  const form = read('src/components/LeadForm.tsx')
+  assert.match(form, /reachGoal\('lead', \{ source: source \?\? leadSource\('home'\) \}\)\s*\n\s*forgetLeadFrom\(\)/)
+  assert.doesNotMatch(form, /reachGoal\('lead', \{ source: 'home' \}\)/)
+  assert.match(home, /<LeadForm \/>/)
   // sessionStorage, а не хэш: App.tsx скроллит к id = hash.
   assert.match(metrika, /sessionStorage\.setItem\(LEAD_FROM_KEY, section\)/)
 })

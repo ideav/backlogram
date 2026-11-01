@@ -126,10 +126,13 @@ test('the landing form anchor has scroll margin for the fixed header', () => {
   assert.match(section[1], /(?:^|\s)scroll-mt-\d+(?:\s|$)/)
 })
 
-test('the home page promotes the Excel → app landing', () => {
-  const promo = homeSource.match(/<Link\s+[\s\S]*?to="\/excel-to-app\.html"[\s\S]*?<\/Link>/)
-  assert.ok(promo, 'expected a promo Link to /excel-to-app.html on the home page')
-  assert.match(promo[0], /Загрузите Excel — получите приложение/)
+// #827: промо «Загрузите Excel — получите приложение» переехало с главной в
+// раздел «Заменить Excel»; главная ведёт в раздел карточкой hero.
+test('the Excel section promotes the Excel → app landing', async () => {
+  const { SITE_SECTIONS } = await import('../src/data/siteSections.mjs')
+  const excel = SITE_SECTIONS.find((s) => s.slug === 'zamena-excel')
+  assert.equal(excel.cta.href, '/excel-to-app.html')
+  assert.match(homeSource, /SITE_SECTIONS\.map/)
 })
 
 test('the header links to the Excel → app landing', () => {

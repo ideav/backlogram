@@ -42,8 +42,11 @@ test('prerender-landing fills #root and injects SEO head tags into dist/index.ht
 
   // Representative section headings from Home.tsx are present (wording follows
   // the keyword rewrite from issue #518).
-  assert.match(out, /Масштабируемые информационные системы без кода/)
-  assert.match(out, /Готовые типы проектов: описание и анализ бизнес-процессов/)
+  assert.match(out, /Масштабируемые информационные системы без кода и автоматизация бизнес-процессов/)
+  // #827: «Готовые типы проектов» переехали в раздел «Автоматизация бизнеса».
+  assert.doesNotMatch(out, /Готовые типы проектов/)
+  // Выбор раздела — в снапшоте первого экрана.
+  assert.match(out, /href="\/avtomatizaciya-biznesa\.html"/)
 
   // SEO head tags: canonical, Open Graph, and SoftwareApplication JSON-LD.
   assert.match(out, /<link rel="canonical" href="https:\/\/ideav\.ru\/" \/>/)
