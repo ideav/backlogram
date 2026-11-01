@@ -116,9 +116,11 @@ test('хаб ↔ разделы: карточки на хабе, ссылка н
   }
 })
 
-test('главная ведёт на хаб: React и пререндер', () => {
-  assert.ok(read('src/pages/Home.tsx').includes(`'/${AI_HUB.slug}.html'`), 'нет в «Все решения и инструменты»')
-  assert.ok(read('src/pages/Home.tsx').includes(`to="/${AI_HUB.slug}.html"`), 'нет кнопки в секции «ИИ»')
+// #827: блок «ИИ» и «Все решения и инструменты» переехали с главной в раздел
+// «Автоматизация бизнеса» — хаб ссылается оттуда, а снапшот главной держит
+// ссылку в подвале.
+test('сайт ведёт на хаб: раздел «Автоматизация бизнеса» и пререндер главной', () => {
+  assert.ok(read('src/data/siteSections.mjs').includes(`href: '/${AI_HUB.slug}.html'`), 'нет кнопки в блоке «ИИ» раздела')
   assert.ok(read('scripts/prerender-landing.mjs').includes(`href="/${AI_HUB.slug}.html"`), 'нет в пререндере главной')
 })
 

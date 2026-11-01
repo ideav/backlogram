@@ -25,7 +25,8 @@ const homeTitle = indexHtml.match(/<title>([\s\S]*?)<\/title>/)[1]
 
 /** Страницы с формой-заявкой: в каждой галочка согласия ссылается на политику. */
 const PAGES_WITH_CONSENT = [
-  'src/pages/Home.tsx',
+  // #827: форма главной и раздела «Автоматизация бизнеса» — общий компонент.
+  'src/components/LeadForm.tsx',
   'src/pages/ExcelToApp.tsx',
   'src/pages/CatalogMatching.tsx',
   'src/pages/ExcelConstructor.tsx',

@@ -10,11 +10,6 @@ function getHeroSection(source) {
   return match[0]
 }
 
-function getPromoSection(source) {
-  const match = source.match(/\{\/\* 1b\. Excel.*?promo \*\/\}[\s\S]*?<\/section>/)
-  assert.ok(match, 'Expected the excel promo section to exist')
-  return match[0]
-}
 
 test('hero primary CTA leads to the #cta section (restored old offer, issue #319)', () => {
   const hero = getHeroSection(homeSource)
@@ -23,8 +18,13 @@ test('hero primary CTA leads to the #cta section (restored old offer, issue #319
   assert.match(hero, /Отправить задачу из очереди задач/)
 })
 
-test('excel-to-app promo section is present below the hero with a link to /excel-to-app.html', () => {
-  const promo = getPromoSection(homeSource)
-  assert.match(promo, /to="\/excel-to-app\.html"/)
-  assert.match(promo, /Загрузит/)
+// #827: промо «Загрузите Excel» переехало с главной в раздел «Заменить Excel»:
+// его главная кнопка ведёт на /excel-to-app.html, а первый блок описывает,
+// что происходит с таблицей.
+test('the Excel section leads to /excel-to-app.html and explains what happens to the table', async () => {
+  const { SITE_SECTIONS } = await import('../src/data/siteSections.mjs')
+  const excel = SITE_SECTIONS.find((s) => s.slug === 'zamena-excel')
+  assert.equal(excel.cta.href, '/excel-to-app.html')
+  assert.match(excel.cta.text, /Загрузит/)
+  assert.equal(excel.blocks[0].h2, 'Что происходит с вашей таблицей')
 })

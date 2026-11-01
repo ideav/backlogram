@@ -10,7 +10,7 @@ import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { SITE_SECTIONS } from '../src/data/siteSections.mjs'
+import { SITE_SECTIONS, sectionLinks } from '../src/data/siteSections.mjs'
 import { SERVICES } from '../src/data/services.mjs'
 import { headerNavLinks, staticNavLinks } from '../src/data/nav.mjs'
 
@@ -44,18 +44,22 @@ test('у каждого раздела своё целевое действие'
   const ctas = SITE_SECTIONS.map((s) => s.cta.href)
   assert.equal(new Set(ctas).size, 3, 'целевые действия разделов не должны совпадать')
   assert.equal(SITE_SECTIONS[0].cta.href, '/excel-to-app.html')
-  assert.equal(SITE_SECTIONS[1].cta.href, '/#cta')
+  // #827: форма заявки — на самой странице раздела.
+  assert.equal(SITE_SECTIONS[1].cta.href, '#zayavka')
   assert.match(SITE_SECTIONS[2].cta.href, /start\.html#reg$/)
 })
 
 test('карточки разделов ведут на существующие страницы и услуги', () => {
   const sitemap = read('public/sitemap.xml')
   for (const s of SITE_SECTIONS) {
-    for (const l of s.blocks.flatMap((b) => b.links)) {
-      if (l.external || l.href.startsWith('/#')) continue
-      assert.ok(sitemap.includes(`<loc>https://ideav.ru${l.href}</loc>`), `${s.slug}: ${l.href} нет в sitemap`)
+    for (const l of sectionLinks(s)) {
+      if (l.external || l.href.startsWith('#') || l.href.startsWith('/#')) continue
+      const page = l.href.split('#')[0]
+      assert.ok(sitemap.includes(`<loc>https://ideav.ru${page}</loc>`), `${s.slug}: ${l.href} нет в sitemap`)
     }
-    for (const id of s.pricing ?? []) assert.ok(SERVICES.some((x) => x.id === id), `${s.slug}: нет услуги ${id}`)
+    for (const b of s.blocks.filter((x) => x.type === 'pricing')) {
+      for (const id of b.services ?? []) assert.ok(SERVICES.some((x) => x.id === id), `${s.slug}: нет услуги ${id}`)
+    }
   }
 })
 
@@ -95,7 +99,7 @@ test('раздел вшит в сайт: роутер, сборка, .htaccess, 
 
 test('выбор раздела — на первом экране главной и в шапке', () => {
   const home = read('src/pages/Home.tsx')
-  const hero = home.slice(home.indexOf('id="hero"'), home.indexOf('id="excel-promo"'))
+  const hero = home.slice(home.indexOf('id="hero"'), home.indexOf('id="technology"'))
   assert.match(hero, /SITE_SECTIONS\.map/, 'карточки разделов должны стоять в hero')
   assert.deepEqual(headerNavLinks.slice(0, 3).map((l) => l.href), SLUGS.map((s) => `/${s}.html`))
   const nav = staticNavLinks().map((l) => l.href)

@@ -637,7 +637,7 @@ export default function Quiz() {
                 и договоримся о времени разговора.
               </p>
               <Link
-                to="/#cases"
+                to="/avtomatizaciya-biznesa.html#cases"
                 className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition-all"
               >
                 Посмотреть примеры работ

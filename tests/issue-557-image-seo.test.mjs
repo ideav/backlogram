@@ -42,14 +42,12 @@ test('the decorative hero background stays hidden from assistive tech', () => {
 })
 
 test('case screenshots come from the shared source with real dimensions', () => {
-  for (const key of Object.keys(HOME_CASE_SCREENSHOTS)) {
-    assert.match(
-      homeSource,
-      new RegExp(`alt=\\{HOME_CASE_SCREENSHOTS\\.${key}\\.alt\\}`),
-      `Home.tsx must take the ${key} alt from src/data/home-cases.mjs`,
-    )
-    assert.match(homeSource, new RegExp(`width=\\{HOME_CASE_SCREENSHOTS\\.${key}\\.width\\}`))
-    assert.match(homeSource, new RegExp(`height=\\{HOME_CASE_SCREENSHOTS\\.${key}\\.height\\}`))
+  // #827: кейсы переехали с главной в раздел «Автоматизация бизнеса» —
+  // src/pages/SiteSection.tsx берёт картинку по ключу из home-cases.mjs.
+  const sectionSource = readFileSync(resolve(repo, 'src/pages/SiteSection.tsx'), 'utf8')
+  assert.match(sectionSource, /const shot = HOME_CASE_SCREENSHOTS\[c\.shot\]/)
+  for (const attr of ['alt', 'width', 'height']) {
+    assert.match(sectionSource, new RegExp(`${attr}=\\{shot\\.${attr}\\}`))
   }
   for (const shot of SHOTS) {
     assert.ok(shot.alt.length > 40, `alt for ${shot.file} is too thin to describe the screenshot`)
@@ -111,12 +109,13 @@ test('prerendered snapshot ships the case screenshots crawlers cannot get from R
   const work = mkdtempSync(resolve(tmpdir(), 'lp-images-'))
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
-  cpSync(resolve(repo, 'scripts/prerender-landing.mjs'), resolve(work, 'scripts/prerender-landing.mjs'))
+  // #827: снапшот кейсов — у раздела «Автоматизация бизнеса».
+  cpSync(resolve(repo, 'scripts/prerender-site-sections.mjs'), resolve(work, 'scripts/prerender-site-sections.mjs'))
   cpSync(resolve(repo, 'src/data'), resolve(work, 'src/data'), { recursive: true })
   writeFileSync(resolve(work, 'dist/index.html'), indexHtml)
 
-  execFileSync('node', ['scripts/prerender-landing.mjs'], { cwd: work })
-  const out = readFileSync(resolve(work, 'dist/index.html'), 'utf8')
+  execFileSync('node', ['scripts/prerender-site-sections.mjs'], { cwd: work })
+  const out = readFileSync(resolve(work, 'dist/avtomatizaciya-biznesa.html'), 'utf8')
 
   for (const shot of SHOTS) {
     const tag = out.match(new RegExp(`<img src="/${shot.file}"[^>]*>`))

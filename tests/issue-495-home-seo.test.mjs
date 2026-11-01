@@ -14,6 +14,7 @@ import { resolve } from 'node:path'
 import { execFileSync } from 'node:child_process'
 import { HOME_FAQ } from '../src/data/home-faq.mjs'
 import { USE_CASES } from '../src/data/usecases.mjs'
+import { SITE_SECTIONS } from '../src/data/siteSections.mjs'
 import { HOME_CASE_SCREENSHOTS } from '../src/data/home-cases.mjs'
 
 const repo = new URL('..', import.meta.url).pathname
@@ -124,7 +125,9 @@ test('SoftwareApplication описывает продукт и не выдумы
 // ── 5. alt-тексты ─────────────────────────────────────────────────────────
 test('у картинок главной есть содержательный alt (декоративные — пустой + aria-hidden)', () => {
   const images = homeTsx.match(/<img[\s\S]*?\/>/g) ?? []
-  assert.ok(images.length >= 4, 'ожидались фон героя и три скриншота кейсов')
+  // #827: скриншоты кейсов переехали в раздел «Автоматизация бизнеса» —
+  // на главной остался фон героя (alt раздела проверяет issue-557).
+  assert.ok(images.length >= 1, 'ожидался фон героя')
 
   for (const img of images) {
     // Скриншоты кейсов берут alt из общего с пререндером src/data/home-cases.mjs
@@ -160,6 +163,7 @@ const PAGES = [
   '/knowledge-base',
   '/resheniya.html',
   '/privacy',
+  ...SITE_SECTIONS.map((s) => `/${s.slug}.html`),
   ...USE_CASES.map((u) => `/${u.slug}.html`),
   ...KB_SLUGS.map((s) => `/knowledge-base/${s}.html`),
 ]
@@ -169,16 +173,18 @@ test('каждая внутренняя ссылка главной ведёт �
     ...[...homeTsx.matchAll(/to="(\/[^"#]*)"/g)].map((m) => m[1]),
     ...[...homeTsx.matchAll(/href: '(\/[^']*)'/g)].map((m) => m[1]),
     ...HOME_FAQ.map((item) => item.link?.href).filter(Boolean),
+    ...SITE_SECTIONS.map((s) => `/${s.slug}.html`),
   ])
-  assert.ok(hrefs.size >= 15, `перелинковки мало: ${hrefs.size} ссылок`)
+  assert.ok(hrefs.size >= 10, `перелинковки мало: ${hrefs.size} ссылок`)
   for (const href of hrefs) {
     assert.ok(PAGES.includes(href), `битая внутренняя ссылка: ${href}`)
   }
 })
 
-test('ключевые блоки главной ведут на свою посадочную', () => {
-  // Готовые типы проектов → решения; отрасли «Для кого» → решения;
-  // карточки «конструкторы падают» и FAQ → база знаний.
+test('ключевые блоки ведут на свою посадочную', () => {
+  // #827: «Готовые типы проектов», «Для кого» и кейсы переехали с главной в
+  // раздел «Автоматизация бизнеса» — посадочные решений ссылаются оттуда.
+  const auto = JSON.stringify(SITE_SECTIONS.find((s) => s.slug === 'avtomatizaciya-biznesa'))
   for (const href of [
     '/crm-uchet-klientov.html', // CRM и системы учёта клиентов
     '/baza-zayavok.html', // Service Desk / ИТ-компании
@@ -187,7 +193,7 @@ test('ключевые блоки главной ведут на свою пос
     '/upravlenie-proektami.html', // строительные компании / кейс 1
     '/catalog-matching.html', // центры управления НСИ
   ]) {
-    assert.ok(homeTsx.includes(href), `на главной нет ссылки на ${href}`)
+    assert.ok(auto.includes(href), `в разделе нет ссылки на ${href}`)
   }
 
   // Ссылки перелинковки видны и краулеру — то есть попали в снапшот.
