@@ -38,3 +38,35 @@ export function visitParams(params: Record<string, unknown>): void {
     /* аналитика никогда не мешает переходу */
   }
 }
+
+// Раздел сайта, из которого посетитель ушёл на форму заявки главной (`/#cta`),
+// — issue #825. Хэш `#cta?from=…` не годится: App.tsx скроллит к элементу с
+// id = hash, поэтому источник живёт в sessionStorage до отправки формы.
+const LEAD_FROM_KEY = 'ideav_lead_from'
+
+/** Запомнить раздел, откуда ведёт кнопка на форму `/#cta`. */
+export function rememberLeadFrom(section: string): void {
+  try {
+    sessionStorage.setItem(LEAD_FROM_KEY, section)
+  } catch {
+    /* приватный режим / запрет storage — заявка уйдёт с source: 'home' */
+  }
+}
+
+/** Источник заявки формы главной: раздел, если пришли из него, иначе `fallback`. */
+export function leadSource(fallback: string): string {
+  try {
+    return sessionStorage.getItem(LEAD_FROM_KEY) || fallback
+  } catch {
+    return fallback
+  }
+}
+
+/** Сбросить источник после успешной заявки — следующая уже не из раздела. */
+export function forgetLeadFrom(): void {
+  try {
+    sessionStorage.removeItem(LEAD_FROM_KEY)
+  } catch {
+    /* нечего сбрасывать */
+  }
+}
