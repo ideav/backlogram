@@ -15,14 +15,20 @@
 
 /** Ссылки верхнего уровня (видимы сразу, без раскрытия). */
 export const headerNavLinks = [
-  { name: 'Технология', href: '/#technology' },
-  { name: 'Как работаем', href: '/#process' },
-  { name: 'Примеры', href: '/#cases' },
+  // #823: сайт делится на три основных раздела по аудитории — они и стоят
+  // первыми в шапке вместо якорей главной (технология, процесс, примеры
+  // остались в подвале и на самой главной).
+  // Короткое «Автоматизация» — на 1024 px шапка тесная (#559, п. 5).
+  { name: 'Заменить Excel', href: '/zamena-excel.html' },
+  { name: 'Автоматизация', href: '/avtomatizaciya-biznesa.html' },
+  { name: 'Разработчикам', href: '/razrabotchikam.html' },
   // #578: пункт ведёт на каталог услуг с ценами, а не на якорь главной —
   // Яндексу нужна отдельная страница услуг, чтобы считать сайт «сайтом услуг».
   { name: 'Услуги и цены', href: '/uslugi.html' },
-  { name: 'Больше CRM', href: '/sravnenie-s-bitrix-amocrm.html' },
-  { name: 'База знаний', href: '/knowledge-base.html' },
+  // `wideOnly`: на 1024–1279 px шапке не хватает места после трёх разделов
+  // #823 — эти пункты видны с 1280 px, а уже́ — в подвале и в бургер-меню.
+  { name: 'Больше CRM', href: '/sravnenie-s-bitrix-amocrm.html', wideOnly: true },
+  { name: 'База знаний', href: '/knowledge-base.html', wideOnly: true },
   { name: 'Блог', href: 'https://ideav.ru/blog/', external: true },
 ]
 
@@ -58,6 +64,10 @@ export const footerNavGroups = [
   {
     title: 'Продукт',
     links: [
+      // #823: три основных раздела сайта.
+      { name: 'Заменить Excel', href: '/zamena-excel.html' },
+      { name: 'Автоматизация бизнеса', href: '/avtomatizaciya-biznesa.html' },
+      { name: 'Разработчикам', href: '/razrabotchikam.html' },
       { name: 'Технология', href: '/#technology' },
       { name: 'Схема работы', href: '/#process' },
       { name: 'Примеры', href: '/#cases' },

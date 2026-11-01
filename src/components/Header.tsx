@@ -55,13 +55,13 @@ export function Header() {
               Брейкпоинт lg, а не md: на 768 px десктопное меню не помещалось —
               header.scrollWidth 1079 против clientWidth 768 (issue #559, п. 5).
               Планшетная ширина теперь получает то же бургер-меню, что и телефон. */}
-          <nav className="hidden lg:flex items-center space-x-4 xl:space-x-8">
+          <nav className="hidden lg:flex items-center space-x-3 xl:space-x-6">
             {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
                 {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+                className={`${link.wideOnly ? 'hidden xl:inline' : ''} whitespace-nowrap text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors`}
               >
                 {link.name}
               </a>

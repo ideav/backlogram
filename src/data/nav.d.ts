@@ -11,6 +11,8 @@ export interface NavLink {
   icon?: 'external'
   /** Пункт подвала свёрнут под «Ещё…» (#820). */
   more?: boolean
+  /** Пункт шапки виден только с 1280 px (xl) — на 1024 px не помещается (#823). */
+  wideOnly?: boolean
 }
 
 export interface NavGroup {

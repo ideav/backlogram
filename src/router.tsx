@@ -3,6 +3,7 @@ import { createBrowserRouter } from 'react-router-dom'
 import Home from './pages/Home'
 import { USE_CASES } from './data/usecases'
 import { AI_PAGES } from './data/aiPages'
+import { SITE_SECTIONS } from './data/siteSections'
 import App from './App'
 
 // Главная и layout грузятся сразу (самый частый вход). Остальные страницы —
@@ -48,6 +49,8 @@ const Terms = lazy(() => import('./pages/Terms'))
 const Services = lazy(() => import('./pages/Services'))
 // #642: кластер «автоматизация бизнеса с ИИ» — шесть страниц из src/data/aiPages.mjs.
 const AiLanding = lazy(() => import('./pages/AiLanding'))
+// #823: три основных раздела сайта — из src/data/siteSections.mjs.
+const SiteSection = lazy(() => import('./pages/SiteSection'))
 
 export const router = createBrowserRouter([
   {
@@ -259,6 +262,12 @@ export const router = createBrowserRouter([
       ...USE_CASES.flatMap((u) => [
         { path: `${u.slug}.html`, element: <UseCaseLanding slug={u.slug} /> },
         { path: u.slug, element: <UseCaseLanding slug={u.slug} /> },
+      ]),
+      // Три основных раздела сайта (issue #823): «заменить Excel»,
+      // «автоматизация бизнеса», «разработчикам» — реклама ведёт сразу сюда.
+      ...SITE_SECTIONS.flatMap((s) => [
+        { path: `${s.slug}.html`, element: <SiteSection slug={s.slug} /> },
+        { path: s.slug, element: <SiteSection slug={s.slug} /> },
       ]),
       // Кластер «автоматизация бизнеса с ИИ» (issue #642) — из src/data/aiPages.mjs,
       // того же источника, что у scripts/prerender-ai-pages.mjs.
