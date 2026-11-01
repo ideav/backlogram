@@ -23,6 +23,7 @@ import { USE_CASES } from '../src/data/usecases.mjs'
 import { BLOG_URL, visibleBlogPosts } from '../src/data/blogPosts.mjs'
 import { HOME_FAQ } from '../src/data/home-faq.mjs'
 import { HOME_CASE_SCREENSHOTS } from '../src/data/home-cases.mjs'
+import { SITE_SECTIONS } from '../src/data/siteSections.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -188,6 +189,14 @@ const LEAD =
 const SEO_FOOTER =
   'Интеграм — российская no-code платформа для создания внутренних бизнес-приложений и баз данных без программирования. Конвертация Excel в приложение за 45 минут: формы, отчёты, дашборды, права доступа на уровне строк. Замена Excel, Google Sheets и Airtable для корпоративных объёмов данных — сотни тысяч записей, реляционные связи, локальное размещение (on-premise). Автоматизация бизнес-процессов, CRM для B2B-продаж, система учёта данных, управление заявками и инцидентами, документооборот и маршрутизация согласования. Автоматическая генерация отчётов, парсинг Excel файлов, интеграция данных из разрозненных источников. Включён в реестр отечественного ПО (запись №30872). Аналог Airtable, аналог Trello, замена Excel для бизнеса. Пилотный проект за 2 недели. Облако от 0₽/мес, локальная лицензия 590 000₽/год.'
 
+// #823: выбор одного из трёх разделов сайта — на первом экране, как в
+// src/pages/Home.tsx (источник общий — src/data/siteSections.mjs).
+const routesHtml = `<nav class="lp-prerender__routes" aria-label="Выберите, что вам нужно">
+      <ul>
+        ${SITE_SECTIONS.map((s) => `<li><a href="/${s.slug}.html">${escape(s.choice)}</a> — ${escape(s.choiceNote)}</li>`).join('\n        ')}
+      </ul>
+    </nav>`
+
 const bodyHtml = `
 <article id="lp-prerender" itemscope itemtype="https://schema.org/SoftwareApplication">
   <header>
@@ -196,6 +205,7 @@ const bodyHtml = `
     <p class="lp-prerender__lead" itemprop="description">
       ${escape(LEAD)}
     </p>
+    ${routesHtml}
   </header>
   ${sectionsHtml}
   ${casesHtml}

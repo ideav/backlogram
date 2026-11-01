@@ -41,6 +41,7 @@ import {
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { USE_CASES } from '../data/usecases'
+import { SITE_SECTIONS } from '../data/siteSections'
 import { HOME_FAQ } from '../data/home-faq'
 // Скриншоты кейсов — общий с пререндером источник: alt и размеры должны
 // совпадать с тем, что уходит краулерам в статический снапшот (issue #557).
@@ -73,6 +74,9 @@ const CAPTCHA_CLIENT_KEY = (import.meta.env.VITE_SMARTCAPTCHA_CLIENT_KEY as stri
 const ATTACH_MAX_FILES = 10
 const ATTACH_MAX_BYTES = 10 * 1024 * 1024
 const ATTACH_ACCEPT = '.xlsx,.xls,.csv,.ods,.doc,.docx,.pdf,.png,.jpg,.jpeg,.txt'
+
+// #823: иконки карточек выбора раздела на первом экране.
+const ROUTE_ICONS = { excel: FileSpreadsheet, business: Briefcase, developer: Code2 } as const
 
 function formatBytes(n: number): string {
   if (n >= 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} МБ`
@@ -212,7 +216,7 @@ export default function Home() {
     // «скелет» страницы для поисковика размывался. Тест — tests/issue-514-headings.
     <div className="overflow-hidden">
       {/* 1. Hero Section */}
-      <section id="hero" className="scroll-mt-24 relative isolate overflow-hidden pt-32 pb-20 lg:pt-48 lg:pb-32">
+      <section id="hero" className="scroll-mt-24 relative isolate overflow-hidden pt-24 pb-16 lg:pt-28 lg:pb-24">
         <div className="absolute inset-0 -z-10 overflow-hidden">
           <div
             className="hero-background-flicker"
@@ -235,7 +239,7 @@ export default function Home() {
               initial={{ y: 20 }}
               animate={{ y: 0 }}
               transition={{ duration: 0.5 }}
-              className="hero-teaser-badge inline-flex items-center gap-2 px-3 py-1 rounded-full border text-blue-500 dark:text-blue-400 text-sm font-medium mb-6"
+              className="hero-teaser-badge inline-flex items-center gap-2 px-3 py-1 rounded-full border text-blue-500 dark:text-blue-400 text-sm font-medium mb-5"
               data-active={isHeroTeaserActive ? 'true' : 'false'}
             >
               <Zap size={14} className="fill-current" />
@@ -254,51 +258,74 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8"
+                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-6 md:mb-8"
               >
 <span className="text-blue-500 italic">Интеграм</span> — российский no-code конструктор приложений и баз данных: замена Excel и аналог Airtable для бизнеса
               </motion.h1>
 
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="max-w-3xl mx-auto text-lg md:text-xl text-slate-900 dark:text-slate-100 leading-relaxed mb-10"
-              >
-                Из Excel-таблицы — рабочее веб-приложение за 45 минут. Реляционные данные, сотни тысяч записей, права доступа на уровне строк, локальное размещение в контуре заказчика. Автоматизация бизнес-процессов без программистов. В реестре отечественного ПО (запись №30872).
-              </motion.p>
 
-              <motion.div
+              {/* #823: выбор маршрута — сразу на первом экране. Три раздела
+                  сайта по аудитории; реклама ведёт прямо на страницы разделов,
+                  а с главной посетитель выбирает сам. Подписи — обычный текст,
+                  не заголовки: бюджет заголовков главной (#514). */}
+              <motion.nav
+                aria-label="Выберите, что вам нужно"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4"
+                className="max-w-5xl mx-auto grid md:grid-cols-3 gap-3 md:gap-4 text-left"
               >
+                {SITE_SECTIONS.map((section) => {
+                  const Icon = ROUTE_ICONS[section.icon]
+                  return (
+                    <Link
+                      key={section.slug}
+                      to={`/${section.slug}.html`}
+                      className="group flex md:flex-col items-start gap-4 md:gap-0 h-full p-4 md:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/80 backdrop-blur hover:border-blue-500 dark:hover:border-blue-500 shadow-lg shadow-slate-900/5 transition-colors"
+                    >
+                      <span className="w-11 h-11 shrink-0 rounded-xl bg-blue-600/10 text-blue-600 dark:text-blue-400 flex items-center justify-center md:mb-3">
+                        <Icon size={22} />
+                      </span>
+                      {/* На телефоне карточка в строку и без подписи маршрута —
+                          все три выбора помещаются в первый экран. */}
+                      <span className="flex flex-col flex-1 h-full">
+                        <span className="text-base md:text-lg font-bold text-slate-900 dark:text-white mb-1">{section.choice}</span>
+                        <span className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed md:mb-3">{section.choiceNote}</span>
+                        <span className="hidden md:inline-flex mt-auto items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400">
+                          {section.route}
+                          <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                        </span>
+                      </span>
+                    </Link>
+                  )
+                })}
+              </motion.nav>
+
+              {/* Прежние кнопки hero (#319, #281) — вторым планом под выбором раздела. */}
+              <div className="mt-6 flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3">
                 <a
                   href="#cta"
-                  className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2 group"
+                  className="w-full sm:w-auto px-5 py-2.5 text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors"
                 >
                   Отправить задачу из очереди задач (бэклога)
-                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                </a>
-                <a
-                  href="https://ideav.ru/excel-to-app.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-2 group"
-                >
-                  <Sparkles size={18} />
-                  Мгновенный старт с ИИ
                 </a>
                 <a
                   href="https://ideav.ru/start.html#reg"
                   target="start"
                   rel="noopener noreferrer"
-                  className="w-full sm:w-auto px-8 py-4 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-xl transition-all"
+                  className="w-full sm:w-auto px-5 py-2.5 text-sm bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-xl transition-colors"
                 >
                   Попробовать самому
                 </a>
-              </motion.div>
+              </div>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="max-w-3xl mx-auto mt-8 text-base md:text-lg text-slate-900 dark:text-slate-100 leading-relaxed"
+              >
+                Из Excel-таблицы — рабочее веб-приложение за 45 минут. Реляционные данные, сотни тысяч записей, права доступа на уровне строк, локальное размещение в контуре заказчика. Автоматизация бизнес-процессов без программистов. В реестре отечественного ПО (запись №30872).
+              </motion.p>
             </div>
           </div>
         </div>
