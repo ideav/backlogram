@@ -36,6 +36,7 @@ const ProcDocs = lazy(() => import('./pages/ProcDocs'))
 const QueryDocs = lazy(() => import('./pages/QueryDocs'))
 // backlogram#798: шаблонизатор — HTML рабочих мест и вставка данных.
 const TemplaterDocs = lazy(() => import('./pages/TemplaterDocs'))
+const DbTemplates = lazy(() => import('./pages/DbTemplates'))
 // #553: персональная страница с контактами (требование поддержки Хабра к профилю).
 const AlexeySemenov = lazy(() => import('./pages/AlexeySemenov'))
 const AdImages = lazy(() => import('./pages/AdImages'))
@@ -230,6 +231,15 @@ export const router = createBrowserRouter([
       {
         path: 'templater',
         element: <TemplaterDocs />,
+      },
+      // ideav/crm#5364: каталог шаблонов баз (не /templates: путь занят папкой движка).
+      {
+        path: 'shablony-reshenij.html',
+        element: <DbTemplates />,
+      },
+      {
+        path: 'shablony-reshenij',
+        element: <DbTemplates />,
       },
       {
         path: 'terms.html',
