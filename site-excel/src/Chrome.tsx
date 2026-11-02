@@ -16,9 +16,18 @@ import tabel from '../tpl/tabel-ucheta-rabochego-vremeni.json'
 import sklad from '../tpl/uchet-prihoda-rashoda-materialov.json'
 import zhurnal from '../tpl/zhurnal-vydachi-materialov.json'
 import siz from '../tpl/kartochka-ucheta-vydachi-siz.json'
+import sklad2 from '../landings/sklad-iz-excel.json'
+import kalk from '../landings/kalkulyaciya-v-excel.json'
+import rashody from '../landings/uchet-rashodov.json'
+import neSprav from '../landings/excel-ne-spravlyaetsya.json'
+import zhurnaly from '../landings/zhurnaly-ucheta.json'
+import ii from '../landings/ii-prilozhenie.json'
 
 // Бесплатные шаблоны (#790): без ссылки отсюда до них не дойти с главной (#806).
 const TPL = [tabel, sklad, zhurnal, siz].sort((a, b) => a.order - b.order)
+
+// Посадочные под кластеры запросов (#837): ссылки из подвала, чтобы страницы не были сиротами.
+const TASKS = [sklad2, kalk, rashody, neSprav, zhurnaly, ii].sort((a, b) => a.order - b.order)
 
 // Шапка и подвал — общие у лендинга и статических страниц кейсов и сравнения
 // (issue #626). Подвал несёт обязательную справку оператора персональных
@@ -229,6 +238,17 @@ export function SiteFooter() {
         <p className="mt-10 text-sm text-slate-400">
           Бесплатные шаблоны Excel:
           {TPL.map((page, i) => (
+            <span key={page.slug}>
+              {i ? ' · ' : ' '}
+              <a href={`${SITE_BASE}${page.slug}/`} className="text-slate-200 hover:text-white hover:underline">
+                {page.crumb}
+              </a>
+            </span>
+          ))}
+        </p>
+        <p className="mt-2 text-sm text-slate-400">
+          Из Excel в приложение:
+          {TASKS.map((page, i) => (
             <span key={page.slug}>
               {i ? ' · ' : ' '}
               <a href={`${SITE_BASE}${page.slug}/`} className="text-slate-200 hover:text-white hover:underline">

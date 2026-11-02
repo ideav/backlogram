@@ -87,7 +87,7 @@ const { PAGES, renderLanding, renderLandingPages, renderTplPages, renderStaticPa
 // Нарушение — сборка падает, страница с браком на хостинг не уезжает.
 let landings
 try {
-  landings = assertLandings(loadLandings(), PAGES)
+  landings = assertLandings(loadLandings(), PAGES, undefined, loadTplPages().map(p => `/${p.slug}/`))
 } catch (err) {
   console.error(err.message)
   process.exit(1)
@@ -255,7 +255,7 @@ function programScript(slug) {
 }
 
 const written = [indexPath]
-const pages = [...renderStaticPages(CANONICAL), ...renderLandingPages(CANONICAL, landings), ...renderTplPages(CANONICAL, tplPages, landings)]
+const pages = [...renderStaticPages(CANONICAL), ...renderLandingPages(CANONICAL, landings, tplPages), ...renderTplPages(CANONICAL, tplPages, landings)]
 
 /** Обещание по сроку копии — уходит в сообщение об успехе формы (issue #790). */
 const tplPromise = slug => tplPages.find(p => p.slug === slug)?.copyPromise ?? 'Ссылка придёт на указанный контакт'

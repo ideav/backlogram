@@ -121,8 +121,8 @@ function linkTitles(landings: LandingData[], tplPages: TplPageData[] = []): Map<
 }
 
 /** Посадочные страницы под рекламу и поиск (issue #657), данные — `landings/*.json`. */
-export function renderLandingPages(canonical: string, landings: LandingData[]): StaticPage[] {
-  const titles = linkTitles(landings)
+export function renderLandingPages(canonical: string, landings: LandingData[], tplPages: TplPageData[] = []): StaticPage[] {
+  const titles = linkTitles(landings, tplPages)
   return landings.map(page => {
     const related: LandingLink[] = page.related.map(target => {
       const path = target.startsWith('/') ? target : `/${target}/`
