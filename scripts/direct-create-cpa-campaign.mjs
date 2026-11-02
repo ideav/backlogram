@@ -31,6 +31,9 @@
  *              каждой группы, максимум кликов, только поиск по будням днём
  *   erp        ideav.ru/erp-sistema.html (issue #817), цель erp_lead, максимум
  *              кликов, поиск и сети по будням днём
+ *   cluster    шесть посадочных по кластерам запросов (issue #837): склад,
+ *              калькуляция, расходы, «Excel не справляется», журналы, ИИ —
+ *              по кампании на страницу, поиск по будням днём, максимум кликов
  *
  * Окружение:
  *   DIRECT_TOKEN     OAuth-токен Директа (обязателен для --apply)
@@ -336,6 +339,41 @@ PROFILES.erp = {
   callouts: ['Пилот за 2 недели', 'Облако или свой сервер', 'Изменения без релизов', 'Обмен с 1С'],
 }
 
+/**
+ * «Excel→приложение» по кластерам (issue #837): шесть посадочных под группы
+ * запросов, на которых рекламные посетители задерживались или оставляли
+ * заявки (Метрика, 08.10–02.11.2026). У каждой страницы своя кампания и своя
+ * метка utm_campaign=cl-<slug>, как у «Шаблонов»: поиск, будни 8:00–20:00,
+ * максимум кликов. Минус-слова свои — cluster.negatives.json.
+ * Быстрые ссылки: у посадочных один якорь (#kontakty), поэтому три ссылки
+ * ведут на разделы главной (path), четвёртая — к заявке на самой посадочной.
+ */
+PROFILES.cluster = {
+  title: 'Excel→приложение',
+  slug: 'cl',
+  path: '/',
+  goalName: 'lead',
+  strategy: 'clicks',
+  weeklyRub: 1500,
+  clickCeilingRub: { search: 40, network: 15 },
+  campaignPerGroup: true,
+  places: ['search'],
+  shifts: ['day'],
+  days: [1, 2, 3, 4, 5],
+  dayHours: { from: 8, to: 20 },
+  keywordFiles: [marketing('cluster.keywords.json')],
+  adsFile: marketing('cluster.ads.json'),
+  negativesFile: marketing('cluster.negatives.json'),
+  ads: [],
+  sitelinks: [
+    { Title: 'Цены', Description: 'Демо бесплатно, разбор 20 000 ₽, пилот от 93 750 ₽', anchor: 'ceny', path: '/' },
+    { Title: 'Кейсы', Description: 'Какие приложения уже сделали из таблиц', anchor: 'keysy', path: '/' },
+    { Title: 'Как это происходит', Description: 'Присылаете таблицу — через 45 минут демо', anchor: 'kak-proishodit', path: '/' },
+    { Title: 'Оставить заявку', Description: 'Пришлите таблицу — покажем приложение на ней', anchor: 'kontakty' },
+  ],
+  callouts: ['Демо бесплатно', 'Пилот за 2 недели', 'Данные в России', 'На ваших данных'],
+}
+
 export const PROFILE = PROFILES[process.env.CAMPAIGN_PROFILE ?? 'excel']
 
 const cfg = {
@@ -426,10 +464,11 @@ export const CALLOUT_LIMIT = 25
 export function sitelinksFor(campaignSlug, siteUrl = cfg.siteUrl, profile = PROFILE, group = undefined) {
   // «Что внутри шаблона» у каждой группы своё (insideNote, #806): общее описание
   // табеля у журнала и карточки СИЗ было бы неправдой.
-  return profile.sitelinks.map(({ anchor, ...link }) => ({
+  // path (#837) — ссылка на раздел другой страницы домена, а не посадочной группы.
+  return profile.sitelinks.map(({ anchor, path: linkPath, ...link }) => ({
     ...link,
     ...(anchor === 'shablon' && group?.insideNote ? { Description: group.insideNote } : {}),
-    Href: `${href(campaignSlug, siteUrl, profile, group)}#${anchor}`,
+    Href: `${href(campaignSlug, siteUrl, profile, linkPath ? { ...group, path: linkPath } : group)}#${anchor}`,
   }))
 }
 
@@ -460,6 +499,28 @@ export const EXACT_ONLY = ['EXACT', 'ALTERNATIVE', 'COMPETITOR', 'BROADER', 'ACC
 
 /** Автотаргетинг по всем категориям — для профилей, которым нужен весь охват (#688). */
 export const ALL_CATEGORIES = EXACT_ONLY.map(({ Category }) => ({ Category, Value: 'YES' }))
+
+/**
+ * То же в новой структуре AutotargetingSettings (02.11.2026, #837):
+ * AutotargetingCategories Директ объявил устаревшим, и в нём нет ни «узких»
+ * запросов (Narrow), ни запросов с брендами конкурентов — старое поле их не
+ * выключало. Передавать оба поля сразу нельзя (ошибка валидации). Режим BRIEF
+ * («по описанию») API на запись не принимает — только интерфейс.
+ */
+export function autotargetingSettings(categories) {
+  const on = new Set(categories.filter(c => c.Value === 'YES').map(c => c.Category))
+  const yn = flag => (flag ? 'YES' : 'NO')
+  return {
+    Categories: {
+      Exact: yn(on.has('EXACT')),
+      Narrow: yn(on.size > 1),
+      Alternative: yn(on.has('ALTERNATIVE')),
+      Accessory: yn(on.has('ACCESSORY')),
+      Broader: yn(on.has('BROADER')),
+    },
+    BrandOptions: { WithoutBrands: 'YES', WithAdvertiserBrand: 'YES', WithCompetitorsBrand: yn(on.has('COMPETITOR')) },
+  }
+}
 
 /**
  * Смены по московскому времени (решение владельца 29.09.2026): днём с 8:00 до
@@ -530,7 +591,7 @@ export function campaignPayload(name, slug, where, shift = 'day', profile = PROF
     ...(negatives.length ? { NegativeKeywords: { Items: negatives } } : {}),
     TimeZone: 'Europe/Moscow',
     TimeTargeting: {
-      Schedule: { Items: scheduleFor(shift) },
+      Schedule: { Items: scheduleFor(shift, profile) },
       ConsiderWorkingWeekends: 'YES',
     },
     TextCampaign: {
@@ -706,7 +767,7 @@ async function main() {
       idsOf(await call('keywords', 'resume', { SelectionCriteria: { Ids: autoIds } }), 'ResumeResults')
     } else if (autoIds.length) {
       idsOf(await call('keywords', 'update', {
-        Keywords: autoIds.map(Id => ({ Id, AutotargetingCategories: PROFILE.noNegatives ? ALL_CATEGORIES : EXACT_ONLY })),
+        Keywords: autoIds.map(Id => ({ Id, AutotargetingSettings: autotargetingSettings(PROFILE.noNegatives ? ALL_CATEGORIES : EXACT_ONLY) })),
       }), 'UpdateResults')
     }
     console.log(`  автотаргетинг: ${autotargeting ? 'включён' : PROFILE.noNegatives ? 'все категории' : 'только целевые запросы'} (${apply ? autoIds.length : '…'} групп)`)
