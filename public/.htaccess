@@ -73,6 +73,8 @@ DirectoryIndex index.html
   RewriteRule ^stored-procedures/?$ /stored-procedures.html [R=301,L]
   # /templater → /templater.html (backlogram#798): шаблонизатор рабочих мест.
   RewriteRule ^templater/?$ /templater.html [R=301,L]
+  # /shablony-reshenij → /shablony-reshenij.html (ideav/crm#5364): каталог шаблонов баз.
+  RewriteRule ^shablony-reshenij/?$ /shablony-reshenij.html [R=301,L]
   # /queries → /queries.html (backlogram#802): справочник запросов.
   RewriteRule ^queries/?$ /queries.html [R=301,L]
 

@@ -54,6 +54,7 @@ const { TRIGGER_META } = await import('../src/data/triggerDocs.mjs')
 const { PROC_META } = await import('../src/data/procDocs.mjs')
 const { QUERY_META } = await import('../src/data/queryDocs.mjs')
 const { TEMPLATER_META } = await import('../src/data/templaterDocs.mjs')
+const { DBT_META } = await import('../src/data/dbTemplates.mjs')
 const { nbspText } = await import('../src/lib/typography.mjs')
 
 // ── Card template ─────────────────────────────────────────────────────────
@@ -386,6 +387,13 @@ const landingCards = [
     eyebrow: 'Для разработчиков · шаблоны',
     title: nbspText(TEMPLATER_META.h1),
     subtitle: nbspText(TEMPLATER_META.description),
+  },
+  // ideav/crm#5364: каталог шаблонов баз.
+  {
+    slug: 'shablony-reshenij',
+    eyebrow: 'Готовые базы · шаблоны',
+    title: nbspText(DBT_META.h1),
+    subtitle: nbspText(DBT_META.description),
   },
   // #642: страницы кластера «ИИ для бизнеса» — тексты из src/data/aiPages.mjs.
   ...AI_PAGES.map((p) => ({ slug: p.slug, eyebrow: p.badge, title: p.ogTitle, subtitle: p.ogDescription })),
