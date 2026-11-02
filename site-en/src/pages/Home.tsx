@@ -22,6 +22,24 @@ import { useCases } from '../content/usecases'
 import { HOME_FAQ } from '../data/faq'
 import { SIGNUP_PATH } from '../site'
 
+const AFTER_EXCEL = [
+  {
+    icon: Users,
+    title: 'Your team',
+    body: 'Lists, record cards, forms and reports in the browser. The same columns you had in Excel, now with roles and one current copy.',
+  },
+  {
+    icon: Bot,
+    title: 'Your AI assistant',
+    body: 'Connect Claude, Cursor or another MCP client and ask for a new field, a report or a role. It changes the app you already use.',
+  },
+  {
+    icon: KeyRound,
+    title: 'Outside agents',
+    body: 'Give an assistant its own user with a narrow role. It can check a status, find a free slot or create a request, and sees nothing else.',
+  },
+]
+
 const PAINS = [
   {
     icon: FileSpreadsheet,
@@ -99,15 +117,15 @@ export default function Home() {
         <Container className="relative grid items-center gap-12 py-16 sm:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
           <div>
             <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-800">
-              <Bot size={15} aria-hidden="true" /> Spreadsheet to web app, with an API your AI agents can use
+              <Bot size={15} aria-hidden="true" /> Where to go after Excel: software your team and AI agents share
             </p>
             <h1 className="text-4xl font-bold leading-[1.1] tracking-tight text-slate-900 sm:text-5xl lg:text-[3.5rem]">
               Your spreadsheet, rebuilt as a real app.
-              <span className="block text-blue-600">Your AI agent, ready to run it.</span>
+              <span className="block text-blue-600">Your business, ready for AI agents.</span>
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600">
-              Upload an Excel file and get a web app with linked tables, forms, roles and reports. Then connect
-              Claude or any MCP-compatible agent and change the app by asking, not by clicking through settings.
+              Upload an Excel file and get a web app with linked tables, forms, roles and reports. Your team works in
+              the browser, and Claude or any MCP-compatible agent works in the same data, with the same permissions.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button to={SIGNUP_PATH} arrow>
@@ -127,6 +145,40 @@ export default function Home() {
           />
         </Container>
       </section>
+
+      {/* After Excel: the main story */}
+      <Section muted>
+        <div className="grid gap-12 lg:grid-cols-[1fr_1fr]">
+          <div>
+            <Eyebrow>After Excel</Eyebrow>
+            <H2>Most teams build agents that do things. We build businesses agents can work with.</H2>
+            <Lead>
+              Ask an assistant to book a plumber or a dentist and it finds websites, not a system it can use. The
+              schedule, the prices and the orders sit in a spreadsheet. Integram turns that spreadsheet into one
+              environment where people and agents work with the same data.
+            </Lead>
+            <p className="mt-6">
+              <A
+                to="/knowledge-base/after-excel-agent-ready-business"
+                className="inline-flex items-center gap-1.5 font-semibold text-blue-700 hover:underline"
+              >
+                Read: where to go after Excel <ArrowRight size={16} aria-hidden="true" />
+              </A>
+            </p>
+          </div>
+          <ul className="space-y-4">
+            {AFTER_EXCEL.map(({ icon: Icon, title, body }) => (
+              <li key={title} className="flex gap-4 rounded-2xl border border-slate-200 bg-white p-6">
+                <Icon size={22} className="mt-0.5 shrink-0 text-blue-600" aria-hidden="true" />
+                <div>
+                  <h3 className="font-semibold text-slate-900">{title}</h3>
+                  <p className="mt-1.5 leading-relaxed text-slate-600">{body}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Section>
 
       {/* Two audiences */}
       <Section>
