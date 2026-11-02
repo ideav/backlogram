@@ -47,6 +47,8 @@
  *   NIGHT_CPA_RUB    цена конверсии ночью, ₽ (по умолчанию — у профиля, иначе CPA_RUB / 10)
  *   WEEKLY_RUB       недельный лимит расхода, ₽ (по умолчанию 10000)
  *   GOAL_VALUE_RUB   ценность цели для Директа, ₽ (по умолчанию — у профиля)
+ *   STRATEGY         conversions — оплата за конверсии вместо стратегии профиля
+ *   VARIANT          пометка копии: « · CPA» в имени, «-cpa» в utm_campaign
  *   CAMPAIGN_ONLY    создать только кампании, в slug которых есть эта строка,
  *                    например network — досоздать сети, если Директ оборвал прогон
  */
@@ -374,7 +376,15 @@ PROFILES.cluster = {
   callouts: ['Демо бесплатно', 'Пилот за 2 недели', 'Данные в России', 'На ваших данных'],
 }
 
-export const PROFILE = PROFILES[process.env.CAMPAIGN_PROFILE ?? 'excel']
+/**
+ * Копии кампаний профиля с другой стратегией (02.11.2026): STRATEGY=conversions
+ * ставит оплату за конверсии (GOAL_ID, CPA_RUB) профилю с кликами, VARIANT
+ * помечает копию — « · <VARIANT>» в имени кампании и «-<variant>» в
+ * utm_campaign, чтобы в Метрике копия не смешивалась с оригиналом.
+ */
+export const VARIANT = (process.env.VARIANT ?? '').trim()
+const baseProfile = PROFILES[process.env.CAMPAIGN_PROFILE ?? 'excel']
+export const PROFILE = baseProfile && process.env.STRATEGY ? { ...baseProfile, strategy: process.env.STRATEGY } : baseProfile
 
 const cfg = {
   token: process.env.DIRECT_TOKEN ?? '',
@@ -428,7 +438,7 @@ export function href(campaignSlug, siteUrl = cfg.siteUrl, profile = PROFILE, gro
   const utm = [
     'utm_source=yandex',
     'utm_medium=cpc',
-    `utm_campaign=${group?.utm ?? campaignSlug}`,
+    `utm_campaign=${group?.utm ?? campaignSlug}${VARIANT ? `-${VARIANT.toLowerCase()}` : ''}`,
     'utm_content={ad_id}',
     'utm_term={keyword}',
   ].join('&')
@@ -626,7 +636,7 @@ export function campaignsFor(profile = PROFILE) {
   const places = profile.places ?? Object.keys(where)
   const shifts = profile.shifts ?? Object.keys(shift)
   const four = (title, slug, extra = {}) => places.flatMap(w => shifts.map(sh =>
-    ({ ...campaignPayload(`${title} ${where[w]} ${shift[sh]}`, `${slug}-${w}-${sh}`, w, sh, profile), ...extra })))
+    ({ ...campaignPayload(`${title} ${where[w]} ${shift[sh]}${VARIANT ? ` · ${VARIANT}` : ''}`, `${slug}-${w}-${sh}`, w, sh, profile), ...extra })))
     .map((campaign, _index) => ({ ...campaign, _index }))
   if (!profile.campaignPerGroup) return four(profile.title, profile.slug)
   // keepNegatives (#806): общий минус «личный» резал «личная карточка сиз» —
