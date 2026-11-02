@@ -100,6 +100,6 @@ test('слова из статьи на месте: кружка, подстак
 
 test('автотаргетинг: у мусорных на поиске все категории, у остальных — только целевые', () => {
   assert.ok(ALL_CATEGORIES.every(c => c.Value === 'YES'))
-  assert.match(script, /PROFILE\.noNegatives \? ALL_CATEGORIES : EXACT_ONLY/)
+  assert.match(script, /autotargetingSettings\(PROFILE\.noNegatives \? ALL_CATEGORIES : EXACT_ONLY\)/)
   assert.ok(!PROFILES.praktikum.noNegatives && !PROFILES.adept.noNegatives && !PROFILES.partner.noNegatives)
 })
