@@ -9,6 +9,7 @@ import {
   FORMULA,
   HERO_CHIPS,
   HERO_LEAD,
+  HERO_OFFER,
   MODULES,
   PROCESS,
   READ_MORE,
@@ -192,12 +193,39 @@ export default function ErpSistema() {
   return (
     <div className="pb-20">
       {/* Hero */}
-      <section className="relative isolate overflow-hidden px-4 sm:px-6 lg:px-8 pt-32 lg:pt-44 pb-12">
+      <section className="relative isolate overflow-hidden px-4 sm:px-6 lg:px-8 pt-24 sm:pt-32 lg:pt-44 pb-12">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.10)_0%,transparent_60%)]" />
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
             {ERP_META.h1}
           </h1>
+          {/* Оффер первого экрана (#835): что получу, сколько стоит, одна кнопка к заявке. */}
+          <div
+            data-offer=""
+            className="mt-6 mx-auto max-w-2xl rounded-2xl border border-blue-200 dark:border-slate-700 bg-white/90 dark:bg-slate-900/80 p-4 sm:p-6 text-left shadow-lg shadow-blue-500/10"
+          >
+            <p className="text-lg sm:text-xl font-bold leading-snug text-slate-900 dark:text-white">{HERO_OFFER.title}</p>
+            <ul className="mt-3 space-y-1.5">
+              {HERO_OFFER.bullets.map(b => (
+                <li key={b} className="flex items-start gap-2 text-sm sm:text-base text-slate-700 dark:text-slate-200">
+                  <CheckCircle2 size={18} aria-hidden="true" className="mt-0.5 shrink-0 text-emerald-500" />
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-sm sm:text-base font-semibold text-slate-900 dark:text-white">{HERO_OFFER.price}</p>
+            <button
+              type="button"
+              onClick={() => {
+                reachGoal('landing_cta', { page: 'erp-sistema' })
+                goTo('#zayavka')
+              }}
+              className="mt-4 inline-flex w-full sm:w-auto items-center justify-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-colors"
+            >
+              {HERO_OFFER.cta}
+              <ArrowRight size={18} aria-hidden="true" />
+            </button>
+          </div>
           <p className="mt-6 text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed">{HERO_LEAD}</p>
           <div className="mt-6 flex flex-wrap justify-center gap-2">
             {HERO_CHIPS.map(chip => (
@@ -211,14 +239,6 @@ export default function ErpSistema() {
             ))}
           </div>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <button
-              type="button"
-              onClick={() => goTo('#zayavka')}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-colors"
-            >
-              Обсудить вашу ERP
-              <ArrowRight size={18} aria-hidden="true" />
-            </button>
             <button
               type="button"
               onClick={() => goTo('#formula')}

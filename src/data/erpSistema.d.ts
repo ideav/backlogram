@@ -50,6 +50,7 @@ export const SELLER: {
 }
 export const HERO_LEAD: string
 export const HERO_CHIPS: string[]
+export const HERO_OFFER: { title: string; bullets: string[]; price: string; cta: string }
 export const READ_MORE: ErpLink[]
 export const FORMULA: ErpStep[]
 export const MODULES: ErpModule[]

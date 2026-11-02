@@ -95,6 +95,9 @@ export function validateTplPages(pages, existing = [], extraPaths = [], publicDi
     need('inside', v => Array.isArray(v) && v.length >= 3 && v.length <= 6 && v.every(r => str(r?.what) && str(r?.note)), '3–6 строк { what, note }')
     need('pains', v => Array.isArray(v) && v.length === 3 && v.every(str), 'ровно 3 строки боли')
     need('onlineAnswer', str, 'обязательное поле')
+    // Оффер первого экрана и блок «следующий шаг» после скачивания (issue #835).
+    for (const f of ['offerTitle', 'nextStep']) need(f, str, 'обязательное поле')
+    need('offerBullets', v => Array.isArray(v) && v.length >= 2 && v.length <= 3 && v.every(str), '2–3 строки результата')
     need('faq', v => Array.isArray(v) && v.length >= 3 && v.length <= 5 && v.every(r => str(r?.q) && str(r?.a)), '3–5 вопросов { q, a }')
 
     // Адрес, на который человек попадёт с кнопки «Открыть онлайн», обязан быть
