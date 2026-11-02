@@ -1,5 +1,5 @@
 /**
- * Comparison pages: Integram vs Airtable / Smartsheet / Notion.
+ * Comparison pages: Integram vs Airtable / Smartsheet / Notion / Supabase.
  *
  * Rule for this file: competitor cells describe what the vendor publicly
  * offers, in qualitative terms, and each page links to the vendor's own
@@ -14,7 +14,7 @@ export interface CompareRow {
 }
 
 export interface Competitor {
-  slug: 'airtable' | 'smartsheet' | 'notion'
+  slug: 'airtable' | 'smartsheet' | 'notion' | 'supabase'
   name: string
   pricingUrl: string
   title: string
@@ -154,6 +154,50 @@ export const COMPETITORS: Competitor[] = [
       {
         q: 'Should we leave Notion entirely?',
         a: 'Usually not. Teams keep Notion for docs and move the operational databases, the ones with roles, volume and reports, into Integram.',
+      },
+    ],
+  },
+  {
+    slug: 'supabase',
+    name: 'Supabase',
+    pricingUrl: 'https://supabase.com/pricing',
+    title: 'Integram vs Supabase: a business app without a development team',
+    description:
+      'Integram vs Supabase compared honestly: a no-code app builder versus a Postgres backend for developers. Pricing model, row-level security, self-hosting, Excel import and AI agents.',
+    headline: 'Integram vs Supabase',
+    intro:
+      'Supabase is an open-source Postgres backend for developers: database, auth, storage and APIs, with the screens left to you. Integram shares several of its strengths (relational data, row-level rules, self-hosting, no per-seat bill), but it is aimed at the team that needs a working business app and has no developer to build the front end.',
+    rows: [
+      { label: 'Who builds the app', us: 'Business users in the browser: tables, forms, reports and roles without code.', them: 'Developers. Supabase is the backend; the user interface is code you write and host.' },
+      { label: 'Pricing model', us: COMMON_US.pricing, them: 'Free tier, then a monthly fee per organization plus usage-based compute, storage and traffic. Not per seat.' },
+      { label: 'Data model', us: 'Relational tables with references, recursive and nested queries.', them: 'Full Postgres: SQL, extensions, functions and triggers. A core strength.' },
+      { label: 'Access control', us: COMMON_US.rights + ' Set up in the interface.', them: 'Postgres row-level security policies written in SQL. Very powerful, but someone has to write them.' },
+      { label: 'Self-hosting', us: COMMON_US.selfHost, them: 'Yes. Open source, self-hosted with Docker.' },
+      { label: 'AI agents', us: COMMON_US.agents, them: 'An MCP server aimed at development tools, plus auto-generated APIs over the database.' },
+      { label: 'Spreadsheet import', us: COMMON_US.excel, them: 'CSV import into one table at a time; relations are defined in SQL.' },
+      { label: 'Screens for end users', us: 'Forms, tables, reports and dashboards out of the box; HTML/CSS/JS templates when you want your own.', them: 'None for end users; the dashboard is for developers. You build the app.' },
+    ],
+    chooseThem: [
+      'You are a development team building your own product with its own front end.',
+      'You need raw Postgres: extensions, custom SQL, realtime subscriptions, edge functions.',
+      'The app serves your customers at consumer scale, not your own team.',
+    ],
+    chooseUs: [
+      'Nobody on the team writes code, and the app is needed this week.',
+      'The data lives in Excel today and the links between sheets should survive the move.',
+      'Access rules should be set by an admin in the interface, not written as SQL policies.',
+      'You want an AI agent to build tables, forms and roles through MCP, not only to query a database.',
+    ],
+    migration:
+      'Export the Supabase tables to CSV, put them into one workbook and upload it; columns that reference other tables become links. Many teams use both: Supabase behind the customer-facing product, Integram for the internal operations around it.',
+    faq: [
+      {
+        q: 'Is Integram a Supabase alternative?',
+        a: 'Only for some jobs. If you are building a product with your own front end, Supabase is the better foundation. If you need an internal business app (CRM, orders, inventory) and have no developers, Integram gives you the whole app, not only the backend.',
+      },
+      {
+        q: 'Both have row-level security. What is the difference?',
+        a: 'Supabase uses Postgres policies written in SQL, which is flexible and owned by developers. In Integram an admin sets roles for tables, columns and rows in the interface, and AI agents act under the same rules as a user.',
       },
     ],
   },

@@ -159,6 +159,7 @@ function llmsTxt(entry: ServerEntry): string {
     line('/compare/airtable'),
     line('/compare/smartsheet'),
     line('/compare/notion'),
+    line('/compare/supabase'),
     '',
     '## Use cases',
     ...entry.content.useCases.map((u) => `- [${u.title}](${urlOf(`/use-cases/${u.slug}`)}): ${u.description}`),

@@ -257,6 +257,7 @@ export const OG = {
   'compare-airtable': ['Compare', 'Integram vs Airtable', 'Unlimited records, built-in AI access and predictable pricing.', 'm1'],
   'compare-smartsheet': ['Compare', 'Integram vs Smartsheet', 'Relational data instead of grids, at a fraction of the cost.', 'm1'],
   'compare-notion': ['Compare', 'Integram vs Notion', 'A real relational database when docs are not enough.', 'm1'],
+  'compare-supabase': ['Compare', 'Integram vs Supabase', 'A ready business app without a development team.', 'm1'],
   'use-cases': ['Use cases', 'Business apps you can build in an afternoon', 'CRM, inventory, orders, projects, HR, assets and more.', 'm2'],
   'uc-crm': ['Use case', 'CRM for small teams', 'Track contacts, deals and follow-ups in one place.', 'm1'],
   'uc-inventory': ['Use case', 'Inventory management', 'Stock levels, warehouses and reorder alerts.', 'm1'],
