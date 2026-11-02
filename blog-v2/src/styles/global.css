@@ -642,6 +642,13 @@ img {
   filter: saturate(1.06) contrast(1.04);
 }
 
+/* Обложка поста в первой карточке не обрезается: высоту блока задаёт длина
+   заголовка, и cover срезал края у обложек с текстом. Фон блока — тёмно-синий,
+   как у обложек, поэтому поля по краям не видны. */
+.product-featured-media.has-image:not(.is-abstract) img {
+  object-fit: contain;
+}
+
 .product-featured-copy {
   display: flex;
   min-height: 23rem;
