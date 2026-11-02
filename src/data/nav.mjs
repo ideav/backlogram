@@ -106,6 +106,8 @@ export const footerNavGroups = [
       { name: 'Шаблонизатор', href: '/templater.html', more: true },
       // ideav/crm#5364: каталог шаблонов баз.
       { name: 'Шаблоны решений', href: '/shablony-reshenij.html', more: true },
+      // #843: партнёрская программа (переехала с integram.io).
+      { name: 'Партнёрам', href: '/partners.html', more: true },
       { name: 'Токены', href: '/tokens.html', more: true },
       // #642: хаб кластера «автоматизация бизнеса с ИИ».
       { name: 'Автоматизация бизнеса с ИИ', href: '/avtomatizaciya-biznesa-s-ii.html', more: true },

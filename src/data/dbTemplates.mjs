@@ -40,7 +40,7 @@ export const DBT_CATALOG = [
     ],
     links: [
       { text: 'Подробнее о решении', href: '/catalog-matching.html' },
-      { text: 'Партнёрам', href: 'https://integram.io/partners.html', external: true },
+      { text: 'Партнёрам', href: '/partners.html' },
     ],
   },
 ]
@@ -94,6 +94,6 @@ export const DBT_RELATED = {
   links: [
     { text: 'Разработчикам и интеграторам', href: '/razrabotchikam.html' },
     { text: 'Сопоставление каталогов', href: '/catalog-matching.html' },
-    { text: 'Партнёрам Интеграма', href: 'https://integram.io/partners.html', external: true },
+    { text: 'Партнёрам Интеграма', href: '/partners.html' },
   ],
 }
