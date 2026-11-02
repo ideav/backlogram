@@ -1,4 +1,5 @@
 import type { KbArticle } from '../types'
+import { article as afterExcel } from './after-excel-agent-ready-business'
 import { article as excelToWebApp } from './excel-to-web-app'
 import { article as relationalVsSpreadsheets } from './relational-vs-spreadsheets'
 import { article as accessControl } from './access-control'
@@ -11,6 +12,7 @@ import { article as formsAndReports } from './forms-and-reports'
 import { article as notionAsDatabase } from './notion-as-database'
 
 export const articles: KbArticle[] = [
+  afterExcel,
   excelToWebApp,
   relationalVsSpreadsheets,
   accessControl,
