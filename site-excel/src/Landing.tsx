@@ -19,12 +19,14 @@ import {
   X,
   ZoomIn,
 } from 'lucide-react'
+import { OfferCard } from './Offer'
 import { GOALS, dwellMs, looksHuman, reachExpressGoal, reachGoal, reachSignupGoal } from './conversion'
 import { Cases, type Shot } from './Cases'
 import { SiteFooter, SiteHeader } from './Chrome'
 import {
   ANALYSIS_PRICE,
   FILE_ACCEPT,
+  OFFER_PRICE_LINE,
   MAX_FILES,
   MAX_FILE_BYTES,
   MIN_TASK_CHARS,
@@ -740,28 +742,32 @@ export default function Landing() {
           <div className="absolute -top-32 -right-24 w-[28rem] h-[28rem] bg-violet-400/25 blur-[110px] rounded-full pointer-events-none animate-float" />
           <div className="absolute top-40 -left-32 w-[24rem] h-[24rem] bg-blue-400/25 blur-[110px] rounded-full pointer-events-none animate-float-slow" />
           <div className="absolute -bottom-24 right-1/3 w-80 h-80 bg-emerald-300/25 blur-[100px] rounded-full pointer-events-none animate-float" />
-          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-14 pb-16 sm:pt-20 sm:pb-20 grid gap-12 lg:grid-cols-[1.15fr_1fr] lg:items-center">
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-12 sm:pt-20 sm:pb-20 grid gap-12 lg:grid-cols-[1.15fr_1fr] lg:items-center">
             <div>
               <p className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-violet-500/20 bg-white/80 backdrop-blur text-violet-700 text-sm font-medium shadow-sm">
                 <Sparkles size={14} />
                 Бесплатная демонстрация за ~45 минут
               </p>
-              <h1 className="mt-6 text-4xl sm:text-5xl lg:text-[3.4rem] font-extrabold tracking-tight leading-[1.08]">
+              <h1 className="mt-5 text-3xl sm:text-5xl lg:text-[3.4rem] font-extrabold tracking-tight leading-[1.08]">
                 Сделайте себе <span className="text-gradient">полноценное приложение</span>
                 <br className="hidden sm:block" /> из вашего Excel
               </h1>
-              <p className="mt-6 text-lg text-slate-600 leading-relaxed max-w-2xl">
-                Пришлите ваши таблицы, по которым живёт участок, склад или объект. Если есть, приложите
-                ТЗ в свободной форме. Примерно через 45 минут ИИ-агент Интеграма вернёт работающее
-                веб-приложение с вашими данными: формы, права доступа, отчёты и графики.
-              </p>
-
-              <div className="mt-10">
+              {/* Оффер первого экрана (issue #835): что получу, сколько стоит, одна кнопка. */}
+              <OfferCard
+                bullets={[
+                  'Работающее веб-приложение на ваших данных: формы, права доступа, отчёты и графики',
+                  'Пришлите таблицы и опишите задачу — первая версия примерно через 45 минут, смотрите до оплаты',
+                ]}
+                price={OFFER_PRICE_LINE}
+              >
                 {!funnelOpen ? (
                   <button
                     type="button"
-                    onClick={openFunnel}
-                    className="btn-primary px-7 py-4 text-lg"
+                    onClick={() => {
+                      reachGoal('landing_cta', { page: 'home' })
+                      openFunnel()
+                    }}
+                    className="btn-primary w-full sm:w-auto px-7 py-4 text-lg"
                   >
                     Сделать приложение из моего Excel
                     <ArrowRight size={20} />
@@ -769,12 +775,12 @@ export default function Landing() {
                 ) : (
                   <p className="text-slate-500">Ниже — форма: пришлите файлы и опишите задачу.</p>
                 )}
-              </div>
-              <p className="mt-5 text-sm text-slate-500">
-                Демонстрация — бесплатно · разбор процесса — {ANALYSIS_PRICE} · облако — от 1 950 ₽/мес.{' '}
+              </OfferCard>
+              <p className="mt-3 text-sm">
                 <a href="#ceny" className="text-blue-600 font-medium hover:underline">
                   Все цены
-                </a>
+                </a>{' '}
+                · облако — от 1&nbsp;950&nbsp;₽/мес
               </p>
               <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-slate-700">
                 {TRUST.map(({ icon: Icon, label, tone }) => (

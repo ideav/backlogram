@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { ArrowRight, BadgePercent, Check, GraduationCap, Handshake, Mail, MessageSquare, Server, Sparkles, Users, Wallet } from 'lucide-react'
 import { ADEPT, BUSINESS_MODEL, CONTACT_EMAIL, CONTACT_TELEGRAM_URL, PARTNER, PRAKTIKUM } from '../content'
+import { OfferCard } from '../Offer'
 import { SITE_BASE } from '../site-base'
 import { StaticPage } from './StaticPage'
 
@@ -263,12 +264,15 @@ function ProgramHero({ program, visual }: { program: Program; visual: ReactNode 
               <span className="text-gradient">{program.titleAccent.replace(/(\d)–(?=\d)/g, '$1–⁠')}</span>
               {after}
             </h1>
-            <p className="mt-6 text-lg text-slate-600 leading-relaxed max-w-2xl">{program.lead}</p>
-            <div className="mt-10 flex flex-wrap gap-4">
-              <a href="#zayavka" className="btn-primary px-7 py-4 text-lg">
+            {/* Оффер первого экрана (issue #835): что получу, сколько это стоит, одна кнопка к заявке. */}
+            <OfferCard bullets={[...program.offerBullets]} price={program.offerPrice}>
+              <a href="#zayavka" className="btn-primary w-full sm:w-auto px-7 py-4 text-lg">
                 {program.mailSubject.replace(' Интеграма', '')}
                 <ArrowRight size={20} />
               </a>
+            </OfferCard>
+            <p className="mt-6 text-lg text-slate-600 leading-relaxed max-w-2xl">{program.lead}</p>
+            <div className="mt-6 flex flex-wrap gap-4">
               <a
                 href="#model"
                 className="inline-flex items-center gap-2 px-7 py-4 rounded-xl border border-slate-300 bg-white/80 backdrop-blur text-slate-700 font-semibold text-lg hover:border-blue-500 hover:text-blue-600 transition-colors"

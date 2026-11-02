@@ -21,6 +21,7 @@ import {
 } from 'lucide-react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { ADEPT, ANALYSIS_PRICE, CONTACT_TELEGRAM_URL, PARTNER, PRAKTIKUM, TARIFFS_URL } from '../content'
+import { OfferCard } from '../Offer'
 import { SITE_BASE } from '../site-base'
 import { StaticPage } from './StaticPage'
 
@@ -360,9 +361,18 @@ function PraktikumHero() {
                 PRAKTIKUM.title
               )}
             </h1>
+            {/* Оффер первого экрана (issue #835): что получу, сколько стоит, одна кнопка записи. */}
+            <OfferCard
+              bullets={[
+                'Приложение из вашего Excel: за час онлайн разбираете, как ИИ-агент его собрал, и уходите со ссылкой на него',
+                'Программировать и знать нейросети не нужно',
+              ]}
+              price={`${PRAKTIKUM.price} за час на вашем файле. Если закажете разбор процесса, сумма засчитывается в его стоимость (${ANALYSIS_PRICE}).`}
+            >
+              <OpenButton className="w-full sm:w-auto" />
+            </OfferCard>
             <p className="mt-6 text-lg text-slate-600 leading-relaxed max-w-2xl">{PRAKTIKUM.lead}</p>
-            <div className="mt-10 flex flex-wrap gap-4">
-              <OpenButton />
+            <div className="mt-6 flex flex-wrap gap-4">
               <a
                 href="#programma"
                 className="inline-flex items-center gap-2 px-7 py-4 rounded-xl border border-slate-300 bg-white/80 backdrop-blur text-slate-700 font-semibold text-lg hover:border-blue-500 hover:text-blue-600 transition-colors"

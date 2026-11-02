@@ -1,6 +1,7 @@
 import { ArrowRight, Download, ExternalLink } from 'lucide-react'
 import { SiteFooter, SiteHeader } from '../Chrome'
-import { PRIVACY_URL, type Landing } from '../content'
+import { OFFER_PRICE_LINE, PRIVACY_URL, type Landing } from '../content'
+import { OfferCard } from '../Offer'
 import { SITE_BASE } from '../site-base'
 
 /**
@@ -28,6 +29,11 @@ export type TplPageData = Pick<
   pains: string[]
   /** Ответ на боль: что меняет онлайн-версия. */
   onlineAnswer: string
+  /** Заголовок и результат оффера первого экрана (issue #835). */
+  offerTitle: string
+  offerBullets: string[]
+  /** Текст блока, который открывается после клика «Скачать Excel» (issue #835). */
+  nextStep: string
   /** Обещание по сроку копии: «в течение часа в рабочее время» (решение 7.2 плана). */
   copyPromise: string
   /** Файл шаблона, путь от корня сайта: `/files/….xlsx`. */
@@ -75,13 +81,24 @@ export function TplPage({ page, related }: { page: TplPageData; related: TplPage
             <h1 className="mt-6 text-3xl sm:text-5xl font-extrabold tracking-tight leading-[1.1] max-w-4xl">
               {page.h1}
             </h1>
-            <p className="mt-6 text-lg text-slate-700 leading-relaxed max-w-3xl">{page.lead}</p>
-            <div className="mt-8 flex flex-wrap gap-4">
+            {/* Оффер первого экрана (issue #835): что получу, сколько стоит, одна кнопка к форме. */}
+            <OfferCard title={page.offerTitle} bullets={page.offerBullets} price={OFFER_PRICE_LINE}>
+              <a
+                href={`${SITE_BASE}?from=${encodeURIComponent(page.slug)}`}
+                data-cta=""
+                className="btn-primary inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-4 text-base sm:text-lg"
+              >
+                Прислать таблицу — получить демо бесплатно
+                <ArrowRight size={20} aria-hidden="true" />
+              </a>
+            </OfferCard>
+            <p className="mt-6 text-base text-slate-700 leading-relaxed max-w-3xl">{page.lead}</p>
+            <div className="mt-6 flex flex-wrap gap-4">
               <a
                 href={page.xlsx}
                 download
                 data-tpl-download=""
-                className="btn-primary inline-flex items-center gap-2 px-6 py-4 text-base sm:text-lg"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 bg-white text-slate-800 font-semibold hover:border-blue-500 hover:text-blue-700 transition-colors"
               >
                 <Download size={20} aria-hidden="true" />
                 Скачать Excel
@@ -91,14 +108,31 @@ export function TplPage({ page, related }: { page: TplPageData; related: TplPage
                 target="_blank"
                 rel="noopener noreferrer"
                 data-tpl-demo=""
-                className="inline-flex items-center gap-2 px-6 py-4 rounded-xl border border-slate-300 bg-white text-slate-800 font-semibold hover:border-blue-500 hover:text-blue-700 transition-colors text-base sm:text-lg"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 bg-white text-slate-800 font-semibold hover:border-blue-500 hover:text-blue-700 transition-colors"
               >
                 Открыть онлайн-версию
                 <ExternalLink size={20} aria-hidden="true" />
               </a>
             </div>
+            {/* Следующий шаг после скачивания (issue #835): скрыт, пока нет клика; скрипт пререндера снимает hidden. */}
+            <div
+              data-tpl-next=""
+              hidden
+              role="status"
+              className="mt-5 max-w-2xl rounded-2xl border border-emerald-500/40 bg-emerald-50 p-4 sm:p-5"
+            >
+              <p className="text-base text-slate-800 leading-relaxed">{page.nextStep}</p>
+              <a
+                href={`${SITE_BASE}?from=${encodeURIComponent(page.slug)}`}
+                data-cta=""
+                className="mt-3 btn-primary inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 text-base"
+              >
+                Прислать таблицу — получить демо бесплатно
+                <ArrowRight size={20} aria-hidden="true" />
+              </a>
+            </div>
             <p className="mt-5 text-sm text-slate-700">
-              Бесплатно и без формы · файл откроется в Excel или LibreOffice · онлайн-версия работает на ideav.ru — это
+              Файл бесплатно и без формы · откроется в Excel или LibreOffice · онлайн-версия работает на ideav.ru — это
               наша платформа
             </p>
           </div>

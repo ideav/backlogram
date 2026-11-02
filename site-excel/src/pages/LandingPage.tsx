@@ -1,6 +1,7 @@
 import { ArrowRight, FileSpreadsheet, LayoutDashboard, MessageSquare } from 'lucide-react'
 import { SiteFooter, SiteHeader } from '../Chrome'
-import { LANDING_FAQ_COMMON, PRICING_GROUPS, TELEGRAM_BOT_URL, type Landing } from '../content'
+import { OfferCard } from '../Offer'
+import { LANDING_FAQ_COMMON, OFFER_PRICE_LINE, PRICING_GROUPS, TELEGRAM_BOT_URL, type Landing } from '../content'
 import { SITE_BASE } from '../site-base'
 
 /**
@@ -34,7 +35,7 @@ function ctaHref(slug: string): string {
 
 function Cta({ slug }: { slug: string }) {
   return (
-    <a href={ctaHref(slug)} data-cta="" className="btn-primary px-6 py-4 text-base sm:text-lg">
+    <a href={ctaHref(slug)} data-cta="" className="btn-primary px-6 py-4 text-base sm:text-lg w-full sm:w-auto">
       {LANDING_CTA}
       <ArrowRight size={20} aria-hidden="true" />
     </a>
@@ -101,13 +102,18 @@ export function LandingPage({ page, related }: { page: Landing; related: Landing
             <h1 className="mt-6 text-3xl sm:text-5xl font-extrabold tracking-tight leading-[1.1] max-w-4xl">
               {page.h1}
             </h1>
-            <p className="mt-6 text-lg text-slate-700 leading-relaxed max-w-3xl">{page.lead}</p>
-            <div className="mt-8">
+            {/* Оффер первого экрана (issue #835): что получу, сколько стоит, одна кнопка. */}
+            <OfferCard
+              bullets={[
+                'Работающее веб-приложение на ваших данных: формы, права доступа, отчёты',
+                'Пришлите таблицу — первая версия примерно через 45 минут, смотрите до оплаты',
+              ]}
+              price={OFFER_PRICE_LINE}
+              footnote="Данные хранятся в России · демонстрация бесплатна"
+            >
               <Cta slug={page.slug} />
-            </div>
-            <p className="mt-5 text-sm text-slate-700">
-              ~45 минут до демонстрации · данные хранятся в России · демонстрация бесплатна
-            </p>
+            </OfferCard>
+            <p className="mt-6 text-lg text-slate-700 leading-relaxed max-w-3xl">{page.lead}</p>
           </div>
         </section>
 

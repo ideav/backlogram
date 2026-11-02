@@ -24,6 +24,7 @@ import {
   FORMULA,
   HERO_CHIPS,
   HERO_LEAD,
+  HERO_OFFER,
   MODULES,
   PROCESS,
   READ_MORE,
@@ -75,6 +76,12 @@ const bodyHtml = `
 <article id="erp-prerender">
   <header>
     <h1>${escape(ERP_META.h1)}</h1>
+    <div data-offer="">
+      <p><strong>${escape(HERO_OFFER.title)}</strong></p>
+      <ul>${HERO_OFFER.bullets.map((b) => `<li>${escape(b)}</li>`).join('')}</ul>
+      <p>${escape(HERO_OFFER.price)}</p>
+      <p><a href="#zayavka">${escape(HERO_OFFER.cta)}</a></p>
+    </div>
     <p class="erp-prerender__lead">${escape(HERO_LEAD)}</p>
     <p>${chipsHtml}</p>
   </header>
