@@ -893,6 +893,9 @@ export type Landing = PageDates & {
   description: string
   h1: string
   lead: string
+  /** Оффер первого экрана под кластер запросов (issue #837); без него — общий. */
+  offerTitle?: string
+  offerBullets?: string[]
   /** Имя страницы в хлебных крошках и в списках соседних страниц. */
   crumb: string
   was: string[]

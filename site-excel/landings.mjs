@@ -107,12 +107,13 @@ export function loadLandings(dir = LANDINGS_DIR) {
  * @param pages      страницы из loadLandings()
  * @param existing   уже существующие страницы домена: [{ path, title, description }]
  * @param publicDir  каталог статики — проверить, что скриншоты на месте
+ * @param extraPaths адреса страниц шаблонов (tpl/*.json), на которые можно ссылаться
  */
-export function validateLandings(pages, existing = [], publicDir = PUBLIC_DIR) {
+export function validateLandings(pages, existing = [], publicDir = PUBLIC_DIR, extraPaths = []) {
   const errors = []
   const fail = (page, msg) => errors.push(`${page._file ?? page.slug}: ${msg}`)
 
-  const knownPaths = new Set(existing.map(p => p.path))
+  const knownPaths = new Set([...existing.map(p => p.path), ...extraPaths])
   for (const page of pages) knownPaths.add(`/${page.slug}/`)
 
   for (const page of pages) {
@@ -152,6 +153,9 @@ export function validateLandings(pages, existing = [], publicDir = PUBLIC_DIR) {
     need('roles', list(2, 6, r => str(r?.role) && str(r?.access)), '2–6 ролей { role, access }')
     need('faq', list(3, 5, r => str(r?.q) && str(r?.a)), '3–5 своих вопросов { q, a }')
     need('related', list(4, 6, v => typeof v === 'string'), '4–6 соседних страниц')
+    // Оффер первого экрана под кластер запросов (issue #837); без него — общий.
+    if (page.offerTitle !== undefined) need('offerTitle', str, 'непустая строка')
+    if (page.offerBullets !== undefined) need('offerBullets', v => Array.isArray(v) && v.length >= 2 && v.length <= 3 && v.every(str), '2–3 строки результата')
     if (page.steps !== undefined) need('steps', list(3, 6, r => str(r?.title) && str(r?.body)), '3–6 шагов { title, body }')
     if (page.screens !== undefined) {
       need('screens', list(2, 3, r => str(r?.src) && str(r?.alt) && str(r?.caption)), '2–3 скриншота { src, alt, caption } или ни одного')
@@ -208,8 +212,8 @@ export function validateLandings(pages, existing = [], publicDir = PUBLIC_DIR) {
 }
 
 /** То же, но падает со списком ошибок — для сборки. */
-export function assertLandings(pages, existing, publicDir) {
-  const errors = validateLandings(pages, existing, publicDir)
+export function assertLandings(pages, existing, publicDir, extraPaths) {
+  const errors = validateLandings(pages, existing, publicDir, extraPaths)
   if (errors.length > 0) {
     throw new Error(`Посадочные страницы не прошли проверку (${errors.length}):\n  - ${errors.join('\n  - ')}`)
   }

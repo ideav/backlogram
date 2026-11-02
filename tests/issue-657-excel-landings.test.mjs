@@ -11,6 +11,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { test } from 'node:test'
 import { CTA_LABEL, LIMITS, loadLandings, validateLandings } from '../site-excel/landings.mjs'
+import { loadTplPages } from '../site-excel/tpl-pages.mjs'
 
 const read = p => readFileSync(fileURLToPath(new URL(p, import.meta.url)), 'utf8')
 
@@ -52,7 +53,7 @@ const errorsFor = (...pages) => validateLandings([main, ...pages], EXISTING)
 test('главный лендинг волны 1 лежит отдельным файлом и проходит проверки', () => {
   assert.ok(main, 'нет site-excel/landings/mgnovennyj-start.json')
   assert.equal(main.group, 'main')
-  assert.deepEqual(validateLandings(landings, EXISTING), [])
+  assert.deepEqual(validateLandings(landings, EXISTING, undefined, loadTplPages().map(p => `/${p.slug}/`)), [])
 })
 
 test('title, description и H1 в пределах ТЗ, H1 содержит главный запрос', () => {
@@ -123,8 +124,8 @@ test('текст CTA в шаблоне совпадает с тем, что ищ
 
 test('пререндер проверяет данные, CTA и битые ссылки и ставит скрипт UTM', () => {
   const pre = read('../scripts/prerender-site-excel.mjs')
-  assert.match(pre, /assertLandings\(loadLandings\(\), PAGES\)/)
-  assert.match(pre, /renderLandingPages\(CANONICAL, landings\)/)
+  assert.match(pre, /assertLandings\(loadLandings\(\), PAGES, undefined, /)
+  assert.match(pre, /renderLandingPages\(CANONICAL, landings, tplPages\)/)
   assert.match(pre, /Битые внутренние ссылки/)
   assert.match(pre, /includes\(CTA_LABEL\)/)
   assert.match(pre, /reachGoal','landing_cta'/)
@@ -164,4 +165,15 @@ test('order.php пишет в уведомление страницу-источ
 test('выбор файла в форме — цель file_attach', () => {
   assert.match(read('../site-excel/src/conversion.ts'), /fileAttach: 'file_attach'/)
   assert.match(read('../site-excel/src/Landing.tsx'), /reachGoal\(GOALS\.fileAttach/)
+})
+
+test('6 кластерных посадочных (#837): свой оффер, цены сайта, ссылка на шаблон или соседей', () => {
+  const slugs = ['sklad-iz-excel', 'kalkulyaciya-v-excel', 'uchet-rashodov', 'excel-ne-spravlyaetsya', 'zhurnaly-ucheta', 'ii-prilozhenie']
+  for (const slug of slugs) {
+    const page = landings.find(p => p.slug === slug)
+    assert.ok(page, slug)
+    assert.ok(page.offerTitle && page.offerBullets.length >= 2, `${slug}: нет своего оффера`)
+    assert.equal(page.published, '2026-11-02')
+    assert.equal(page.updated, '2026-11-02')
+  }
 })
