@@ -36,7 +36,7 @@ test('данные: путь, каталог и ссылки', () => {
   const cm = DBT_CATALOG.find((t) => t.id === 'cm')
   assert.ok(cm, 'нет шаблона «Сопоставление каталогов»')
   assert.ok(cm.links.some((l) => l.href === '/catalog-matching.html'))
-  assert.ok(cm.links.some((l) => l.href === 'https://integram.io/partners.html'))
+  assert.ok(cm.links.some((l) => l.href === '/partners.html'))
   for (const t of DBT_CATALOG) for (const f of ['id', 'name', 'audience', 'task']) assert.ok(t[f], `${t.id}: нет ${f}`)
   assert.equal(new Set(DBT_CATALOG.map((t) => t.id)).size, DBT_CATALOG.length, 'id шаблонов не уникальны')
 })
@@ -84,6 +84,6 @@ test('пререндер несёт каталог, шаги, ограничен
     assert.ok(out.includes(s), `нет «${s}»`)
   }
   assert.ok(out.includes('href="/catalog-matching.html"'))
-  assert.ok(out.includes('href="https://integram.io/partners.html"'))
+  assert.ok(out.includes('href="/partners.html"'))
   assert.ok(!out.includes('&nbsp;') && !out.includes(' '), 'неразрывные пробелы ставит постпроход, не пререндер')
 })

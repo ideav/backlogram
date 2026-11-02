@@ -49,6 +49,7 @@ const { knowledgeBaseArticles } = await import(dataUrl)
 const { AI_PAGES } = await import('../src/data/aiPages.mjs')
 const { ADEPT_META } = await import('../src/data/adeptPath.mjs')
 const { ERP_META } = await import('../src/data/erpSistema.mjs')
+const { PARTNERS_META } = await import('../src/data/partners.mjs')
 const { API_META } = await import('../src/data/apiDocs.mjs')
 const { TRIGGER_META } = await import('../src/data/triggerDocs.mjs')
 const { PROC_META } = await import('../src/data/procDocs.mjs')
@@ -352,6 +353,13 @@ const landingCards = [
     eyebrow: 'ERP · 100% кастомизация',
     title: nbspText(ERP_META.h1),
     subtitle: nbspText(ERP_META.description),
+  },
+  // #843: партнёрская программа — ссылку пересылают внедренцам.
+  {
+    slug: 'partners',
+    eyebrow: 'Партнёрам · шаблоны для внедренцев',
+    title: nbspText('Готовые шаблоны, которые вы продаёте как своё внедрение'),
+    subtitle: nbspText(PARTNERS_META.description),
   },
   // ideav/crm#5247: описание API — ссылку пересылают разработчикам.
   {

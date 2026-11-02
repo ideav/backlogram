@@ -26,6 +26,7 @@ const Quiz = lazy(() => import('./pages/Quiz'))
 // #765: «Путь адепта Интеграм» — два проекта, пять шагов и заявка в разработчики.
 const AdeptPath = lazy(() => import('./pages/AdeptPath'))
 const ErpSistema = lazy(() => import('./pages/ErpSistema'))
+const Partners = lazy(() => import('./pages/Partners'))
 // ideav/crm#5247: описание API ядра с примерами curl.
 const ApiDocs = lazy(() => import('./pages/ApiDocs'))
 // python2node#866: триггеры кнопок — событие записи запускает действие.
@@ -151,6 +152,15 @@ export const router = createBrowserRouter([
       {
         path: 'erp-sistema',
         element: <ErpSistema />,
+      },
+      // #843: «Партнёрам» переехала с integram.io/partners.html.
+      {
+        path: 'partners.html',
+        element: <Partners />,
+      },
+      {
+        path: 'partners',
+        element: <Partners />,
       },
       {
         path: 'alexey-semenov.html',
