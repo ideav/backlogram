@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="t d">
+<title id="t">Агенты не ошибаются, когда им не нужно угадывать</title>
+<desc id="d">Таблица событий спецификации и путь неопределённости: найдена, проверена спекой, решена агентом или людьми.</desc>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0" stop-color="#060d20"/><stop offset="0.55" stop-color="#0a1c47"/><stop offset="1" stop-color="#123a8f"/>
+ </linearGradient>
+ <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+  <stop offset="0" stop-color="#60a5fa" stop-opacity="0.40"/><stop offset="1" stop-color="#60a5fa" stop-opacity="0"/>
+ </radialGradient>
+ <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
+  <circle cx="2" cy="2" r="1.3" fill="#8ab4f8" fill-opacity="0.12"/>
+ </pattern>
+ <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#7dd3fc"/></marker>
+ <style>
+  .ttl{fill:#ffffff;font:700 52px Arial,sans-serif}
+  .ttl2{fill:#7dd3fc;font:700 52px Arial,sans-serif}
+  .sub{fill:#cfe0ff;fill-opacity:0.85;font:400 20px Arial,sans-serif}
+  .hd{fill:#7dd3fc;font:700 13px Arial,sans-serif;letter-spacing:1px}
+  .cell{fill:#e0f2fe;font:400 13px Consolas,monospace}
+  .row{fill:#0d2557;stroke:#38bdf8;stroke-opacity:0.35;stroke-width:1.2}
+  .hl{fill:#3a2a06;stroke:#fbbf24;stroke-opacity:0.9;stroke-width:1.6}
+  .amb{fill:#fbbf24;font:700 13px Arial,sans-serif}
+  .pill{fill:#0d2557;stroke:#7dd3fc;stroke-opacity:0.6;stroke-width:1.4}
+  .pl{fill:#e0f2fe;font:700 14px Arial,sans-serif}
+ </style>
+</defs>
+<rect width="1200" height="630" fill="url(#bg)"/>
+<rect width="1200" height="630" fill="url(#dots)"/>
+<circle cx="900" cy="330" r="300" fill="url(#glow)"/>
+<text x="64" y="110" font-family="Arial" font-size="15" font-weight="700" letter-spacing="3" fill="#7dd3fc" fill-opacity="0.9">ИИ-АГЕНТЫ • СОБЫТИЙНАЯ СПЕЦИФИКАЦИЯ • ОНТОЛОГИЯ</text>
+<text class="ttl" x="64" y="180">Агенты не ошибаются,</text>
+<text class="ttl" x="64" y="242">когда им не нужно</text>
+<text class="ttl2" x="64" y="304">угадывать</text>
+<text class="sub" x="64" y="356">Процесс — таблица событий, а не промпт.</text>
+<text class="sub" x="64" y="386">Неопределённость — событие, а не импровизация.</text>
+<g transform="translate(700,150)">
+ <text class="hd" x="12" y="0">СОБЫТИЕ</text><text class="hd" x="150" y="0">ДАЛЬШЕ</text><text class="hd" x="290" y="0">РОЛЬ</text><text class="hd" x="368" y="0">GATE</text>
+ <rect class="row" x="0" y="14" width="452" height="40" rx="6"/>
+ <text class="cell" x="12" y="39">заявка.создана</text><text class="cell" x="150" y="39">проверка</text><text class="cell" x="290" y="39">менеджер</text><text class="cell" x="368" y="39">сумма</text>
+ <rect class="row" x="0" y="62" width="452" height="40" rx="6"/>
+ <text class="cell" x="12" y="87">проверка</text><text class="cell" x="150" y="87">одобрено</text><text class="cell" x="290" y="87">юрист</text><text class="cell" x="368" y="87">договор</text>
+ <rect class="row" x="0" y="110" width="452" height="40" rx="6"/>
+ <text class="cell" x="12" y="135">одобрено</text><text class="cell" x="150" y="135">оплата</text><text class="cell" x="290" y="135">бухгалтер</text><text class="cell" x="368" y="135">счёт</text>
+ <rect class="hl" x="0" y="158" width="452" height="40" rx="6"/>
+ <text class="cell" x="12" y="183">доработка</text><text class="amb" x="150" y="183">? нет следующего шага</text>
+</g>
+<g transform="translate(64,470)">
+ <rect class="pill" x="0" y="0" width="220" height="54" rx="27"/><text class="pl" x="110" y="32" text-anchor="middle">Найдена</text>
+ <line x1="226" y1="27" x2="290" y2="27" stroke="#7dd3fc" stroke-width="2" marker-end="url(#arr)"/>
+ <rect class="pill" x="296" y="0" width="250" height="54" rx="27"/><text class="pl" x="421" y="32" text-anchor="middle">Проверена спекой</text>
+ <line x1="552" y1="27" x2="616" y2="27" stroke="#7dd3fc" stroke-width="2" marker-end="url(#arr)"/>
+ <rect class="pill" x="622" y="0" width="230" height="54" rx="27"/><text class="pl" x="737" y="32" text-anchor="middle">Решил агент</text>
+ <text x="880" y="33" fill="#cfe0ff" fill-opacity="0.8" font-family="Arial" font-size="16">или</text>
+ <rect x="922" y="0" width="150" height="54" rx="27" fill="#3a2a06" stroke="#fbbf24" stroke-width="1.4"/><text class="amb" x="997" y="32" text-anchor="middle" font-size="14">Люди</text>
+</g>
+</svg>
