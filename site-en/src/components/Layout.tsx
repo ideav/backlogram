@@ -103,6 +103,7 @@ const FOOTER_COLUMNS = [
       { label: 'Integram vs Airtable', path: '/compare/airtable' },
       { label: 'Integram vs Smartsheet', path: '/compare/smartsheet' },
       { label: 'Integram vs Notion', path: '/compare/notion' },
+      { label: 'Integram vs Supabase', path: '/compare/supabase' },
     ],
   },
   {

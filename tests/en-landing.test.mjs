@@ -69,7 +69,7 @@ test('every contract route is routed and prerendered with its own meta', () => {
     assert.ok(match.includes(`'${p}':`), `match.ts must route ${p}`)
     assert.ok(routes.includes(`path: '${p}'`), `routes.ts must describe ${p}`)
   }
-  assert.match(match, /compare\\\/\(airtable\|smartsheet\|notion\)/)
+  assert.match(match, /compare\\\/\(airtable\|smartsheet\|notion\|supabase\)/)
   assert.match(match, /\(terms\|privacy\|cookies\|dpa\|subprocessors\|acceptable-use\|copyright\|security\)/)
   // Dynamic routes come from the content modules, so new articles/use cases
   // automatically get a page and a sitemap entry.

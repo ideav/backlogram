@@ -91,12 +91,17 @@ const FEATURES = [
 ]
 
 type Mark = 'yes' | 'no' | 'partial'
-const TEASER: { label: string; cells: [Mark, Mark, Mark, Mark] }[] = [
-  { label: 'Flat price, not per seat', cells: ['yes', 'no', 'no', 'no'] },
-  { label: 'Row-level access rules', cells: ['yes', 'partial', 'partial', 'partial'] },
-  { label: 'Self-hosting', cells: ['yes', 'no', 'no', 'no'] },
-  { label: 'Excel import with links detected', cells: ['yes', 'no', 'no', 'no'] },
-  { label: 'Large template ecosystem', cells: ['no', 'yes', 'yes', 'yes'] },
+// Columns: Integram, Airtable, Smartsheet, Notion, Supabase. Supabase is here on
+// purpose (#855): a developer backend whose marks differ from the no-code tools,
+// so the table maps trade-offs instead of showing a row of empty cells.
+const TEASER_COLUMNS = ['Integram', 'Airtable', 'Smartsheet', 'Notion', 'Supabase'] as const
+const TEASER: { label: string; cells: [Mark, Mark, Mark, Mark, Mark] }[] = [
+  { label: 'Build without writing code', cells: ['yes', 'yes', 'yes', 'yes', 'no'] },
+  { label: 'Flat price, not per seat', cells: ['yes', 'no', 'no', 'no', 'yes'] },
+  { label: 'Row-level access rules', cells: ['yes', 'partial', 'partial', 'partial', 'yes'] },
+  { label: 'Self-hosting', cells: ['yes', 'no', 'no', 'no', 'yes'] },
+  { label: 'Excel import with links detected', cells: ['yes', 'no', 'no', 'no', 'no'] },
+  { label: 'Large template ecosystem', cells: ['no', 'yes', 'yes', 'yes', 'partial'] },
 ]
 
 function MarkIcon({ m }: { m: Mark }) {
@@ -359,16 +364,16 @@ export default function Home() {
         <div className="max-w-2xl">
           <Eyebrow>Compared honestly</Eyebrow>
           <H2>Where Integram fits next to the tools you know</H2>
-          <Lead>Airtable, Smartsheet and Notion are excellent products. Here is where Integram is different, and where it is not.</Lead>
+          <Lead>Airtable, Smartsheet and Notion are excellent no-code products; Supabase is an excellent backend for developers. Here is where Integram is different, and where it is not.</Lead>
         </div>
         <div className="mt-10 overflow-x-auto rounded-2xl border border-slate-200">
-          <table className="w-full min-w-[640px] text-left">
+          <table className="w-full min-w-[760px] text-left">
             <thead className="bg-slate-50 text-sm">
               <tr>
                 <th scope="col" className="px-5 py-4 font-semibold text-slate-700">
                   <span className="sr-only">Capability</span>
                 </th>
-                {['Integram', 'Airtable', 'Smartsheet', 'Notion'].map((n) => (
+                {TEASER_COLUMNS.map((n) => (
                   <th key={n} scope="col" className={`px-5 py-4 text-center font-semibold ${n === 'Integram' ? 'text-blue-700' : 'text-slate-700'}`}>
                     {n}
                   </th>
@@ -393,6 +398,7 @@ export default function Home() {
           <A to="/compare/airtable" className="text-blue-700 hover:underline">Integram vs Airtable</A>
           <A to="/compare/smartsheet" className="text-blue-700 hover:underline">Integram vs Smartsheet</A>
           <A to="/compare/notion" className="text-blue-700 hover:underline">Integram vs Notion</A>
+          <A to="/compare/supabase" className="text-blue-700 hover:underline">Integram vs Supabase</A>
         </div>
       </Section>
 

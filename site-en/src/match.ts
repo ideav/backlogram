@@ -45,7 +45,7 @@ export function toSitePath(pathname: string, base: string): string {
 
 export function matchPath(path: string): Match | null {
   if (STATIC[path]) return { page: STATIC[path] }
-  let m = /^\/compare\/(airtable|smartsheet|notion)$/.exec(path)
+  let m = /^\/compare\/(airtable|smartsheet|notion|supabase)$/.exec(path)
   if (m) return { page: 'compare', slug: m[1] }
   m = /^\/use-cases\/([a-z0-9-]+)$/.exec(path)
   if (m) return { page: 'use-case', slug: m[1] }

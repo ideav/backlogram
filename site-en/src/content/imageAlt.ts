@@ -26,6 +26,7 @@ export const imageAlt: Record<string, string> = {
   'og/compare-airtable': 'Integram compared with Airtable: unlimited records, built-in AI access and predictable pricing.',
   'og/compare-smartsheet': 'Integram compared with Smartsheet: relational data instead of grids, at a fraction of the cost.',
   'og/compare-notion': 'Integram compared with Notion: a real relational database when docs are not enough.',
+  'og/compare-supabase': 'Integram compared with Supabase: a ready business app without a development team.',
   'og/use-cases': 'Integram use cases: business apps you can build in an afternoon, from CRM to inventory and budgeting.',
   'og/uc-crm': 'Integram use case: CRM for small teams.',
   'og/uc-inventory': 'Integram use case: inventory management.',
