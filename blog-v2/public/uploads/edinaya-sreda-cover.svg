@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="t d">
-<title id="t">Таблица — общий язык местного бизнеса и ИИ-агентов</title>
+<title id="t">Единая операционная среда для бизнеса и ИИ-агентов</title>
 <desc id="d">Excel-таблица превращается в приложение, с которым работают три стороны: люди, ИИ-чат внутри базы и внешние агенты через MCP.</desc>
 <defs>
  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
@@ -31,11 +31,11 @@
 <circle cx="900" cy="315" r="300" fill="url(#glow)"/>
 
 <text x="64" y="132" font-family="Arial" font-size="15" font-weight="700" letter-spacing="3" fill="#7dd3fc" fill-opacity="0.9">МЕСТНЫЙ БИЗНЕС • ИИ-АГЕНТЫ</text>
-<text class="ttl" x="64" y="200">Таблица —</text>
-<text class="ttl" x="64" y="260">общий язык</text>
+<text class="ttl" x="64" y="200">Единая</text>
+<text class="ttl" x="64" y="260">операционная среда</text>
 <text class="ttl2" x="64" y="320">бизнеса и агентов</text>
-<text class="sub" x="64" y="378">Excel превращается в приложение без разработки:</text>
-<text class="sub" x="64" y="404">его понимают люди, ИИ-чат и внешние агенты.</text>
+<text class="sub" x="64" y="378">Excel-таблица становится средой, где работают</text>
+<text class="sub" x="64" y="404">люди, ИИ-чат и внешние агенты.</text>
 
 <!-- таблица -->
 <rect class="head" x="616" y="220" width="62" height="32"/><text class="ch" x="647" y="241" text-anchor="middle">Клиент</text>
