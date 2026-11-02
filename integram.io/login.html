@@ -172,13 +172,14 @@ a {
                     <a><font color="#555"><t9n>[RU]Я уже зарегистрирован[EN]I have my account</t9n></font></a>
                 </div>
             </form>
-			<!--
+            <!-- #857: вход и регистрация через Google, как в старом ядре (обработчик /auth.asp в crm/integram.io/index.php) -->
             <div class="d-grid googel">
-                <button class="btn btn-secondary-outline btn-google btn-login mt-3" onclick="googel()">
-                    <i class="fab fa-google me-2"></i> <t9n>[RU]Вход через Google[EN]Sign in using Google</t9n>
+                <button class="btn btn-secondary-outline btn-google btn-login mt-3" type="button" onclick="googel()">
+                    <i class="fab fa-google me-2"></i>
+                    <span class="g-login"><t9n>[RU]Вход через Google[EN]Sign in with Google</t9n></span>
+                    <span class="g-reg" style="display:none;"><t9n>[RU]Регистрация через Google[EN]Sign up with Google</t9n></span>
                 </button>
             </div>
-			-->
             <form class="change" style="display:none;" onsubmit="event.returnValue=false;event.preventDefault();changePwd()">
                 <input type="hidden" class="form-control" name="change" value="1">
                 <h5 class="card-title text-center mb-4 fw-light fs-4"><t9n>[RU]Смена пароля[EN]Password change</t9n></h5>
@@ -239,7 +240,7 @@ a {
 <script>
 var db,mode='login';
 if(document.location.hash=='#reg'){
-    $('.reg,.login').toggle();
+    $('.reg,.login,.g-reg,.g-login').toggle();
     mode='reg';
 }
 else if(document.location.hash=='#change'){
@@ -367,6 +368,7 @@ function toggleHelp(){
 function formMode(){
     document.location.hash=mode=mode==='login'?'reg':'login';
     $('.reg,.login').toggle(300);
+    $('.g-reg,.g-login').toggle();
 }
 $('.mode-link').click(function(){formMode()});
 function intApi(m,u,b,vars,index){
