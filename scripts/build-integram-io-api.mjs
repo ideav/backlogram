@@ -66,7 +66,40 @@ export function renderIoApiPage() {
   html { scroll-behavior: smooth; }
   body { margin: 0; background: var(--bg); color: var(--fg);
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  #${CLS} { max-width: 60rem; margin: 0 auto; padding: 3rem 1rem 2rem; }
+  /* Две колонки: слева липкое оглавление, справа справочник (#874). */
+  #${CLS} { max-width: 80rem; margin: 0 auto; padding: 0 1rem;
+    display: grid; grid-template-columns: 17rem minmax(0, 1fr); gap: 2.5rem; }
+  #${CLS} .${CLS}__main { min-width: 0; max-width: 60rem; padding: 3rem 0 2rem; }
+  #${CLS} [id] { scroll-margin-top: 1rem; }
+  #${CLS} .${CLS}__side { position: sticky; top: 0; align-self: start; max-height: 100vh;
+    overflow-y: auto; padding: 2rem 1rem 2rem 0; border-right: 1px solid var(--line);
+    font-size: 0.88rem; scrollbar-width: thin; }
+  #${CLS} .${CLS}__side summary { font-weight: 700; cursor: pointer; list-style: none; display: none; }
+  #${CLS} .${CLS}__side summary::-webkit-details-marker { display: none; }
+  #${CLS} .${CLS}__toc-title { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.72rem;
+    font-weight: 700; color: var(--faint); margin: 0 0 0.75rem; }
+  #${CLS} .${CLS}__toc ol, #${CLS} .${CLS}__toc ul { list-style: none; margin: 0; padding: 0; }
+  #${CLS} .${CLS}__toc > ol > li { margin: 0 0 0.6rem; }
+  #${CLS} .${CLS}__toc > ol > li > a { font-weight: 600; color: var(--fg); }
+  #${CLS} .${CLS}__toc ul { margin-top: 0.2rem; border-left: 1px solid var(--line); }
+  #${CLS} .${CLS}__toc li { margin: 0; line-height: 1.4; }
+  #${CLS} .${CLS}__toc ul a { display: block; padding: 0.18rem 0 0.18rem 0.75rem; margin-left: -1px;
+    border-left: 2px solid transparent; color: var(--muted); }
+  #${CLS} .${CLS}__toc a { text-decoration: none; }
+  #${CLS} .${CLS}__toc a:hover { color: var(--link); }
+  #${CLS} .${CLS}__toc a[aria-current="true"] { color: var(--link); border-left-color: var(--link); font-weight: 600; }
+  @media (max-width: 900px) {
+    #${CLS} { display: block; padding: 0; }
+    #${CLS} .${CLS}__main { padding: 1.5rem 16px 2rem; }
+    #${CLS} [id] { scroll-margin-top: 3.5rem; }
+    #${CLS} .${CLS}__side { position: sticky; top: 0; z-index: 10; max-height: none; overflow: visible;
+      padding: 0; border-right: 0; border-bottom: 1px solid var(--line); background: var(--bg); }
+    #${CLS} .${CLS}__side summary { display: block; padding: 0.75rem 16px; }
+    #${CLS} .${CLS}__side summary::after { content: "▾"; float: right; color: var(--faint); }
+    #${CLS} .${CLS}__side details[open] summary::after { content: "▴"; }
+    #${CLS} .${CLS}__toc-title { display: none; }
+    #${CLS} .${CLS}__toc { max-height: 70vh; overflow-y: auto; padding: 0 16px 1rem; }
+  }
   #${CLS} h1 { font-size: 2.2rem; line-height: 1.15; margin: 0.5rem 0 0.75rem; }
   #${CLS} h2 { font-size: 1.6rem; margin: 2.5rem 0 1rem; padding-top: 1rem; border-top: 1px solid var(--line); }
   #${CLS} h3 { font-size: 1.2rem; margin: 1.75rem 0 0.5rem; }
@@ -83,26 +116,80 @@ export function renderIoApiPage() {
   #${CLS} .${CLS}__lead { font-size: 1.05rem; color: var(--muted); }
   #${CLS} .${CLS}__label { font-size: 0.8rem; color: var(--faint); margin-bottom: 0; }
   #${CLS} .${CLS}__note { border-left: 3px solid #f59e0b; padding-left: 0.75rem; }
-  #${CLS} .${CLS}__toc ol { padding-left: 1.25rem; }
-  #${CLS} .${CLS}__toc ul { padding-left: 1rem; font-size: 0.92rem; }
   #${CLS} .${CLS}__footer { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line);
     font-size: 0.92rem; color: var(--muted); }
 </style>
 </head>
 <body>
-<main id="${CLS}">
+<div id="${CLS}">
+<aside class="${CLS}__side">
+  <details open>
+    <summary>Содержание</summary>
+    <nav class="${CLS}__toc" aria-label="Содержание">
+      <p class="${CLS}__toc-title">Содержание</p>
+      <ol>${tocHtml(API_IO_SECTIONS)}</ol>
+    </nav>
+  </details>
+</aside>
+<main class="${CLS}__main">
   <header>
     <p class="${CLS}__eyebrow">integram.io · для разработчиков</p>
     <h1>${escape(API_IO_META.h1)}</h1>
     ${API_IO_INTRO.map((p) => `<p class="${CLS}__lead">${inline(p)}</p>`).join('\n    ')}
-  </header>
-  <nav class="${CLS}__toc" aria-label="Содержание">
-    <ol>${tocHtml(API_IO_SECTIONS)}</ol>
-  </nav>${sectionsHtml(API_IO_SECTIONS, CLS)}
+  </header>${sectionsHtml(API_IO_SECTIONS, CLS)}
   <footer class="${CLS}__footer">
     <p><a href="/">integram.io</a></p>
   </footer>
 </main>
+</div>
+<script>
+// Оглавление: свёрнуто на узком экране, закрывается по клику на пункт;
+// пункт текущей темы подсвечен и виден в прокрутке левой колонки.
+(function () {
+  var narrow = window.matchMedia('(max-width: 900px)');
+  var side = document.querySelector('.${CLS}__side');
+  var box = side.querySelector('details');
+  if (narrow.matches) box.removeAttribute('open');
+  narrow.addEventListener('change', function (e) { if (e.matches) box.removeAttribute('open'); else box.setAttribute('open', ''); });
+  side.addEventListener('click', function (e) { if (e.target.closest('a') && narrow.matches) box.removeAttribute('open'); });
+  var links = {};
+  side.querySelectorAll('a[href^="#"]').forEach(function (a) { links[a.getAttribute('href').slice(1)] = a; });
+  var targets = Array.prototype.slice.call(document.querySelectorAll('#${CLS} section[id], #${CLS} article[id]'));
+  if (!targets.length) return;
+  var current = null;
+  function mark(id) {
+    var a = links[id];
+    if (!a || a === current) return;
+    if (current) current.removeAttribute('aria-current');
+    a.setAttribute('aria-current', 'true');
+    current = a;
+    if (!narrow.matches) {
+      // offsetParent ссылки — сама липкая колонка (sticky позиционирована)
+      var top = a.offsetTop, h = side.clientHeight;
+      if (top < side.scrollTop + 40 || top > side.scrollTop + h - 60) side.scrollTop = top - h / 3;
+    }
+  }
+  // Текущая тема — последняя, чей заголовок уже поднялся до верхней трети экрана.
+  function update() {
+    var line = Math.min(window.innerHeight / 3, 200), best = null;
+    for (var i = 0; i < targets.length; i++) {
+      if (targets[i].getBoundingClientRect().top <= line) best = targets[i]; else break;
+    }
+    // Внизу страницы последние темы до верха не доезжают — берём последнюю.
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) best = targets[targets.length - 1];
+    if (best) mark(best.id);
+    else if (current) { current.removeAttribute('aria-current'); current = null; }
+  }
+  var queued = false;
+  window.addEventListener('scroll', function () {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(function () { queued = false; update(); });
+  }, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
 
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
