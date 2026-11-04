@@ -69,8 +69,17 @@
 
 ## Образец `info.html`
 
+> **Фигурные скобки — только для подстановок ядра.** Шаблонизатор ядра
+> (`Parse_block` в crm `index.php`) читает `{слово}` в любом месте файла, включая
+> `<script>`, как точку вставки. JS template literals (обратные кавычки с
+> `${…}`) внутри `info.html` дают `{переменная}` — ядро вырезает блок, и страница
+> рендерится пустой (crm#5231, ревью сборок crm#5386). Строки в JS собирать
+> конкатенацией `"…" + x + "…"`, как в образце ниже; `{слово}` без пробелов
+> оставлять только для `{_global_.*}` и полей, которые подставляет сборщик.
+> Перед заливкой: `grep -n '\${' info.html` должен быть пустым.
+
 ```html
-<!-- Главная страница демо-приложения. {_global_.*} подставляет ядро при отрисовке. -->
+<!-- Главная страница демо-приложения. Подстановки _global_.* делает ядро при отрисовке. -->
 <section class="ig-info">
   <h1>{ProjectName}</h1>
 
@@ -118,7 +127,7 @@
   let creds = [];
 
   async function loadCreds() {
-    const rows = await fetch(`/${DB}/report/${REPORT_ID}?JSON_KV`)
+    const rows = await fetch("/" + DB + "/report/" + REPORT_ID + "?JSON_KV")
       .then(r => r.json()).catch(() => []);
     creds = Array.isArray(rows) ? rows : [];
     if (!creds.length) {
@@ -127,22 +136,23 @@
       return;
     }
     if (ROLE !== "admin") btn.style.display = "none"; /* стирать может только админ */
-    box.innerHTML = creds.map((o, i) => `
-      <div class="ig-creds-row" data-id="${esc(o.id)}">
-        <b>${esc(o.role)}</b> —
-        вход: <code>${esc(o.login)}</code> / <code>${esc(o.pass)}</code>
-        · <a href="${esc(o.url || startUrl(o.login))}" data-open="${i}">открыть</a>
-        · <a href="#" data-copy="${i}">скопировать ссылку и пароль</a>
-      </div>`).join("");
+    box.innerHTML = creds.map((o, i) =>
+      '<div class="ig-creds-row" data-id="' + esc(o.id) + '">' +
+        "<b>" + esc(o.role) + "</b> — " +
+        "вход: <code>" + esc(o.login) + "</code> / <code>" + esc(o.pass) + "</code>" +
+        ' · <a href="' + esc(o.url || startUrl(o.login)) + '" data-open="' + i + '">открыть</a>' +
+        ' · <a href="#" data-copy="' + i + '">скопировать ссылку и пароль</a>' +
+      "</div>").join("");
   }
 
   function startUrl(login) {
-    return `https://${location.host}/start.html?db=${DB}&u=${encodeURIComponent(login)}`;
+    return "https://" + location.host + "/start.html?db=" + DB +
+      "&u=" + encodeURIComponent(login);
   }
 
   /* Тот же текст, что копирует «конвертик» у пароля на форме пользователя */
   function inviteText(o) {
-    return `Ссылка для входа: ${startUrl(o.login)}\nПароль: ${o.pass}`;
+    return "Ссылка для входа: " + startUrl(o.login) + "\nПароль: " + o.pass;
   }
 
   async function copyText(text) {
@@ -161,7 +171,7 @@
     link.textContent = "входим…";
     try {
       const body = new URLSearchParams({ login: o.login, pwd: o.pass });
-      const r = await fetch(`/${DB}/auth?JSON`, {
+      const r = await fetch("/" + DB + "/auth?JSON", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: body.toString(),
@@ -169,16 +179,16 @@
       const j = await r.json().catch(() => ({}));
       if (!r.ok || !j.token) throw new Error(j.error || "вход не удался");
       if (String(o.login).toLowerCase() === DB.toLowerCase()) {
-        location.href = `/${DB}`; /* супер-админ — на главную */
+        location.href = "/" + DB; /* супер-админ — на главную */
         return;
       }
-      const html = await fetch(`/${DB}`).then(x => x.text());
+      const html = await fetch("/" + DB).then(x => x.text());
       const menu = (html.match(/var menuData = \[([\s\S]*?)\];/) || [])[1] || "";
       const first = [...menu.matchAll(/href:'([^']*)'/g)].map(m => m[1]).find(Boolean);
-      location.href = first ? `/${DB}/${first}` : `/${DB}`;
+      location.href = first ? "/" + DB + "/" + first : "/" + DB;
     } catch (e) {
       link.textContent = "открыть";
-      alert(`Не удалось войти как ${o.login}: ${e.message}`);
+      alert("Не удалось войти как " + o.login + ": " + e.message);
     }
   }
 
@@ -195,7 +205,7 @@
 
   async function delRow(id) {
     const body = new URLSearchParams({ _xsrf: XSRF });
-    return fetch(`/${DB}/_m_del/${id}?JSON`, {
+    return fetch("/" + DB + "/_m_del/" + id + "?JSON", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: body.toString(),
