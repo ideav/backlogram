@@ -306,6 +306,7 @@
     .slide-nav-next:hover { background: var(--accent-ink); border-color: var(--accent-ink); color: var(--ground); }
     .navbtn[data-nav="next"] { background: var(--accent); border-color: var(--accent); color: var(--ground); }
     .navbtn[data-nav="next"]:hover { background: var(--accent-ink); border-color: var(--accent-ink); color: var(--ground); }
+    .navbtn:disabled, .navbtn[data-nav="next"]:disabled { background: var(--surface); border-color: var(--rule); color: var(--faint); opacity: .5; cursor: default; }
 
     @media print {
         .bar, .slide-nav { display: none; }
@@ -581,6 +582,10 @@
             });
             counter.textContent = (index + 1) + ' / ' + slides.length;
             fill.style.width = ((index + 1) / slides.length * 100) + '%';
+            // На краях колоды стрелка панели неактивна (#868).
+            document.querySelectorAll('.navbtn[data-nav]').forEach(function (b) {
+                b.disabled = b.getAttribute('data-nav') === 'next' ? index === slides.length - 1 : index === 0;
+            });
             if (location.hash !== '#' + (index + 1)) history.replaceState(null, '', '#' + (index + 1));
             window.scrollTo(0, 0);
         }
