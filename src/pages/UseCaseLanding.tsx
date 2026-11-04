@@ -68,6 +68,7 @@ const IMG_SIZE: Record<string, { w: number; h: number }> = {
   '/uc-dogovory.png': { w: 1536, h: 1024 },
   '/uc-otchetnost.png': { w: 1536, h: 1024 },
   '/uc-dvizhenie-tmc.png': { w: 1520, h: 916 },
+  '/adept/spz-pult-zadach.webp': { w: 1170, h: 610 },
 }
 function Icon({ name, size = 24 }: { name: string; size?: number }) {
   const Cmp = ICONS[name] ?? Boxes
@@ -135,7 +136,7 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
     if (!uc) return
     document.title = uc.ogTitle
     const canonical = `${SITE}/${uc.slug}.html`
-    const ogImage = `${SITE}/og/knowledge-base.png`
+    const ogImage = `${SITE}${uc.ogImage ?? '/og/knowledge-base.png'}`
     setMetaTag('meta[name="description"]', 'name', 'description', uc.ogDescription)
     setMetaTag('meta[name="keywords"]', 'name', 'keywords', uc.keywords)
     setMetaTag('meta[property="og:type"]', 'property', 'og:type', 'website')
@@ -233,6 +234,9 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
   }
 
   const others = USE_CASES.filter((u) => u.slug !== uc.slug)
+  const steps = uc.steps ?? STEPS
+  const facts = uc.facts ?? FACTS
+  const ctaLabel = uc.ctaLabel ?? 'Заказать демо'
 
   return (
     <div className="overflow-hidden">
@@ -255,8 +259,13 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
           </motion.h1>
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-8">{uc.lead}</p>
           <a href="#zayavka" className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all">
-            Заказать демо <ArrowRight size={18} />
+            {ctaLabel} <ArrowRight size={18} />
           </a>
+          {uc.demoUrl && (
+            <a href={uc.demoUrl} target="_blank" rel="noopener noreferrer" className="ml-3 inline-flex items-center justify-center gap-2 px-6 py-3 border border-blue-500/40 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 font-bold rounded-xl transition-all">
+              {uc.demoLabel ?? 'Открыть демо'} <ArrowRight size={18} />
+            </a>
+          )}
           <motion.figure
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }}
             className="mt-12">
@@ -271,7 +280,7 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
               />
             </div>
             <figcaption className="mt-3 text-center text-sm text-slate-400 dark:text-slate-500">
-              Пример приложения на платформе Интеграм
+              {uc.figureCaption ?? 'Пример приложения на платформе Интеграм'}
             </figcaption>
           </motion.figure>
         </div>
@@ -280,13 +289,13 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
       {/* Боль → решение */}
       <section className="py-16 border-b border-slate-200 dark:border-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-3xl font-bold mb-8">Excel перестал справляться — что меняется</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-8">{uc.painsTitle ?? 'Excel перестал справляться — что меняется'}</h2>
           <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-900/50">
-                  <th className="text-left py-3 px-4 font-bold text-slate-500 dark:text-slate-400">Проблема в Excel</th>
-                  <th className="text-left py-3 px-4 font-bold text-blue-600 dark:text-blue-400">Решение в Интеграм</th>
+                  <th className="text-left py-3 px-4 font-bold text-slate-500 dark:text-slate-400">{uc.painsHead?.[0] ?? 'Проблема в Excel'}</th>
+                  <th className="text-left py-3 px-4 font-bold text-blue-600 dark:text-blue-400">{uc.painsHead?.[1] ?? 'Решение в Интеграм'}</th>
                 </tr>
               </thead>
               <tbody>
@@ -312,7 +321,7 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
       {/* Возможности */}
       <section className="py-16 border-b border-slate-200 dark:border-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-3xl font-bold mb-10">Что вы получаете</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-10">{uc.featuresTitle ?? 'Что вы получаете'}</h2>
           <div className="grid gap-6 md:grid-cols-3">
             {uc.features.map((f, i) => (
               <div key={i} className="p-7 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm dark:shadow-none">
@@ -324,15 +333,23 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
               </div>
             ))}
           </div>
+          {uc.gallery?.map((g) => (
+            <figure key={g.src} className="mt-10">
+              <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 ring-1 ring-slate-900/5 shadow-xl shadow-slate-900/10">
+                <img src={g.src} alt={g.alt} width={g.w} height={g.h} loading="lazy" className="w-full h-auto block" />
+              </div>
+              <figcaption className="mt-3 text-center text-sm text-slate-400 dark:text-slate-500">{g.caption}</figcaption>
+            </figure>
+          ))}
         </div>
       </section>
 
       {/* Как это работает */}
       <section className="py-16 border-b border-slate-200 dark:border-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-3xl font-bold mb-10">Как это работает</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-10">{uc.stepsTitle ?? 'Как это работает'}</h2>
           <div className="grid gap-6 md:grid-cols-3">
-            {STEPS.map((s, i) => (
+            {steps.map((s, i) => (
               <div key={i} className="p-7 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm dark:shadow-none">
                 <div className="w-11 h-11 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-3">
                   {s.icon === 'CheckCircle2' ? <CheckCircle2 size={22} /> : <Icon name={s.icon} size={22} />}
@@ -348,9 +365,9 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
       {/* Факты */}
       <section className="py-16 border-b border-slate-200 dark:border-slate-900 bg-slate-50/60 dark:bg-slate-900/30">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-3xl font-bold mb-8">Только факты</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-8">{uc.factsTitle ?? 'Только факты'}</h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {FACTS.map((f, i) => (
+            {facts.map((f, i) => (
               <div key={i} className="p-6 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm dark:shadow-none">
                 <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-3">
                   <Icon name={f.icon} size={20} />
@@ -362,6 +379,43 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
           </div>
         </div>
       </section>
+
+      {/* Цена (необязательный блок) */}
+      {uc.pricing && (
+        <section id="cena" className="py-16 border-b border-slate-200 dark:border-slate-900 scroll-mt-24">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">{uc.pricingTitle ?? 'Цена'}</h2>
+            {uc.pricingLead && <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-8">{uc.pricingLead}</p>}
+            <div className="grid gap-6 md:grid-cols-3">
+              {uc.pricing.map((p) => (
+                <div key={p.name} className="p-7 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm dark:shadow-none">
+                  <div className="text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2">{p.name}</div>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{p.price}</div>
+                  <div className="text-sm text-blue-600 dark:text-blue-400 mb-4">{p.note}</div>
+                  <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                    {p.items.map((it) => (
+                      <li key={it} className="inline-flex items-start gap-1.5"><CheckCircle2 size={14} className="text-blue-500 shrink-0 mt-0.5" />{it}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Демо (необязательный блок) */}
+      {uc.demoUrl && (
+        <section id="demo" className="py-16 border-b border-slate-200 dark:border-slate-900 bg-slate-50/60 dark:bg-slate-900/30 scroll-mt-24">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">{uc.demoTitle}</h2>
+            {uc.demoText && <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">{uc.demoText}</p>}
+            <a href={uc.demoUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all">
+              {uc.demoLabel ?? 'Открыть демо'} <ArrowRight size={18} />
+            </a>
+          </div>
+        </section>
+      )}
 
       {/* FAQ */}
       <section className="py-16 border-b border-slate-200 dark:border-slate-900">
@@ -385,9 +439,9 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
             <div className="flex justify-center mb-4">
               <div className="w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center"><Sparkles size={26} /></div>
             </div>
-            <h2 className="text-xl md:text-2xl font-bold mb-3 text-center">Начните с демо-доступа</h2>
+            <h2 className="text-xl md:text-2xl font-bold mb-3 text-center">{uc.ctaTitle ?? 'Начните с демо-доступа'}</h2>
             <p className="text-slate-600 dark:text-slate-300 mb-6 max-w-xl mx-auto text-center">
-              Расскажите про вашу задачу — настроим демо под вас и покажем, как это работает. Ответим в течение 24 часов.
+              {uc.ctaText ?? 'Расскажите про вашу задачу — настроим демо под вас и покажем, как это работает. Ответим в течение 24 часов.'}
             </p>
             <form className="max-w-xl mx-auto space-y-4 text-left" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -411,7 +465,7 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1">Про вашу задачу</label>
-                <textarea name="task" rows={3} placeholder="Что автоматизируете, сколько записей, в каком формате данные..."
+                <textarea name="task" rows={3} placeholder={uc.ctaPlaceholder ?? 'Что автоматизируете, сколько записей, в каком формате данные...'}
                   className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-slate-800 dark:text-slate-100 focus:border-blue-500 outline-none transition-all resize-none" />
               </div>
               {formState === 'success' && (
@@ -433,7 +487,7 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
 
               <button type="submit" disabled={formState === 'sending' || formState === 'success' || !consentChecked}
                 className="w-full py-3 sm:py-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2">
-                {formState === 'sending' ? 'Отправка...' : 'Заказать демо'}
+                {formState === 'sending' ? 'Отправка...' : ctaLabel}
                 {formState !== 'sending' && <Send size={18} />}
               </button>
             </form>
@@ -452,6 +506,22 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
             <Link to="/sravnenie-s-bitrix-amocrm.html" className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 transition-colors">
               Сравнение: Интеграм vs Битрикс24 и AmoCRM <ArrowRight size={16} />
             </Link>
+          </div>
+        </section>
+      )}
+      {uc.related && (
+        <section className="py-8 border-b border-slate-200 dark:border-slate-900">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-lg font-bold mb-4">Читайте также</h2>
+            <ul className="space-y-2">
+              {uc.related.map((r) => (
+                <li key={r.href}>
+                  {/^https?:/.test(r.href)
+                    ? <a href={r.href} className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 transition-colors">{r.label} <ArrowRight size={14} /></a>
+                    : <Link to={r.href} className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 transition-colors">{r.label} <ArrowRight size={14} /></Link>}
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
       )}

@@ -20,6 +20,7 @@ import { fileURLToPath } from 'node:url'
 import { Resvg } from '@resvg/resvg-js'
 import satori from 'satori'
 import { build } from 'esbuild'
+import { DASHBOARD_UC } from '../src/data/dashboardLanding.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -293,6 +294,13 @@ const landingCards = [
     title: 'Интеграм против Битрикс24 и AmoCRM',
     subtitle:
       'В коробочных CRM часть логики нельзя изменить даже за деньги. Интеграм — конструктор: модель данных, воронки и правила процесса настраиваются под вас.',
+  },
+  // #867: лендинг «Дашборд собственника» — тексты из src/data/usecases.mjs.
+  {
+    slug: DASHBOARD_UC.slug,
+    eyebrow: 'Дашборд · Битрикс24, 1С, Google-таблицы',
+    title: nbspText(DASHBOARD_UC.ogTitle.replace(/ — Интеграм$/, '')),
+    subtitle: nbspText(DASHBOARD_UC.ogDescription),
   },
   {
     slug: 'excel-to-app',
