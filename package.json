@@ -17,6 +17,8 @@
     "deploy:en": "bash scripts/en-deploy.sh",
     "dev:excel": "vite --config site-excel/vite.config.ts",
     "build:excel": "vite build --config site-excel/vite.config.ts && node scripts/prerender-site-excel.mjs",
+    "dev:mvp": "vite --config site-mvp/vite.config.ts",
+    "build:mvp": "vite build --config site-mvp/vite.config.ts && node scripts/prerender-site-mvp.mjs",
     "og-excel": "node scripts/generate-excel-og.mjs",
     "og-images": "node scripts/generate-og-images.mjs",
     "blog-posts": "node scripts/generate-blog-posts.mjs",
