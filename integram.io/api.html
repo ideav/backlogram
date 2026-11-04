@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API Интеграм: описание команд и&nbsp;примеры curl</title>
+<meta name="description" content="Команды API Интеграм на integram.io с примерами curl: авторизация, таблицы и колонки, записи, пользователи, роли, доступы и запросы с фильтрами.">
+<meta name="keywords" content="API Интеграм, integram api, integram.io api, curl, REST API базы данных, _m_new, _d_new, metadata, report">
+<link rel="canonical" href="https://integram.io/api.html">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://integram.io/api.html">
+<meta property="og:title" content="API Интеграм: описание команд и примеры curl">
+<meta property="og:description" content="Команды API Интеграм на integram.io с примерами curl: авторизация, таблицы и колонки, записи, пользователи, роли, доступы и запросы с фильтрами.">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:site_name" content="Интеграм">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","@id":"https://integram.io/api.html#article","url":"https://integram.io/api.html","headline":"API Интеграм","name":"API Интеграм: описание команд и примеры curl","description":"Команды API Интеграм на integram.io с примерами curl: авторизация, таблицы и колонки, записи, пользователи, роли, доступы и запросы с фильтрами.","inLanguage":"ru","publisher":{"@type":"Organization","name":"Интеграм","url":"https://integram.io/"},"keywords":"API Интеграм, integram api, integram.io api, curl, REST API базы данных, _m_new, _d_new, metadata, report"}</script>
+<style>
+  :root { --fg: #1e293b; --muted: #475569; --faint: #64748b; --bg: #ffffff; --line: #e2e8f0;
+    --link: #2563eb; --accent: #3b82f6; --code-bg: #0f172a; --code-fg: #f1f5f9; --inline-bg: #f1f5f9; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fg: #e2e8f0; --muted: #94a3b8; --faint: #94a3b8; --bg: #0b1120; --line: #334155;
+      --link: #60a5fa; --accent: #60a5fa; --code-bg: #020617; --code-fg: #e2e8f0; --inline-bg: #1e293b; }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  #api { max-width: 60rem; margin: 0 auto; padding: 3rem 1rem 2rem; }
+  #api h1 { font-size: 2.2rem; line-height: 1.15; margin: 0.5rem 0 0.75rem; }
+  #api h2 { font-size: 1.6rem; margin: 2.5rem 0 1rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+  #api h3 { font-size: 1.2rem; margin: 1.75rem 0 0.5rem; }
+  #api p, #api li { line-height: 1.65; margin: 0.4rem 0; }
+  #api a { color: var(--link); }
+  #api code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.9em; }
+  #api :not(pre) > code { background: var(--inline-bg); padding: 0.05em 0.3em; border-radius: 0.25rem; }
+  #api pre { background: var(--code-bg); color: var(--code-fg); padding: 1rem; border-radius: 0.75rem;
+    overflow-x: auto; font-size: 0.85rem; line-height: 1.5; }
+  #api table { border-collapse: collapse; width: 100%; font-size: 0.9rem; display: block; overflow-x: auto; }
+  #api th, #api td { border: 1px solid var(--line); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+  #api .api__eyebrow { text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.72rem;
+    color: var(--accent); font-weight: 700; margin: 0; }
+  #api .api__lead { font-size: 1.05rem; color: var(--muted); }
+  #api .api__label { font-size: 0.8rem; color: var(--faint); margin-bottom: 0; }
+  #api .api__note { border-left: 3px solid #f59e0b; padding-left: 0.75rem; }
+  #api .api__toc ol { padding-left: 1.25rem; }
+  #api .api__toc ul { padding-left: 1rem; font-size: 0.92rem; }
+  #api .api__footer { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line);
+    font-size: 0.92rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<main id="api">
+  <header>
+    <p class="api__eyebrow">integram.io · для&nbsp;разработчиков</p>
+    <h1>API Интеграм</h1>
+    <p class="api__lead">Через API доступно всё, что пользователь делает в&nbsp;интерфейсе Интеграма: создать таблицы и&nbsp;колонки, завести записи, пользователей и&nbsp;роли, выдать доступы, построить запрос с&nbsp;фильтрами и&nbsp;формулами.</p>
+    <p class="api__lead">Примеры даны для&nbsp;<code>https://integram.io</code> и&nbsp;базы <code>mydb</code>: подставьте имя своей базы.</p>
+  </header>
+  <nav class="api__toc" aria-label="Содержание">
+    <ol><li><a href="#basics">Общие правила</a><ul><li><a href="#terms">Термины</a></li><li><a href="#url">Адрес команды</a></li><li><a href="#names">Имена вместо кодов</a></li><li><a href="#responses">Ответы и&nbsp;ошибки</a></li></ul></li><li><a href="#auth">Авторизация</a><ul><li><a href="#auth-token">Токен API</a></li><li><a href="#auth-xsrf">Токен XSRF</a></li><li><a href="#auth-login">Вход по&nbsp;логину и&nbsp;паролю</a></li></ul></li><li><a href="#databases">Базы</a><ul><li><a href="#db-list">Список баз</a></li><li><a href="#db-new">Создать базу</a></li></ul></li><li><a href="#schema">Структура: таблицы и&nbsp;колонки</a><ul><li><a href="#base-types">Базовые типы</a></li><li><a href="#metadata">Метаданные</a></li><li><a href="#terms-list">Список таблиц</a></li><li><a href="#table-new">Создать таблицу</a></li><li><a href="#column-new">Добавить колонку</a></li><li><a href="#column-ref">Колонка-справочник</a></li><li><a href="#subtable">Подчинённая таблица</a></li><li><a href="#column-attrs">Обязательность и&nbsp;значение по&nbsp;умолчанию</a></li><li><a href="#column-move-del">Переместить и&nbsp;удалить</a></li></ul></li><li><a href="#records">Записи</a><ul><li><a href="#object-list">Прочитать записи</a></li><li><a href="#record-new">Создать запись</a></li><li><a href="#record-set">Изменить запись</a></li><li><a href="#record-del">Удалить и&nbsp;переместить</a></li><li><a href="#import">Загрузка файлом</a></li></ul></li><li><a href="#access">Пользователи, роли и&nbsp;доступ</a><ul><li><a href="#system-tables">Системные таблицы</a></li><li><a href="#role-new">Создать роль</a></li><li><a href="#user-new">Создать пользователя и&nbsp;задать пароль</a></li><li><a href="#grants">Выдать доступ</a></li><li><a href="#masks">Маски: только свои записи</a></li><li><a href="#menu">Меню роли</a></li><li><a href="#guest">Гостевой доступ</a></li></ul></li><li><a href="#reports">Запросы (отчёты)</a><ul><li><a href="#report-model">Как&nbsp;устроен запрос</a></li><li><a href="#report-new">Создать запрос</a></li><li><a href="#report-formula">Формулы и&nbsp;вычисляемые колонки</a></li><li><a href="#report-filters">Фильтры</a></li><li><a href="#report-subquery">Подзапросы</a></li><li><a href="#report-run">Выполнить запрос</a></li><li><a href="#report-access">Права на&nbsp;запрос</a></li></ul></li><li><a href="#files">Файлы и&nbsp;рабочие места</a><ul><li><a href="#dir-admin">Файловый менеджер</a></li><li><a href="#templater">Шаблонизатор</a></li><li><a href="#backup">Резервная копия</a></li></ul></li></ol>
+  </nav>
+  <section id="basics">
+    <h2>Общие правила</h2>
+    <article id="terms">
+      <h3>Термины</h3>
+      <p>Всё в&nbsp;базе Интеграма&nbsp;— термины: Клиент, Адрес, Статус, Пользователь. Пользователь видит их как&nbsp;таблицы и&nbsp;колонки, разработчик&nbsp;— как&nbsp;типы и&nbsp;их реквизиты. «Таблица Клиент с&nbsp;колонками Адрес и&nbsp;Телефон» и&nbsp;«тип Клиент с&nbsp;реквизитами Адрес и&nbsp;Телефон»&nbsp;— одно&nbsp;и&nbsp;то же.</p>
+      <ul><li>Таблица (тип)&nbsp;— термин верхнего уровня. Значение её первой колонки&nbsp;— главное значение записи.</li><li>Колонка (реквизит)&nbsp;— термин, добавленный к&nbsp;таблице. Один&nbsp;термин может быть колонкой у&nbsp;разных таблиц.</li><li>Справочная колонка&nbsp;— ссылка на&nbsp;другую таблицу; в&nbsp;ней хранится id записи справочника.</li><li>Подчинённая таблица&nbsp;— записи, принадлежащие записи родителя (позиции заказа, пункты меню роли).</li></ul>
+    </article>
+    <article id="url">
+      <h3>Адрес команды</h3>
+      <p>Команда&nbsp;— это адрес вида <code>/{база}/{команда}/{id}</code>. Параметр <code>JSON</code> в&nbsp;адресе говорит, что ответ нужен в&nbsp;JSON, а&nbsp;не&nbsp;HTML-страницей.</p>
+      <pre><code>https://integram.io/{база}/{команда}/{id}?JSON=1</code></pre>
+      <ul><li><code>_d_*</code>&nbsp;— изменение структуры (таблиц и&nbsp;колонок), POST;</li><li><code>_m_*</code>&nbsp;— изменение данных (записей), POST;</li><li><code>metadata</code>, <code>object</code>, <code>report</code>, <code>terms</code>, <code>xsrf</code>&nbsp;— чтение, GET.</li></ul>
+      <p>Поля POST-запросов передаются формой (<code>-F</code> в&nbsp;curl или&nbsp;<code>application/x-www-form-urlencoded</code>). Значение колонки передаётся полем <code>t{id колонки}</code>, например <code>t41=ivan@example.com</code>.</p>
+    </article>
+    <article id="names">
+      <h3>Имена вместо кодов</h3>
+      <p>Таблицы, записи и&nbsp;запросы можно называть в&nbsp;адресе по&nbsp;именам, не&nbsp;зная их id: ядро ищет термин с&nbsp;таким именем, а&nbsp;для&nbsp;записи&nbsp;— запись с&nbsp;таким главным значением.</p>
+      <table><thead><tr><th>Где</th><th>Как</th><th>Пример</th></tr></thead><tbody><tr><td>Таблица в&nbsp;адресе</td><td>Имя таблицы вместо её id&nbsp;— в&nbsp;любой команде</td><td><code>metadata/Клиент</code>, <code>object/Клиент</code>, <code>_m_new/Клиент</code></td></tr><tr><td>Запись в&nbsp;адресе</td><td>Имя таблицы и&nbsp;главное значение записи</td><td><code>edit_obj/Клиент/АО Ромашка</code>, <code>_m_set/Роль/Менеджер</code></td></tr><tr><td>Запрос в&nbsp;адресе</td><td>Название запроса вместо id</td><td><code>report/Клиенты по категориям</code></td></tr><tr><td>Фильтр запроса</td><td>Имя колонки в&nbsp;отчёте, пробелы&nbsp;— <code>_</code></td><td><code>FR_Дата_заказа=01.10.2026</code></td></tr></tbody></table>
+      <pre><code>curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/metadata/Пользователь?JSON=1&quot;
+curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/edit_obj/Роль/admin?JSON=1&quot;
+curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/report/Клиенты%20по%20категориям?JSON_KV&quot;</code></pre>
+      <ul><li>пробел в&nbsp;адресе пишется как&nbsp;<code>%20</code>, остальную кириллицу curl передаёт как&nbsp;есть;</li><li>поля записи передаются только кодами <code>t{id колонки}</code>, фильтры записей&nbsp;— <code>F_{id колонки}</code>: id колонок отдаёт <code>metadata</code>;</li><li>если в&nbsp;базе два&nbsp;термина с&nbsp;одним именем, адрес берёт первый найденный&nbsp;— такие таблицы читайте по&nbsp;id.</li></ul>
+    </article>
+    <article id="responses">
+      <h3>Ответы и&nbsp;ошибки</h3>
+      <p>Команды <code>_d_*</code> и&nbsp;<code>_m_*</code> отвечают объектом одного вида: <code>id</code>&nbsp;— созданный или&nbsp;изменённый элемент, <code>obj</code>&nbsp;— объект, к&nbsp;которому он относится, <code>warnings</code>&nbsp;— предупреждения.</p>
+      <pre><code>{&quot;id&quot;: 643, &quot;obj&quot;: 641, &quot;next_act&quot;: &quot;edit_types&quot;, &quot;args&quot;: &quot;ext&quot;, &quot;warnings&quot;: &quot;&quot;}</code></pre>
+      <p>Ошибка приходит массивом с&nbsp;ключом <code>error</code>, и&nbsp;HTTP-статус у&nbsp;неё обычно 200: проверяйте в&nbsp;ответе ключ <code>error</code>, а&nbsp;не&nbsp;только код. Свой статус есть у&nbsp;немногих отказов: 401&nbsp;— нет авторизации или&nbsp;неверный пароль в&nbsp;<code>auth</code>, 403&nbsp;— неверный или&nbsp;устаревший <code>_xsrf</code>, 429&nbsp;— вход временно заблокирован.</p>
+      <pre><code>[{&quot;error&quot;: &quot;Вы хотите удалить реквизит у типа при наличии этого реквизита у экземпляров (всего: 1)!&quot;}]</code></pre>
+    </article>
+  </section>
+  <section id="auth">
+    <h2>Авторизация</h2>
+    <article id="auth-token">
+      <h3>Токен API</h3>
+      <p>Для&nbsp;программ и&nbsp;интеграций удобнее всего постоянный токен: заведите в&nbsp;базе пользователя (например, <code>api</code>), впишите ему в&nbsp;поле «Токен» случайную строку из&nbsp;15–64&nbsp;символов и&nbsp;выдайте роль с&nbsp;нужными правами. Токен передаётся заголовком <code>X-Authorization</code> в&nbsp;каждом запросе.</p>
+      <pre><code>TOKEN=a3f1c9...           # токен пользователя api
+curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/metadata?JSON=1&quot;</code></pre>
+      <p class="api__note">Заголовок читается, только если в&nbsp;адресе или&nbsp;теле запроса есть параметр <code>JSON</code> (<code>JSON</code>, <code>JSON_KV</code>, <code>JSON_OBJ</code>…). Без&nbsp;него запрос считается переходом браузера и&nbsp;уходит на&nbsp;страницу входа.</p>
+      <p>Вместо <code>X-Authorization</code> подходит <code>Authorization: &lt;токен&gt;</code> или&nbsp;<code>Authorization: Bearer &lt;токен&gt;</code>. Ещё токен можно передать кукой, названной именем базы (<code>mydb</code>), или&nbsp;полем формы <code>token</code> в&nbsp;POST-запросе. Кука нужна командам, работающим с&nbsp;сессией, например файловому менеджеру <code>dir_admin</code>.</p>
+      <pre><code>curl -s -b &quot;mydb=$TOKEN&quot; &quot;https://integram.io/mydb/metadata?JSON=1&quot;</code></pre>
+      <p>Простейший вариант&nbsp;— Basic-авторизация: логин и&nbsp;пароль в&nbsp;каждом запросе. По&nbsp;RFC 7617&nbsp;пара&nbsp;<code>логин:пароль</code> кодируется в&nbsp;Base64, curl делает это сам ключом <code>-u</code>.</p>
+      <pre><code>curl -s -u &quot;manager:Str0ng-Pass&quot; &quot;https://integram.io/mydb/metadata?JSON=1&quot;</code></pre>
+    </article>
+    <article id="auth-xsrf">
+      <h3>Токен XSRF</h3>
+      <p>Каждый POST-запрос на&nbsp;изменение (<code>_d_*</code>, <code>_m_*</code>) должен нести поле <code>_xsrf</code>. Его выдаёт команда <code>xsrf</code>; заодно она сообщает пользователя, его роль и&nbsp;id.</p>
+      <pre><code>curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/xsrf?JSON=1&quot;</code></pre>
+      <p class="api__label">Ответ</p><pre><code>{&quot;_xsrf&quot;: &quot;cd4b6417a3940ed4a84h074d&quot;, &quot;token&quot;: &quot;a3f1c9...&quot;, &quot;user&quot;: &quot;api&quot;, &quot;role&quot;: &quot;api&quot;, &quot;id&quot;: &quot;632&quot;, &quot;msg&quot;: &quot;&quot;}</code></pre>
+      <p class="api__label">Получить в&nbsp;переменную (нужен jq)</p><pre><code>XSRF=$(curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/xsrf?JSON=1&quot; | jq -r ._xsrf)</code></pre>
+      <p>Дальше в&nbsp;примерах <code>$TOKEN</code> и&nbsp;<code>$XSRF</code>&nbsp;— эти два&nbsp;значения. <code>_xsrf</code> привязан к&nbsp;токену, которым его получили: запрашивайте его и&nbsp;шлите POST под&nbsp;одним и&nbsp;тем же токеном.</p>
+    </article>
+    <article id="auth-login">
+      <h3>Вход по&nbsp;логину и&nbsp;паролю</h3>
+      <p>Команда <code>auth</code> проверяет логин и&nbsp;пароль и&nbsp;открывает сессию этого устройства. В&nbsp;ответе&nbsp;— токен сессии и&nbsp;<code>_xsrf</code> к&nbsp;нему.</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/auth?JSON=1&quot; -F &quot;login=manager&quot; -F &quot;pwd=Str0ng-Pass&quot;</code></pre>
+      <p class="api__label">Ответ</p><pre><code>{&quot;_xsrf&quot;: &quot;1cb413634d074d3804ed48&quot;, &quot;token&quot;: &quot;s.1824537600.9e0c...&quot;, &quot;id&quot;: &quot;632&quot;, &quot;msg&quot;: &quot;&quot;}</code></pre>
+      <p>Сессия живёт, пока ею пользуются: без&nbsp;запросов она гаснет через 30&nbsp;дней. Пять&nbsp;неверных паролей подряд блокируют вход на&nbsp;15&nbsp;минут, сервер отвечает 429&nbsp;с&nbsp;заголовком <code>Retry-After</code>.</p>
+      <p>Выход&nbsp;— <code>GET /{база}/exit</code> гасит текущую сессию, <code>exit?all=1</code>&nbsp;— все сессии пользователя.</p>
+    </article>
+  </section>
+  <section id="databases">
+    <h2>Базы</h2>
+    <article id="db-list">
+      <h3>Список баз</h3>
+      <p>Базы пользователя перечислены в&nbsp;его личном кабинете&nbsp;— базе <code>my</code>. Список отдаёт отчёт 313.</p>
+      <pre><code>curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/my/report/313?JSON_KV=1&quot;</code></pre>
+      <p class="api__label">Ответ (сокращён)</p><pre><code>[
+  {&quot;DB&quot;: &quot;test&quot;, &quot;DBID&quot;: &quot;178652&quot;, &quot;Template&quot;: &quot;RU&quot;, &quot;Plan&quot;: &quot;Startup&quot;, &quot;Plan date&quot;: &quot;23.04.2026&quot;},
+  {&quot;DB&quot;: &quot;mydb&quot;, &quot;DBID&quot;: &quot;195822&quot;, &quot;Template&quot;: &quot;RU&quot;, &quot;Plan&quot;: &quot;Startup&quot;, &quot;Plan date&quot;: &quot;23.04.2026&quot;}
+]</code></pre>
+    </article>
+    <article id="db-new">
+      <h3>Создать базу</h3>
+      <p>Команда <code>_new_db</code> кабинета <code>my</code>: <code>db</code>&nbsp;— имя новой базы (латиница и&nbsp;цифры), <code>template</code>&nbsp;— шаблон, обычно <code>RU</code>.</p>
+      <pre><code>curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/my/_new_db/?JSON=1&amp;db=apiman&amp;template=RU&quot;</code></pre>
+      <p class="api__label">Ответ</p><pre><code>{&quot;status&quot;: &quot;Ok&quot;, &quot;id&quot;: 221756}</code></pre>
+      <p>В&nbsp;новой базе уже есть администратор: пользователь с&nbsp;логином, равным имени базы, и&nbsp;ролью admin (145). У&nbsp;него полный доступ в&nbsp;обход прав; переименовать его или&nbsp;сменить ему роль нельзя.</p>
+    </article>
+  </section>
+  <section id="schema">
+    <h2>Структура: таблицы и&nbsp;колонки</h2>
+    <article id="base-types">
+      <h3>Базовые типы</h3>
+      <p>Тип каждой колонки&nbsp;— один&nbsp;из&nbsp;базовых. Его код передаётся параметром <code>t</code> при&nbsp;создании термина.</p>
+      <table><thead><tr><th>Код</th><th>Тип</th><th>Что хранит</th></tr></thead><tbody><tr><td>3</td><td>SHORT</td><td>Короткая строка (до&nbsp;127&nbsp;символов)</td></tr><tr><td>8</td><td>CHARS</td><td>Строка без&nbsp;ограничения длины</td></tr><tr><td>12</td><td>MEMO</td><td>Многострочный текст</td></tr><tr><td>13</td><td>NUMBER</td><td>Целое число</td></tr><tr><td>14</td><td>SIGNED</td><td>Число с&nbsp;дробной частью</td></tr><tr><td>9</td><td>DATE</td><td>Дата, <code>30.10.2026</code></td></tr><tr><td>4</td><td>DATETIME</td><td>Дата и&nbsp;время; через API&nbsp;— unix-время в&nbsp;секундах</td></tr><tr><td>11</td><td>BOOLEAN</td><td>Да / нет: <code>1</code> или&nbsp;пусто</td></tr><tr><td>10</td><td>FILE</td><td>Файл</td></tr><tr><td>2</td><td>HTML</td><td>HTML-текст, выводится без&nbsp;экранирования</td></tr><tr><td>6</td><td>PWD</td><td>Пароль: хранится хешем, на&nbsp;экране&nbsp;— «******»</td></tr><tr><td>7</td><td>BUTTON</td><td>Кнопка-действие над&nbsp;записью</td></tr><tr><td>5</td><td>GRANT</td><td>Объект системы&nbsp;— выбор таблицы или&nbsp;колонки</td></tr><tr><td>16</td><td>REPORT_COLUMN</td><td>Колонка запроса</td></tr><tr><td>17</td><td>PATH</td><td>Путь к&nbsp;файлу</td></tr></tbody></table>
+    </article>
+    <article id="metadata">
+      <h3>Метаданные</h3>
+      <p>Команда <code>metadata</code> без&nbsp;id описывает всю базу, с&nbsp;id&nbsp;— одну таблицу. Отсюда берут id колонок для&nbsp;<code>t{id}</code> в&nbsp;записях и&nbsp;запросах.</p>
+      <pre><code>curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/metadata/18?JSON=1&quot;
+curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/metadata/Пользователь?JSON=1&quot;     # то же по имени</code></pre>
+      <p class="api__label">Ответ (сокращён): таблица Пользователь</p><pre><code>{
+  &quot;id&quot;: &quot;18&quot;, &quot;up&quot;: &quot;0&quot;, &quot;type&quot;: &quot;3&quot;, &quot;val&quot;: &quot;Пользователь&quot;, &quot;unique&quot;: &quot;1&quot;,
+  &quot;reqs&quot;: [
+    {&quot;num&quot;: 1, &quot;id&quot;: &quot;115&quot;, &quot;orig&quot;: &quot;42&quot;, &quot;val&quot;: &quot;Роль&quot;, &quot;type&quot;: &quot;3&quot;, &quot;ref&quot;: &quot;42&quot;, &quot;ref_id&quot;: &quot;114&quot;,
+     &quot;attrs&quot;: &quot;:!NULL:&quot;},
+    {&quot;num&quot;: 2, &quot;id&quot;: &quot;41&quot;, &quot;orig&quot;: &quot;41&quot;, &quot;val&quot;: &quot;Email&quot;, &quot;type&quot;: &quot;3&quot;},
+    {&quot;num&quot;: 4, &quot;id&quot;: &quot;156&quot;, &quot;orig&quot;: &quot;156&quot;, &quot;val&quot;: &quot;Дата&quot;, &quot;type&quot;: &quot;9&quot;, &quot;attrs&quot;: &quot;[TODAY]&quot;}
+  ]
+}</code></pre>
+      <ul><li><code>id</code>&nbsp;— id таблицы или&nbsp;колонки; <code>val</code>&nbsp;— имя; <code>type</code>&nbsp;— базовый тип;</li><li><code>unique</code>&nbsp;— значения первой колонки уникальны;</li><li><code>ref</code>&nbsp;— таблица-справочник у&nbsp;справочной колонки, <code>ref_id</code>&nbsp;— id ссылки на&nbsp;неё;</li><li><code>orig</code>&nbsp;— термин колонки: у&nbsp;справочной&nbsp;— таблица-справочник, у&nbsp;обычной&nbsp;— сам термин;</li><li><code>arr_id</code>&nbsp;— подчинённая таблица;</li><li><code>attrs</code>&nbsp;— атрибуты колонки строкой, только если заданы.</li></ul>
+      <p>Атрибуты хранятся строкой: <code>:!NULL:</code>&nbsp;— обязательное поле, <code>:MULTI:</code>&nbsp;— множественный выбор, <code>:ALIAS=Имя:</code>&nbsp;— псевдоним, а&nbsp;текст вне двоеточий&nbsp;— значение по&nbsp;умолчанию. Например, <code>:!NULL::ALIAS=Исполнитель:</code>&nbsp;— обязательная колонка с&nbsp;псевдонимом.</p>
+    </article>
+    <article id="terms-list">
+      <h3>Список таблиц</h3>
+      <p>Команда <code>terms</code> отдаёт таблицы базы, доступные пользователю: id, базовый тип первой колонки и&nbsp;имя.</p>
+      <pre><code>curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/terms?JSON=1&quot;</code></pre>
+      <p class="api__label">Ответ</p><pre><code>[{&quot;id&quot;: 641, &quot;type&quot;: 3, &quot;name&quot;: &quot;Клиент&quot;}, {&quot;id&quot;: 18, &quot;type&quot;: 3, &quot;name&quot;: &quot;Пользователь&quot;}, {&quot;id&quot;: 42, &quot;type&quot;: 3, &quot;name&quot;: &quot;Роль&quot;}]</code></pre>
+    </article>
+    <article id="table-new">
+      <h3>Создать таблицу</h3>
+      <p><code>_d_new</code> создаёт термин&nbsp;— таблицу из&nbsp;одной колонки. <code>t</code>&nbsp;— базовый тип первой колонки, <code>val</code>&nbsp;— имя, <code>unique=1</code>&nbsp;— значения первой колонки уникальны (так делают справочники).</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_d_new?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;t=3&quot; -F &quot;val=Клиент&quot;</code></pre>
+      <p class="api__label">Ответ: id новой таблицы&nbsp;— в&nbsp;obj</p><pre><code>{&quot;id&quot;: &quot;&quot;, &quot;obj&quot;: 641, &quot;next_act&quot;: &quot;edit_types&quot;, &quot;args&quot;: &quot;ext&quot;, &quot;warnings&quot;: &quot;&quot;}</code></pre>
+      <p>Повторный вызов с&nbsp;тем же именем не&nbsp;создаёт дубль: вернётся id существующего термина и&nbsp;предупреждение в&nbsp;<code>warnings</code>.</p>
+    </article>
+    <article id="column-new">
+      <h3>Добавить колонку</h3>
+      <p>Колонка добавляется в&nbsp;два&nbsp;шага: создать термин колонки (<code>_d_new</code>) и&nbsp;добавить его к&nbsp;таблице (<code>_d_req</code>). Если подходящий термин уже есть, первый шаг пропускают.</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_d_new?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;t=3&quot; -F &quot;val=ИНН&quot;
+# → {&quot;obj&quot;: 642, ...}
+curl -s &quot;https://integram.io/mydb/_d_req/641?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;t=642&quot;
+# → {&quot;id&quot;: 643, &quot;obj&quot;: 641, ...}</code></pre>
+      <p>Id колонки&nbsp;— <code>id</code> из&nbsp;ответа <code>_d_req</code> (643), а&nbsp;не&nbsp;<code>obj</code>: дальше значение этой колонки пишется полем <code>t643</code>.</p>
+    </article>
+    <article id="column-ref">
+      <h3>Колонка-справочник</h3>
+      <p>Справочная колонка ссылается на&nbsp;другую таблицу. Шаги: таблица-справочник, ссылка на&nbsp;неё (<code>_d_ref</code>), ссылка как&nbsp;колонка (<code>_d_req</code>).</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_d_new?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;t=3&quot; -F &quot;val=Категория&quot; -F &quot;unique=1&quot;
+# → {&quot;obj&quot;: 644}
+curl -s &quot;https://integram.io/mydb/_d_ref/644?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot;
+# → {&quot;obj&quot;: 645}       — ссылка на Категорию
+curl -s &quot;https://integram.io/mydb/_d_req/641?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;t=645&quot;
+# → {&quot;id&quot;: 646}        — колонка Категория у Клиента</code></pre>
+      <p>Множественный выбор включает и&nbsp;выключает <code>_d_multi</code> на&nbsp;колонке:</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_d_multi/646?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot;</code></pre>
+      <p>Если в&nbsp;таблице несколько колонок со&nbsp;ссылкой на&nbsp;один&nbsp;справочник (Автор, Исполнитель, Контролёр&nbsp;— все из&nbsp;Пользователя), дайте им псевдонимы через <code>_d_alias</code> с&nbsp;id колонки:</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_d_alias/648?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;val=Исполнитель&quot;</code></pre>
+    </article>
+    <article id="subtable">
+      <h3>Подчинённая таблица</h3>
+      <p>Табличная часть (позиции заказа, этапы проекта)&nbsp;— это таблица, добавленная к&nbsp;другой таблице через <code>_d_req</code> без&nbsp;ссылки. Её записи создаются с&nbsp;родителем <code>up={id записи}</code>.</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_d_new?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;t=3&quot; -F &quot;val=Позиция&quot;
+# → {&quot;obj&quot;: 700}
+curl -s &quot;https://integram.io/mydb/_d_req/690?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;t=700&quot;     # 690 — таблица Заказ</code></pre>
+    </article>
+    <article id="column-attrs">
+      <h3>Обязательность и&nbsp;значение по&nbsp;умолчанию</h3>
+      <p><code>_d_null</code> переключает обязательность колонки. <code>_d_attrs</code> задаёт значение по&nbsp;умолчанию: константу или&nbsp;переменную: <code>[TODAY]</code>&nbsp;— сегодня, <code>[USER_ID]</code>&nbsp;— текущий пользователь. Результат виден в&nbsp;<code>attrs</code> колонки в&nbsp;<code>metadata</code>.</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_d_null/643?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot;
+curl -s &quot;https://integram.io/mydb/_d_attrs/650?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;val=[TODAY]&quot;</code></pre>
+    </article>
+    <article id="column-move-del">
+      <h3>Переместить и&nbsp;удалить</h3>
+      <p><code>_d_ord</code> ставит колонку на&nbsp;позицию <code>order</code> (первую колонку двигать нельзя), <code>_d_up</code>&nbsp;— на&nbsp;одну позицию выше.</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_d_ord/648?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;order=1&quot;</code></pre>
+      <p><code>_d_del_req</code> удаляет колонку. Если в&nbsp;ней есть данные, сервер откажет; <code>forced=1</code> удаляет вместе с&nbsp;данными. Сам термин колонки остаётся и&nbsp;может пригодиться в&nbsp;другой таблице.</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_d_del_req/643?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;forced=1&quot;</code></pre>
+      <p><code>_d_del</code> удаляет пустую таблицу или&nbsp;неиспользуемый термин. Порядок для&nbsp;таблицы с&nbsp;данными: записи, затем ссылки на&nbsp;неё и&nbsp;доступы, затем сама таблица.</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_d_del/642?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot;</code></pre>
+      <p><code>_d_save</code> переименовывает таблицу или&nbsp;меняет её базовый тип: <code>val</code>&nbsp;— имя, <code>t</code>&nbsp;— базовый тип, <code>unique=1</code>&nbsp;— признак уникальности.</p>
+    </article>
+  </section>
+  <section id="records">
+    <h2>Записи</h2>
+    <article id="object-list">
+      <h3>Прочитать записи</h3>
+      <p>Команда <code>object</code> с&nbsp;id таблицы отдаёт её записи. Формат <code>JSON_OBJ</code>&nbsp;— массив строк: <code>i</code>&nbsp;— id записи, <code>u</code>&nbsp;— родитель, <code>o</code>&nbsp;— порядок, <code>r</code>&nbsp;— значения колонок по&nbsp;порядку метаданных.</p>
+      <pre><code>curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/object/641/?JSON_OBJ&amp;LIMIT=100&quot;</code></pre>
+      <p class="api__label">Ответ</p><pre><code>[
+  {&quot;i&quot;: 649, &quot;u&quot;: 1, &quot;o&quot;: 1, &quot;r&quot;: [&quot;АО Ромашка&quot;, &quot;7701234567&quot;, &quot;660:Клиент&quot;]},
+  {&quot;i&quot;: 668, &quot;u&quot;: 1, &quot;o&quot;: 2, &quot;r&quot;: [&quot;ПАО Эллипс&quot;, &quot;7709876543&quot;, &quot;650:Лид&quot;]}
+]</code></pre>
+      <p>Справочное значение приходит как&nbsp;<code>id:Название</code>, множественное&nbsp;— <code>id1,id2:Название1,Название2</code>.</p>
+      <table><thead><tr><th>Параметр</th><th>Что делает</th></tr></thead><tbody><tr><td><code>F_{id колонки}=значение</code></td><td>Фильтр по&nbsp;колонке</td></tr><tr><td><code>F_{id таблицы}=значение</code></td><td>Фильтр по&nbsp;первой колонке: её ключ&nbsp;— id самой таблицы</td></tr><tr><td><code>FR_{колонка}=…&amp;TO_{колонка}=…</code></td><td>Диапазон: от&nbsp;и&nbsp;до</td></tr><tr><td><code>F_U={id родителя}</code></td><td>Записи подчинённой таблицы у&nbsp;одного родителя</td></tr><tr><td><code>F_I={id записи}</code></td><td>Одна&nbsp;запись</td></tr><tr><td><code>ORDER={id колонки}</code></td><td>Сортировка; <code>ORDER=-{id}</code>&nbsp;— по&nbsp;убыванию</td></tr><tr><td><code>LIMIT=100</code> · <code>LIMIT=100,100</code></td><td>Первые 100&nbsp;записей · 100&nbsp;записей, начиная со&nbsp;101-й</td></tr><tr><td><code>_count=</code></td><td>Только число записей: <code>{&quot;count&quot;: &quot;42&quot;}</code></td></tr><tr><td><code>full=1</code></td><td>Не&nbsp;обрезать длинные значения</td></tr></tbody></table>
+      <p>В&nbsp;значении фильтра работают условия: <code>%ООО%</code>&nbsp;— содержит, <code>!значение</code>&nbsp;— не&nbsp;равно, <code>&gt;100</code>, <code>&lt;=20002</code>, <code>10..20</code>&nbsp;— между, <code>%</code>&nbsp;— непусто, <code>!%</code>&nbsp;— пусто, <code>IN(a,b)</code>&nbsp;— одно&nbsp;из&nbsp;значений, <code>@660</code>&nbsp;— ссылка на&nbsp;запись 660, <code>@IN(21006,21014)</code>&nbsp;— на&nbsp;одну из&nbsp;записей, <code>[TODAY]</code> и&nbsp;другие переменные.</p>
+      <pre><code># клиенты, в названии которых есть «Ромашка»: %25 — это % в адресе
+curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/object/641/?JSON_OBJ&amp;F_641=%25Ромашка%25&quot;
+# позиции заказа 691
+curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/object/700/?JSON_OBJ&amp;F_U=691&quot;
+# таблица по имени, фильтр — по id колонки ИНН
+curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/object/Клиент?JSON_OBJ&amp;F_643=7701234567&quot;</code></pre>
+      <p class="api__note">Подчинённую таблицу без&nbsp;<code>F_U</code> сервер отдаёт пустой: её записи висят на&nbsp;родителях, а&nbsp;не&nbsp;на&nbsp;корне.</p>
+    </article>
+    <article id="record-new">
+      <h3>Создать запись</h3>
+      <p><code>_m_new</code> с&nbsp;id таблицы. Главное значение записи пишется в&nbsp;<code>t{id таблицы}</code>, колонки&nbsp;— в&nbsp;<code>t{id колонки}</code>. <code>up=1</code>&nbsp;— запись верхнего уровня, <code>up={id записи}</code>&nbsp;— подчинённая.</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_m_new/641?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=1&quot; -F &quot;t641=АО Ромашка&quot; -F &quot;t643=7701234567&quot; -F &quot;t646=660&quot;</code></pre>
+      <p class="api__label">Ответ</p><pre><code>{&quot;id&quot;: 649, &quot;obj&quot;: 649, &quot;ord&quot;: 1, &quot;next_act&quot;: &quot;object&quot;, &quot;args&quot;: &quot;&quot;, &quot;val&quot;: &quot;АО Ромашка&quot;}</code></pre>
+      <p>В&nbsp;справочную колонку пишется id записи справочника (<code>t646=660</code>). Позиция заказа 691:</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_m_new/700?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;up=691&quot; -F &quot;t700=Труба 32 мм&quot; -F &quot;t702=12&quot;</code></pre>
+    </article>
+    <article id="record-set">
+      <h3>Изменить запись</h3>
+      <p><code>_m_set</code> с&nbsp;id записи меняет переданные колонки, включая первую. Пустое значение очищает поле, у&nbsp;BOOLEAN снимают галку значением <code>0</code>.</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_m_set/649?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;t643=7701234568&quot; -F &quot;t646=661&quot;</code></pre>
+      <p>Признак удачной записи&nbsp;— <code>&quot;obj&quot;: 649</code> (id записи) и&nbsp;непустой <code>id</code> в&nbsp;ответе. В&nbsp;справочный ключ <code>t{id}</code> <code>_m_set</code> принимает только id; пробел (<code>t646= </code>) очищает одиночную ссылку.</p>
+      <p>Запись можно назвать в&nbsp;адресе по&nbsp;имени таблицы и&nbsp;главному значению:</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_m_set/Клиент/АО%20Ромашка?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;t643=7701234568&quot; -F &quot;t646=661&quot;</code></pre>
+      <p>В&nbsp;колонку с&nbsp;множественным выбором передают id записей через запятую: <code>t648=616,617</code>.</p>
+      <p>Варианты для&nbsp;справочной колонки отдаёт <code>_ref_reqs</code> с&nbsp;id колонки; параметр <code>id</code>&nbsp;— запись, для&nbsp;которой выбирают значение:</p>
+      <pre><code>curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/_ref_reqs/646?JSON=1&amp;id=649&quot;
+# → {&quot;650&quot;: &quot;Лид&quot;, &quot;660&quot;: &quot;Клиент&quot;, &quot;661&quot;: &quot;ЧС&quot;}</code></pre>
+    </article>
+    <article id="record-del">
+      <h3>Удалить и&nbsp;переместить</h3>
+      <p><code>_m_del</code> удаляет запись вместе с&nbsp;подчинёнными; если на&nbsp;неё ссылаются другие записи, сервер откажет ошибкой в&nbsp;<code>error</code>. <code>_m_move</code> переносит подчинённую запись к&nbsp;другому родителю, <code>_m_up</code> поднимает её на&nbsp;одну позицию среди соседей, <code>_m_ord</code> ставит на&nbsp;позицию <code>order</code>.</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_m_del/668?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot;
+curl -s &quot;https://integram.io/mydb/_m_move/705?JSON=1&amp;up=692&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot;</code></pre>
+      <p>Все записи под&nbsp;фильтром удаляет <code>object</code> с&nbsp;<code>_m_del_select</code>. Записи, на&nbsp;которые есть ссылки, остаются. Ответ&nbsp;— переадресация, число удалённых&nbsp;— в&nbsp;параметре <code>deleted</code> её адреса:</p>
+      <pre><code>curl -s -o /dev/null -w &quot;%{redirect_url}\n&quot; &quot;https://integram.io/mydb/object/641/?JSON=1&amp;F_646=650&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;_m_del_select=1&quot;
+# → …/object/641?…&amp;deleted=31</code></pre>
+    </article>
+    <article id="import">
+      <h3>Загрузка файлом</h3>
+      <p>Тысячи записей загружают файлом: <code>object/{таблица}</code> с&nbsp;<code>import=1</code> и&nbsp;файлом <code>bki_file</code>. Строка файла&nbsp;— значения колонок через <code>;</code> в&nbsp;порядке метаданных, первой строкой&nbsp;— <code>DATA</code>. Справочные колонки задаются названиями, даты&nbsp;— <code>ДД.ММ.ГГГГ</code>, <code>;</code> внутри значения экранируется как&nbsp;<code>\;</code>. Если первая колонка уникальна, существующие записи обновляются.</p>
+      <p class="api__label">clients.bki</p><pre><code>DATA
+АО Ромашка;7701234567;Клиент;;
+ПАО Эллипс;7709876543;Лид;;</code></pre>
+      <pre><code>curl -s &quot;https://integram.io/mydb/object/641?JSON&amp;import=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;bki_file=@clients.bki;type=text/plain&quot;</code></pre>
+      <p>Файл&nbsp;— до&nbsp;8&nbsp;МБ; большие объёмы делите на&nbsp;части по&nbsp;несколько тысяч строк. Для&nbsp;подчинённой таблицы добавьте в&nbsp;адрес <code>F_U={id родителя}</code>.</p>
+    </article>
+  </section>
+  <section id="access">
+    <h2>Пользователи, роли и&nbsp;доступ</h2>
+    <article id="system-tables">
+      <h3>Системные таблицы</h3>
+      <p>Пользователи, роли, меню, доступы и&nbsp;запросы&nbsp;— обычные таблицы базы. Их записи создаются и&nbsp;меняются теми же <code>_m_new</code>, <code>_m_set</code> и&nbsp;<code>_m_del</code>.</p>
+      <table><thead><tr><th>Таблица</th><th>id</th><th>Колонки</th></tr></thead><tbody><tr><td>Пользователь</td><td>18</td><td><code>t18</code> логин, <code>t115</code> роль, <code>t20</code> пароль, <code>t33</code> имя, <code>t41</code> email, <code>t125</code> токен API</td></tr><tr><td>Роль</td><td>42</td><td><code>t42</code> название, <code>t135</code> описание</td></tr><tr><td>Объекты (доступы роли)</td><td>116</td><td><code>t116</code> объект, <code>t136</code> уровень, <code>t49</code> маска; подчинена роли</td></tr><tr><td>Меню</td><td>151</td><td><code>t151</code> название, <code>t153</code> адрес, <code>t391</code> иконка; подчинено роли</td></tr><tr><td>Запрос</td><td>22</td><td><code>t22</code> название; колонки запроса&nbsp;— таблица 28</td></tr><tr><td>Функция</td><td>63</td><td>Справочник функций колонок запроса: SUM, COUNT, abn_ID…</td></tr></tbody></table>
+      <p>Колонки Activity (<code>t124</code>) и&nbsp;xsrf (<code>t40</code>) заполняет сервер&nbsp;— не&nbsp;пишите в&nbsp;них. Неудачные входы ядро integram.io считает в&nbsp;журнале базы, а&nbsp;не&nbsp;в&nbsp;колонке пользователя.</p>
+    </article>
+    <article id="role-new">
+      <h3>Создать роль</h3>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_m_new/42?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=1&quot; -F &quot;t42=Менеджер&quot; -F &quot;t135=Ведёт клиентов и заказы&quot;
+# → {&quot;id&quot;: 900, ...}</code></pre>
+      <p>Роли базы&nbsp;— <code>object/42/?JSON_OBJ</code>. Роль admin с&nbsp;полным доступом&nbsp;— запись 145. Id роли по&nbsp;названию:</p>
+      <pre><code>curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/object/Роль?JSON_OBJ&amp;F_42=Менеджер&quot;
+# → [{&quot;i&quot;: 900, &quot;u&quot;: 1, &quot;o&quot;: 1, &quot;r&quot;: [&quot;Менеджер&quot;, &quot;&quot;, &quot;&quot;, &quot;Ведёт клиентов и заказы&quot;]}]</code></pre>
+    </article>
+    <article id="user-new">
+      <h3>Создать пользователя и&nbsp;задать пароль</h3>
+      <p>Пользователь&nbsp;— запись таблицы 18: логин в&nbsp;<code>t18</code>, роль в&nbsp;<code>t115</code>, пароль в&nbsp;<code>t20</code>. Пароль сохраняется хешем, прочитать его обратно нельзя.</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_m_new/18?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=1&quot; -F &quot;t18=ivanov&quot; -F &quot;t115=900&quot; -F &quot;t20=Str0ng-Pass&quot; -F &quot;t33=Иван Иванов&quot; -F &quot;t41=ivanov@example.com&quot;
+# → {&quot;id&quot;: 910, ...}</code></pre>
+      <p>Сменить пароль или&nbsp;роль&nbsp;— <code>_m_set</code> с&nbsp;id пользователя. Открытые сессии смена пароля не&nbsp;закрывает: выйти на&nbsp;всех устройствах&nbsp;— <code>exit?all=1</code> под&nbsp;токеном этого пользователя.</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_m_set/910?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;t20=N3w-Pass&quot;
+curl -s &quot;https://integram.io/mydb/_m_set/910?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;t115=901&quot;</code></pre>
+      <p>Пользователь для&nbsp;интеграции получает вместо пароля токен API в&nbsp;<code>t125</code>&nbsp;— с&nbsp;ним он работает заголовком <code>X-Authorization</code> (см. «Токен API»):</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_m_new/18?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=1&quot; -F &quot;t18=api&quot; -F &quot;t115=900&quot; -F &quot;t125=$(openssl rand -hex 32)&quot;</code></pre>
+    </article>
+    <article id="grants">
+      <h3>Выдать доступ</h3>
+      <p>Доступ роли к&nbsp;таблице, колонке или&nbsp;запросу&nbsp;— запись таблицы 116, подчинённая роли: <code>up</code>&nbsp;— роль, <code>t116</code>&nbsp;— объект, <code>t136</code>&nbsp;— уровень.</p>
+      <table><thead><tr><th>t136</th><th>Уровень</th></tr></thead><tbody><tr><td>53</td><td>READ&nbsp;— чтение</td></tr><tr><td>54</td><td>WRITE&nbsp;— чтение и&nbsp;изменение</td></tr><tr><td>52</td><td>BARRED&nbsp;— нет доступа (колонка не&nbsp;приходит даже в&nbsp;API)</td></tr></tbody></table>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_m_new/116?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=900&quot; -F &quot;t116=641&quot; -F &quot;t136=54&quot;   # Клиент: запись
+curl -s &quot;https://integram.io/mydb/_m_new/116?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=900&quot; -F &quot;t116=644&quot; -F &quot;t136=53&quot;   # Категория: чтение
+curl -s &quot;https://integram.io/mydb/_m_new/116?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=900&quot; -F &quot;t116=643&quot; -F &quot;t136=52&quot;   # колонка ИНН скрыта</code></pre>
+      <p>Уровень таблицы наследуют её колонки; отдельной колонке его можно понизить. Кроме таблиц в&nbsp;<code>t116</code> бывают особые объекты: <code>0</code>&nbsp;— редактор структуры (WRITE на&nbsp;него нужен для&nbsp;команд <code>_d_*</code>), <code>1</code>&nbsp;— все таблицы, <code>10</code>&nbsp;— файловый менеджер. Поля <code>t55</code> и&nbsp;<code>t56</code> разрешают роли выгрузку и&nbsp;удаление.</p>
+      <p class="api__note">Новая таблица не&nbsp;выдана ни&nbsp;одной роли: без&nbsp;доступа её записи отвечают 403, а&nbsp;выпадающий список справочника пуст. Выдавайте доступ сразу после <code>_d_new</code> всем ролям, чьи экраны ею пользуются.</p>
+      <p>Доступы роли&nbsp;— <code>object/116/?JSON_OBJ&amp;F_U={роль}</code>, роли с&nbsp;доступом к&nbsp;таблице&nbsp;— <code>object/42/?JSON_OBJ&amp;F_116={таблица}</code>.</p>
+    </article>
+    <article id="masks">
+      <h3>Маски: только свои записи</h3>
+      <p>Маска <code>t49</code> у&nbsp;доступа фильтрует строки, которые увидит роль. Её значение работает как&nbsp;фильтр <code>F_</code> по&nbsp;колонке из&nbsp;<code>t116</code>.</p>
+      <pre><code># менеджер видит только клиентов, где он — ответственный (колонка 651 ссылается на Пользователя)
+curl -s &quot;https://integram.io/mydb/_m_new/116?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=900&quot; -F &quot;t116=651&quot; -F &quot;t136=54&quot; -F &quot;t49=[USER_ID]&quot;
+# пользователь видит в таблице Пользователь только себя
+curl -s &quot;https://integram.io/mydb/_m_new/116?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=900&quot; -F &quot;t116=18&quot; -F &quot;t136=53&quot; -F &quot;t49=[USER]&quot;</code></pre>
+      <ul><li>переменные: <code>[USER]</code>&nbsp;— логин, <code>[USER_ID]</code>&nbsp;— id пользователя, <code>[ROLE]</code>, <code>[ROLE_ID]</code>;</li><li>значение или&nbsp;условие: <code>164</code>, <code>%ООО%</code>, <code>@IN(21006,21014)</code>;</li><li><code>[Имя запроса]</code>&nbsp;— подставляется первая ячейка первой строки запроса, например список id через <code>GROUP_CONCAT</code>;</li><li>маски на&nbsp;одну колонку складываются по&nbsp;ИЛИ, на&nbsp;разные колонки&nbsp;— по&nbsp;И.</li></ul>
+    </article>
+    <article id="menu">
+      <h3>Меню роли</h3>
+      <p>Пункты меню&nbsp;— записи таблицы 151, подчинённые роли. <code>t153</code>&nbsp;— адрес страницы внутри базы, <code>t391</code>&nbsp;— иконка (HTML, поэтому через <code>--form-string</code>).</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_m_new/151?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;up=900&quot; -F &quot;t151=Клиенты&quot; -F &quot;t153=table/641&quot; \
+  --form-string &#39;t391=&lt;i class=&quot;pi pi-users&quot;&gt;&lt;/i&gt;&#39;</code></pre>
+      <p>Меню роли&nbsp;— <code>object/151/?JSON_OBJ&amp;F_U={роль}</code>.</p>
+    </article>
+    <article id="guest">
+      <h3>Гостевой доступ</h3>
+      <p>Посетитель без&nbsp;входа работает пользователем <code>guest</code>, если в&nbsp;базе есть и&nbsp;роль <code>guest</code>, и&nbsp;пользователь <code>guest</code> с&nbsp;этой ролью. Что видит гость, решают доступы и&nbsp;меню роли <code>guest</code>.</p>
+    </article>
+  </section>
+  <section id="reports">
+    <h2>Запросы (отчёты)</h2>
+    <article id="report-model">
+      <h3>Как&nbsp;устроен запрос</h3>
+      <p>Запрос&nbsp;— запись таблицы 22, его колонки&nbsp;— записи таблицы 28&nbsp;с&nbsp;<code>up={id запроса}</code>. У&nbsp;колонки есть источник (таблица или&nbsp;колонка), имя, формула, фильтр и&nbsp;функция. Как&nbsp;соединить таблицы и&nbsp;по&nbsp;чему группировать, ядро определяет само по&nbsp;метаданным.</p>
+      <table><thead><tr><th>Поле</th><th>Что задаёт</th></tr></thead><tbody><tr><td><code>t28</code></td><td>Источник: id таблицы (её главное значение) или&nbsp;id колонки; <code>0</code>&nbsp;— вычисляемая колонка</td></tr><tr><td><code>t100</code></td><td>Имя в&nbsp;отчёте: ключ в&nbsp;<code>JSON_KV</code> и&nbsp;имя фильтра <code>FR_{имя}</code>. Без&nbsp;имени колонку снаружи не&nbsp;отфильтровать</td></tr><tr><td><code>t101</code></td><td>Формула: у&nbsp;колонки с&nbsp;источником&nbsp;— псевдоним (одно&nbsp;слово), у&nbsp;вычисляемой&nbsp;— SQL-выражение над&nbsp;псевдонимами</td></tr><tr><td><code>t102</code> / <code>t103</code></td><td>Фильтр: значение от&nbsp;/ до</td></tr><tr><td><code>t104</code></td><td>Функция: <code>SUM</code>, <code>COUNT</code>, <code>AVG</code>, <code>MIN</code>, <code>MAX</code>, <code>GROUP_CONCAT</code>; <code>abn_ID</code>&nbsp;— id записи</td></tr><tr><td><code>t105</code> / <code>t106</code></td><td>Фильтр по&nbsp;значению функции (HAVING)</td></tr><tr><td><code>t107</code></td><td><code>1</code>&nbsp;— скрыть колонку: она фильтрует и&nbsp;связывает, но&nbsp;не&nbsp;выводится</td></tr><tr><td><code>t109</code></td><td>Сортировка: <code>1</code>, <code>2</code>…; минус&nbsp;— по&nbsp;убыванию</td></tr><tr><td><code>t84</code></td><td>Формат: <code>NUMBER</code>, <code>SIGNED</code>, <code>DATE</code>, <code>HTML</code></td></tr><tr><td><code>t72</code></td><td>Итог по&nbsp;колонке в&nbsp;форме отчёта: <code>SUM</code>, <code>COUNT</code></td></tr></tbody></table>
+      <p>Первая колонка задаёт главную таблицу: строки отчёта&nbsp;— её записи. Колонки связанных таблиц добавляются просто id их колонок&nbsp;— путь по&nbsp;ссылкам ядро находит само.</p>
+    </article>
+    <article id="report-new">
+      <h3>Создать запрос</h3>
+      <p>Отчёт «Клиенты по&nbsp;категориям»: категория, число клиентов и&nbsp;сумма заказов.</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_m_new/22?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; -F &quot;up=1&quot; -F &quot;t22=Клиенты по категориям&quot;
+# → {&quot;id&quot;: 950}
+curl -s &quot;https://integram.io/mydb/_m_new/28?JSON=1&amp;up=950&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=950&quot; -F &quot;t28=646&quot; -F &quot;t100=Категория&quot; -F &quot;t109=1&quot;
+curl -s &quot;https://integram.io/mydb/_m_new/28?JSON=1&amp;up=950&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=950&quot; -F &quot;t28=641&quot; -F &quot;t100=Клиентов&quot; -F &quot;t104=COUNT&quot; -F &quot;t72=SUM&quot;
+curl -s &quot;https://integram.io/mydb/_m_new/28?JSON=1&amp;up=950&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=950&quot; -F &quot;t28=695&quot; -F &quot;t100=Сумма&quot; -F &quot;t104=SUM&quot; -F &quot;t84=NUMBER&quot;</code></pre>
+      <p><code>GROUP BY</code> строится по&nbsp;всем видимым колонкам без&nbsp;функции&nbsp;— здесь по&nbsp;Категории. В&nbsp;<code>_m_new</code> функцию можно указать именем (<code>t104=SUM</code>), в&nbsp;<code>_m_set</code>&nbsp;— только id записи из&nbsp;таблицы Функция: <code>object/63/?JSON_OBJ</code>.</p>
+      <p>Колонки запроса&nbsp;— <code>object/28/?JSON_OBJ&amp;F_U=950</code>, список запросов&nbsp;— <code>object/22/?JSON_OBJ</code>.</p>
+    </article>
+    <article id="report-formula">
+      <h3>Формулы и&nbsp;вычисляемые колонки</h3>
+      <p>Колонке-источнику дают псевдоним в&nbsp;<code>t101</code>, вычисляемая колонка (<code>t28=0</code>) использует его в&nbsp;SQL-выражении. В&nbsp;формуле&nbsp;— псевдоним, а&nbsp;не&nbsp;имя в&nbsp;отчёте.</p>
+      <pre><code>curl -s &quot;https://integram.io/mydb/_m_new/28?JSON=1&amp;up=960&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=960&quot; -F &quot;t28=720&quot; -F &quot;t100=Мест&quot; -F &quot;t101=мест&quot; -F &quot;t107=1&quot;
+curl -s &quot;https://integram.io/mydb/_m_new/28?JSON=1&amp;up=960&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=960&quot; -F &quot;t28=721&quot; -F &quot;t100=Куплено&quot; -F &quot;t101=куплено&quot;
+curl -s &quot;https://integram.io/mydb/_m_new/28?JSON=1&amp;up=960&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=960&quot; -F &quot;t28=0&quot; -F &quot;t100=Загрузка, %&quot; -F &quot;t101=ROUND(куплено/мест*100, 2)&quot;</code></pre>
+      <ul><li>псевдоним&nbsp;— одно&nbsp;слово, не&nbsp;совпадающее с&nbsp;SQL-словами (<code>id</code>, <code>val</code>, <code>SUM</code>);</li><li>агрегат внутри формулы: <code>ROUND(SUM(Оценка), 1)</code>;</li><li><code>[THIS]</code>&nbsp;— собственное значение колонки: <code>COALESCE([THIS], 0)</code>;</li><li>ссылка: <code>CONCAT(&#39;&lt;a href=&quot;&#39;, Адрес, &#39;&quot;&gt;открыть&lt;/a&gt;&#39;)</code> с&nbsp;<code>t84=HTML</code>;</li><li><code>SELECT</code>, <code>FROM</code>, <code>TABLE</code> в&nbsp;формулах запрещены&nbsp;— выборка из&nbsp;другой таблицы делается подзапросом.</li></ul>
+    </article>
+    <article id="report-filters">
+      <h3>Фильтры</h3>
+      <p>Постоянный фильтр задаётся в&nbsp;<code>t102</code> (от) и&nbsp;<code>t103</code> (до) у&nbsp;колонки. Колонку только для&nbsp;фильтра скрывают (<code>t107=1</code>). Если у&nbsp;колонки нет «Имени в&nbsp;отчёте» (<code>t100</code>), её фильтр снаружи не&nbsp;переопределить&nbsp;— так задают ограничители, см. «Права на&nbsp;запрос».</p>
+      <table><thead><tr><th>t102</th><th>Отбирает</th></tr></thead><tbody><tr><td><code>Одобрена</code></td><td>Равно значению; у&nbsp;справочной колонки&nbsp;— по&nbsp;названию</td></tr><tr><td><code>660</code> при&nbsp;<code>t104=abn_ID</code></td><td>Ссылка на&nbsp;запись справочника 660</td></tr><tr><td><code>%</code> / <code>!%</code></td><td>Непусто / пусто</td></tr><tr><td><code>!1</code></td><td>Не&nbsp;равно 1</td></tr><tr><td><code>&gt;=[WEEK_AGO]</code>, <code>[TODAY]</code>, <code>[YESTERDAY]</code>, <code>[MONTH_AGO]</code>, <code>[NOW]</code></td><td>Относительные даты</td></tr><tr><td><code>1.1</code> и&nbsp;<code>t103=31.12</code></td><td>Диапазон дат текущего года</td></tr><tr><td><code>[USER_ID]</code> при&nbsp;<code>t104=abn_ID</code></td><td>Строки текущего пользователя</td></tr><tr><td><code>_request_.ProjID</code></td><td>Параметр из&nbsp;адреса: <code>report/950?ProjID=12</code></td></tr><tr><td><code>[Имя запроса]</code></td><td>Значение другого запроса</td></tr></tbody></table>
+      <pre><code># только свои заказы: колонка Ответственный (697) скрыта и фильтрует по текущему пользователю
+curl -s &quot;https://integram.io/mydb/_m_new/28?JSON=1&amp;up=950&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=950&quot; -F &quot;t28=697&quot; -F &quot;t104=abn_ID&quot; -F &quot;t102=[USER_ID]&quot; -F &quot;t107=1&quot;</code></pre>
+    </article>
+    <article id="report-subquery">
+      <h3>Подзапросы</h3>
+      <p>Суммы с&nbsp;разных уровней цепочки (Компания ← Заявка ← Договор) в&nbsp;одном запросе удваиваются: строки соединённых таблиц перемножаются. Каждую следующую сумму считают отдельным запросом и&nbsp;вставляют в&nbsp;формулу как&nbsp;<code>[Имя запроса]</code>.</p>
+      <pre><code># подзапрос «Договоры компании»: сумма договоров компании [КомпанияID]
+curl -s &quot;https://integram.io/mydb/_m_new/22?JSON=1&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=1&quot; -F &quot;t22=Договоры компании&quot;
+# → {&quot;id&quot;: 970}
+curl -s &quot;https://integram.io/mydb/_m_new/28?JSON=1&amp;up=970&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=970&quot; -F &quot;t28=812&quot; -F &quot;t100=Сумма&quot; -F &quot;t104=SUM&quot;
+curl -s &quot;https://integram.io/mydb/_m_new/28?JSON=1&amp;up=970&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=970&quot; -F &quot;t28=803&quot; -F &quot;t104=abn_ID&quot; -F &quot;t102=[КомпанияID]&quot; -F &quot;t107=1&quot;
+# основной запрос: псевдоним КомпанияID и вычисляемая колонка с подзапросом
+curl -s &quot;https://integram.io/mydb/_m_new/28?JSON=1&amp;up=980&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=980&quot; -F &quot;t28=800&quot; -F &quot;t100=КомпанияID&quot; -F &quot;t101=КомпанияID&quot; -F &quot;t104=abn_ID&quot; -F &quot;t107=1&quot;
+curl -s &quot;https://integram.io/mydb/_m_new/28?JSON=1&amp;up=980&quot; \
+  -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot; \
+  -F &quot;up=980&quot; -F &quot;t28=0&quot; -F &quot;t100=Законтрактовано&quot; -F &quot;t101=IFNULL([Договоры компании],0)&quot;</code></pre>
+      <p>Подзапрос без&nbsp;строк возвращает пусто&nbsp;— оберните его в&nbsp;<code>IFNULL</code> или&nbsp;задайте запросу «Если пусто, вернуть» (<code>t113=0</code>).</p>
+    </article>
+    <article id="report-run">
+      <h3>Выполнить запрос</h3>
+      <p><code>report</code> с&nbsp;id или&nbsp;названием запроса. <code>JSON_KV</code>&nbsp;— массив объектов с&nbsp;ключами из&nbsp;<code>t100</code>; <code>JSON</code>&nbsp;— с&nbsp;описанием колонок и&nbsp;форматов.</p>
+      <pre><code>curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/report/950?JSON_KV&quot;</code></pre>
+      <p class="api__label">Ответ</p><pre><code>[
+  {&quot;Категория&quot;: &quot;Клиент&quot;, &quot;Клиентов&quot;: &quot;12&quot;, &quot;Сумма&quot;: &quot;1840000&quot;},
+  {&quot;Категория&quot;: &quot;Лид&quot;, &quot;Клиентов&quot;: &quot;31&quot;, &quot;Сумма&quot;: &quot;0&quot;}
+]</code></pre>
+      <p>Фильтры снаружи&nbsp;— <code>FR_{имя}</code> (от) и&nbsp;<code>TO_{имя}</code> (до), пробелы в&nbsp;имени заменяются на&nbsp;<code>_</code>. Они работают на&nbsp;колонках с&nbsp;заполненным «Именем в&nbsp;отчёте» (<code>t100</code>) и&nbsp;перекрывают их <code>t102</code>/<code>t103</code>; колонки без&nbsp;имени параметрами не&nbsp;меняются. <code>ORDER={id колонки}</code> сортирует (минус&nbsp;— по&nbsp;убыванию), <code>LIMIT</code> ограничивает число строк, <code>RECORD_COUNT</code> возвращает только их число.</p>
+      <pre><code>curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/report/950?JSON_KV&amp;FR_Категория=Клиент&quot;
+curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/report/951?JSON_KV&amp;FR_Дата=01.10.2026&amp;TO_Дата=31.10.2026&amp;LIMIT=50&quot;
+# запрос по названию
+curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/report/Клиенты%20по%20категориям?JSON_KV&amp;FR_Категория=Клиент&quot;</code></pre>
+    </article>
+    <article id="report-access">
+      <h3>Права на&nbsp;запрос</h3>
+      <p>Запрос работает как&nbsp;хранимая процедура: с&nbsp;правами того, кто его настроил, а&nbsp;не&nbsp;того, кто вызывает. Роли нужен только доступ READ к&nbsp;самому запросу (<code>t116={id запроса}</code>, <code>t136=53</code>). Он открывает все колонки и&nbsp;строки, которые отбирает запрос; доступы роли к&nbsp;таблицам и&nbsp;её маски к&nbsp;запросу не&nbsp;применяются.</p>
+      <p>Это не&nbsp;обход прав, а&nbsp;назначение запроса: отдать ровно то, что решил аналитик, в&nbsp;том числе из&nbsp;таблиц, которые роль руками не&nbsp;видит. Что увидит вызывающий, ограничивают фильтры внутри запроса, и&nbsp;внешний параметр их не&nbsp;отменит:</p>
+      <ul><li>снаружи фильтруются только колонки с&nbsp;заполненным «Именем в&nbsp;отчёте» (<code>t100</code>): <code>FR_{имя}</code> и&nbsp;<code>TO_{имя}</code> перекрывают их <code>t102</code>/<code>t103</code>;</li><li>у&nbsp;колонки без&nbsp;<code>t100</code> фильтр <code>t102</code>/<code>t103</code> параметрами адреса не&nbsp;переопределяется&nbsp;— это защита от&nbsp;подмены фильтра пользователем;</li><li>фильтруемость включается явно, именем колонки: всё, чему аналитик не&nbsp;дал имени, закрыто для&nbsp;подмены. Это строже правила «фильтровать можно всё, кроме запрещённого».</li></ul>
+      <pre><code># ограничитель «только свои заказы»: без t100, скрыт — FR_/TO_ его не заменят
+curl -s &quot;https://integram.io/mydb/_m_new/28?JSON=1&amp;up=950&quot;   -H &quot;X-Authorization: $TOKEN&quot; -F &quot;_xsrf=$XSRF&quot;   -F &quot;up=950&quot; -F &quot;t28=697&quot; -F &quot;t104=abn_ID&quot; -F &quot;t102=[USER_ID]&quot; -F &quot;t107=1&quot;</code></pre>
+      <p class="api__note">Не&nbsp;давайте колонке-ограничителю «Имя в&nbsp;отчёте». С&nbsp;именем её фильтр становится параметром: вызывающий подставит в&nbsp;<code>FR_</code> чужой id вместо <code>[USER_ID]</code> и&nbsp;получит чужие строки.</p>
+    </article>
+  </section>
+  <section id="files">
+    <h2>Файлы и&nbsp;рабочие места</h2>
+    <article id="dir-admin">
+      <h3>Файловый менеджер</h3>
+      <p><code>dir_admin</code> загружает HTML-шаблоны рабочих мест (<code>templates=1</code>) и&nbsp;скрипты со&nbsp;стилями (<code>download=1</code>). Кроме заголовка нужны кука <code>{база}</code>, поле <code>token</code> и&nbsp;<code>_xsrf</code>, полученный под&nbsp;этой кукой. Без&nbsp;куки сервер отвечает <code>InvalidToken</code>.</p>
+      <pre><code>XSRF=$(curl -s -b &quot;mydb=$TOKEN&quot; &quot;https://integram.io/mydb/xsrf?JSON=1&quot; | jq -r ._xsrf)
+curl -s -H &quot;X-Authorization: $TOKEN&quot; -b &quot;mydb=$TOKEN&quot; &quot;https://integram.io/mydb/dir_admin/?JSON=1&quot; \
+  -F &quot;_xsrf=$XSRF&quot; -F &quot;token=$TOKEN&quot; -F &quot;templates=1&quot; -F &quot;add_path=/&quot; -F &quot;upload=Загрузить&quot; -F &quot;rewrite=1&quot; \
+  -F &quot;userfile=@clients.html&quot;</code></pre>
+      <p>Файлы из&nbsp;<code>download=1</code> раздаются по&nbsp;адресу <code>https://integram.io/download/mydb/</code>. Адрес рабочего места в&nbsp;меню роли&nbsp;— имя шаблона без&nbsp;<code>.html</code> (<code>t153=clients</code>). Доступ роли к&nbsp;файлам&nbsp;— особый объект <code>10</code> в&nbsp;таблице 116.</p>
+    </article>
+    <article id="templater">
+      <h3>Шаблонизатор</h3>
+      <p>Адрес <code>/mydb/clients</code> открывает оболочку <code>main.html</code>, и&nbsp;её маркер <code>&lt;!-- File: a --&gt;</code> вставляет <code>clients.html</code> из&nbsp;папки базы (<code>templates=1</code>), а&nbsp;если его нет&nbsp;— из&nbsp;общей <code>templates/</code>.</p>
+      <ul><li>Блок <code>&lt;!-- Begin: Clients --&gt;…&lt;!-- End: Clients --&gt;</code> получает строки запроса базы с&nbsp;тем же именем и&nbsp;повторяется по&nbsp;ним; вложенный блок&nbsp;— по&nbsp;строкам своего запроса на&nbsp;каждой строке внешнего.</li><li>Плейсхолдеры: <code>{колонка}</code>&nbsp;— значение строки, <code>{_parent_.колонка}</code>&nbsp;— строка внешнего блока, <code>{_global_.user}</code>, <code>{_global_.xsrf}</code> и&nbsp;другие&nbsp;— сессия, <code>{_request_.имя}</code>&nbsp;— параметр адреса.</li><li>Условий нет: блок без&nbsp;строк не&nbsp;выводится, строка с&nbsp;неподставленным <code>{...}</code> выбрасывается. Параметры <code>FR_колонка</code> в&nbsp;адресе фильтруют запросы всех блоков.</li></ul>
+    </article>
+    <article id="backup">
+      <h3>Резервная копия</h3>
+      <p><code>backup</code> создаёт архив базы в&nbsp;папке <code>backups</code> файлового менеджера. Делайте его перед массовыми изменениями структуры. Выгрузка одной таблицы&nbsp;— <code>object/{таблица}</code> с&nbsp;параметром <code>csv</code> или&nbsp;<code>bki</code>.</p>
+      <pre><code>curl -s -b &quot;mydb=$TOKEN&quot; &quot;https://integram.io/mydb/backup&quot;
+curl -s -H &quot;X-Authorization: $TOKEN&quot; &quot;https://integram.io/mydb/object/641/?JSON=1&amp;bki&quot; -o clients.bki</code></pre>
+    </article>
+  </section>
+  <footer class="api__footer">
+    <p><a href="/">integram.io</a></p>
+  </footer>
+</main>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(97768013, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/97768013" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+</body>
+</html>
