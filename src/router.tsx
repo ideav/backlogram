@@ -47,6 +47,8 @@ const UseCaseLanding = lazy(() => import('./pages/UseCaseLanding'))
 const UseCaseHub = lazy(() => import('./pages/UseCaseHub'))
 const Privacy = lazy(() => import('./pages/Privacy'))
 const Terms = lazy(() => import('./pages/Terms'))
+// ideav/courses#3: оферты партнёра и адепта, описание взаимодействия.
+const PartnerDoc = lazy(() => import('./pages/PartnerDoc'))
 // #578: каталог услуг с ценами — коммерческие сигналы для рейтинга в Яндексе.
 const Services = lazy(() => import('./pages/Services'))
 // #642: кластер «автоматизация бизнеса с ИИ» — шесть страниц из src/data/aiPages.mjs.
@@ -194,6 +196,10 @@ export const router = createBrowserRouter([
         path: 'privacy',
         element: <Privacy />,
       },
+      // ideav/courses#3: документы партнёрской программы (текст — src/data/partner-docs.mjs).
+      { path: 'partner-offer.html', element: <PartnerDoc doc="partner-offer" /> },
+      { path: 'adept-offer.html', element: <PartnerDoc doc="adept-offer" /> },
+      { path: 'partner-adept.html', element: <PartnerDoc doc="partner-adept" /> },
       // Соглашение об использовании сервиса. Раньше страница лежала статикой в
       // public/ (копия integram.io/terms.html в вёрстке старого сайта) — теперь
       // её собирает сам сайт; URL /terms.html сохранён, он в индексе.

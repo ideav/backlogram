@@ -141,6 +141,9 @@ export function Footer() {
               <Link to="/privacy.html" onClick={() => visitParams({ footer_click: { legal: 'Обработка персональных данных' } })} className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
                 Обработка персональных данных
               </Link>
+              <Link to="/partner-adept.html" onClick={() => visitParams({ footer_click: { legal: 'Партнёрам и адептам: условия' } })} className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
+                Партнёрам и адептам: условия
+              </Link>
             </div>
           </div>
           <div className="text-slate-400 dark:text-slate-500 text-xs italic">
