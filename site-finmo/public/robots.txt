@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /success
+Disallow: /order.php
+
+Sitemap: https://finmo.integram.io/sitemap.xml

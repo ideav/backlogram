@@ -19,6 +19,8 @@
     "build:excel": "vite build --config site-excel/vite.config.ts && node scripts/prerender-site-excel.mjs",
     "dev:mvp": "vite --config site-mvp/vite.config.ts",
     "build:mvp": "vite build --config site-mvp/vite.config.ts && node scripts/prerender-site-mvp.mjs",
+    "dev:finmo": "vite --config site-finmo/vite.config.ts",
+    "build:finmo": "vite build --config site-finmo/vite.config.ts && node scripts/prerender-site-finmo.mjs",
     "og-excel": "node scripts/generate-excel-og.mjs",
     "og-images": "node scripts/generate-og-images.mjs",
     "blog-posts": "node scripts/generate-blog-posts.mjs",
