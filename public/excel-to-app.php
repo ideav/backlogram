@@ -82,6 +82,7 @@ $SOURCE_LABELS = [
     'uc-dokumenty'      => 'Документооборот / договоры',
     'uc-otchetnost'     => 'Управленческий учёт',
     'uc-tmc-ds'         => 'Движение ТМЦ и денег',
+    'uc-dashbord'       => 'Дашборд собственника (Битрикс24, 1С, Google-таблицы)',
 ];
 $sourceLabel = $SOURCE_LABELS[$source] ?? ($source !== '' ? $source : 'Excel → приложение');
 

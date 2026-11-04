@@ -39,6 +39,7 @@ const IMG_SIZE = {
   '/uc-dogovory.png': { w: 1536, h: 1024 },
   '/uc-otchetnost.png': { w: 1536, h: 1024 },
   '/uc-dvizhenie-tmc.png': { w: 1520, h: 916 },
+  '/adept/spz-pult-zadach.webp': { w: 1170, h: 610 },
 }
 
 function escape(s) {
@@ -123,6 +124,22 @@ for (const uc of USE_CASES) {
     .map((f) => `<section><h3>${escape(f.title)}</h3><p>${escape(f.body)}</p></section>`).join('')
   const faqHtml = uc.faq
     .map((f) => `<section><h3>${escape(f.q)}</h3><p>${escape(f.a)}</p></section>`).join('')
+  // Необязательные блоки расширенного лендинга (issue #867).
+  const galleryHtml = (uc.gallery ?? [])
+    .map((g) => `<figure class="uc-figure"><img src="${escape(g.src)}" alt="${escape(g.alt)}" width="${g.w}" height="${g.h}" loading="lazy" /><figcaption>${escape(g.caption)}</figcaption></figure>`).join('')
+  const stepsHtml = uc.steps
+    ? `<h2>${escape(uc.stepsTitle ?? 'Как это работает')}</h2>` + uc.steps.map((st) => `<section><h3>${escape(st.title)}</h3><p>${escape(st.body)}</p></section>`).join('')
+    : ''
+  const pricingHtml = uc.pricing
+    ? `<h2 id="cena">${escape(uc.pricingTitle ?? 'Цена')}</h2><p>${escape(uc.pricingLead ?? '')}</p><ul>` +
+      uc.pricing.map((p) => `<li><strong>${escape(p.name)}: ${escape(p.price)}</strong> (${escape(p.note)}) — ${p.items.map(escape).join('; ')}</li>`).join('') + '</ul>'
+    : ''
+  const demoHtml = uc.demoUrl
+    ? `<h2 id="demo">${escape(uc.demoTitle ?? 'Демо')}</h2><p>${escape(uc.demoText ?? '')} <a href="${escape(uc.demoUrl)}">${escape(uc.demoLabel ?? 'Открыть демо')}</a></p>`
+    : ''
+  const relatedHtml = uc.related
+    ? uc.related.map((r) => `<a href="${escape(r.href)}">${escape(r.label)}</a>`).join(' · ') + ' · '
+    : ''
   const others = USE_CASES.filter((o) => o.slug !== uc.slug).slice(0, 3)
   const otherLinks = others
     .map((o) => `<a href="/${o.slug}.html">${escape(o.badge)}</a>`).join(' · ')
@@ -139,19 +156,19 @@ for (const uc of USE_CASES) {
     <p class="uc-lead" itemprop="description">${escape(uc.lead)}</p>
     <figure class="uc-figure">
       <img src="${escape(uc.image)}" alt="${escape(uc.imageAlt)}" width="${IMG_SIZE[uc.image]?.w ?? ''}" height="${IMG_SIZE[uc.image]?.h ?? ''}" loading="lazy" itemprop="image" />
-      <figcaption>Пример приложения на платформе Интеграм</figcaption>
+      <figcaption>${escape(uc.figureCaption ?? 'Пример приложения на платформе Интеграм')}</figcaption>
     </figure>
   </header>
-  <h2>Excel перестал справляться — что меняется</h2>
+  <h2>${escape(uc.painsTitle ?? 'Excel перестал справляться — что меняется')}</h2>
   <ul>${painsHtml}</ul>
   <p>${escape(uc.example)}</p>
-  <h2>Что вы получаете</h2>
-  ${featuresHtml}
+  <h2>${escape(uc.featuresTitle ?? 'Что вы получаете')}</h2>
+  ${featuresHtml}${galleryHtml}${stepsHtml}${pricingHtml}${demoHtml}
   <h2>Частые вопросы</h2>
   ${faqHtml}
   <footer class="uc-footer">
     <p>
-      ${relatedExtra}<a href="/${uc.slug}.html#zayavka">Заказать демо</a> ·
+      ${relatedExtra}${relatedHtml}<a href="/${uc.slug}.html#zayavka">${escape(uc.ctaLabel ?? 'Заказать демо')}</a> ·
       <a href="/resheniya.html">Все решения вместо Excel</a> ·
       <a href="/">На главную</a> · ${otherLinks}
     </p>
@@ -178,7 +195,8 @@ for (const uc of USE_CASES) {
   const { tags, seoTitle, metaDescription } = headTagsFor({
     canonical, seoTitle: uc.seoTitle, metaDescription: uc.metaDescription,
     ogTitle: uc.ogTitle, ogDescription: uc.ogDescription, jsonLd,
-    ogImage: `${SITE}${uc.image}`, ogImageW: sz.w, ogImageH: sz.h,
+    ogImage: uc.ogImage ? `${SITE}${uc.ogImage}` : `${SITE}${uc.image}`,
+    ogImageW: uc.ogImage ? 1200 : sz.w, ogImageH: uc.ogImage ? 630 : sz.h,
   })
   write(uc.slug, seoTitle, metaDescription, tags, bodyHtml)
 }
