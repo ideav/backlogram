@@ -9,6 +9,7 @@ for (const name of ['deck-partner', 'deck-client']) {
         assert.match(html, /nav\.className = 'slide-nav'/);
         assert.match(html, /'Далее: ' \+ title/);
         assert.match(html, /\.slide-nav-next \{/);
+        assert.match(html, /b\.disabled = /, 'на краях колоды стрелка панели неактивна');
         assert.match(html, /\.bar, \.slide-nav \{ display: none; \}/, 'в печати кнопки скрыты');
     });
 }
