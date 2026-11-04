@@ -1,4 +1,4 @@
-# Deploying the English site (integram-ai.online)
+# Deploying the English site (ideav.pro)
 
 Issue #526 (epic #524). The web root on the host is the union of two trees:
 
@@ -12,11 +12,13 @@ engine `index.php` (`.htaccess` comes from `site-en/public/.htaccess` into `dist
 ## One-command deploy
 
 ```bash
-export EN_SITE_URL=https://integram-ai.online       # scheme + host the static pages are built for
-export EN_DEPLOY_HOST=host.example.com
-export EN_DEPLOY_USER=deploy
-export EN_DEPLOY_PATH=/var/www/integram-ai.online      # the web root
-# optional: EN_CONTACT_EMAIL (default hello@<host>), EN_DEPLOY_SSH_PORT, EN_DEPLOY_SSH_KEY, EN_DEPLOY_PHP
+export EN_SITE_URL=https://ideav.pro                # scheme + host the static pages are built for
+export EN_DEPLOY_HOST=ideav.pro
+export EN_DEPLOY_USER=root
+export EN_DEPLOY_PATH=/var/www/ideav.pro               # the web root
+export EN_CONTACT_EMAIL=support@ideav.pro             # there is no hello@ mailbox on ideav.pro
+# optional: EN_DEPLOY_SSH_PORT, EN_DEPLOY_SSH_KEY, EN_DEPLOY_PHP
+# after an upload as root: ssh root@ideav.pro 'chown -R apache:apache /var/www/ideav.pro'
 
 bash scripts/en-deploy.sh --dry-run            # show what would change
 bash scripts/en-deploy.sh                      # build + upload
@@ -44,17 +46,25 @@ literal domain in `site-en/engine` or `site-en/src`.
 
 After deploy run the release gate: `node scripts/en-release-audit.mjs $EN_SITE_URL` and go through `docs/en-release-checklist.md`.
 
-## Production host (integram-ai.online)
+## Production host (ideav.pro)
 
-The site is a separate ispmanager web domain on the shared server (the one that also runs other sites; never touch their vhosts, roots or DBs):
+Since 2026-11-04 the site runs on its own VPS (AlmaLinux 8, no control panel); the earlier copy on
+integram-ai.online was removed (#526). The server runs nothing but this site.
 
-- Web domain `integram-ai.online` (alias `www.integram-ai.online`), owner `www-root`, PHP 8.3 (CGI, native) with mysqli/curl/mbstring/openssl.
-- Web root: `/var/www/www-root/data/www/integram-ai.online` (`EN_DEPLOY_USER=www-root`, `EN_DEPLOY_PATH` = this path).
-- Extra vhost config: `/etc/apache2/vhosts-resources/integram-ai.online/integram-ai-extra.conf` (www -> bare 301, `AllowOverride All`, `DirectoryIndex index.html index.php`); it is included by the panel-generated vhost and survives panel regeneration.
-- MySQL: database `integram_ai`, user `integram_ai@localhost` (created via the panel, utf8mb4).
-- Server-only config (chmod 600, owner `www-root`, kept by the deploy): `.env` in the web root (engine: DB, salt, SMTP, base URL, OAuth) and `order-config.php` (lead form recipient).
-- Mail: mailbox `abc@integram-ai.online` on the same host (exim/dovecot, ispmanager email domain with DKIM). The engine sends through `localhost:25` with SMTP AUTH as that mailbox (no STARTTLS: the local exim certificate is self-signed and PHP would reject it).
-- TLS: Let's Encrypt via ispmanager (`integram-ai.online_le*`), issued once the A records point to the host.
+- Apache 2.4 + `mod_ssl` + php-fpm 8.2 (`php:8.2` module stream) + MySQL 8.0, all from the distro repos.
+- Web root: `/var/www/ideav.pro`, owner `apache`. Vhost: `/etc/httpd/conf.d/ideav.pro.conf` (port 80 -> `https://ideav.pro` in one 301)
+  and `ideav.pro-le-ssl.conf` (written by certbot); `AllowOverride All` so the site `.htaccess` applies.
+- MySQL: database `integram_ai`, user `integram_ai@localhost` (the name stayed from the first host).
+- Server-only config (chmod 600, owner `apache`, kept by the deploy): `.env` in the web root (engine: DB, salt, SMTP, base URL,
+  OAuth) and `order-config.php` (lead form: to `support@ideav.pro`, from `no-reply@ideav.pro`).
+- Mail out: local postfix, send-only on loopback, DKIM via opendkim (selector `mail`, key in `/etc/opendkim/keys/ideav.pro/`).
+  The engine talks to `127.0.0.1:25` without AUTH (`INTEGRAM_SMTP_PASSWORD` empty), sender `no-reply@ideav.pro`, reply-to `support@ideav.pro`.
+- Mail in: the `ideav.pro` mailboxes (`support@` and others) live on a separate mail host (`MX mail.ideav.pro`), not on this VPS.
+  That host's exim rejects unauthenticated mail with an `@ideav.pro` sender unless the sending IP is in `relay_from_hosts`,
+  so the web VPS IP is listed there (in both `exim4.conf.template` and the panel's `exim4.conf.templater`).
+- TLS: Let's Encrypt via `certbot --apache -d ideav.pro -d www.ideav.pro`, renewed by `certbot-renew.timer`.
+- DNS resolvers are pinned in NetworkManager (`nmcli con mod "System eth0" ipv4.dns ...`): after a hostname change the generated
+  `/etc/resolv.conf` came up without nameservers and certbot could not reach Let's Encrypt.
 
 ## Host requirements (any provider outside the RF)
 
@@ -65,8 +75,8 @@ The site is a separate ispmanager web domain on the shared server (the one that 
   ```nginx
   server {
     listen 443 ssl http2;
-    server_name integram-ai.online;
-    root /var/www/integram-ai.online;
+    server_name ideav.pro;
+    root /var/www/ideav.pro;
     index index.html index.php;
     location / { try_files $uri $uri/ /index.php?$query_string; }
     location ~ \.php$ {
@@ -76,24 +86,28 @@ The site is a separate ispmanager web domain on the shared server (the one that 
     }
     location ~ /\.(env|git|ht) { deny all; }
   }
-  server { listen 80; server_name integram-ai.online www.integram-ai.online; return 301 https://integram-ai.online$request_uri; }
-  server { listen 443 ssl http2; server_name www.integram-ai.online; return 301 https://integram-ai.online$request_uri; }
+  server { listen 80; server_name ideav.pro www.ideav.pro; return 301 https://ideav.pro$request_uri; }
+  server { listen 443 ssl http2; server_name www.ideav.pro; return 301 https://ideav.pro$request_uri; }
   ```
-- **HTTPS** via Let's Encrypt (`certbot --apache -d integram-ai.online -d www.integram-ai.online`), auto-renewal timer on; HTTP -> HTTPS and `www` -> bare in one 301; HSTS header recommended.
-- **SMTP** for confirmation mails and the contact form (from `abc@integram-ai.online`): relay credentials go into the server `.env`. SPF/DKIM/DMARC as in the checklist.
+- **HTTPS** via Let's Encrypt (`certbot --apache -d <domain> -d www.<domain>`), auto-renewal timer on; HTTP -> HTTPS and `www` -> bare in one 301; HSTS header recommended.
+- **SMTP** for confirmation mails and the contact form (from `no-reply@<domain>`): relay credentials, if any, go into the server `.env`. SPF/DKIM/DMARC as in the checklist.
 - **Cron**: only if the engine stream documents scheduled jobs (mail queue, cleanup); install them with the deploy user's crontab and note them here.
 - **Server `.env`**: DB credentials, SMTP, GitHub/Google OAuth client id/secret, contact email. Created once by hand, never uploaded.
 
 ### DNS records
 | Record | Name | Value |
 |---|---|---|
-| A (and AAAA) | `integram-ai.online` | host IP |
-| CNAME or A | `www.integram-ai.online` | `integram-ai.online` / host IP |
-| MX | `integram-ai.online` | `10 integram-ai.online.` (mailbox on the web host) |
-| TXT (SPF) | `integram-ai.online` | `v=spf1 ip4:<host IP> a mx ~all` |
-| TXT (DKIM) | `dkim._domainkey.integram-ai.online` | public key from ispmanager (Mail -> Mail domains) |
-| TXT (DMARC) | `_dmarc.integram-ai.online` | `v=DMARC1; p=none; rua=mailto:abc@integram-ai.online` |
-| CAA (optional) | `integram-ai.online` | `0 issue "letsencrypt.org"` |
+As set for ideav.pro:
+
+| Record | Name | Value |
+|---|---|---|
+| A | `ideav.pro`, `www.ideav.pro` | web VPS IP |
+| MX | `ideav.pro` | `10 mail.ideav.pro.` (separate mail host, keep as is) |
+| TXT (SPF) | `ideav.pro` | `v=spf1 ip4:<mail host IP> ip4:<web VPS IP> mx ~all` |
+| TXT (DKIM) | `mail._domainkey.ideav.pro` | `/etc/opendkim/keys/ideav.pro/mail.txt` on the web VPS |
+| TXT (DMARC) | `_dmarc.ideav.pro` | `v=DMARC1; p=none; rua=mailto:support@ideav.pro` |
+| PTR | web VPS IP | `ideav.pro` (set at the VPS provider, not in the zone) |
+| CAA (optional) | `ideav.pro` | `0 issue "letsencrypt.org"` |
 
 ## Docker Compose option
 
