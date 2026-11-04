@@ -75,8 +75,9 @@ test('текст соглашения перенесён дословно: 16 п
   assert.match(termsData, /Сервис предоставляется Интеграмом «как есть»/)
   assert.match(termsData, /Федеральным законом № 152-ФЗ «О персональных данных» от 27\.07\.2006 года/)
   assert.match(termsData, /не рассматривается как «спам»|Не рассматривается как «спам»/)
-  // Адреса из пунктов 11 и 15 — как в оригинале.
-  assert.match(termsData, /https:\/\/integram\.io\/terms\.html/)
+  // Пункт 11 с 04.11.2026 (#864) публикует изменения на ideav.ru; адрес из 15 — как в оригинале.
+  assert.match(termsData, /https:\/\/ideav\.ru\/terms\.html/)
+  assert.doesNotMatch(termsData, /href: 'https:\/\/integram\.io\/terms\.html'/)
   assert.match(termsData, /mailto:support@integram\.io/)
 })
 
@@ -108,7 +109,7 @@ test('prerender-terms пишет crawlable dist/terms.html с текстом с�
 
   // Все 16 пунктов на месте, ссылки из 11-го и 15-го развёрнуты.
   assert.equal((out.match(/<li id="p\d+">/g) ?? []).length, 16)
-  assert.match(out, /<a href="https:\/\/integram\.io\/terms\.html">integram\.io\/terms\.html<\/a>/)
+  assert.match(out, /<a href="https:\/\/ideav\.ru\/terms\.html">ideav\.ru\/terms\.html<\/a>/)
   assert.match(out, /<a href="mailto:support@integram\.io">support@integram\.io<\/a>/)
   assert.match(out, /Политика обработки персональных данных/)
 })
@@ -140,7 +141,7 @@ test('React-страница и снапшот берут текст из общ
 
 test('пункт 16: своя установка ограничена оплаченными базами', () => {
   assert.match(termsData, /n: 16,/)
-  assert.match(termsData, /только те базы данных и в том количестве, которые были оплачены/)
+  assert.match(termsData, /только те базы данных и в том количестве, которые были оплачены Пользователем на момент прекращения работы Сервиса/)
   assert.match(termsData, /создавать новые базы данных и тиражировать экземпляр на другие серверы запрещается/)
   assert.match(termsData, /виртуальная база данных Сервиса, хранимая в одноимённой физической таблице/)
   assert.match(termsData, /https:\/\/ideav\.ru\/self-hosting\.html/)
