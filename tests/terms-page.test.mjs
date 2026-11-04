@@ -69,8 +69,8 @@ test('build прогоняет пререндер соглашения посл�
   )
 })
 
-test('текст соглашения перенесён дословно: 15 пунктов и ключевые формулировки', () => {
-  assert.equal((termsData.match(/^\s{4}n: \d+,$/gm) ?? []).length, 15, 'пунктов должно быть 15')
+test('текст соглашения перенесён дословно: 16 пунктов (16-й добавлен 04.11.2026) и ключевые формулировки', () => {
+  assert.equal((termsData.match(/^\s{4}n: \d+,$/gm) ?? []).length, 16, 'пунктов должно быть 16')
   // Выборочные формулировки из оригинала integram.io/terms.html.
   assert.match(termsData, /Сервис предоставляется Интеграмом «как есть»/)
   assert.match(termsData, /Федеральным законом № 152-ФЗ «О персональных данных» от 27\.07\.2006 года/)
@@ -106,8 +106,8 @@ test('prerender-terms пишет crawlable dist/terms.html с текстом с�
   assert.ok(head.includes('rel="canonical"'), 'canonical должен быть внутри <head>')
   assert.match(out, /"@type":"WebPage"/)
 
-  // Все 15 пунктов на месте, ссылки из 11-го и 15-го развёрнуты.
-  assert.equal((out.match(/<li id="p\d+">/g) ?? []).length, 15)
+  // Все 16 пунктов на месте, ссылки из 11-го и 15-го развёрнуты.
+  assert.equal((out.match(/<li id="p\d+">/g) ?? []).length, 16)
   assert.match(out, /<a href="https:\/\/integram\.io\/terms\.html">integram\.io\/terms\.html<\/a>/)
   assert.match(out, /<a href="mailto:support@integram\.io">support@integram\.io<\/a>/)
   assert.match(out, /Политика обработки персональных данных/)
@@ -136,4 +136,12 @@ test('React-страница и снапшот берут текст из общ
   const script = readFileSync(resolve(repo, 'scripts/prerender-terms.mjs'), 'utf8')
   assert.match(page, /from '\.\.\/data\/terms'/)
   assert.match(script, /from '\.\.\/src\/data\/terms\.mjs'/)
+})
+
+test('пункт 16: своя установка ограничена оплаченными базами', () => {
+  assert.match(termsData, /n: 16,/)
+  assert.match(termsData, /только те базы данных и в том количестве, которые были оплачены/)
+  assert.match(termsData, /создавать новые базы данных и тиражировать экземпляр на другие серверы запрещается/)
+  assert.match(termsData, /виртуальная база данных Сервиса, хранимая в одноимённой физической таблице/)
+  assert.match(termsData, /https:\/\/ideav\.ru\/self-hosting\.html/)
 })
