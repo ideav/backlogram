@@ -23,6 +23,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { API_META, API_INTRO, API_SECTIONS } from '../src/data/apiDocs.mjs'
 import { docsRingHtml } from '../src/data/docsRing.mjs'
+import { escape, inline, tocHtml, sectionsHtml } from '../src/data/apiDocsHtml.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -31,67 +32,9 @@ const SITE = 'https://ideav.ru'
 const PUBLISHER = 'Интеграм'
 const PATH = API_META.path
 
-function escape(s) {
-  return String(s ?? '').replace(/[&<>"']/g, (c) => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;',
-  }[c]))
-}
-
-/** Фрагменты в обратных кавычках — <code>, остальное экранируется. */
-function inline(text) {
-  return String(text)
-    .split('`')
-    .map((part, i) => (i % 2 === 1 ? `<code>${escape(part)}</code>` : escape(part)))
-    .join('')
-}
-
-function blockHtml(b) {
-  switch (b.t) {
-    case 'p':
-      return `<p>${inline(b.text)}</p>`
-    case 'note':
-      return `<p class="api-prerender__note">${inline(b.text)}${b.link ? ` <a href="${escape(b.link.href)}">${escape(b.link.text)}</a>` : ''}</p>`
-    case 'list':
-      return `<ul>${b.items.map((i) => `<li>${inline(i)}</li>`).join('')}</ul>`
-    case 'code':
-      return `${b.label ? `<p class="api-prerender__label">${escape(b.label)}</p>` : ''}<pre><code>${escape(b.code)}</code></pre>`
-    case 'table':
-      return `<table><thead><tr>${b.head.map((h) => `<th>${escape(h)}</th>`).join('')}</tr></thead><tbody>${b.rows
-        .map((r) => `<tr>${r.map((c) => `<td>${inline(c)}</td>`).join('')}</tr>`)
-        .join('')}</tbody></table>`
-    default:
-      throw new Error(`prerender-api: неизвестный блок ${b.t}`)
-  }
-}
-
 // ───────────────────────────────────────────────────────────────────────────
 //  Статический снапшот — тот же текст, что рендерит src/pages/ApiDocs.tsx
 // ───────────────────────────────────────────────────────────────────────────
-const tocHtml = API_SECTIONS.map(
-  (s) =>
-    `<li><a href="#${s.id}">${escape(s.title)}</a><ul>${s.topics
-      .map((t) => `<li><a href="#${t.id}">${escape(t.title)}</a></li>`)
-      .join('')}</ul></li>`,
-).join('')
-
-const sectionsHtml = API_SECTIONS.map(
-  (s) => `
-  <section id="${s.id}">
-    <h2>${escape(s.title)}</h2>${s.topics
-      .map(
-        (t) => `
-    <article id="${t.id}">
-      <h3>${escape(t.title)}</h3>
-      ${t.blocks.map(blockHtml).join('\n      ')}
-    </article>`,
-      )
-      .join('')}
-  </section>`,
-).join('')
 
 const canonical = `${SITE}${PATH}`
 
@@ -107,8 +50,8 @@ const bodyHtml = `
     ${docsRingHtml(PATH)}
   </header>
   <nav class="api-prerender__toc" aria-label="Содержание">
-    <ol>${tocHtml}</ol>
-  </nav>${sectionsHtml}
+    <ol>${tocHtml(API_SECTIONS)}</ol>
+  </nav>${sectionsHtml(API_SECTIONS)}
   <footer class="api-prerender__footer">
     <p>
       <a href="/">На главную</a> ·
