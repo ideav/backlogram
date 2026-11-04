@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="t d">
+<title id="t">Меньше кода — меньше дыр: почему приложения на Интеграме безопаснее</title>
+<desc id="d">Слева — стопка приложений, у каждого свой код и свои уязвимости; справа — одно ядро под щитом, над которым приложения лежат как описания без кода.</desc>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0" stop-color="#060d20"/><stop offset="0.55" stop-color="#0a1c47"/><stop offset="1" stop-color="#123a8f"/>
+ </linearGradient>
+ <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+  <stop offset="0" stop-color="#60a5fa" stop-opacity="0.40"/><stop offset="1" stop-color="#60a5fa" stop-opacity="0"/>
+ </radialGradient>
+ <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
+  <circle cx="2" cy="2" r="1.3" fill="#8ab4f8" fill-opacity="0.12"/>
+ </pattern>
+ <style>
+  .card{fill:#0d2557;stroke:#38bdf8;stroke-opacity:0.45;stroke-width:1.6}
+  .bad{fill:#2a1530;stroke:#f87171;stroke-opacity:0.6;stroke-width:1.6}
+  .bar{fill:#7dd3fc;fill-opacity:0.30}
+  .badbar{fill:#fca5a5;fill-opacity:0.35}
+  .ttl{fill:#ffffff;font:700 54px Arial,sans-serif}
+  .ttl2{fill:#7dd3fc;font:700 54px Arial,sans-serif}
+  .sub{fill:#cfe0ff;fill-opacity:0.85;font:400 18px Arial,sans-serif}
+  .lbl{fill:#e0f2fe;font:700 13.5px Arial,sans-serif}
+  .lbl2{fill:#cfe0ff;fill-opacity:0.7;font:400 11.5px Arial,sans-serif}
+  .bug{fill:#f87171;font:700 15px Arial,sans-serif}
+ </style>
+</defs>
+
+<rect width="1200" height="630" fill="url(#bg)"/>
+<rect width="1200" height="630" fill="url(#dots)"/>
+<circle cx="900" cy="330" r="300" fill="url(#glow)"/>
+<circle cx="230" cy="130" r="230" fill="url(#glow)" opacity="0.5"/>
+
+<text x="64" y="150" font-family="Arial" font-size="15" font-weight="700" letter-spacing="3" fill="#7dd3fc" fill-opacity="0.9">БЕЗОПАСНОСТЬ • АРХИТЕКТУРА</text>
+<text class="ttl" x="64" y="220">Меньше кода —</text>
+<text class="ttl2" x="64" y="284">меньше дыр</text>
+<text class="sub" x="64" y="342">48 185 уязвимостей за 2025 год.</text>
+<text class="sub" x="64" y="368">Большинство — в коде приложений,</text>
+<text class="sub" x="64" y="394">а не в ядрах систем.</text>
+
+<!-- слева: приложения со своим кодом -->
+<g>
+ <text class="lbl" x="740" y="120" text-anchor="middle">приложения с кодом</text>
+ <rect class="bad" x="650" y="138" width="180" height="58" rx="10"/>
+ <text x="666" y="176" font-family="Consolas,monospace" font-size="22" font-weight="700" fill="#fca5a5">&lt;/&gt;</text>
+ <rect class="badbar" x="712" y="156" width="90" height="7" rx="3"/><rect class="badbar" x="712" y="172" width="64" height="7" rx="3"/>
+ <text class="bug" x="812" y="160">!</text>
+ <rect class="bad" x="650" y="208" width="180" height="58" rx="10"/>
+ <text x="666" y="246" font-family="Consolas,monospace" font-size="22" font-weight="700" fill="#fca5a5">&lt;/&gt;</text>
+ <rect class="badbar" x="712" y="226" width="76" height="7" rx="3"/><rect class="badbar" x="712" y="242" width="96" height="7" rx="3"/>
+ <text class="bug" x="812" y="230">!</text>
+ <rect class="bad" x="650" y="278" width="180" height="58" rx="10"/>
+ <text x="666" y="316" font-family="Consolas,monospace" font-size="22" font-weight="700" fill="#fca5a5">&lt;/&gt;</text>
+ <rect class="badbar" x="712" y="296" width="96" height="7" rx="3"/><rect class="badbar" x="712" y="312" width="58" height="7" rx="3"/>
+ <text class="bug" x="812" y="300">!</text>
+ <text class="lbl2" x="740" y="362" text-anchor="middle">у каждого свой код и зависимости</text>
+</g>
+
+<text x="882" y="246" font-family="Arial" font-size="30" font-weight="700" fill="#fbbf24" text-anchor="middle">→</text>
+
+<!-- справа: описания над одним ядром -->
+<g>
+ <text class="lbl" x="1030" y="120" text-anchor="middle">Интеграм</text>
+ <rect class="card" x="930" y="138" width="200" height="34" rx="8"/><text class="lbl2" x="1030" y="160" text-anchor="middle">CRM · описание</text>
+ <rect class="card" x="930" y="180" width="200" height="34" rx="8"/><text class="lbl2" x="1030" y="202" text-anchor="middle">склад · описание</text>
+ <rect class="card" x="930" y="222" width="200" height="34" rx="8"/><text class="lbl2" x="1030" y="244" text-anchor="middle">заявки · описание</text>
+ <path d="M1030 272 L1102 296 L1102 336 Q1102 378 1030 404 Q958 378 958 336 L958 296 Z" fill="#0d2557" stroke="#7dd3fc" stroke-width="2.2"/>
+ <path d="M1004 336 L1024 356 L1060 316" fill="none" stroke="#7dd3fc" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+ <text class="lbl2" x="1030" y="430" text-anchor="middle">одно ядро, права на сервере</text>
+</g>
+
+<text x="64" y="560" font-family="Arial" font-size="20" font-weight="700" letter-spacing="1" fill="#ffffff">ИНТЕГРАМ</text>
+<text x="190" y="560" font-family="Arial" font-size="16" fill="#cfe0ff" fill-opacity="0.7">ideav.ru/blog</text>
+</svg>
