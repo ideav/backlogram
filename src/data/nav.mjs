@@ -130,6 +130,8 @@ export const footerNavGroups = [
 export const footerLegalLinks = [
   { name: 'Правила использования', href: '/terms.html' },
   { name: 'Обработка персональных данных', href: '/privacy.html' },
+  // ideav/courses#3: оферты партнёра и адепта — со страницы описания.
+  { name: 'Партнёрам и адептам: условия', href: '/partner-adept.html' },
 ]
 
 /**

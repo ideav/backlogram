@@ -389,6 +389,13 @@ export default function Partners() {
                   </a>
                 </span>
               </label>
+              {/* ideav/courses#3: условия партнёрской программы — публичная оферта. */}
+              <p className="mt-3 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                Условия программы —{' '}
+                <a href="/partner-offer.html" target="_blank" className="underline hover:text-blue-500 transition-colors">оферта партнёрской программы</a>
+                {' '}и{' '}
+                <a href="/partner-adept.html" target="_blank" className="underline hover:text-blue-500 transition-colors">как работают партнёры и адепты</a>.
+              </p>
 
               <button
                 type="submit"

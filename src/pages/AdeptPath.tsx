@@ -576,6 +576,13 @@ export default function AdeptPath() {
                   </a>
                 </span>
               </label>
+              {/* ideav/courses#3: заявка — акцепт оферты для адептов. */}
+              <p className="mt-3 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                Отправляя заявку, вы принимаете{' '}
+                <a href="/adept-offer.html" target={LINK_TARGET} className="underline hover:text-blue-500 transition-colors">оферту для адептов</a>.
+                {' '}Как устроена работа с клиентами —{' '}
+                <a href="/partner-adept.html" target={LINK_TARGET} className="underline hover:text-blue-500 transition-colors">партнёры и адепты</a>.
+              </p>
 
               <button
                 type="submit"
