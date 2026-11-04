@@ -1,7 +1,7 @@
 ---
 title: 'Память ИИ-агента: нужна ли векторная БД или хватит Postgres'
 description: 'Что на самом деле нужно памяти ИИ-агента: pgvector, отдельная векторная БД или связи между записями. Замеры на 19 000 тикетах и грабли Postgres.'
-pubDate: '2026-11-05'
+pubDate: '2026-11-09'
 image: /uploads/pamyat-ii-agenta-cover.png
 category: Обучение
 author: Команда Интеграм
