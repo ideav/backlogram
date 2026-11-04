@@ -11,6 +11,7 @@ node_modules
 dist
 dist-en
 dist-excel
+dist-mvp
 dist-ssr
 *.local
 
@@ -46,3 +47,4 @@ excel-to-app-queue/
 
 # Настройки приёма заявок лендинга на отдельном домене (токен бота, почта)
 site-excel/public/order-config.php
+site-mvp/public/order-config.php

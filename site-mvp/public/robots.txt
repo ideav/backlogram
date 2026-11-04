@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /success
+Disallow: /ideav_callme
+Disallow: /order.php
+
+Sitemap: https://mvp.care/sitemap.xml
