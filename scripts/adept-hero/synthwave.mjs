@@ -1,4 +1,4 @@
-// «Ретровейв»: полосатое закатное солнце, неоновая сетка до горизонта,
+// «Ретровейв»: закатное солнце (цельное, без полос-щелей — #887), неоновая сетка до горизонта,
 // каркасные горы и пальмы по краям.
 import { H, W, glow, stars, svgDoc } from './common.mjs'
 
@@ -45,15 +45,16 @@ const defs = `
       <stop offset="0" stop-color="#2a0845"/>
       <stop offset="1" stop-color="#05010d"/>
     </linearGradient>
-    <clipPath id="sunCut">
-      <rect x="0" y="0" width="${W}" height="470"/>
-      ${[0, 1, 2, 3, 4, 5].map(i => `<rect x="0" y="${480 + i * 42}" width="${W}" height="${30 - i * 4}"/>`).join('')}
-    </clipPath>${glow('g', 6)}${glow('sunGlow', 40)}`
+    <radialGradient id="halo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0.55" stop-color="#fb7185" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#fb7185" stop-opacity="0"/>
+    </radialGradient>${glow('g', 6)}`
 
 const body = `
   <rect width="${W}" height="${H}" fill="url(#sky)"/>
   ${stars(19, 160, 520)}
-  <circle cx="${W / 2}" cy="${HZ - 40}" r="360" fill="url(#sun)" clip-path="url(#sunCut)" filter="url(#sunGlow)"/>
+  <circle cx="${W / 2}" cy="${HZ - 40}" r="620" fill="url(#halo)"/>
+  <circle cx="${W / 2}" cy="${HZ - 40}" r="360" fill="url(#sun)"/>
   ${mountains([[0, 0], [160, 260], [300, 150], [470, 330], [640, 120], [820, 210], [980, 0]], 0)}
   ${mountains([[0, 0], [180, 240], [340, 120], [520, 300], [700, 170], [860, 280], [1000, 0]], 1560)}
   <rect y="${HZ}" width="${W}" height="${H - HZ}" fill="url(#floor)"/>
