@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { ArrowRight, Bot, Briefcase, Check, CheckCircle2, Clock, ExternalLink, LayoutGrid, Lightbulb, MessagesSquare, Send, Wallet, X } from 'lucide-react'
-import { reachGoal } from '../lib/metrika'
+import { reachGoal, visitParams } from '../lib/metrika'
+import { adeptHeroCookie, nextAdeptHero, readAdeptHeroCookie } from '../data/adeptHero'
 import { parseTelegramMessage } from '../lib/telegramMessage'
 import { BOT_REPORT } from '../data/adeptBotReport'
 import {
@@ -70,6 +71,17 @@ export default function AdeptPath() {
   const captchaContainerRef = useRef<HTMLDivElement>(null)
   const captchaWidgetIdRef = useRef<number | null>(null)
   const reportDialogRef = useRef<HTMLDialogElement>(null)
+  // Ротация фона hero: кука хранит прошлую тему, каждый заход — следующая.
+  const [hero] = useState(() => {
+    const picked = nextAdeptHero(readAdeptHeroCookie(document.cookie))
+    document.cookie = adeptHeroCookie(picked.id)
+    return picked
+  })
+
+  // Показ темы — параметром визита: в Метрике видно и показы, и заявки по теме.
+  useEffect(() => {
+    visitParams({ adept_hero: hero.id })
+  }, [hero.id])
 
   useEffect(() => {
     document.title = ADEPT_META.title
@@ -163,6 +175,7 @@ export default function AdeptPath() {
     const summary = [
       'Путь адепта /put-adepta.html — заявка в разработчики',
       experience.trim() ? `Опыт: ${experience.trim()}` : 'Опыт: не указан',
+      `Картинка hero: ${hero.id} (${hero.label})`,
     ].join('\n')
 
     const data = new FormData()
@@ -179,7 +192,7 @@ export default function AdeptPath() {
       .then(res => res.json())
       .then(json => {
         if (json.ok) {
-          reachGoal('lead', { source: 'adept' })
+          reachGoal('lead', { source: 'adept', adept_hero: hero.id })
           setStage('done')
         } else {
           setStage('form')
@@ -195,18 +208,32 @@ export default function AdeptPath() {
   return (
     <div className="pb-20">
       {/* Hero */}
-      <section className="relative isolate overflow-hidden px-4 sm:px-6 lg:px-8 pt-32 lg:pt-44 pb-12">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.10)_0%,transparent_60%)]" />
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+      {/* Фон — одна из тем ADEPT_HEROES, случайно на каждый заход (A/B по заявкам) */}
+      <section
+        data-hero={hero.id}
+        className="relative isolate overflow-hidden bg-slate-950 px-4 sm:px-6 lg:px-8 pt-32 lg:pt-44 pb-16 lg:pb-24"
+      >
+        <div className="absolute inset-0 -z-10">
+          <img
+            src={hero.src}
+            alt=""
+            aria-hidden="true"
+            fetchPriority="high"
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-slate-950/45" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(2,6,23,0.7)_0%,rgba(2,6,23,0.25)_55%,transparent_80%)]" />
+        </div>
+        <div className="max-w-4xl mx-auto text-center [text-shadow:0_2px_12px_rgba(2,6,23,0.6)]">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
             {ADEPT_META.h1}
           </h1>
-          <p className="mt-6 text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed">{HERO_LEAD}</p>
+          <p className="mt-6 text-lg sm:text-xl text-slate-100 leading-relaxed">{HERO_LEAD}</p>
           <div className="mt-6 flex flex-wrap justify-center gap-2">
             {HERO_CHIPS.map(chip => (
               <span
                 key={chip}
-                className="inline-flex items-center gap-1.5 rounded-full bg-blue-500/10 px-3 py-1 text-sm font-medium text-blue-600 dark:text-blue-400"
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-sm px-3 py-1 text-sm font-medium text-white"
               >
                 <Check size={14} aria-hidden="true" />
                 {chip}
@@ -225,7 +252,7 @@ export default function AdeptPath() {
             <button
               type="button"
               onClick={() => goTo('#zayavka')}
-              className="inline-flex items-center gap-2 px-8 py-4 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 font-bold rounded-xl transition-colors"
+              className="inline-flex items-center gap-2 px-8 py-4 border border-white/50 bg-slate-950/30 backdrop-blur-sm text-white hover:border-white hover:bg-white/10 font-bold rounded-xl transition-colors"
             >
               Присоединиться
             </button>
