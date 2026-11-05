@@ -83,6 +83,7 @@ $SOURCE_LABELS = [
     'adept'               => 'Путь адепта: заявка в разработчики',
     'erp'                 => 'ERP со 100% кастомизацией: заявка на разбор',
     'partners'            => 'Партнёрам: заявка на партнёрство',
+    'kurs'                => 'Курсы (ideav.ru/kurs): заявка на курс',
 ];
 $source_label = $SOURCE_LABELS[$source] ?? $source;
 
