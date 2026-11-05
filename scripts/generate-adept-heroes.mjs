@@ -32,6 +32,9 @@ async function loadSharp() {
   throw new Error('не найден sharp: установите зависимости blog-v2 (npm i) или задайте SHARP_MODULE')
 }
 
+// Подъём яркости после растеризации (#882: «мрачновато»): ночным сценам больше.
+const BRIGHTNESS = { samurai: 1.12, anime: 1.08, cyberpunk: 1.3, synthwave: 1.15, cosmos: 1.3 }
+
 const only = process.argv.slice(2)
 const sharp = await loadSharp()
 for (const hero of ADEPT_HEROES) {
@@ -39,9 +42,9 @@ for (const hero of ADEPT_HEROES) {
   const mod = await import(`./adept-hero/${hero.id}.mjs`)
   const svg = mod[`${hero.id}Svg`]
   const out = join(root, 'public', hero.src)
-  await sharp(Buffer.from(svg)).webp({ quality: 80 }).toFile(out)
+  await sharp(Buffer.from(svg)).modulate({ brightness: BRIGHTNESS[hero.id] ?? 1 }).webp({ quality: 80 }).toFile(out)
   if (process.env.ADEPT_HERO_PNG) {
-    await sharp(Buffer.from(svg)).resize(1280).png().toFile(join(process.env.ADEPT_HERO_PNG, `${hero.id}.png`))
+    await sharp(Buffer.from(svg)).modulate({ brightness: BRIGHTNESS[hero.id] ?? 1 }).resize(1280).png().toFile(join(process.env.ADEPT_HERO_PNG, `${hero.id}.png`))
   }
   console.log(`→ ${out}`)
 }

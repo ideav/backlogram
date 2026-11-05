@@ -16,8 +16,8 @@ const dust = (() => {
 
 const defs = `
     <radialGradient id="space" cx="0.5" cy="0.4" r="0.8">
-      <stop offset="0" stop-color="#1b1446"/>
-      <stop offset="1" stop-color="#03030c"/>
+      <stop offset="0" stop-color="#33287a"/>
+      <stop offset="1" stop-color="#0f0d30"/>
     </radialGradient>
     <radialGradient id="planet" cx="0.35" cy="0.3" r="0.8">
       <stop offset="0" stop-color="#fcd34d"/>

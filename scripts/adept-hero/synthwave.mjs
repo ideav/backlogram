@@ -32,8 +32,8 @@ const palm = (x, s, flip) => `
 
 const defs = `
     <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0b0420"/>
-      <stop offset="0.6" stop-color="#3b0f5c"/>
+      <stop offset="0" stop-color="#1c0b45"/>
+      <stop offset="0.6" stop-color="#5e1a85"/>
       <stop offset="1" stop-color="#9d174d"/>
     </linearGradient>
     <linearGradient id="sun" x1="0" y1="0" x2="0" y2="1">

@@ -52,9 +52,9 @@ const ronin = `
 
 const defs = `
     <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#05030f"/>
-      <stop offset="0.6" stop-color="#2a0b44"/>
-      <stop offset="1" stop-color="#7a1d6b"/>
+      <stop offset="0" stop-color="#1c1145"/>
+      <stop offset="0.6" stop-color="#52207f"/>
+      <stop offset="1" stop-color="#c03a86"/>
     </linearGradient>${glow('neon', 9)}${blur('haze', 40)}`
 
 const body = `
