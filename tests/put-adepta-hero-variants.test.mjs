@@ -60,3 +60,9 @@ test('страница берёт тему из куки и шлёт её с з�
   assert.match(src, /reachGoal\('lead', \{ source: 'adept', adept_hero: hero\.id \}\)/)
   assert.match(src, /visitParams\(\{ adept_hero: hero\.id \}\)/)
 })
+
+test('#887: солнце ретровейва цельное — без полос-щелей поверх свечения', () => {
+  const src = readFileSync(join(root, 'scripts/adept-hero/synthwave.mjs'), 'utf8')
+  assert.doesNotMatch(src, /clip-path="url\(#sunCut\)"/)
+  assert.doesNotMatch(src, /<clipPath id="sunCut">/)
+})
