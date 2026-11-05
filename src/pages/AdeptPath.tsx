@@ -221,10 +221,10 @@ export default function AdeptPath() {
             fetchPriority="high"
             className="absolute inset-0 h-full w-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-slate-950/45" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(2,6,23,0.7)_0%,rgba(2,6,23,0.25)_55%,transparent_80%)]" />
+          <div className="absolute inset-0 bg-slate-950/15" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(2,6,23,0.5)_0%,rgba(2,6,23,0.12)_50%,transparent_75%)]" />
         </div>
-        <div className="max-w-4xl mx-auto text-center [text-shadow:0_2px_12px_rgba(2,6,23,0.6)]">
+        <div className="max-w-4xl mx-auto text-center [text-shadow:0_2px_14px_rgba(2,6,23,0.75)]">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
             {ADEPT_META.h1}
           </h1>
