@@ -129,3 +129,22 @@ AddDefaultCharset UTF-8
     Header set Cache-Control "public, max-age=3600"
   </FilesMatch>
 </IfModule>
+
+# ── Security headers (ideav/python2node#1142) ───────────────────────────────
+# Apply to every response of the web root: the landing, the blog and the
+# Интеграм engine (index.php) alike.
+#   • X-Frame-Options + CSP frame-ancestors — no framing by foreign sites
+#     (clickjacking). Yandex Metrika Webvisor replays visits inside a frame on
+#     its own domains, so frame-ancestors lets those in; browsers that know CSP
+#     use frame-ancestors and ignore X-Frame-Options.
+#   • CSP here carries ONLY frame-ancestors. A script policy is a separate step
+#     (report-only first): the engine templates rely on inline scripts.
+#   • HSTS starts with a short max-age, no includeSubDomains; raise it once
+#     https on the host is confirmed stable.
+<IfModule mod_headers.c>
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Content-Security-Policy "frame-ancestors 'self' https://webvisor.com https://*.webvisor.com https://metrika.yandex.ru https://*.metrika.yandex.ru"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Strict-Transport-Security "max-age=300" "expr=%{HTTPS} == 'on'"
+</IfModule>
