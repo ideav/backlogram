@@ -13,18 +13,45 @@
  * Отдаёт готовый объект; подставляет его BaseLayout через проп `jsonLd`.
  */
 
-/** Организация-издатель. Совпадает с `${SITE}/#organization` основного сайта. */
+/**
+ * Организация-издатель. Тот же узел `${SITE}/#organization`, что в пререндере
+ * главной (scripts/prerender-landing.mjs): одинаковый @id с разными полями
+ * дробит бренд на две сущности. Раньше здесь были только name/url/logo — без
+ * description и sameAs модели не связывали «Интеграм», ideav.ru и integram.io
+ * (аудит SEO/GEO, issue #898).
+ */
 function organization(site: string) {
   return {
     '@type': 'Organization',
     '@id': `${site}/#organization`,
     name: 'Интеграм',
+    legalName: 'АО «Интеграм»',
+    alternateName: ['Конструктор Интеграм', 'Integram'],
+    description:
+      'Интеграм — российский no-code конструктор приложений и баз данных (не социальная сеть). Из Excel — рабочее веб-приложение с формами, правами доступа и отчётами.',
     url: `${site}/`,
     logo: {
       '@type': 'ImageObject',
-      url: `${site}/logo.png`,
+      url: `${site}/logos/integram-og.png`,
     },
+    sameAs: [
+      'https://integram.io',
+      'https://reestr.digital.gov.ru/reestr/4638631/',
+      'https://rutube.ru/channel/41204904/videos/',
+    ],
   }
+}
+
+/**
+ * Автор статьи. «Команда Интеграм» — не человек, и `Person` с таким именем
+ * поисковик считает ошибкой разметки (#898): коллективный автор ссылается на
+ * организацию-издателя, живой автор остаётся `Person`.
+ */
+export function authorNode(site: string, author: string) {
+  // Не \b: в JS он видит границу слова только у латиницы.
+  return /^(команда|редакция)(\s|$)/i.test(author.trim())
+    ? { '@id': `${site}/#organization` }
+    : { '@type': 'Person', name: author }
 }
 
 function breadcrumb(id: string, items: Array<{ name: string; url: string }>) {
@@ -57,9 +84,13 @@ export interface PostGraphInput {
   /** Абсолютный адрес обложки. */
   image?: string
   section?: string
+  /** Абсолютный адрес страницы раздела — третья крошка цепочки. */
+  sectionUrl?: string
   keywords?: string[]
   /** Слов в тексте статьи — Google показывает его в отчётах по статьям. */
   wordCount?: number
+  /** Частые вопросы статьи — узел FAQPage (#898). */
+  faq?: Array<{ q: string; a: string }>
 }
 
 /** BlogPosting + Organization + BreadcrumbList для страницы статьи. */
@@ -75,8 +106,10 @@ export function postGraph(input: PostGraphInput) {
     author,
     image,
     section,
+    sectionUrl,
     keywords,
     wordCount,
+    faq,
   } = input
 
   return {
@@ -92,7 +125,7 @@ export function postGraph(input: PostGraphInput) {
         mainEntityOfPage: url,
         datePublished,
         dateModified,
-        author: { '@type': 'Person', name: author },
+        author: authorNode(site, author),
         publisher: { '@id': `${site}/#organization` },
         ...(image ? { image } : {}),
         ...(section ? { articleSection: section } : {}),
@@ -112,9 +145,25 @@ export function postGraph(input: PostGraphInput) {
       breadcrumb(url, [
         { name: 'Интеграм', url: `${site}/` },
         { name: 'Блог', url: blogUrl },
-        ...(section ? [{ name: section, url: `${blogUrl}` }] : []),
+        // Раньше крошка раздела вела на главную блога — два пункта цепочки с одним
+        // URL (#898). Без адреса раздела крошку не выдумываем.
+        ...(section && sectionUrl ? [{ name: section, url: sectionUrl }] : []),
         { name: headline, url },
       ]),
+      ...(faq?.length
+        ? [
+            {
+              '@type': 'FAQPage',
+              '@id': `${url}#faq`,
+              isPartOf: { '@id': `${url}#article` },
+              mainEntity: faq.map((it) => ({
+                '@type': 'Question',
+                name: it.q,
+                acceptedAnswer: { '@type': 'Answer', text: it.a },
+              })),
+            },
+          ]
+        : []),
     ],
   }
 }

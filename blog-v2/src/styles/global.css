@@ -1414,7 +1414,8 @@ img {
 }
 
 .product-footer h2,
-.product-footer h3 {
+.product-footer h3,
+.product-footer-title {
   margin: 0;
   color: var(--color-product-navy);
   font-weight: 850;
