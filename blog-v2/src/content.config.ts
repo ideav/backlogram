@@ -6,6 +6,12 @@ const posts = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
+    // Короткие версии для выдачи (#898): <title>, meta description, og/twitter и
+    // JSON-LD. title и description остаются заголовком и лидом на странице —
+    // длинный лид читателю полезен, а в сниппете обрезается на середине.
+    // Без полей берутся title/description. Пределы держит тест issue-898.
+    seoTitle: z.string().optional(),
+    seoDescription: z.string().optional(),
     pubDate: z.coerce.date(),
     // Дата последней правки — уходит в dateModified разметки BlogPosting
     // (issue #627, п. 1). Ставится руками: от даты сборки она менялась бы при
@@ -25,6 +31,9 @@ const posts = defineCollection({
     // Does NOT affect <link rel="canonical"> — see issue #331.
     originalUrl: z.string().url().optional(),
     tags: z.array(z.string()).default([]),
+    // Частые вопросы (#898): выводятся блоком в конце статьи и тем же текстом
+    // уходят в FAQPage разметки — разметка обязана совпадать с видимым текстом.
+    faq: z.array(z.object({ q: z.string(), a: z.string() })).optional(),
     // Тематический CTA вместо общего блока «Попробуйте Интеграм» внизу статьи
     // (issue #641): статье про дашборды кнопка «Excel → приложение» не по теме.
     // Без поля показывается общий блок.

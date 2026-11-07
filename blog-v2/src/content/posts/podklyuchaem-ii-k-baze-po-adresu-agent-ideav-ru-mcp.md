@@ -1,5 +1,6 @@
 ---
 title: 'Подключаем ИИ к базе ideav.ru по адресу: удалённый MCP agent.ideav.ru/mcp'
+seoTitle: "Подключаем ИИ к базе ideav.ru: удалённый MCP-сервер"
 description: 'Как подключить Claude, ChatGPT или другой ИИ-клиент к базе на ideav.ru без установки: адрес agent.ideav.ru/mcp, MCP-токен со страницы базы, права, срок и отзыв.'
 pubDate: '2026-11-02'
 category: Обучение

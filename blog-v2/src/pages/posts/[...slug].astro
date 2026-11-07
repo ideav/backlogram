@@ -1,5 +1,7 @@
 ---
 import { existsSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import sharp from 'sharp'
 import { getCollection, render } from 'astro:content'
 import { isPublished } from '../../lib/published.mjs'
 import BaseLayout from '../../layouts/BaseLayout.astro'
@@ -7,6 +9,7 @@ import { tagSlug } from '../../lib/tags'
 import { categorySlug } from '../../lib/categories'
 import { absoluteWithBase, withBase } from '../../lib/url'
 import { postGraph } from '../../lib/jsonld'
+import { machineDate } from '../../lib/dates.mjs'
 
 // og:image must be exactly 1200×630 — BaseLayout hardcodes og:image:width/height.
 // Covers that aren't already that size get a generated 1200×630 variant at
@@ -19,6 +22,20 @@ function ogImage(image) {
   return existsSync(new URL(`../../../public${variant}`, import.meta.url))
     ? variant
     : image
+}
+
+// Размеры обложки для <img width/height>: без них браузер не резервирует место
+// и текст прыгает при загрузке (CLS, аудит #898). Читаются из файла при сборке.
+async function imageSize(image) {
+  if (!image?.startsWith('/uploads/')) return null
+  try {
+    const { width, height } = await sharp(
+      fileURLToPath(new URL(`../../../public${image}`, import.meta.url))
+    ).metadata()
+    return width && height ? { width, height } : null
+  } catch {
+    return null
+  }
 }
 
 export async function getStaticPaths() {
@@ -48,13 +65,27 @@ export async function getStaticPaths() {
 }
 
 const { post, issueNumber, next } = Astro.props
-const { Content } = await render(post)
+const { Content, headings } = await render(post)
+
+// Оглавление (#898): у длинной статьи — ссылки на её H2 (якоря Astro ставит
+// сам) и на блок вопросов. Короткой заметке с 1–3 разделами оно не нужно.
+const faq = post.data.faq ?? []
+const FAQ_ID = 'chastye-voprosy'
+const toc = [
+  ...headings.filter((h) => h.depth === 2).map((h) => ({ id: h.slug, text: h.text })),
+  ...(faq.length ? [{ id: FAQ_ID, text: 'Частые вопросы' }] : []),
+]
+const showToc = toc.length >= 4
 
 const formattedDate = post.data.pubDate
   // timeZone: 'UTC' — pubDate из YAML это полночь UTC; без него сборка на машине
   // с отрицательным смещением показывала предыдущий день (issue #641).
   .toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'UTC' })
   .replace(' г.', '')
+
+const heroSize = await imageSize(post.data.image)
+const published = machineDate(post.data.pubDate)
+const modified = machineDate(post.data.updatedDate ?? post.data.pubDate)
 
 const readingTime = Math.max(1, Math.round(post.body!.length / 1100))
 
@@ -75,6 +106,8 @@ const cta = post.data.cta ?? {
 // заголовок не влезал в выдачу и обрезался на самом важном (аудит 02.10.2026,
 // issue #627, п. 12). Короткий хвост освобождает 5 символов под сам заголовок.
 const titleSuffix = ' — Интеграм'
+const metaTitle = post.data.seoTitle ?? post.data.title
+const metaDescription = post.data.seoDescription ?? post.data.description
 
 // Разметка статьи (issue #627, п. 1). dateModified берётся из updatedDate
 // фронтматтера, а при его отсутствии равен дате публикации — дату сборки сюда
@@ -87,26 +120,28 @@ const graph = postGraph({
   url: canonicalURL,
   blogUrl: absoluteWithBase('/', Astro.site!),
   headline: post.data.title,
-  description: post.data.description,
-  datePublished: post.data.pubDate.toISOString(),
-  dateModified: (post.data.updatedDate ?? post.data.pubDate).toISOString(),
+  description: metaDescription,
+  datePublished: published,
+  dateModified: modified,
   author: post.data.author,
   image: post.data.image ? absoluteWithBase(ogImage(post.data.image), Astro.site!) : undefined,
   section: post.data.category,
+  sectionUrl: absoluteWithBase(`/category/${categorySlug(post.data.category)}/`, Astro.site!),
   keywords: post.data.tags,
   wordCount: (post.body!.match(/[A-Za-zА-Яа-яЁё0-9]+/g) ?? []).length,
+  faq,
 })
 ---
 
 <BaseLayout
-  title={`${post.data.title}${titleSuffix}`}
-  description={post.data.description}
+  title={`${metaTitle}${titleSuffix}`}
+  description={metaDescription}
   image={ogImage(post.data.image)}
   imageAlt={post.data.title}
   canonical={post.data.canonical}
   type="article"
-  publishedTime={post.data.pubDate.toISOString()}
-  modifiedTime={(post.data.updatedDate ?? post.data.pubDate).toISOString()}
+  publishedTime={published}
+  modifiedTime={modified}
   author={post.data.author}
   jsonLd={graph}
 >
@@ -117,7 +152,7 @@ const graph = postGraph({
       <div class="issue-number text-[var(--color-vermilion)] text-xl font-medium tracking-tight">
         №&nbsp;{issueNumber}
       </div>
-      <div class="eyebrow text-[var(--color-ink-faint)]">{formattedDate}</div>
+      <time datetime={published} class="eyebrow text-[var(--color-ink-faint)]">{formattedDate}</time>
       <div class="eyebrow text-[var(--color-vermilion)]">
         <a href={withBase(`/category/${categorySlug(post.data.category)}/`)} class="link-swipe">{post.data.category}</a>
       </div>
@@ -225,13 +260,38 @@ const graph = postGraph({
             <img
               src={withBase(post.data.image)}
               alt={post.data.title}
-              class="w-full"
+              width={heroSize?.width}
+              height={heroSize?.height}
+              fetchpriority="high"
+              class="w-full h-auto"
             />
           </figure>
         )}
 
+        {showToc && (
+          <nav class="post-toc mb-10 lg:pr-6" aria-label="Содержание">
+            <div class="eyebrow text-[var(--color-ink-faint)] mb-3">Содержание</div>
+            <ol class="space-y-1.5 list-decimal pl-5 text-[var(--color-ink-soft)]">
+              {toc.map((t) => (
+                <li><a href={`#${t.id}`} class="link-swipe text-[var(--color-ink)]">{t.text}</a></li>
+              ))}
+            </ol>
+          </nav>
+        )}
+
         <div class="prose-article lg:pr-6">
           <Content />
+          {faq.length > 0 && (
+            <section aria-labelledby={FAQ_ID}>
+              <h2 id={FAQ_ID}>Частые вопросы</h2>
+              {faq.map((it) => (
+                <>
+                  <h3>{it.q}</h3>
+                  <p>{it.a}</p>
+                </>
+              ))}
+            </section>
+          )}
         </div>
 
         <!-- End marker -->
@@ -244,12 +304,13 @@ const graph = postGraph({
         <!-- CTA — перелинковка блога на продукт (issue #483), тематический через frontmatter cta (issue #641) -->
         <aside class="mt-12 rounded-2xl border border-[var(--color-hairline-strong)] bg-[var(--color-product-panel)] p-8 sm:p-10">
           <div class="eyebrow text-[var(--color-vermilion)] mb-3">{cta.eyebrow}</div>
-          <h2
+          <!-- Не h2: CTA не раздел статьи и не должен попадать в её оглавление (#898) -->
+          <div
             class="font-[family-name:var(--font-serif)] text-2xl sm:text-[1.9rem] leading-[1.1] tracking-[-0.02em] text-[var(--color-ink)]"
             style="font-weight: 700;"
           >
             {cta.title}
-          </h2>
+          </div>
           <p class="mt-3 max-w-2xl text-[var(--color-ink-soft)] leading-relaxed">
             {cta.text}
           </p>
@@ -280,12 +341,12 @@ const graph = postGraph({
               <span class="eyebrow text-[var(--color-vermilion)]">№&nbsp;{next.issueNumber}</span>
             </div>
             <div class="flex items-start justify-between gap-6">
-              <h2
+              <div
                 class="font-[family-name:var(--font-serif)] text-2xl sm:text-[2rem] leading-[1.1] tracking-[-0.02em] text-[var(--color-ink)] transition-colors group-hover:text-[var(--color-vermilion)]"
                 style="font-variation-settings: 'opsz' 80, 'SOFT' 30; font-weight: 500;"
               >
                 {next.title}
-              </h2>
+              </div>
               <span
                 class="text-[var(--color-vermilion)] text-3xl leading-none shrink-0 transition-transform group-hover:translate-x-1"
                 aria-hidden="true"

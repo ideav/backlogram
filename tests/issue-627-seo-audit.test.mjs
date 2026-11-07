@@ -312,7 +312,9 @@ test('nbspHtml() не ломается на «<» внутри скрипта', 
 test('страница статьи блога отдаёт граф BlogPosting с датой правки', () => {
   const page = read('blog-v2/src/pages/posts/[...slug].astro')
   assert.match(page, /postGraph\(/)
-  assert.match(page, /dateModified: \(post\.data\.updatedDate \?\? post\.data\.pubDate\)/)
+  // #898: дата идёт через machineDate (без выдуманной «полуночи UTC»).
+  assert.match(page, /modified = machineDate\(post\.data\.updatedDate \?\? post\.data\.pubDate\)/)
+  assert.match(page, /dateModified: modified/)
   assert.match(page, /jsonLd=\{graph\}/)
   assert.match(page, /modifiedTime=/)
   const config = read('blog-v2/src/content.config.ts')
