@@ -26,6 +26,8 @@ const repo = fileURLToPath(new URL('..', import.meta.url))
 const read = (p) => readFileSync(resolve(repo, p), 'utf8')
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
+// lastmod карты блога: день или момент с поясом (W3C Datetime, #905)
+const W3C_DATETIME = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2})?$/
 
 // ───────────────────────────────────────────────────────────────────────────
 // п. 3 — страницы-сироты: ссылки меню есть в сыром HTML, и они покрывают карту
@@ -355,7 +357,7 @@ test('карта сайта блога получает lastmod на кажды�
   const { readPosts, tagCounts } = await import('../blog-v2/src/lib/posts-meta.mjs')
   const posts = readPosts()
   assert.ok(posts.length > 0, 'статьи блога не прочитались — изменился фронтматтер?')
-  const undated = posts.filter((p) => !ISO_DATE.test(p.lastmod ?? ''))
+  const undated = posts.filter((p) => !W3C_DATETIME.test(p.lastmod ?? ''))
   assert.deepEqual(
     undated.map((p) => p.slug),
     [],

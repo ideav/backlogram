@@ -9,7 +9,7 @@ import { tagSlug } from '../../lib/tags'
 import { categorySlug } from '../../lib/categories'
 import { absoluteWithBase, withBase } from '../../lib/url'
 import { postGraph } from '../../lib/jsonld'
-import { machineDate } from '../../lib/dates.mjs'
+import { humanDate, machineDate } from '../../lib/dates.mjs'
 
 // og:image must be exactly 1200×630 — BaseLayout hardcodes og:image:width/height.
 // Covers that aren't already that size get a generated 1200×630 variant at
@@ -77,15 +77,15 @@ const toc = [
 ]
 const showToc = toc.length >= 4
 
-const formattedDate = post.data.pubDate
-  // timeZone: 'UTC' — pubDate из YAML это полночь UTC; без него сборка на машине
-  // с отрицательным смещением показывала предыдущий день (issue #641).
-  .toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'UTC' })
-  .replace(' г.', '')
+// День по Москве: и для «только дня» (полночь UTC), и для момента со временем (#641, #905).
+const formattedDate = humanDate(post.data.pubDate)
 
 const heroSize = await imageSize(post.data.image)
 const published = machineDate(post.data.pubDate)
 const modified = machineDate(post.data.updatedDate ?? post.data.pubDate)
+// «Обновлено» показываем только после содержательной правки (#905).
+const updated = post.data.updatedDate ? machineDate(post.data.updatedDate) : null
+const formattedUpdated = post.data.updatedDate ? humanDate(post.data.updatedDate) : null
 
 const readingTime = Math.max(1, Math.round(post.body!.length / 1100))
 
@@ -153,6 +153,9 @@ const graph = postGraph({
         №&nbsp;{issueNumber}
       </div>
       <time datetime={published} class="eyebrow text-[var(--color-ink-faint)]">{formattedDate}</time>
+      {formattedUpdated && formattedUpdated !== formattedDate && (
+        <div class="eyebrow text-[var(--color-ink-faint)]">Обновлено <time datetime={updated}>{formattedUpdated}</time></div>
+      )}
       <div class="eyebrow text-[var(--color-vermilion)]">
         <a href={withBase(`/category/${categorySlug(post.data.category)}/`)} class="link-swipe">{post.data.category}</a>
       </div>

@@ -71,7 +71,7 @@ test('article #35 is wired into the index, sitemap, llms.txt, OG and neighbours'
 })
 
 test('blog post on lean manufacturing is published today and links the article', () => {
-  assert.match(post, /^pubDate: '2026-11-07'$/m)
+  assert.match(post, /^pubDate: '2026-11-07T21:37:11\+03:00'$/m)
   assert.match(post, /^image: \/uploads\/berezhlivoe-proizvodstvo-cover\.png$/m)
   assert.match(post, /lean manufacturing, lean production/)
   assert.match(post, new RegExp(`knowledge-base/${SLUG}\\.html`))

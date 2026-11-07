@@ -45,9 +45,12 @@ export function publishDay() {
 
 /** `pubDate` → `YYYY-MM-DD`: строка из фронтматтера или Date из astro:content. */
 export function dayOf(pubDate) {
-  // Date из z.coerce.date() — полночь UTC, поэтому день берётся из ISO-строки,
-  // а не по местному времени машины сборки.
-  return pubDate instanceof Date ? pubDate.toISOString().slice(0, 10) : String(pubDate).slice(0, 10)
+  // Только день ('2026-10-20', в Date — полночь UTC) — берём его как есть.
+  // Момент со временем и поясом ('2026-11-07T01:30:00+03:00', #905) — день по
+  // Москве, иначе ночная выкладка уехала бы на вчера по UTC.
+  const s = pubDate instanceof Date ? pubDate.toISOString() : String(pubDate)
+  if (DAY.test(s) || s.endsWith('T00:00:00.000Z')) return s.slice(0, 10)
+  return moscowDay(new Date(s))
 }
 
 /** Статья видна: не черновик и день публикации уже наступил. */
