@@ -78,3 +78,21 @@ test('prerender-partner-docs пишет три crawlable страницы и н�
   assert.equal(readFileSync(resolve(work, 'dist/index.html'), 'utf8'), indexHtml)
   assert.ok(existsSync(resolve(work, 'dist/adept-offer.html')))
 })
+
+// ideav/courses#26: агентские условия по курсам — раздел той же оферты, без
+// второго договора; ставки и механика совпадают с courses/pricing/commissions.
+test('раздел «Курсы Интеграма» в оферте партнёрской программы', () => {
+  const offer = PARTNER_DOCS['partner-offer']
+  const kursy = offer.sections.find((s) => s.id === 'kursy')
+  assert.ok(kursy, 'нет раздела #kursy — на него ссылается ideav.ru/kurs/agents.html')
+  const text = JSON.stringify(kursy.blocks)
+  assert.match(text, /\?aff=<номер Партнёра>/)
+  assert.match(text, /AG<номер Партнёра>/)
+  assert.match(text, /скидку 5%/)
+  assert.match(text, /на 180 дней/)
+  assert.match(text, /40% от первой оплаты/)
+  assert.match(text, /15% от последующих оплат/)
+  assert.match(text, /5% от оплат курсов/)
+  assert.match(text, /через 14 дней после оплаты курса/)
+  assert.match(text, /Отдельный договор для этого не заключается/)
+})
