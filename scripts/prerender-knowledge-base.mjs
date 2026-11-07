@@ -103,6 +103,7 @@ const groups = [
       '19-ai-agent-app-build',
       '33-event-spec-ai-agents',
       '32-erp-customization',
+      '35-lean-manufacturing-tools',
       '21-catalog-matching',
       '24-pure-business-design',
     ],
