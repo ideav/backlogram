@@ -115,6 +115,7 @@ const groups = [
       '10-no-release-changes',
       '13-api-json-export',
       '26-mcp-server-explained',
+      '34-mcp-security-agent-permissions',
       '27-text-to-sql-russian',
       '28-query-engine-capabilities',
       '29-query-as-stored-procedure',
