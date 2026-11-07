@@ -12,11 +12,14 @@ const posts = defineCollection({
     // Без полей берутся title/description. Пределы держит тест issue-898.
     seoTitle: z.string().optional(),
     seoDescription: z.string().optional(),
+    // Только день ('2026-10-20') или реальное время выкладки с поясом
+    // ('2026-11-07T21:37:11+03:00') — см. src/lib/dates.mjs (#905).
     pubDate: z.coerce.date(),
     // Дата последней правки — уходит в dateModified разметки BlogPosting
     // (issue #627, п. 1). Ставится руками: от даты сборки она менялась бы при
     // каждом деплое и обещала поисковику свежесть, которой не было. Если правок
-    // не было, поле не нужно — dateModified равен pubDate.
+    // не было, поле не нужно — dateModified равен pubDate. Только содержательные
+    // правки (факты, разделы, выводы), не опечатки и не правки шаблона.
     updatedDate: z.coerce.date().optional(),
     category: z.string().default('Без категории'),
     author: z.string().default('Команда Интеграм'),
