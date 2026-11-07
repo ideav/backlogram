@@ -9,6 +9,7 @@ import { tagSlug } from '../../lib/tags'
 import { categorySlug } from '../../lib/categories'
 import { absoluteWithBase, withBase } from '../../lib/url'
 import { postGraph } from '../../lib/jsonld'
+import { authorByName, authorPath } from '../../lib/authors.mjs'
 import { humanDate, machineDate } from '../../lib/dates.mjs'
 
 // og:image must be exactly 1200×630 — BaseLayout hardcodes og:image:width/height.
@@ -91,6 +92,10 @@ const readingTime = Math.max(1, Math.round(post.body!.length / 1100))
 
 const initial = post.data.author.charAt(0)
 
+// Автор-человек с профилем (#905); иначе — коллективная подпись редакции.
+const person = authorByName(post.data.author)
+const authorProfileUrl = person ? absoluteWithBase(authorPath(person), Astro.site!) : undefined
+
 // Общий CTA блога (issue #483); статья может заменить его своим полем cta (issue #641).
 const cta = post.data.cta ?? {
   eyebrow: 'Попробуйте Интеграм',
@@ -124,6 +129,7 @@ const graph = postGraph({
   datePublished: published,
   dateModified: modified,
   author: post.data.author,
+  authorProfile: person && authorProfileUrl ? { url: authorProfileUrl, jobTitle: person.jobTitle } : undefined,
   image: post.data.image ? absoluteWithBase(ogImage(post.data.image), Astro.site!) : undefined,
   section: post.data.category,
   sectionUrl: absoluteWithBase(`/category/${categorySlug(post.data.category)}/`, Astro.site!),
@@ -142,7 +148,7 @@ const graph = postGraph({
   type="article"
   publishedTime={published}
   modifiedTime={modified}
-  author={post.data.author}
+  author={authorProfileUrl ?? post.data.author}
   jsonLd={graph}
 >
   <article class="max-w-[78rem] mx-auto px-6 lg:px-12 pt-14 pb-24" data-pagefind-body>
@@ -176,8 +182,12 @@ const graph = postGraph({
               {initial}
             </div>
             <div>
-              <div class="text-[var(--color-ink)] font-medium">{post.data.author}</div>
-              <div class="eyebrow text-[var(--color-ink-faint)] mt-0.5">Редакция журнала</div>
+              {person ? (
+                <a href={withBase(authorPath(person))} rel="author" class="text-[var(--color-ink)] font-medium link-swipe">{person.name}</a>
+              ) : (
+                <div class="text-[var(--color-ink)] font-medium">{post.data.author}</div>
+              )}
+              <div class="eyebrow text-[var(--color-ink-faint)] mt-0.5">{person ? person.jobTitle : 'Редакция журнала'}</div>
             </div>
           </div>
 

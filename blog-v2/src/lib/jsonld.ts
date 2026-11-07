@@ -42,12 +42,33 @@ function organization(site: string) {
   }
 }
 
+/** Живой автор с профилем в блоге (#905). */
+export interface AuthorProfile {
+  /** Абсолютный адрес профиля. */
+  url: string
+  jobTitle: string
+}
+
+/** Узел Person автора с профилем: один @id на постах и на странице профиля. */
+export function personNode(site: string, name: string, profile: AuthorProfile) {
+  return {
+    '@type': 'Person',
+    '@id': `${profile.url}#person`,
+    name,
+    jobTitle: profile.jobTitle,
+    url: profile.url,
+    worksFor: { '@id': `${site}/#organization` },
+  }
+}
+
 /**
  * Автор статьи. «Команда Интеграм» — не человек, и `Person` с таким именем
  * поисковик считает ошибкой разметки (#898): коллективный автор ссылается на
- * организацию-издателя, живой автор остаётся `Person`.
+ * организацию-издателя. Человек с профилем (#905) — полный Person со ссылкой
+ * на профиль; прочие имена — Person с одним именем.
  */
-export function authorNode(site: string, author: string) {
+export function authorNode(site: string, author: string, profile?: AuthorProfile) {
+  if (profile) return personNode(site, author, profile)
   // Не \b: в JS он видит границу слова только у латиницы.
   return /^(команда|редакция)(\s|$)/i.test(author.trim())
     ? { '@id': `${site}/#organization` }
@@ -81,6 +102,8 @@ export interface PostGraphInput {
   /** ISO-дата правки; если правок не было — равна датe публикации. */
   dateModified: string
   author: string
+  /** Профиль автора-человека (#905). */
+  authorProfile?: AuthorProfile
   /** Абсолютный адрес обложки. */
   image?: string
   section?: string
@@ -104,6 +127,7 @@ export function postGraph(input: PostGraphInput) {
     datePublished,
     dateModified,
     author,
+    authorProfile,
     image,
     section,
     sectionUrl,
@@ -125,7 +149,7 @@ export function postGraph(input: PostGraphInput) {
         mainEntityOfPage: url,
         datePublished,
         dateModified,
-        author: authorNode(site, author),
+        author: authorNode(site, author, authorProfile),
         publisher: { '@id': `${site}/#organization` },
         ...(image ? { image } : {}),
         ...(section ? { articleSection: section } : {}),
@@ -223,6 +247,53 @@ export function collectionGraph(input: CollectionGraphInput) {
         { name: 'Интеграм', url: `${site}/` },
         { name: 'Блог', url: blogUrl },
         ...trail,
+      ]),
+    ],
+  }
+}
+
+export interface ProfileGraphInput {
+  site: string
+  blogUrl: string
+  name: string
+  profile: AuthorProfile
+  /** Посты автора в порядке вывода. */
+  items: Array<{ name: string; url: string }>
+}
+
+/** ProfilePage + Person + посты автора + Organization + крошки (#905). */
+export function profileGraph(input: ProfileGraphInput) {
+  const { site, blogUrl, name, profile, items } = input
+  const url = profile.url
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'ProfilePage',
+        '@id': `${url}#webpage`,
+        url,
+        name: `${name} — автор блога Интеграм`,
+        inLanguage: 'ru',
+        isPartOf: { '@id': `${blogUrl}#blog` },
+        mainEntity: { '@id': `${url}#person` },
+        ...(items.length
+          ? { hasPart: items.map((it) => ({ '@type': 'BlogPosting', headline: it.name, url: it.url })) }
+          : {}),
+      },
+      personNode(site, name, profile),
+      {
+        '@type': 'Blog',
+        '@id': `${blogUrl}#blog`,
+        name: 'Блог Интеграм',
+        url: blogUrl,
+        inLanguage: 'ru',
+        publisher: { '@id': `${site}/#organization` },
+      },
+      organization(site),
+      breadcrumb(url, [
+        { name: 'Интеграм', url: `${site}/` },
+        { name: 'Блог', url: blogUrl },
+        { name, url },
       ]),
     ],
   }

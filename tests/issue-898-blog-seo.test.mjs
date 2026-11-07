@@ -25,7 +25,8 @@ const footer = read('blog-v2/src/components/Footer.astro')
 const POSTS = 'blog-v2/src/content/posts/'
 
 test('коллективный автор — Organization, живой — Person', () => {
-  assert.match(jsonld, /author: authorNode\(site, author\)/)
+  // #905: третьим аргументом приходит профиль автора-человека
+  assert.match(jsonld, /author: authorNode\(site, author, authorProfile\)/)
   assert.doesNotMatch(jsonld, /author: \{ '@type': 'Person', name: author \}/)
   const m = jsonld.match(/return (\/\^\(команда\|редакция\)[^\n]*?\/i)\.test/)
   assert.ok(m, 'регэксп коллективного автора на месте')

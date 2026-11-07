@@ -7,7 +7,7 @@ pubDate: '2026-11-07T21:37:11+03:00'
 updatedDate: '2026-11-07T23:39:52+03:00'
 image: /uploads/berezhlivoe-proizvodstvo-cover.png
 category: Обучение
-author: Команда Интеграм
+author: Ким Артамонов
 tags:
 - бережливое производство
 - Lean
