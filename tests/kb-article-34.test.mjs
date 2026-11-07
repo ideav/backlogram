@@ -47,7 +47,8 @@ test('article #34 keeps honest limits', () => {
   assert.match(block, /Промпт-инъекции/)
   assert.match(block, /маски роли к ним не применяются/)
   assert.match(block, /делает клиент, а не сервер/)
-  assert.match(block, /супер-пользователь базы обходит гранты/)
+  assert.match(block, /Супер-пользователь базы обходит гранты/)
+  assert.match(block, /переходном режиме/)
 })
 
 test('article #34 is wired into the index, sitemap, llms.txt, OG and neighbours', () => {
