@@ -4091,6 +4091,21 @@ export const knowledgeBaseArticles: KnowledgeBaseArticle[] = [
         note: 'Нормы трудоёмкости, бюджет и сроки производственных проектов.',
       },
       {
+        title: 'Приказ Росстандарта от 19.08.2020 № 513-ст об утверждении ГОСТ Р 56020-2020',
+        url: 'https://legalacts.ru/doc/prikaz-rosstandarta-ot-19082020-n-513-st-ob-utverzhdenii-natsionalnogo/',
+        note: 'Стандарт «Бережливое производство. Основные положения и словарь», действует с 01.08.2021 взамен ГОСТ Р 56020-2014.',
+      },
+      {
+        title: 'Krafcik J. F. Triumph of the Lean Production System',
+        url: 'https://www.proquest.com/docview/224963951',
+        note: 'Sloan Management Review, осень 1988, т. 30, № 1, с. 41–52: статья, которая ввела термин «lean production».',
+      },
+      {
+        title: 'Womack J. P., Jones D. T. Lean Thinking',
+        url: 'https://www.simonandschuster.com/books/Lean-Thinking/James-P-Womack/9780743530484',
+        note: 'Книга 1996 года с пятью принципами бережливого производства, страница издательства.',
+      },
+      {
         title: 'Задача ideav/backlogram#895',
         url: 'https://github.com/ideav/backlogram/issues/895',
       },
