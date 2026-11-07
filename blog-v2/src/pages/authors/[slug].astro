@@ -7,6 +7,7 @@ import { isPublished } from '../../lib/published.mjs'
 import { absoluteWithBase, withBase } from '../../lib/url'
 import { profileGraph } from '../../lib/jsonld'
 import { AUTHORS, authorPath } from '../../lib/authors.mjs'
+import { humanDate } from '../../lib/dates.mjs'
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => isPublished(data))
@@ -24,9 +25,7 @@ export async function getStaticPaths() {
 const { author, posts } = Astro.props
 
 function formatDate(d: Date): string {
-  return d
-    .toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'Europe/Moscow' })
-    .replace(' г.', '')
+  return humanDate(d)
 }
 
 const blogUrl = absoluteWithBase('/', Astro.site!)
