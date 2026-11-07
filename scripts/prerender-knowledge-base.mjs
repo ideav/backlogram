@@ -462,6 +462,20 @@ for (const article of knowledgeBaseArticles) {
       </section>`
     : ''
 
+  // Sources: the SPA lists them, so crawlers get the same links — including
+  // the blog post a reference article pairs with (№35 ↔ Lean post).
+  const sourcesHtml = article.sources?.length
+    ? `<section class="kb-article__sources">
+        <h2>Источники</h2>
+        <ul>${article.sources
+          .map(
+            (src) =>
+              `<li><a href="${escape(src.url)}">${escape(src.title)}</a>${src.note ? ` — ${escape(src.note)}` : ''}</li>`
+          )
+          .join('')}</ul>
+      </section>`
+    : ''
+
   const contextHtml = article.context
     ? `<section class="kb-article__context"><p>${escape(article.context)}</p></section>`
     : ''
@@ -526,6 +540,7 @@ for (const article of knowledgeBaseArticles) {
   ${scenarioHtml}
   ${integramHtml}
   ${faqHtml}
+  ${sourcesHtml}
   ${ctaHtml}
   ${relatedHtml}
   <footer class="kb-prerender__footer">
