@@ -1,3 +1,4 @@
+import { machineDate } from '../lib/dates.mjs'
 import { getCollection } from 'astro:content'
 import { isPublished } from '../lib/published.mjs'
 import type { APIContext } from 'astro'
@@ -77,7 +78,7 @@ export async function GET(context: APIContext) {
     '',
     ...sorted.map((post) => {
       const url = absoluteURL(`/posts/${post.id}/`, site)
-      const date = post.data.pubDate.toISOString().slice(0, 10)
+      const date = machineDate(post.data.pubDate).slice(0, 10)
       const tags =
         post.data.tags.length > 0 ? ` Теги: ${post.data.tags.map(oneLine).join(', ')}.` : ''
 

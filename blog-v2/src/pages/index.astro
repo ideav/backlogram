@@ -1,4 +1,5 @@
 ---
+import { humanDate } from '../lib/dates.mjs'
 import { getCollection } from 'astro:content'
 import { isPublished } from '../lib/published.mjs'
 import BaseLayout from '../layouts/BaseLayout.astro'
@@ -24,9 +25,7 @@ const display = [...numbered].sort(
 type NumberedPost = typeof numbered[number]
 
 function formatDate(d: Date): string {
-  return d
-    .toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'UTC' })
-    .replace(' г.', '')
+  return humanDate(d)
 }
 
 function readingTime(post: NumberedPost): number {

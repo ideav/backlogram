@@ -25,7 +25,8 @@ const footer = read('blog-v2/src/components/Footer.astro')
 const POSTS = 'blog-v2/src/content/posts/'
 
 test('коллективный автор — Organization, живой — Person', () => {
-  assert.match(jsonld, /author: authorNode\(site, author\)/)
+  // #905: третьим аргументом приходит профиль автора-человека
+  assert.match(jsonld, /author: authorNode\(site, author, authorProfile\)/)
   assert.doesNotMatch(jsonld, /author: \{ '@type': 'Person', name: author \}/)
   const m = jsonld.match(/return (\/\^\(команда\|редакция\)[^\n]*?\/i)\.test/)
   assert.ok(m, 'регэксп коллективного автора на месте')
@@ -52,7 +53,8 @@ test('Organization блога совпадает с главной: description,
 test('дата без времени — чистая дата, на странице есть <time datetime>', async () => {
   const { machineDate } = await import('../blog-v2/src/lib/dates.mjs')
   assert.equal(machineDate(new Date('2026-11-07')), '2026-11-07')
-  assert.equal(machineDate(new Date('2026-11-07T09:30:00Z')), '2026-11-07T09:30:00.000Z')
+  // #905: момент отдаётся по Москве с поясом, а не в Z
+  assert.equal(machineDate(new Date('2026-11-07T09:30:00Z')), '2026-11-07T12:30:00+03:00')
   assert.match(page, /<time datetime=\{published\}/)
   assert.doesNotMatch(page, /toISOString\(\)/)
 })

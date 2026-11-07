@@ -1,0 +1,93 @@
+---
+// Профиль автора-человека (issue #905, п. 1): имя, роль и посты автора.
+// Только то, что владелец разрешил публиковать — см. src/lib/authors.mjs.
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { getCollection } from 'astro:content'
+import { isPublished } from '../../lib/published.mjs'
+import { absoluteWithBase, withBase } from '../../lib/url'
+import { profileGraph } from '../../lib/jsonld'
+import { AUTHORS, authorPath } from '../../lib/authors.mjs'
+import { humanDate } from '../../lib/dates.mjs'
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => isPublished(data))
+  return AUTHORS.map((author) => ({
+    params: { slug: author.slug },
+    props: {
+      author,
+      posts: posts
+        .filter((p) => p.data.author.trim() === author.name)
+        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+    },
+  }))
+}
+
+const { author, posts } = Astro.props
+
+function formatDate(d: Date): string {
+  return humanDate(d)
+}
+
+const blogUrl = absoluteWithBase('/', Astro.site!)
+const profileUrl = absoluteWithBase(authorPath(author), Astro.site!)
+const description = `${author.name} — ${author.jobTitle.toLowerCase()}, автор блога Интеграм. Статьи автора: ${posts.length}.`
+const graph = profileGraph({
+  site: Astro.site!.toString().replace(/\/+$/, ''),
+  blogUrl,
+  name: author.name,
+  profile: { url: profileUrl, jobTitle: author.jobTitle },
+  items: posts.map((p) => ({
+    name: p.data.title,
+    url: absoluteWithBase(`/posts/${p.id}/`, Astro.site!),
+  })),
+})
+---
+
+<BaseLayout
+  title={`${author.name} — автор блога Интеграм`}
+  description={description}
+  type="profile"
+  jsonLd={graph}
+>
+  <section class="max-w-[78rem] mx-auto px-6 lg:px-12 pt-14 pb-12 border-b border-[var(--color-hairline)]">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-x-10">
+      <div class="lg:col-span-2 mb-6 lg:mb-0">
+        <a href={withBase('/')} class="eyebrow link-swipe text-[var(--color-vermilion)]">← Все выпуски</a>
+      </div>
+      <div class="lg:col-span-10">
+        <div class="eyebrow text-[var(--color-vermilion)] mb-3">Автор</div>
+        <h1
+          class="font-[family-name:var(--font-serif)] text-[3rem] sm:text-[4.4rem] leading-[0.98] tracking-[-0.022em] text-[var(--color-ink)]"
+          style="font-variation-settings: 'opsz' 144, 'SOFT' 30; font-weight: 500;"
+        >
+          {author.name}
+        </h1>
+        <p class="mt-5 text-lg text-[var(--color-ink-soft)] max-w-2xl">{author.jobTitle}.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-[78rem] mx-auto px-6 lg:px-12 py-14">
+    <h2 class="eyebrow text-[var(--color-ink-faint)] mb-6">Статьи автора</h2>
+    <ol class="border-t border-[var(--color-hairline-strong)]">
+      {posts.map((post) => (
+        <li class="card-container group border-b border-[var(--color-hairline)] py-7 lg:py-9 transition-colors hover:bg-[var(--color-vermilion-soft)]">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-x-10 px-1">
+            <div class="lg:col-span-2 mb-4 lg:mb-0">
+              <div class="eyebrow text-[var(--color-ink-faint)]">{formatDate(post.data.pubDate)}</div>
+            </div>
+            <div class="lg:col-span-10">
+              <h3
+                class="font-[family-name:var(--font-serif)] text-2xl sm:text-[1.85rem] leading-[1.12] tracking-[-0.012em] text-[var(--color-ink)] group-hover:text-[var(--color-vermilion-deep)] transition-colors"
+                style="font-variation-settings: 'opsz' 60; font-weight: 600;"
+              >
+                <a href={withBase(`/posts/${post.id}/`)} class="card-link">{post.data.title}</a>
+              </h3>
+              <p class="mt-3 text-[var(--color-ink-soft)] max-w-2xl">{post.data.description}</p>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+</BaseLayout>
