@@ -19,6 +19,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { USE_CASES, HUB, SITE } from '../src/data/usecases.mjs'
+import { LOSS_INDEXABLE } from '../src/data/lossLandings.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -215,6 +216,8 @@ for (const uc of USE_CASES) {
   </header>
   <h2>Решения по задачам</h2>
   <ul>${cardsHtml}</ul>
+  <h2>Посчитайте эффект по задаче</h2>
+  <ul>${LOSS_INDEXABLE.map((p) => `<li><a href="/${p.slug}.html">${escape(p.navTitle)}</a></li>`).join('')}</ul>
   <footer class="uc-footer">
     <p><a href="/">На главную</a> · <a href="/knowledge-base.html">База знаний</a></p>
   </footer>

@@ -186,6 +186,9 @@ export const USE_CASES = [
   },
   {
     slug: "upravlenie-zakupkami",
+    related: [
+      { href: "/planirovanie-zakupok.html", label: "Планирование закупок и автозаказ: расчёт потребности и калькулятор эффекта" },
+    ],
     source: "uc-zakupki",
     image: "/uc-zakupki.jpg",
     imageAlt: "Управление закупками на Интеграме: заявки, экономия и поставщики",
@@ -224,6 +227,9 @@ export const USE_CASES = [
   },
   {
     slug: "finansovyy-uchet",
+    related: [
+      { href: "/platezhnyj-kalendar.html", label: "Платёжный календарь и дебиторка: калькулятор эффекта" },
+    ],
     source: "uc-finansy",
     image: "/uc-finansy.png",
     imageAlt: "Финансовый учёт на Интеграме: ДДС, бюджет и платежи",

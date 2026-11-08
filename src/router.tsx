@@ -2,6 +2,7 @@ import { lazy } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import Home from './pages/Home'
 import { USE_CASES } from './data/usecases'
+import { LOSS_LANDINGS } from './data/lossLandings'
 import { AI_PAGES } from './data/aiPages'
 import { SITE_SECTIONS } from './data/siteSections'
 import App from './App'
@@ -45,6 +46,7 @@ const KnowledgeBase = lazy(() => import('./pages/KnowledgeBase'))
 const KnowledgeBaseArticle = lazy(() => import('./pages/KnowledgeBaseArticle'))
 const UseCaseLanding = lazy(() => import('./pages/UseCaseLanding'))
 const UseCaseHub = lazy(() => import('./pages/UseCaseHub'))
+const LossLanding = lazy(() => import('./pages/LossLanding'))
 const Privacy = lazy(() => import('./pages/Privacy'))
 const Terms = lazy(() => import('./pages/Terms'))
 // ideav/courses#3: оферты партнёра и адепта, описание взаимодействия.
@@ -288,6 +290,11 @@ export const router = createBrowserRouter([
       ...USE_CASES.flatMap((u) => [
         { path: `${u.slug}.html`, element: <UseCaseLanding slug={u.slug} /> },
         { path: u.slug, element: <UseCaseLanding slug={u.slug} /> },
+      ]),
+      // Посадочные с калькулятором потерь + служебная /cost-of-inaction (python2node#1203).
+      ...LOSS_LANDINGS.flatMap((p) => [
+        { path: `${p.slug}.html`, element: <LossLanding slug={p.slug} /> },
+        { path: p.slug, element: <LossLanding slug={p.slug} /> },
       ]),
       // Три основных раздела сайта (issue #823): «заменить Excel»,
       // «автоматизация бизнеса», «разработчикам» — реклама ведёт сразу сюда.
