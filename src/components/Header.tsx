@@ -102,7 +102,10 @@ export function Header() {
               aria-label={theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
               className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
             >
-              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              {/* backlogram#910: обе иконки в разметке, видимую выбирает класс dark на
+                <html> — первый кадр гидрируемой страницы совпадает с итоговым. */}
+              <Sun size={18} className="hidden dark:block" aria-hidden="true" />
+              <Moon size={18} className="block dark:hidden" aria-hidden="true" />
             </button>
             <a
               href="https://ideav.ru/start.html"
@@ -121,7 +124,10 @@ export function Header() {
               aria-label={theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
               className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
             >
-              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              {/* backlogram#910: обе иконки в разметке, видимую выбирает класс dark на
+                <html> — первый кадр гидрируемой страницы совпадает с итоговым. */}
+              <Sun size={18} className="hidden dark:block" aria-hidden="true" />
+              <Moon size={18} className="block dark:hidden" aria-hidden="true" />
             </button>
             {/* Кнопка нарисована одной иконкой, поэтому доступное имя задаётся
                 aria-label — без него скринридер читал пустую кнопку на всех

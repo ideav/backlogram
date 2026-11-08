@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { ArrowRight, Bot, Briefcase, Check, CheckCircle2, Clock, ExternalLink, LayoutGrid, Lightbulb, MessagesSquare, Send, Wallet, X } from 'lucide-react'
 import { reachGoal, visitParams } from '../lib/metrika'
-import { adeptHeroCookie, nextAdeptHero, readAdeptHeroCookie } from '../data/adeptHero'
+import { ADEPT_HEROES, adeptHeroCookie, adeptHeroInlineScript, nextAdeptHero, readAdeptHeroCookie } from '../data/adeptHero'
 import { parseTelegramMessage } from '../lib/telegramMessage'
 import { BOT_REPORT } from '../data/adeptBotReport'
 import {
@@ -65,23 +65,36 @@ export default function AdeptPath() {
   const [experience, setExperience] = useState('')
   const [consentChecked, setConsentChecked] = useState(false)
   const [captchaToken, setCaptchaToken] = useState('')
-  const [idbCookieFound] = useState(() => hasIdbCookie())
+  // backlogram#910: куку читаем после гидрации — первый рендер обязан
+  // совпасть с разметкой, отрисованной на сборке (без куки).
+  const [idbCookieFound, setIdbCookieFound] = useState(false)
+  useEffect(() => {
+    if (hasIdbCookie()) setIdbCookieFound(true)
+  }, [])
   const [stage, setStage] = useState<FormStage>('form')
   const [errorMsg, setErrorMsg] = useState('')
   const captchaContainerRef = useRef<HTMLDivElement>(null)
   const captchaWidgetIdRef = useRef<number | null>(null)
   const reportDialogRef = useRef<HTMLDialogElement>(null)
   // Ротация фона hero: кука хранит прошлую тему, каждый заход — следующая.
+  // backlogram#910: на сборке темы нет (null — <img> без src, тему ставит
+  // inline-скрипт adeptHeroInlineScript до первого кадра); при гидрации берём
+  // выбранную им из data-hero, при переходе внутри сайта — выбираем сами.
   const [hero] = useState(() => {
+    if (typeof document === 'undefined') return null
+    const chosen = document.getElementById('adept-hero')?.getAttribute('data-hero')
+    const fromHtml = ADEPT_HEROES.find(h => h.id === chosen)
+    if (fromHtml) return fromHtml
     const picked = nextAdeptHero(readAdeptHeroCookie(document.cookie))
     document.cookie = adeptHeroCookie(picked.id)
     return picked
   })
+  const heroId = hero?.id ?? ''
 
   // Показ темы — параметром визита: в Метрике видно и показы, и заявки по теме.
   useEffect(() => {
-    visitParams({ adept_hero: hero.id })
-  }, [hero.id])
+    if (heroId) visitParams({ adept_hero: heroId })
+  }, [heroId])
 
   useEffect(() => {
     document.title = ADEPT_META.title
@@ -175,7 +188,7 @@ export default function AdeptPath() {
     const summary = [
       'Путь адепта /put-adepta.html — заявка в разработчики',
       experience.trim() ? `Опыт: ${experience.trim()}` : 'Опыт: не указан',
-      `Картинка hero: ${hero.id} (${hero.label})`,
+      `Картинка hero: ${heroId} (${hero?.label ?? ''})`,
     ].join('\n')
 
     const data = new FormData()
@@ -192,7 +205,7 @@ export default function AdeptPath() {
       .then(res => res.json())
       .then(json => {
         if (json.ok) {
-          reachGoal('lead', { source: 'adept', adept_hero: hero.id })
+          reachGoal('lead', { source: 'adept', adept_hero: heroId })
           setStage('done')
         } else {
           setStage('form')
@@ -210,17 +223,22 @@ export default function AdeptPath() {
       {/* Hero */}
       {/* Фон — одна из тем ADEPT_HEROES, случайно на каждый заход (A/B по заявкам) */}
       <section
-        data-hero={hero.id}
+        id="adept-hero"
+        data-hero={heroId}
         className="relative isolate overflow-hidden bg-slate-950 px-4 sm:px-6 lg:px-8 pt-32 lg:pt-44 pb-16 lg:pb-24"
       >
         <div className="absolute inset-0 -z-10">
           <img
-            src={hero.src}
+            src={hero?.src}
             alt=""
             aria-hidden="true"
             fetchPriority="high"
             className="absolute inset-0 h-full w-full object-cover object-center"
           />
+          {/* Срабатывает только в HTML со сборки; вставленный React'ом при переходе
+              внутри сайта <script> браузер не выполняет. Рисуется всегда, чтобы
+              дерево при гидрации совпадало с серверным. */}
+          <script dangerouslySetInnerHTML={{ __html: adeptHeroInlineScript() }} />
           <div className="absolute inset-0 bg-slate-950/15" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(2,6,23,0.5)_0%,rgba(2,6,23,0.12)_50%,transparent_75%)]" />
         </div>

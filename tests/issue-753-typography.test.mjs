@@ -53,9 +53,12 @@ test('nbspText склеивает символом U+00A0, а не сущнос�
   assert.equal(glued.charCodeAt(1), 0xa0)
 })
 
-test('SPA-страницы живут по тем же правилам: проход ставится в App', () => {
-  const app = readFileSync(new URL('../src/App.tsx', import.meta.url), 'utf8')
-  assert.match(app, /installTypography\(\)/)
+test('SPA-страницы живут по тем же правилам: проход ставится до гидрации', () => {
+  // backlogram#910: наблюдатель должен стоять раньше hydrateRoot — он склеивает
+  // обратно текст, который React переписывает при гидрации.
+  const main = readFileSync(new URL('../src/main.tsx', import.meta.url), 'utf8')
+  assert.match(main, /installTypography\(\)/)
+  assert.ok(main.indexOf('installTypography()') < main.indexOf('hydrateRoot(container'))
 
   const installer = readFileSync(new URL('../src/lib/install-typography.ts', import.meta.url), 'utf8')
   assert.match(installer, /nbspText/)

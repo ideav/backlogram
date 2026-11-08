@@ -228,7 +228,12 @@ export default function CatalogMatching() {
   const [isCaptchaRequested, setIsCaptchaRequested] = useState(false)
   const [ourCatalog, setOurCatalog] = useState<File | null>(null)
   const [theirCatalog, setTheirCatalog] = useState<File | null>(null)
-  const [idbCookieFound] = useState(() => hasIdbCookie())
+  // backlogram#910: куку читаем после гидрации — первый рендер обязан
+  // совпасть с разметкой, отрисованной на сборке (без куки).
+  const [idbCookieFound, setIdbCookieFound] = useState(false)
+  useEffect(() => {
+    if (hasIdbCookie()) setIdbCookieFound(true)
+  }, [])
   const captchaContainerRef = useRef<HTMLDivElement>(null)
   const captchaWidgetIdRef = useRef<number | null>(null)
 
@@ -356,7 +361,7 @@ export default function CatalogMatching() {
   }
 
   return (
-    <div className="overflow-hidden">
+    <div itemScope itemType="https://schema.org/Article" className="overflow-hidden">
       {/* Hero */}
       <section className="pt-28 pb-12 lg:pt-36 lg:pb-16 border-b border-slate-200 dark:border-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -373,6 +378,7 @@ export default function CatalogMatching() {
           </div>
 
           <motion.h1
+            itemProp="headline"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -382,7 +388,7 @@ export default function CatalogMatching() {
             <span className="text-blue-500">{CM_META.h1Accent}</span>
           </motion.h1>
 
-          <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">{CM_META.lead}</p>
+          <p itemProp="description" className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">{CM_META.lead}</p>
 
           {/* Дата обновления видна и человеку, и в JSON-LD снапшота (аудит #627, п. 5) */}
           <p className="mt-4 text-sm text-slate-400 dark:text-slate-500">
@@ -399,6 +405,7 @@ export default function CatalogMatching() {
           <figure>
             <div className="rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none">
               <img
+                itemProp="image"
                 src="/catalog-tokenization.jpg"
                 alt="Токенизация наименований: каталоги поставщика (SKU) и контрагента (RFP) разбиваются на слова-токены и сопоставляются через общий справочник токенов"
                 width={1672}

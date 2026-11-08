@@ -115,7 +115,12 @@ export default function ExcelToApp() {
   const [captchaToken, setCaptchaToken] = React.useState('')
   const [isCaptchaRequested, setIsCaptchaRequested] = React.useState(false)
   const [isDragging, setIsDragging] = React.useState(false)
-  const [idbCookieFound] = React.useState(() => hasIdbCookie())
+  // backlogram#910: куку читаем после гидрации — первый рендер обязан
+  // совпасть с разметкой, отрисованной на сборке (без куки).
+  const [idbCookieFound, setIdbCookieFound] = React.useState(false)
+  React.useEffect(() => {
+    if (hasIdbCookie()) setIdbCookieFound(true)
+  }, [])
   const fileInputRef = React.useRef<HTMLInputElement>(null)
   const captchaContainerRef = React.useRef<HTMLDivElement>(null)
   const captchaWidgetIdRef = React.useRef<number | null>(null)
@@ -513,7 +518,7 @@ export default function ExcelToApp() {
   ]
 
   return (
-    <div className="overflow-hidden">
+    <div itemScope itemType="https://schema.org/Service" className="overflow-hidden">
       {/* Payment offer */}
       {showPaymentOffer && (
         <section
@@ -634,6 +639,7 @@ export default function ExcelToApp() {
           </motion.div>
 
           <motion.h1
+            itemProp="name"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
@@ -643,6 +649,7 @@ export default function ExcelToApp() {
           </motion.h1>
 
           <motion.p
+            itemProp="description"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}

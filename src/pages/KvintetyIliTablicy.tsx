@@ -198,7 +198,7 @@ export default function KvintetyIliTablicy() {
     // делает его контейнером прокрутки, и липкая колонка «Итог» перестаёт
     // прилипать к верху окна — она прилипает к невидимому контейнеру и едет
     // вместе со страницей. `clip` режет так же, но контейнера не создаёт.
-    <div className="overflow-x-clip">
+    <div itemScope itemType="https://schema.org/WebPage" className="overflow-x-clip">
       {/* Hero */}
       <section className="pt-28 pb-10 lg:pt-36 lg:pb-14 border-b border-slate-200 dark:border-slate-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -215,6 +215,7 @@ export default function KvintetyIliTablicy() {
           </div>
 
           <motion.h1
+            itemProp="headline"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -224,7 +225,7 @@ export default function KvintetyIliTablicy() {
             <span className="text-blue-500">{QUIZ_META.h1Accent}</span>
           </motion.h1>
 
-          <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl">
+          <p itemProp="description" className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl">
             {QUIZ_META.lead}
           </p>
 

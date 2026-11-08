@@ -106,7 +106,12 @@ export default function Quiz() {
   const [callSlot, setCallSlot] = useState('')
   const [consentChecked, setConsentChecked] = useState(false)
   const [captchaToken, setCaptchaToken] = useState('')
-  const [idbCookieFound] = useState(() => hasIdbCookie())
+  // backlogram#910: куку читаем после гидрации — первый рендер обязан
+  // совпасть с разметкой, отрисованной на сборке (без куки).
+  const [idbCookieFound, setIdbCookieFound] = useState(false)
+  useEffect(() => {
+    if (hasIdbCookie()) setIdbCookieFound(true)
+  }, [])
   const [errorMsg, setErrorMsg] = useState('')
   const captchaContainerRef = useRef<HTMLDivElement>(null)
   const captchaWidgetIdRef = useRef<number | null>(null)

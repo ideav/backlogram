@@ -12,29 +12,41 @@ const ThemeContext = createContext<ThemeContextValue>({
   toggleTheme: () => {},
 })
 
-function getInitialTheme(): Theme {
-  const stored = localStorage.getItem('theme')
-  if (stored === 'dark') return 'dark'
-  return 'light'
+// Класс темы на <html> ставит inline-скрипт в index.html ещё до первой
+// отрисовки, поэтому здесь его трогает только переключатель.
+function applyTheme(theme: Theme) {
+  const root = document.documentElement
+  root.classList.toggle('dark', theme === 'dark')
+  root.classList.toggle('light', theme === 'light')
+  try {
+    localStorage.setItem('theme', theme)
+  } catch {
+    // приватный режим или запрет хранилища — тема просто не запомнится
+  }
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(getInitialTheme)
+  // backlogram#910: страница рендерится на сборке и гидрируется в браузере —
+  // первый рендер обязан совпадать с серверным, поэтому сохранённая тема
+  // читается только после него. Разметка от темы не зависит (иконки
+  // переключателя меняет CSS-класс dark:), так что смена состояния ничего не
+  // перерисовывает на экране.
+  const [theme, setTheme] = useState<Theme>('light')
 
   useEffect(() => {
-    const root = document.documentElement
-    if (theme === 'light') {
-      root.classList.add('light')
-      root.classList.remove('dark')
-    } else {
-      root.classList.add('dark')
-      root.classList.remove('light')
+    let stored: string | null = null
+    try {
+      stored = localStorage.getItem('theme')
+    } catch {
+      stored = null
     }
-    localStorage.setItem('theme', theme)
-  }, [theme])
+    if (stored === 'dark') setTheme(stored)
+  }, [])
 
   function toggleTheme() {
-    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'))
+    const next: Theme = theme === 'dark' ? 'light' : 'dark'
+    applyTheme(next)
+    setTheme(next)
   }
 
   return (

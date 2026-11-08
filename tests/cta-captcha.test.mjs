@@ -41,8 +41,10 @@ test('CTA captcha is skipped for visitors with a valid idb_* cookie', () => {
   )
   assert.match(
     homeSource,
-    /const \[idbCookieFound\] = React\.useState\(\(\) => hasIdbCookie\(\)\)/,
-    'idbCookieFound state should be initialised from hasIdbCookie().',
+    // backlogram#910: страница гидрируется поверх разметки со сборки, где куки нет, —
+    // поэтому кука читается эффектом после первого рендера, а не в useState.
+    /const \[idbCookieFound, setIdbCookieFound\] = React\.useState\(false\)\s*React\.useEffect\(\(\) => \{\s*if \(hasIdbCookie\(\)\) setIdbCookieFound\(true\)\s*\}, \[\]\)/,
+    'idbCookieFound should be set from hasIdbCookie() after hydration.',
   )
   assert.match(
     homeSource,

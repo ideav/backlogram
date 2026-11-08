@@ -55,7 +55,12 @@ export default function LeadForm({ source }: { source?: string }) {
   const [consentChecked, setConsentChecked] = React.useState(false)
   const [captchaToken, setCaptchaToken] = React.useState('')
   const [isCaptchaRequested, setIsCaptchaRequested] = React.useState(false)
-  const [idbCookieFound] = React.useState(() => hasIdbCookie())
+  // backlogram#910: куку читаем после гидрации — первый рендер обязан
+  // совпасть с разметкой, отрисованной на сборке (без куки).
+  const [idbCookieFound, setIdbCookieFound] = React.useState(false)
+  React.useEffect(() => {
+    if (hasIdbCookie()) setIdbCookieFound(true)
+  }, [])
   const [attachedFiles, setAttachedFiles] = React.useState<File[]>([])
   const captchaContainerRef = React.useRef<HTMLDivElement>(null)
   const captchaWidgetIdRef = React.useRef<number | null>(null)

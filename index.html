@@ -15,20 +15,9 @@
       (function() {
         var stored = localStorage.getItem('theme');
         var cls = (stored === 'dark') ? 'dark' : 'light';
-        document.documentElement.classList.add(cls);
-      })();
-    </script>
-    <!-- ideav/crm#5460: пока React не смонтировал страницу, #root скрыт. Иначе
-         посетитель видит три картинки подряд: SEO-вёрстку из HTML, шапку со
-         спиннером ленивого чанка и только потом страницу. Класс ставит JS, так что
-         без JS (поисковые роботы) пререндер виден как раньше. Снимает класс
-         RevealWhenReady в App.tsx; таймаут — страховка, если бандл не загрузился. -->
-    <style>html.boot #root { visibility: hidden; }</style>
-    <script>
-      (function() {
-        var root = document.documentElement;
-        root.classList.add('boot');
-        setTimeout(function() { root.classList.remove('boot'); }, 3000);
+        // js: страница с JS — статический блок ссылок для роботов (#static-nav,
+        // scripts/lib/static-nav.mjs) не показываем, его заменяет шапка.
+        document.documentElement.classList.add(cls, 'js');
       })();
     </script>
   </head>

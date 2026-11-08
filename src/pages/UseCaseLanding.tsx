@@ -128,7 +128,12 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
   const [consentChecked, setConsentChecked] = useState(false)
   const [captchaToken, setCaptchaToken] = useState('')
   const [isCaptchaRequested, setIsCaptchaRequested] = useState(false)
-  const [idbCookieFound] = useState(() => hasIdbCookie())
+  // backlogram#910: куку читаем после гидрации — первый рендер обязан
+  // совпасть с разметкой, отрисованной на сборке (без куки).
+  const [idbCookieFound, setIdbCookieFound] = useState(false)
+  useEffect(() => {
+    if (hasIdbCookie()) setIdbCookieFound(true)
+  }, [])
   const captchaContainerRef = useRef<HTMLDivElement>(null)
   const captchaWidgetIdRef = useRef<number | null>(null)
 
@@ -239,7 +244,7 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
   const ctaLabel = uc.ctaLabel ?? 'Заказать демо'
 
   return (
-    <div className="overflow-hidden">
+    <div itemScope itemType="https://schema.org/Service" className="overflow-hidden">
       {/* Hero */}
       <section className="pt-28 pb-12 lg:pt-36 lg:pb-16 border-b border-slate-200 dark:border-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -253,11 +258,11 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 text-blue-600 dark:text-blue-400 text-sm font-medium mb-5">
             <Icon name={uc.badgeIcon} size={14} /> {uc.badge}
           </div>
-          <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+          <motion.h1 itemProp="name" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5">
             {uc.h1} <span className="text-blue-500">{uc.h1accent}</span>
           </motion.h1>
-          <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-8">{uc.lead}</p>
+          <p itemProp="description" className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-8">{uc.lead}</p>
           <a href="#zayavka" className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all">
             {ctaLabel} <ArrowRight size={18} />
           </a>
@@ -271,6 +276,7 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
             className="mt-12">
             <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 ring-1 ring-slate-900/5 shadow-2xl shadow-slate-900/10">
               <img
+                itemProp="image"
                 src={uc.image}
                 alt={uc.imageAlt}
                 width={IMG_SIZE[uc.image]?.w}

@@ -24,6 +24,7 @@ import { BLOG_URL, visibleBlogPosts } from '../src/data/blogPosts.mjs'
 import { HOME_FAQ } from '../src/data/home-faq.mjs'
 import { HOME_CASE_SCREENSHOTS } from '../src/data/home-cases.mjs'
 import { SITE_SECTIONS } from '../src/data/siteSections.mjs'
+import { HOME_LEAD } from '../src/data/homeLead.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -137,8 +138,7 @@ const useCaseLinksHtml = USE_CASES
 // поиска у страницы другой H1, чем для людей (issue #495). Синхронность
 // проверяет tests/issue-495-home-seo.test.mjs.
 const H1 = 'Интеграм — российский no-code конструктор приложений и баз данных: замена Excel и аналог Airtable для бизнеса'
-const LEAD =
-  'Из Excel-таблицы — рабочее веб-приложение за 45 минут. Реляционные данные, сотни тысяч записей, права доступа на уровне строк, локальное размещение в контуре заказчика. Автоматизация бизнес-процессов без программистов. В реестре отечественного ПО (запись №30872).'
+const LEAD = HOME_LEAD
 
 // Абзац SEO-подвала — тот же текст, что в секции 16 src/pages/Home.tsx (af.md, блок 14).
 const SEO_FOOTER =

@@ -301,7 +301,7 @@ export default function InformationSystem() {
   }, [])
 
   return (
-    <div className="overflow-hidden">
+    <div itemScope itemType="https://schema.org/Article" className="overflow-hidden">
       {/* Hero */}
       <section className="pt-28 pb-12 lg:pt-36 lg:pb-16 border-b border-slate-200 dark:border-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -318,6 +318,7 @@ export default function InformationSystem() {
           </div>
 
           <motion.h1
+            itemProp="headline"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -326,7 +327,7 @@ export default function InformationSystem() {
             Информационная система (ИС): <span className="text-blue-500">что это простыми словами</span>
           </motion.h1>
 
-          <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+          <p itemProp="description" className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
             Разбираем, что такое информационная система, из чего она состоит, какими бывают виды и
             свойства ИС — и как собрать работающую информационную систему на low-code платформе с ИИ,
             без месяцев заказной разработки.

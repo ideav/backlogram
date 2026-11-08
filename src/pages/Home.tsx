@@ -20,6 +20,7 @@ import { movedAnchorTarget } from '../lib/movedAnchor'
 import ClientLogos from '@/components/ClientLogos'
 import BlogSlider from '@/components/BlogSlider'
 import LeadForm from '@/components/LeadForm'
+import { HOME_LEAD } from '../data/homeLead'
 
 // #823: иконки карточек выбора раздела на первом экране.
 const ROUTE_ICONS = { excel: FileSpreadsheet, business: Briefcase, developer: Code2 } as const
@@ -62,7 +63,10 @@ export default function Home() {
     // Бюджет заголовков (issue #514): один H1, до 10 H2 — только смысловые
     // разделы страницы. Подписи карточек и вопросы FAQ — обычный текст с теми
     // же классами. Тест — tests/issue-514-headings.
-    <div className="overflow-hidden">
+    // backlogram#910: микроразметка SoftwareApplication — та же, что была в
+    // пререндер-снимке: имя — H1, описание — лид снимка (src/data/homeLead.mjs).
+    <div itemScope itemType="https://schema.org/SoftwareApplication" className="overflow-hidden">
+      <meta itemProp="description" content={HOME_LEAD} />
       {/* 1. Hero Section */}
       <section id="hero" className="scroll-mt-24 relative isolate overflow-hidden pt-24 pb-16 lg:pt-28 lg:pb-24">
         <div className="absolute inset-0 -z-10 overflow-hidden">
@@ -103,6 +107,7 @@ export default function Home() {
 
             <div className={`hero-copy-opacity-target transition-opacity duration-700 ease-in-out ${isHeroTeaserActive ? 'opacity-[0.10] dark:opacity-[0.20]' : 'opacity-100'}`}>
               <motion.h1
+                itemProp="name"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}

@@ -1,5 +1,5 @@
 import { lazy } from 'react'
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, type RouteObject } from 'react-router-dom'
 import Home from './pages/Home'
 import { USE_CASES } from './data/usecases'
 import { AI_PAGES } from './data/aiPages'
@@ -56,7 +56,10 @@ const AiLanding = lazy(() => import('./pages/AiLanding'))
 // #823: три основных раздела сайта — из src/data/siteSections.mjs.
 const SiteSection = lazy(() => import('./pages/SiteSection'))
 
-export const router = createBrowserRouter([
+// backlogram#910: маршруты отдельно от роутера — их же рендерит на сборке
+// src/entry-server.tsx (createStaticRouter), а браузерный роутер создаётся
+// только в браузере: createBrowserRouter обращается к window.
+export const routes: RouteObject[] = [
   {
     path: '/',
     element: <App />,
@@ -307,4 +310,8 @@ export const router = createBrowserRouter([
       },
     ],
   },
-])
+]
+
+export function createRouter() {
+  return createBrowserRouter(routes)
+}

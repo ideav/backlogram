@@ -40,3 +40,23 @@ export function readAdeptHeroCookie(cookie) {
 export function adeptHeroCookie(id) {
   return `${ADEPT_HERO_COOKIE}=${encodeURIComponent(id)}; path=/; max-age=31536000; SameSite=Lax`
 }
+
+/**
+ * backlogram#910: выбор темы до первой отрисовки.
+ *
+ * Страница рендерится на сборке, а тема зависит от куки посетителя — на сборке
+ * её не выбрать. Сервер отдаёт <img> без src, а этот inline-скрипт сразу за ним
+ * (выполняется при разборе HTML, до первого кадра) выбирает тему теми же
+ * правилами, что nextAdeptHero, ставит куку, src и data-hero. При гидрации
+ * AdeptPath берёт тему из data-hero, так что React с выбором согласен и
+ * картинка не меняется.
+ */
+export function adeptHeroInlineScript() {
+  return `(function(){var H=${JSON.stringify(ADEPT_HEROES.map(h => [h.id, h.src]))},` +
+    `s=document.currentScript,img=s&&s.previousElementSibling,sec=img&&img.closest('[data-hero]');` +
+    `if(!img||!sec)return;var m=document.cookie.match(/(?:^|;\s*)${ADEPT_HERO_COOKIE}=([^;]*)/),` +
+    `last=m?decodeURIComponent(m[1]):null,i=-1;for(var k=0;k<H.length;k++)if(H[k][0]===last)i=k;` +
+    `var h=H[i>=0?(i+1)%H.length:Math.min(H.length-1,Math.floor(Math.random()*H.length))];` +
+    `document.cookie='${ADEPT_HERO_COOKIE}='+encodeURIComponent(h[0])+'; path=/; max-age=31536000; SameSite=Lax';` +
+    `img.src=h[1];sec.setAttribute('data-hero',h[0]);})()`
+}

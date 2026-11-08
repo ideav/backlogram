@@ -1,7 +1,20 @@
 # CLAUDE.md — ideav/backlogram
 
-Сайт ideav.ru: Vite + React SPA с пререндер-снапшотами для краулеров (scripts/prerender-*.mjs),
+Сайт ideav.ru: Vite + React SPA, страницы рендерятся на сборке и гидрируются в браузере;
 сборка целиком — `npm run build`, тесты — `npm test` (node --test tests/*.test.mjs).
+
+## Рендер на сборке (#910)
+
+- `src/entry-server.tsx` собирается `vite build --ssr` в `dist-ssr/`; `scripts/render-ssr.mjs`
+  кладёт настоящее React-дерево каждой страницы в `#root` (`data-ssr`), `src/main.tsx` его
+  гидрирует (`hydrateRoot`, ленивый чанк страницы — заранее, `src/lib/preload-route.ts`).
+- `scripts/prerender-*.mjs` по-прежнему собирают `<head>` (title, description, canonical, og,
+  JSON-LD). Их снимок в `#root` заменяется и служит контрольной точкой: render-ssr пишет,
+  если на настоящей странице нет H1 снимка или заметной доли его слов.
+- Первый рендер в браузере обязан совпасть с серверным: в рендере не читать window,
+  document, localStorage, куки — только в эффектах (см. ThemeContext, idbCookieFound,
+  тему hero в AdeptPath). Иначе React перерисует страницу целиком и напишет ошибку в консоль.
+- `#static-nav` стоит перед `#root` и виден только без JS (класс `js` на `<html>`).
 
 ## Типографика: неразрывные пробелы (#627, #753)
 
@@ -17,9 +30,12 @@
 
 - `scripts/apply-typography.mjs` — постпроход по всем страницам dist/, последний
   переписывающий шаг `npm run build` (после inject-static-nav.mjs);
-- `src/lib/install-typography.ts` — тот же проход по смонтированному SPA через
-  MutationObserver: React перерисовывает пререндер-снапшот из исходных строк,
-  и без него переносы возвращались бы уже в браузере.
+- `src/lib/install-typography.ts` — тот же проход по живому DOM через
+  MutationObserver: React рисует тексты из исходных строк, и без него переносы
+  возвращались бы уже в браузере. Ставится в `src/main.tsx` до гидрации: React
+  сравнивает текст со строками, считая U+00A0 и пробел равными
+  (`scripts/lib/hydrate-nbsp.mjs`), переписывает узел своей строкой, а наблюдатель
+  склеивает его обратно до отрисовки кадра.
 
 Новые предлоги, числительные и единицы добавлять в списки `typography.mjs`
 с тестом в `tests/issue-753-typography.test.mjs`; базовые инварианты держит

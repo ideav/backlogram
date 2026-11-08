@@ -294,7 +294,12 @@ export default function ExcelConstructor() {
   const [isCaptchaRequested, setIsCaptchaRequested] = useState(false)
   const [fileA, setFileA] = useState<File | null>(null)
   const [fileB, setFileB] = useState<File | null>(null)
-  const [idbCookieFound] = useState(() => hasIdbCookie())
+  // backlogram#910: куку читаем после гидрации — первый рендер обязан
+  // совпасть с разметкой, отрисованной на сборке (без куки).
+  const [idbCookieFound, setIdbCookieFound] = useState(false)
+  useEffect(() => {
+    if (hasIdbCookie()) setIdbCookieFound(true)
+  }, [])
   const captchaContainerRef = useRef<HTMLDivElement>(null)
   const captchaWidgetIdRef = useRef<number | null>(null)
 
@@ -424,7 +429,7 @@ export default function ExcelConstructor() {
   }
 
   return (
-    <div className="overflow-hidden">
+    <div itemScope itemType="https://schema.org/Service" className="overflow-hidden">
       {/* Hero */}
       <section className="pt-28 pb-12 lg:pt-36 lg:pb-16 border-b border-slate-200 dark:border-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -445,6 +450,7 @@ export default function ExcelConstructor() {
               отрендеренный DOM должны совпадать (issue #559, п. 2). Прежний
               заголовок-крючок остался подзаголовком строкой ниже. */}
           <motion.h1
+            itemProp="name"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -458,7 +464,7 @@ export default function ExcelConstructor() {
             Ваш Excel тормозит и врёт?
           </p>
 
-          <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-8">
+          <p itemProp="description" className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-8">
             Замените Excel конструктором приложений Интеграм: храните миллионы записей, стройте
             отчёты и управляйте данными без программистов. Настоящая база данных вместо
             разъезжающихся таблиц — с ролями доступа, дашбордами и настройкой под ваш бизнес за
@@ -486,6 +492,7 @@ export default function ExcelConstructor() {
             className="mt-12">
             <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 ring-1 ring-slate-900/5 shadow-2xl shadow-slate-900/10">
               <img
+                itemProp="image"
                 src="/case-sovereignty-audit.webp"
                 alt="Пример приложения на платформе Интеграм: аналитика, финансы и дашборды"
                 width={2042}

@@ -8,9 +8,12 @@
  * в меню (src/data/nav.mjs), превращается в статический `<nav>`; его вставляет
  * в каждую страницу `scripts/inject-static-nav.mjs` после всех пререндеров.
  *
- * Блок живёт первым ребёнком `#root`, поэтому при старте React он исчезает
- * вместе с остальным пререндером: `createRoot().render()` заменяет содержимое
- * `#root` целиком. В HTTP-ответе ссылки остаются.
+ * backlogram#910: в `#root` теперь настоящая страница, отрисованная на сборке
+ * и гидрируемая в браузере, — чужой разметки там быть не должно. Блок стоит
+ * прямо перед `#root` и виден только без JS: класс `js` на <html> ставит
+ * inline-скрипт в index.html до первой отрисовки, так что посетитель с JS его
+ * не видит ни в одном кадре (как раньше, когда React стирал блок вместе со
+ * снимком). В HTTP-ответе ссылки остаются.
  */
 import { staticNavLinks } from '../../src/data/nav.mjs'
 
@@ -32,6 +35,7 @@ const STYLE = `<style>
   #static-nav a:hover { text-decoration: underline; }
   .dark #static-nav { color: #94a3b8; }
   .dark #static-nav a { color: #60a5fa; }
+  html.js #static-nav { display: none; }
 </style>`
 
 /**
@@ -56,14 +60,12 @@ ${items}
 }
 
 /**
- * Вставка блока первым ребёнком `#root`. Если блок уже есть — ничего не делает,
- * чтобы повторный прогон сборки не плодил копии.
+ * Вставка блока прямо перед `#root` (вне дерева React). Если блок уже есть —
+ * ничего не делает, чтобы повторный прогон сборки не плодил копии.
  */
 export function injectStaticNav(html, current = '') {
   if (html.includes('id="static-nav"')) return html
-  const anchor = '<div id="root">'
-  const at = html.indexOf(anchor)
+  const at = html.search(/<div id="root"[\s>]/)
   if (at === -1) return html
-  const cut = at + anchor.length
-  return `${html.slice(0, cut)}\n${renderStaticNav(current)}${html.slice(cut)}`
+  return `${html.slice(0, at)}${renderStaticNav(current)}\n    ${html.slice(at)}`
 }

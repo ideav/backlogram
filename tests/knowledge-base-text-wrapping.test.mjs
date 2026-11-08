@@ -22,7 +22,7 @@ test('knowledge base pages have a utility for wrapping long technical tokens', (
 
 test('knowledge base page shells apply long-token wrapping', () => {
   assert.match(kbArticlePageSource, /<div className="overflow-hidden wrap-anywhere">/)
-  assert.match(kbIndexPageSource, /<div className="overflow-hidden wrap-anywhere">/)
+  assert.match(kbIndexPageSource, /<div [^>]*className="overflow-hidden wrap-anywhere">/)
 })
 
 test('knowledge base article flex rows allow long text to shrink and wrap', () => {

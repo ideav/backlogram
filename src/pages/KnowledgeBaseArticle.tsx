@@ -196,7 +196,7 @@ export default function KnowledgeBaseArticle() {
 
   return (
     <div className="overflow-hidden wrap-anywhere">
-      <article className="pt-28 pb-16">
+      <article itemScope itemType="https://schema.org/TechArticle" className="pt-28 pb-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             to="/knowledge-base.html"
@@ -218,10 +218,10 @@ export default function KnowledgeBaseArticle() {
                 <GitCompare size={12} /> Сравнение: {article.compare}
               </span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold leading-tight mb-6">
+            <h1 itemProp="headline" className="text-3xl md:text-4xl font-bold leading-tight mb-6">
               {article.title}
             </h1>
-            <p className="text-lg text-slate-500 dark:text-slate-400 leading-relaxed">
+            <p itemProp="description" className="text-lg text-slate-500 dark:text-slate-400 leading-relaxed">
               {article.summary}
             </p>
             <figure className="mt-8 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-950 shadow-sm">

@@ -193,7 +193,7 @@ export default function BitrixAmoComparison() {
   }, [])
 
   return (
-    <div className="overflow-hidden">
+    <div itemScope itemType="https://schema.org/Article" className="overflow-hidden">
       {/* Hero */}
       <section className="pt-28 pb-12 lg:pt-36 lg:pb-16 border-b border-slate-200 dark:border-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -211,6 +211,7 @@ export default function BitrixAmoComparison() {
           </div>
 
           <motion.h1
+            itemProp="headline"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -220,7 +221,7 @@ export default function BitrixAmoComparison() {
             <span className="text-blue-500">что нельзя поменять в коробке</span>
           </motion.h1>
 
-          <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+          <p itemProp="description" className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
             CRM-система — что это такое: программа, где живут клиенты, сделки и история общения с
             ними. Битрикс24 и AmoCRM — готовые CRM-системы, и в них есть вещи, которые нельзя
             изменить даже за деньги: они зашиты в ядро продукта.

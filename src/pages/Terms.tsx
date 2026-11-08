@@ -72,7 +72,7 @@ export default function Terms() {
   }, [])
 
   return (
-    <div className="overflow-hidden">
+    <div itemScope itemType="https://schema.org/WebPage" className="overflow-hidden">
       {/* Hero */}
       <section className="pt-28 pb-10 lg:pt-36 lg:pb-14 border-b border-slate-200 dark:border-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -88,11 +88,11 @@ export default function Terms() {
             Правила использования
           </div>
 
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5">
+          <h1 itemProp="headline" className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5">
             Соглашение об использовании <span className="text-blue-500">сервиса</span>
           </h1>
 
-          <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+          <p itemProp="description" className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
             {TERMS_INTRO}
           </p>
         </div>

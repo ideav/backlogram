@@ -232,7 +232,7 @@ test('колонке «Итог» ничто не мешает прилипат�
   // страницы и сетку опросника. Корень режет по горизонтали через clip —
   // контейнера прокрутки он не создаёт.
   const body = page.slice(page.indexOf('export default function'))
-  const root = body.match(/return \(\s*(?:\/\/[^\n]*\n\s*)*<div className="([^"]+)"/)[1]
+  const root = body.match(/return \(\s*(?:\/\/[^\n]*\n\s*)*<div [^>]*?className="([^"]+)"/)[1]
   assert.match(root, /overflow-x-clip/)
   assert.ok(!/\boverflow-hidden\b/.test(root), 'overflow-hidden на корне ломает sticky')
   const grid = page.match(/<div className="([^"]*lg:grid-cols-\[[^"]*)"/)[1]

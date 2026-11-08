@@ -148,17 +148,17 @@ export default function KnowledgeBase() {
     : knowledgeBaseArticles
 
   return (
-    <div className="overflow-hidden wrap-anywhere">
+    <div itemScope itemType="https://schema.org/CollectionPage" className="overflow-hidden wrap-anywhere">
       <section className="pt-32 pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-widest mb-6">
               <BookOpen size={14} /> База знаний
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+            <h1 itemProp="name" className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
               Интеграм в сравнении с другими инструментами
             </h1>
-            <p className="text-lg text-slate-500 dark:text-slate-400 leading-relaxed">
+            <p itemProp="description" className="text-lg text-slate-500 dark:text-slate-400 leading-relaxed">
               Серия разборов сценариев, в которых Интеграм заменяет или дополняет
               распространённые инструменты — от Google Sheets до заказной разработки.
               Каждая статья описывает контекст, что Интеграм делает иначе, и где у него

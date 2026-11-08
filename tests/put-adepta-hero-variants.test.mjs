@@ -56,9 +56,11 @@ test('страница берёт тему из куки и шлёт её с з�
   const src = readFileSync(join(root, 'src/pages/AdeptPath.tsx'), 'utf8')
   assert.match(src, /nextAdeptHero\(readAdeptHeroCookie\(document\.cookie\)\)/)
   assert.match(src, /document\.cookie = adeptHeroCookie\(/)
-  assert.match(src, /Картинка hero: \$\{hero\.id\}/)
-  assert.match(src, /reachGoal\('lead', \{ source: 'adept', adept_hero: hero\.id \}\)/)
-  assert.match(src, /visitParams\(\{ adept_hero: hero\.id \}\)/)
+  // backlogram#910: на сборке темы нет (hero = null), id берётся через heroId.
+  assert.match(src, /const heroId = hero\?\.id \?\? ''/)
+  assert.match(src, /Картинка hero: \$\{heroId\}/)
+  assert.match(src, /reachGoal\('lead', \{ source: 'adept', adept_hero: heroId \}\)/)
+  assert.match(src, /visitParams\(\{ adept_hero: heroId \}\)/)
 })
 
 test('#887: солнце ретровейва цельное — без полос-щелей поверх свечения', () => {

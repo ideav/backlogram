@@ -1,10 +1,10 @@
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, useState } from 'react'
+import { PresenceContext } from 'framer-motion'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
 import { CookieConsent } from './components/CookieConsent'
 import { ThemeProvider } from './context/ThemeContext'
-import { installTypography } from './lib/install-typography'
 
 function ScrollToRouteTarget() {
   const { pathname, search, hash } = useLocation()
@@ -40,23 +40,26 @@ function RouteFallback() {
   )
 }
 
-// ideav/crm#5460: снимает класс boot с <html> (см. index.html), открывая #root.
-// Стоит внутри Suspense рядом с Outlet: пока чанк ленивой страницы грузится,
-// React не коммитит соседей, и эффект срабатывает только с готовой страницей.
-function RevealWhenReady() {
-  useEffect(() => {
-    document.documentElement.classList.remove('boot')
-  }, [])
-  return null
-}
+// backlogram#910: страница, отрисованная на сборке, появляется сразу в
+// итоговом виде. Элементы framer-motion с initial={{ opacity: 0 }} иначе
+// попадали бы в HTML невидимыми и проявлялись бы только после загрузки JS.
+// Пока страница гидрируется, контекст «присутствия» говорит им initial: false
+// (как AnimatePresence initial={false}) — они рисуются сразу в состоянии
+// animate, а whileInView-элементы — без стартового сдвига. Значение
+// читается один раз при монтировании, поэтому всё, что появляется после
+// гидрации (переходы по сайту, меню), анимируется как раньше. Объект
+// контекста остаётся непустым всегда: framer-motion вызывает разный набор
+// хуков для пустого и непустого контекста.
+const noop = () => {}
+const PRESENCE_HYDRATING = { id: 'ssr', isPresent: true, initial: false as const, register: () => noop }
+const PRESENCE_LIVE = { id: 'ssr', isPresent: true, register: () => noop }
 
 export default function App() {
-  // Живая микротипографика смонтированной страницы — правила те же, что и в
-  // постпроходе dist (issue #753). Ставится один раз: дальше DOM наблюдает
-  // MutationObserver, маршруты и тексты перерисовываются без нашего ведома.
-  useEffect(() => installTypography(), [])
+  const [hydrated, setHydrated] = useState(false)
+  useEffect(() => setHydrated(true), [])
 
   return (
+    <PresenceContext.Provider value={hydrated ? PRESENCE_LIVE : PRESENCE_HYDRATING}>
     <ThemeProvider>
       <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 selection:bg-blue-500/30">
         <ScrollToRouteTarget />
@@ -64,12 +67,12 @@ export default function App() {
         <main>
           <Suspense fallback={<RouteFallback />}>
             <Outlet />
-            <RevealWhenReady />
           </Suspense>
         </main>
         <Footer />
         <CookieConsent />
       </div>
     </ThemeProvider>
+    </PresenceContext.Provider>
   )
 }
