@@ -97,3 +97,11 @@ test('router и build подключают страницы', () => {
   assert.match(read('src/router.tsx'), /LOSS_LANDINGS/)
   assert.match(read('package.json'), /prerender-loss-landings\.mjs/)
 })
+
+test('robots: служебная заменяет тег из index.html, а не дописывает второй', () => {
+  const pre = read('scripts/prerender-loss-landings.mjs')
+  assert.match(pre, /\.replace\(\/<meta name="robots"\[\^>\]\*>\//)
+  assert.doesNotMatch(pre, /'<meta name="robots" content="noindex, nofollow" \/>',\n/)
+  const page = read('src/pages/LossLanding.tsx')
+  assert.match(page, /querySelector<HTMLMetaElement>\('meta\[name="robots"\]'\)/)
+})

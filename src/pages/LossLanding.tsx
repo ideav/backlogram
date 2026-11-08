@@ -53,15 +53,23 @@ export default function LossLanding({ slug }: { slug: string }) {
       document.head.appendChild(link)
     }
     link.setAttribute('href', canonical)
-    // Служебная страница не индексируется; метку снимаем при уходе со страницы SPA.
-    let robots: HTMLMetaElement | null = null
-    if (!page.indexable) {
+    // Служебная страница не индексируется: меняем content единственного тега robots
+    // (второй тег рядом с index, follow противоречил бы ему), при уходе со страницы SPA — возвращаем.
+    if (page.indexable) return
+    let robots = document.querySelector<HTMLMetaElement>('meta[name="robots"]')
+    const created = !robots
+    if (!robots) {
       robots = document.createElement('meta')
       robots.setAttribute('name', 'robots')
-      robots.setAttribute('content', 'noindex, nofollow')
       document.head.appendChild(robots)
     }
-    return () => robots?.remove()
+    robots.setAttribute('content', 'noindex, nofollow')
+    // Пререндер служебной страницы уже несёт noindex, поэтому при уходе ставим
+    // значение по умолчанию из index.html, а не «прежнее».
+    return () => {
+      if (created) robots?.remove()
+      else robots?.setAttribute('content', 'index, follow, max-image-preview:large, max-snippet:-1')
+    }
   }, [page])
 
   if (!page) return null

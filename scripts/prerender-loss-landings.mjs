@@ -102,7 +102,6 @@ function headFor(p, canonical) {
   if (p.faq?.length) graph.push({ '@type': 'FAQPage', '@id': `${canonical}#faq`, mainEntity: p.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) })
   return [
     `<link rel="canonical" href="${esc(canonical)}" />`,
-    p.indexable ? '' : '<meta name="robots" content="noindex, nofollow" />',
     '<meta property="og:type" content="website" />',
     `<meta property="og:url" content="${esc(canonical)}" />`,
     `<meta property="og:title" content="${esc(p.seoTitle)}" />`,
@@ -134,6 +133,8 @@ for (const p of LOSS_LANDINGS) {
   const html = source
     .replace(/<title>[\s\S]*?<\/title>/, () => `<title>${esc(p.seoTitle)}</title>`)
     .replace(/<meta name="description"[^>]*>/, () => `<meta name="description" content="${esc(p.metaDescription)}" />`)
+    // У служебной страницы robots заменяется, а не дописывается: два тега index/noindex противоречат друг другу.
+    .replace(/<meta name="robots"[^>]*>/, (m) => (p.indexable ? m : '<meta name="robots" content="noindex, nofollow" />'))
     .replace('</head>', () => `    ${headFor(p, canonical)}\n  </head>`)
     .replace('<div id="root"></div>', () => `<div id="root">${bodyFor(p)}</div>`)
   writeFileSync(resolve(dist, `${p.slug}.html`), html)
