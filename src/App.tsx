@@ -40,6 +40,16 @@ function RouteFallback() {
   )
 }
 
+// ideav/crm#5460: снимает класс boot с <html> (см. index.html), открывая #root.
+// Стоит внутри Suspense рядом с Outlet: пока чанк ленивой страницы грузится,
+// React не коммитит соседей, и эффект срабатывает только с готовой страницей.
+function RevealWhenReady() {
+  useEffect(() => {
+    document.documentElement.classList.remove('boot')
+  }, [])
+  return null
+}
+
 export default function App() {
   // Живая микротипографика смонтированной страницы — правила те же, что и в
   // постпроходе dist (issue #753). Ставится один раз: дальше DOM наблюдает
@@ -54,6 +64,7 @@ export default function App() {
         <main>
           <Suspense fallback={<RouteFallback />}>
             <Outlet />
+            <RevealWhenReady />
           </Suspense>
         </main>
         <Footer />

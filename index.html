@@ -18,6 +18,19 @@
         document.documentElement.classList.add(cls);
       })();
     </script>
+    <!-- ideav/crm#5460: пока React не смонтировал страницу, #root скрыт. Иначе
+         посетитель видит три картинки подряд: SEO-вёрстку из HTML, шапку со
+         спиннером ленивого чанка и только потом страницу. Класс ставит JS, так что
+         без JS (поисковые роботы) пререндер виден как раньше. Снимает класс
+         RevealWhenReady в App.tsx; таймаут — страховка, если бандл не загрузился. -->
+    <style>html.boot #root { visibility: hidden; }</style>
+    <script>
+      (function() {
+        var root = document.documentElement;
+        root.classList.add('boot');
+        setTimeout(function() { root.classList.remove('boot'); }, 3000);
+      })();
+    </script>
   </head>
   <body>
     <!-- Yandex.Metrika counter -->
