@@ -6,6 +6,7 @@ import {
   GitCompare, Wallet, Users, TrendingUp, Archive, BarChart3,
 } from 'lucide-react'
 import { HUB, USE_CASES } from '../data/usecases'
+import { LOSS_INDEXABLE } from '../data/lossLandings'
 import Breadcrumbs from '../components/Breadcrumbs'
 
 const SITE = 'https://ideav.ru'
@@ -89,6 +90,17 @@ export default function UseCaseHub() {
                 <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400">
                   Подробнее: {u.badge.replace(/ на Интеграме$/, '')} <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
                 </span>
+              </Link>
+            ))}
+          </div>
+          {/* Посадочные с калькулятором потерь (python2node#1203) */}
+          <h2 className="text-2xl font-bold mt-14 mb-5">Посчитайте эффект по задаче</h2>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {LOSS_INDEXABLE.map((p) => (
+              <Link key={p.slug} to={`/${p.slug}.html`}
+                className="group flex items-center gap-2 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-600 bg-white dark:bg-slate-950 text-sm font-semibold text-slate-700 dark:text-slate-200 transition-colors">
+                {p.navTitle}
+                <ArrowRight size={15} className="ml-auto text-slate-300 dark:text-slate-600 group-hover:text-blue-500 transition-colors" />
               </Link>
             ))}
           </div>

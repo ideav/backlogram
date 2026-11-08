@@ -153,6 +153,10 @@ export const staticExtraLinks = [
   { name: 'Управленческий учёт', href: '/upravlencheskiy-uchet.html' },
   { name: 'Движение ТМЦ и ДС', href: '/dvizhenie-tmc-i-ds.html' },
   { name: 'Дашборд собственника поверх Битрикс24', href: '/dashbord-sobstvennika-bitrix24.html' },
+  // python2node#1203: посадочные с калькулятором потерь.
+  { name: 'Поиск по документам', href: '/poisk-po-dokumentam.html' },
+  { name: 'Планирование закупок', href: '/planirovanie-zakupok.html' },
+  { name: 'Платёжный календарь', href: '/platezhnyj-kalendar.html' },
   { name: 'Алексей Семёнов', href: '/alexey-semenov.html' },
   // #642: страницы кластера «ИИ для бизнеса» (хаб — в меню «Ещё» и в подвале).
   { name: 'ИИ-агенты для бизнеса', href: '/ii-agenty-dlya-biznesa.html' },

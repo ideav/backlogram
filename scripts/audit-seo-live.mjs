@@ -169,6 +169,9 @@ const USECASES = [
   'crm-uchet-klientov',
   'uchet-dogovorov',
   'upravlencheskiy-uchet',
+  'poisk-po-dokumentam',
+  'planirovanie-zakupok',
+  'platezhnyj-kalendar',
 ].map((s) => `/${s}.html`)
 const BLOG_SAMPLE = [
   '/blog/posts/excel-v-prilozhenie-za-45-minut-kak-rabotaet-ii-agent-integrama/',
