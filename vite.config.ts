@@ -19,6 +19,8 @@ export default defineConfig({
   // страниц уходит в свои чанки через lazy() в router.tsx. Так первый экран
   // не тянет весь код сайта одним ~1 МБ файлом (issue #451).
   build: {
+    // Манифест читает scripts/preload-page-chunks.mjs (ideav/crm#5460) и удаляет.
+    manifest: true,
     rollupOptions: {
       output: {
         manualChunks: {
