@@ -58,6 +58,9 @@ function bodyFor(p) {
       `</tbody></table>${k.note ? `<p class="loss-note">${esc(k.note)}</p>` : ''}` : ''
   const steps = p.steps
     ? `<h2>${esc(p.steps.title)}</h2><ol>${p.steps.items.map((s) => `<li><strong>${esc(s.title)}.</strong> ${esc(s.text)}</li>`).join('')}</ol>` : ''
+  // backlogram#921: где в решении ИИ — плашка в шапке и секция #ai.
+  const ai = p.ai
+    ? `<section id="ai"><h2>${esc(p.ai.title)}</h2><p>${esc(p.ai.lead)}</p><ol>${p.ai.items.map((x) => `<li><em>${esc(x.freq)}.</em> <strong>${esc(x.title)}.</strong> ${esc(x.text)}</li>`).join('')}</ol></section>` : ''
   const faq = p.faq?.length
     ? `<h2 id="faq">Частые вопросы</h2>${p.faq.map((f) => `<section><h3>${esc(f.q)}</h3><p>${esc(f.a)}</p></section>`).join('')}` : ''
   const related = p.related.map((x) => `<a href="${esc(x.href)}">${esc(x.label)}</a>`).join(' · ')
@@ -66,6 +69,7 @@ function bodyFor(p) {
 <article id="loss-prerender">
   <header>
     <p class="loss-eyebrow">${esc(p.kicker)}</p>
+    ${p.ai ? `<p><a href="#ai">${esc(p.ai.badge)}</a></p>` : ''}
     <h1>${esc(p.h1)}</h1>
     <p class="loss-lead">${esc(p.lead)}</p>
     ${p.inn
@@ -85,7 +89,7 @@ function bodyFor(p) {
     <p><a href="${esc(p.ctaUrl ?? LOSS_CTA_URL)}">${esc(cta)}</a> · <a href="${LOSS_PHONE.href}">${LOSS_PHONE.text}</a> · <a href="mailto:${LOSS_EMAIL}">${LOSS_EMAIL}</a></p>
     <p class="loss-note">${esc(LOSS_CALC_NOTE)}</p>
   </section>
-  ${kase}${steps}${faq}
+  ${ai}${kase}${steps}${faq}
   <h2>${esc(p.final.title)}</h2>
   <p>${esc(p.final.text)}</p>
   <p><a href="${esc(p.ctaUrl ?? LOSS_CTA_URL)}">${esc(cta)}</a></p>
