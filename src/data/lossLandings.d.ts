@@ -45,6 +45,8 @@ export interface LossCase {
 export interface LossLanding {
   slug: string
   indexable: boolean
+  /** Сначала спросить ИНН и подставить данные ФНС (backlogram#913). */
+  inn?: boolean
   navTitle: string
   seoTitle: string
   metaDescription: string
