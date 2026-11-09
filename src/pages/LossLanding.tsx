@@ -6,7 +6,7 @@ import Breadcrumbs from '../components/Breadcrumbs'
 import LossCalculator from '../components/LossCalculator'
 import { CompanyCard, InnForm } from '../components/InnLookup'
 import { reachGoal } from '../lib/metrika'
-import { profileToValues } from '../lib/innProfile'
+import { aiTransformUrl, profileToValues } from '../lib/innProfile'
 import type { InnProfile } from '../lib/innProfile'
 import { LOSS_CTA_URL, LOSS_DEFAULT_CTA, LOSS_EMAIL, LOSS_LANDINGS, LOSS_PHONE, LOSS_SITE } from '../data/lossLandings'
 
@@ -80,6 +80,8 @@ export default function LossLanding({ slug }: { slug: string }) {
   // Данные ФНС по ИНН → поля калькулятора (backlogram#913).
   const weeks = page.calc.assumptions.find((f) => f.id === 'a_weeks')?.value
   const fromInn = profile ? profileToValues(profile, weeks) : null
+  // Отрасль по ОКВЭД → хэш конфигуратора (python2node#1206); без ИНН — прежняя ссылка.
+  const ctaUrl = profile ? aiTransformUrl(profile) : LOSS_CTA_URL
   const sources = fromInn ? Object.fromEntries(fromInn.facts.map((f) => [f.id, `Подставлено: ${f.source}`])) : undefined
   const onInn = (p: InnProfile) => {
     setProfile(p)
@@ -145,7 +147,7 @@ export default function LossLanding({ slug }: { slug: string }) {
         <div className={WRAP}>
           <h2 className={H2}>{page.calc.title}</h2>
           {profile && <CompanyCard p={profile} />}
-          <LossCalculator key={profile?.inn ?? 'default'} calc={page.calc} slug={page.slug} preset={fromInn?.values} sources={sources} />
+          <LossCalculator key={profile?.inn ?? 'default'} calc={page.calc} slug={page.slug} preset={fromInn?.values} sources={sources} ctaUrl={ctaUrl} />
         </div>
       </section>
 
@@ -227,7 +229,7 @@ export default function LossLanding({ slug }: { slug: string }) {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">{page.final.title}</h2>
           <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">{page.final.text}</p>
-          <a href={LOSS_CTA_URL} onClick={onCta} className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all">
+          <a href={ctaUrl} onClick={onCta} className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all">
             {cta} <ArrowRight size={18} />
           </a>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-3">
