@@ -81,7 +81,8 @@ export default function LossLanding({ slug }: { slug: string }) {
   const weeks = page.calc.assumptions.find((f) => f.id === 'a_weeks')?.value
   const fromInn = profile ? profileToValues(profile, weeks) : null
   // Отрасль по ОКВЭД → хэш конфигуратора (python2node#1206); без ИНН — прежняя ссылка.
-  const ctaUrl = profile ? aiTransformUrl(profile) : LOSS_CTA_URL
+  const baseCta = page.ctaUrl ?? LOSS_CTA_URL
+  const ctaUrl = profile && page.inn ? aiTransformUrl(profile) : baseCta
   const sources = fromInn ? Object.fromEntries(fromInn.facts.map((f) => [f.id, `Подставлено: ${f.source}`])) : undefined
   const onInn = (p: InnProfile) => {
     setProfile(p)

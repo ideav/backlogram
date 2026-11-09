@@ -2,7 +2,7 @@
 // Ответ приходит из /inn-lookup.php (ФНС «Прозрачный бизнес»). Общий для
 // React-страницы и теста: вся арифметика подстановки — здесь.
 
-import { LOSS_CTA_URL } from '../data/lossLandings.mjs'
+import { LOSS_BA_URL } from '../data/lossLandings.mjs'
 
 /** Контрольные цифры ИНН: 10 знаков — юрлицо, 12 — ИП. Та же проверка, что в inn-lookup.php. */
 export function innValid(raw) {
@@ -69,7 +69,8 @@ export function profileToValues(profile, weeks = 47) {
   return { values, facts }
 }
 
-// ОКВЭД → отрасль конфигуратора буткемпов ideav.ru/ai-transform/ (python2node#1206).
+// ОКВЭД → отрасль конфигуратора ideav.ru/ai-transform/before-after.html
+// (python2node#1206, backlogram#919).
 // Конфигуратор читает отрасль из хэша (#food) и открывается с её набором решений.
 // Цифры компании туда не передаются: полей под них в конфигураторе нет, а ИНН и
 // название в адресе увидела бы Метрика. Ключ — класс ОКВЭД (две первые цифры).
@@ -104,5 +105,5 @@ export function okvedToIndustry(okved) {
 /** Ссылка в конфигуратор с отраслью компании, если её удалось определить. */
 export function aiTransformUrl(profile) {
   const id = okvedToIndustry(profile?.okved)
-  return id ? `${LOSS_CTA_URL}#${id}` : LOSS_CTA_URL
+  return id ? `${LOSS_BA_URL}#${id}` : LOSS_BA_URL
 }
