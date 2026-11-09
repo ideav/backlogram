@@ -157,6 +157,8 @@ export const staticExtraLinks = [
   { name: 'Поиск по документам', href: '/poisk-po-dokumentam.html' },
   { name: 'Планирование закупок', href: '/planirovanie-zakupok.html' },
   { name: 'Платёжный календарь', href: '/platezhnyj-kalendar.html' },
+  // backlogram#913: калькулятор потерь по ИНН.
+  { name: 'Оценка потерь по ИНН', href: '/ocenka-po-inn.html' },
   { name: 'Алексей Семёнов', href: '/alexey-semenov.html' },
   // #642: страницы кластера «ИИ для бизнеса» (хаб — в меню «Ещё» и в подвале).
   { name: 'ИИ-агенты для бизнеса', href: '/ii-agenty-dlya-biznesa.html' },

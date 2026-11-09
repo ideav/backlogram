@@ -64,7 +64,7 @@ export function InnForm({ slug, onResult }: { slug: string; onResult: (p: InnPro
     }
   }
 
-  // Ссылка вида /poteri-po-inn.html?inn=… сразу показывает расчёт.
+  // Ссылка вида /ocenka-po-inn.html?inn=… сразу показывает расчёт.
   useEffect(() => {
     if (autorun.current || !innValid(inn)) return
     autorun.current = true

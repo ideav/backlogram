@@ -13,7 +13,7 @@ import { staticNavLinks } from '../src/data/nav.mjs'
 
 const repo = fileURLToPath(new URL('..', import.meta.url))
 const read = (p) => readFileSync(resolve(repo, p), 'utf8')
-const page = LOSS_LANDINGS.find((p) => p.slug === 'poteri-po-inn')
+const page = LOSS_LANDINGS.find((p) => p.slug === 'ocenka-po-inn')
 const base = LOSS_LANDINGS.find((p) => p.slug === 'cost-of-inaction')
 
 // Живой ответ /inn-lookup.php (ООО «Яндекс ДС», 09.11.2026), без лишних полей.
@@ -23,9 +23,10 @@ const PROFILE = {
   employees: { year: 2025, n: 112 }, contributions: { year: 2025, rub: 25239621.91 },
 }
 
-test('страница есть: служебная, со шагом ИНН и тем же расчётом, что /cost-of-inaction', () => {
+test('страница есть: индексируемая, со шагом ИНН и тем же расчётом, что /cost-of-inaction', () => {
   assert.ok(page)
-  assert.equal(page.indexable, false)
+  assert.equal(page.indexable, true)
+  assert.ok(page.pains && page.steps && page.faq.length > 0)
   assert.equal(page.inn, true)
   assert.equal(page.h1, base.h1)
   assert.deepEqual(page.calc.parts, base.calc.parts)
@@ -33,10 +34,14 @@ test('страница есть: служебная, со шагом ИНН и �
   assert.notEqual(page.calc.goal, base.calc.goal)
 })
 
-test('служебная: не в sitemap, llms.txt и nav', () => {
-  assert.ok(!read('public/sitemap.xml').includes('poteri-po-inn'))
-  assert.ok(!read('public/llms.txt').includes('poteri-po-inn'))
-  assert.ok(!staticNavLinks().some((l) => l.href.includes('poteri-po-inn')))
+test('в sitemap, llms.txt, nav и перелинковке с посадочными', () => {
+  assert.ok(read('public/sitemap.xml').includes('<loc>https://ideav.ru/ocenka-po-inn.html</loc>'))
+  assert.ok(read('public/llms.txt').includes('https://ideav.ru/ocenka-po-inn.html'))
+  assert.ok(staticNavLinks().some((l) => l.href === '/ocenka-po-inn.html'))
+  for (const s of ['poisk-po-dokumentam', 'planirovanie-zakupok', 'platezhnyj-kalendar']) {
+    assert.ok(LOSS_LANDINGS.find((p) => p.slug === s).related.some((r) => r.href === '/ocenka-po-inn.html'), s)
+  }
+  assert.ok(page.related.length > 0)
 })
 
 test('контрольные цифры ИНН — как в PHP', () => {

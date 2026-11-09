@@ -24,7 +24,8 @@ const totalOf = (s) => {
 }
 
 test('три индексируемые страницы и одна служебная есть в данных', () => {
-  assert.deepEqual(LOSS_INDEXABLE.map((p) => p.slug), INDEXED)
+  // backlogram#913 добавил индексируемую /ocenka-po-inn (её проверяет issue-913-inn-loss).
+  assert.deepEqual(LOSS_INDEXABLE.filter((p) => !p.inn).map((p) => p.slug), INDEXED)
   assert.equal(bySlug('cost-of-inaction')?.indexable, false)
 })
 
@@ -82,7 +83,8 @@ test('пустое и мусорное значение поля не ломае
 test('страницы без eval и со ссылкой на буткемп; FAQ у индексируемых', () => {
   const src = read('src/data/lossLandings.mjs') + read('src/lib/lossCalc.mjs') + read('src/components/LossCalculator.tsx')
   assert.ok(!/\beval\s*\(|new Function\s*\(/.test(src))
-  for (const p of LOSS_INDEXABLE) assert.ok(p.faq.length > 0 && p.case && p.steps && p.pains, p.slug)
+  // У калькулятора по ИНН нет кейса: реальных замеров «было → стало» нет (backlogram#913).
+  for (const p of LOSS_INDEXABLE) assert.ok(p.faq.length > 0 && (p.case || p.inn) && p.steps && p.pains, p.slug)
 })
 
 test('перелинковка: новые → upravlenie-zakupkami / finansovyy-uchet, и обратно', () => {
