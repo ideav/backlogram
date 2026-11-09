@@ -1,9 +1,10 @@
-// python2node#1206 — со страницы оценки по ИНН в конфигуратор ideav.ru/ai-transform/
+// python2node#1206, backlogram#919 — со страницы оценки по ИНН в конфигуратор
+// ideav.ru/ai-transform/before-after.html
 // уходит только отрасль (хэш #<id>), цифры и ИНН — нет.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { LOSS_CTA_URL } from '../src/data/lossLandings.mjs'
+import { LOSS_BA_URL, LOSS_CTA_URL, LOSS_LANDINGS } from '../src/data/lossLandings.mjs'
 import { aiTransformUrl, okvedToIndustry } from '../src/lib/innProfile.mjs'
 
 // id отраслей конфигуратора — python2node docs/pitch/bootcamps/data.mjs (industries).
@@ -26,8 +27,16 @@ test('ОКВЭД → отрасль конфигуратора', () => {
 
 test('ссылка: отрасль в хэше, без ИНН и названия', () => {
   const url = aiTransformUrl({ ok: true, inn: '7707083893', name: 'ООО «Ромашка»', okved: '10.71' })
-  assert.equal(url, `${LOSS_CTA_URL}#food`)
+  assert.equal(url, `${LOSS_BA_URL}#food`)
   assert.ok(!url.includes('7707083893'))
-  assert.equal(aiTransformUrl({ ok: true, okved: '85.41' }), LOSS_CTA_URL)
-  assert.equal(aiTransformUrl(null), LOSS_CTA_URL)
+  assert.equal(aiTransformUrl({ ok: true, okved: '85.41' }), LOSS_BA_URL)
+  assert.equal(aiTransformUrl(null), LOSS_BA_URL)
+})
+
+test('backlogram#919: «Как это остановить» со страницы ИНН ведёт на before-after.html', () => {
+  assert.equal(LOSS_BA_URL, 'https://ideav.ru/ai-transform/before-after.html')
+  const bySlug = (s) => LOSS_LANDINGS.find((p) => p.slug === s)
+  assert.equal(bySlug('ocenka-po-inn').ctaUrl, LOSS_BA_URL)
+  // Прочие посадочные — по-прежнему на /ai-transform/.
+  for (const p of LOSS_LANDINGS.filter((x) => !x.inn)) assert.equal(p.ctaUrl ?? LOSS_CTA_URL, LOSS_CTA_URL, p.slug)
 })

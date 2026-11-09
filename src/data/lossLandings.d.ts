@@ -1,5 +1,6 @@
 export const LOSS_SITE: string
 export const LOSS_CTA_URL: string
+export const LOSS_BA_URL: string
 export const LOSS_PHONE: { text: string; href: string }
 export const LOSS_EMAIL: string
 export const LOSS_CALC_NOTE: string
@@ -47,6 +48,8 @@ export interface LossLanding {
   indexable: boolean
   /** Сначала спросить ИНН и подставить данные ФНС (backlogram#913). */
   inn?: boolean
+  /** Куда ведёт «Как это остановить…»; по умолчанию LOSS_CTA_URL (backlogram#919). */
+  ctaUrl?: string
   navTitle: string
   seoTitle: string
   metaDescription: string

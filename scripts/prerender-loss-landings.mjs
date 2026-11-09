@@ -82,13 +82,13 @@ function bodyFor(p) {
     <p class="loss-total">${formatRub(r.total)}</p>
     <p>${r.share !== null ? `${formatPct(r.share)} ${esc(c.baseLabel ?? '')} · ` : ''}${formatRub(r.perMonth)} в месяц</p>
     <ul>${c.parts.map((x, i) => `<li>${esc(x.label)}: <strong>${formatRub(r.parts[i])}</strong></li>`).join('')}</ul>
-    <p><a href="${LOSS_CTA_URL}">${esc(cta)}</a> · <a href="${LOSS_PHONE.href}">${LOSS_PHONE.text}</a> · <a href="mailto:${LOSS_EMAIL}">${LOSS_EMAIL}</a></p>
+    <p><a href="${esc(p.ctaUrl ?? LOSS_CTA_URL)}">${esc(cta)}</a> · <a href="${LOSS_PHONE.href}">${LOSS_PHONE.text}</a> · <a href="mailto:${LOSS_EMAIL}">${LOSS_EMAIL}</a></p>
     <p class="loss-note">${esc(LOSS_CALC_NOTE)}</p>
   </section>
   ${kase}${steps}${faq}
   <h2>${esc(p.final.title)}</h2>
   <p>${esc(p.final.text)}</p>
-  <p><a href="${LOSS_CTA_URL}">${esc(cta)}</a></p>
+  <p><a href="${esc(p.ctaUrl ?? LOSS_CTA_URL)}">${esc(cta)}</a></p>
   <footer><p>${related}${related ? ' · ' : ''}<a href="/resheniya.html">Все решения вместо Excel</a> · <a href="/">На главную</a></p></footer>
 </article>${STYLE}`
 }

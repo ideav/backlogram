@@ -15,6 +15,8 @@
 
 export const LOSS_SITE = "https://ideav.ru"
 export const LOSS_CTA_URL = "https://ideav.ru/ai-transform/"
+// Конфигуратор «до и после» (backlogram#919): отрасль читает из хэша (#food).
+export const LOSS_BA_URL = "https://ideav.ru/ai-transform/before-after.html"
 export const LOSS_PHONE = { text: "+7 995 506-01-67", href: "tel:+79955060167" }
 export const LOSS_EMAIL = "care@integram.io"
 export const LOSS_CALC_NOTE =
@@ -800,6 +802,7 @@ PAGES.push({
   "slug": "ocenka-po-inn",
   "indexable": true,
   "inn": true,
+  "ctaUrl": LOSS_BA_URL,
   "navTitle": "Оценка потерь по ИНН",
   "seoTitle": "Оценка потерь компании по ИНН: калькулятор | Интеграм",
   "metaDescription": "Введите ИНН — подставим выручку, численность и фонд оплаты труда из открытых данных ФНС и посчитаем, во что обходятся ручные таблицы.",
