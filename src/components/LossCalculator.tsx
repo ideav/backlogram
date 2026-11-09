@@ -8,8 +8,11 @@ import type { LossCalc, LossField } from '../data/lossLandings'
 // Цвета долей — от тёмного к светлому, как «вес» статьи потерь.
 const BAR_COLORS = ['bg-blue-700', 'bg-blue-500', 'bg-blue-300', 'bg-blue-200']
 
-/** Начальные значения: по умолчанию из данных, поверх — `?id=значение` из адреса. */
-function initialValues(calc: LossCalc): Record<string, string> {
+/**
+ * Начальные значения: по умолчанию из данных, поверх — `?id=значение` из адреса,
+ * поверх — `preset` (данные ФНС по ИНН, backlogram#913).
+ */
+function initialValues(calc: LossCalc, preset?: Record<string, number>): Record<string, string> {
   const out: Record<string, string> = {}
   let q: URLSearchParams | null = null
   try { q = new URLSearchParams(window.location.search) } catch { /* нет window */ }
@@ -17,6 +20,7 @@ function initialValues(calc: LossCalc): Record<string, string> {
     const raw = q?.get(f.id)
     const ok = raw !== null && raw !== undefined && raw !== '' && Number.isFinite(Number(raw.replace(',', '.')))
     out[f.id] = ok ? raw.replace(',', '.') : String(f.value)
+    if (preset && preset[f.id] !== undefined) out[f.id] = String(preset[f.id])
   }
   return out
 }
@@ -36,8 +40,15 @@ function NumberInput({ f, value, onChange, large }: { f: LossField; value: strin
   )
 }
 
-export default function LossCalculator({ calc, slug }: { calc: LossCalc; slug: string }) {
-  const [values, setValues] = useState(() => initialValues(calc))
+export default function LossCalculator({ calc, slug, preset, sources }: {
+  calc: LossCalc
+  slug: string
+  /** Значения полей, подставленные из внешних данных (ИНН). Сменить — перемонтировать через key. */
+  preset?: Record<string, number>
+  /** Откуда взято значение поля: показывается под полем. */
+  sources?: Record<string, string>
+}) {
+  const [values, setValues] = useState(() => initialValues(calc, preset))
   const set = (id: string, v: string) => setValues((s) => ({ ...s, [id]: v }))
   const r = useMemo(() => computeLoss(calc, values), [calc, values])
   const cta = calc.ctaText ?? LOSS_DEFAULT_CTA
@@ -54,6 +65,7 @@ export default function LossCalculator({ calc, slug }: { calc: LossCalc; slug: s
                 <NumberInput f={f} value={values[f.id]} onChange={set} large />
                 {f.unit && <span className="text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap">{f.unit}</span>}
               </div>
+              {sources?.[f.id] && <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-1">{sources[f.id]}</p>}
               {f.hint && <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{f.hint}</p>}
             </div>
           ))}
@@ -64,7 +76,10 @@ export default function LossCalculator({ calc, slug }: { calc: LossCalc; slug: s
             <div className="mt-4 space-y-3">
               {calc.assumptions.map((f) => (
                 <div key={f.id} className="grid gap-1.5 sm:grid-cols-[1fr_7rem] sm:items-center">
-                  <label htmlFor={f.id} className="text-sm text-slate-600 dark:text-slate-300">{f.label}</label>
+                  <label htmlFor={f.id} className="text-sm text-slate-600 dark:text-slate-300">
+                    {f.label}
+                    {sources?.[f.id] && <span className="block text-xs text-emerald-700 dark:text-emerald-400">{sources[f.id]}</span>}
+                  </label>
                   <NumberInput f={f} value={values[f.id]} onChange={set} />
                 </div>
               ))}

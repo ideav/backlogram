@@ -4,7 +4,10 @@ import { motion } from 'framer-motion'
 import { ArrowRight, AlertTriangle } from 'lucide-react'
 import Breadcrumbs from '../components/Breadcrumbs'
 import LossCalculator from '../components/LossCalculator'
+import { CompanyCard, InnForm } from '../components/InnLookup'
 import { reachGoal } from '../lib/metrika'
+import { profileToValues } from '../lib/innProfile'
+import type { InnProfile } from '../lib/innProfile'
 import { LOSS_CTA_URL, LOSS_DEFAULT_CTA, LOSS_EMAIL, LOSS_LANDINGS, LOSS_PHONE, LOSS_SITE } from '../data/lossLandings'
 
 function setMeta(selector: string, attr: 'name' | 'property', key: string, content: string) {
@@ -36,6 +39,7 @@ const LINK = 'inline-flex items-center gap-1.5 text-sm font-semibold text-blue-6
 export default function LossLanding({ slug }: { slug: string }) {
   const page = LOSS_LANDINGS.find((p) => p.slug === slug)
   const [h1Override] = useState(headlineFromUrl)
+  const [profile, setProfile] = useState<InnProfile | null>(null)
 
   useEffect(() => {
     if (!page) return
@@ -73,6 +77,14 @@ export default function LossLanding({ slug }: { slug: string }) {
   }, [page])
 
   if (!page) return null
+  // Данные ФНС по ИНН → поля калькулятора (backlogram#913).
+  const weeks = page.calc.assumptions.find((f) => f.id === 'a_weeks')?.value
+  const fromInn = profile ? profileToValues(profile, weeks) : null
+  const sources = fromInn ? Object.fromEntries(fromInn.facts.map((f) => [f.id, `Подставлено: ${f.source}`])) : undefined
+  const onInn = (p: InnProfile) => {
+    setProfile(p)
+    requestAnimationFrame(() => document.getElementById('calc')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+  }
   const cta = page.calc.ctaText ?? LOSS_DEFAULT_CTA
   const onCta = () => reachGoal(page.calc.goal, { page: page.slug })
   const crumbs = page.indexable
@@ -97,6 +109,7 @@ export default function LossLanding({ slug }: { slug: string }) {
             {h1Override ?? page.h1}
           </motion.h1>
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-8">{page.lead}</p>
+          {page.inn ? <InnForm slug={page.slug} onResult={onInn} /> : (
           <div className="flex flex-wrap gap-3">
             <a href="#calc" className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all">
               {page.heroCta ?? 'Посчитать потери'} <ArrowRight size={18} />
@@ -107,6 +120,7 @@ export default function LossLanding({ slug }: { slug: string }) {
               </a>
             )}
           </div>
+          )}
         </div>
       </section>
 
@@ -130,7 +144,8 @@ export default function LossLanding({ slug }: { slug: string }) {
       <section id="calc" className={`${SECTION} scroll-mt-24`}>
         <div className={WRAP}>
           <h2 className={H2}>{page.calc.title}</h2>
-          <LossCalculator calc={page.calc} slug={page.slug} />
+          {profile && <CompanyCard p={profile} />}
+          <LossCalculator key={profile?.inn ?? 'default'} calc={page.calc} slug={page.slug} preset={fromInn?.values} sources={sources} />
         </div>
       </section>
 

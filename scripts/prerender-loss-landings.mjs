@@ -68,7 +68,10 @@ function bodyFor(p) {
     <p class="loss-eyebrow">${esc(p.kicker)}</p>
     <h1>${esc(p.h1)}</h1>
     <p class="loss-lead">${esc(p.lead)}</p>
-    <p><a href="#calc">${esc(p.heroCta ?? 'Посчитать потери')}</a>${k ? ` · <a href="#case">${esc(p.heroCta2 ?? 'Пример внедрения')}</a>` : ''}</p>
+    ${p.inn
+      // Шаг «ИНН» (backlogram#913): без JS форма уходит GET-ом на ту же страницу, React подхватит ?inn=.
+      ? `<form method="get" action="/${p.slug}.html"><label for="inn">ИНН компании или ИП</label> <input id="inn" name="inn" inputmode="numeric" maxlength="12" placeholder="10 или 12 цифр" /> <button type="submit">Посчитать</button> <a href="#calc">Ввести цифры вручную</a></form>`
+      : `<p><a href="#calc">${esc(p.heroCta ?? 'Посчитать потери')}</a>${k ? ` · <a href="#case">${esc(p.heroCta2 ?? 'Пример внедрения')}</a>` : ''}</p>`}
   </header>
   ${pains}
   <section id="calc">
