@@ -2,6 +2,8 @@
 // Ответ приходит из /inn-lookup.php (ФНС «Прозрачный бизнес»). Общий для
 // React-страницы и теста: вся арифметика подстановки — здесь.
 
+import { LOSS_CTA_URL } from '../data/lossLandings.mjs'
+
 /** Контрольные цифры ИНН: 10 знаков — юрлицо, 12 — ИП. Та же проверка, что в inn-lookup.php. */
 export function innValid(raw) {
   const inn = String(raw ?? '').replace(/\D/g, '')
@@ -65,4 +67,42 @@ export function profileToValues(profile, weeks = 47) {
     }
   }
   return { values, facts }
+}
+
+// ОКВЭД → отрасль конфигуратора буткемпов ideav.ru/ai-transform/ (python2node#1206).
+// Конфигуратор читает отрасль из хэша (#food) и открывается с её набором решений.
+// Цифры компании туда не передаются: полей под них в конфигураторе нет, а ИНН и
+// название в адресе увидела бы Метрика. Ключ — класс ОКВЭД (две первые цифры).
+const OKVED_INDUSTRY = [
+  [[1, 3], 'agro'],
+  [[10, 11], 'food'],
+  [[23, 23], 'construction'], // стройматериалы
+  [[12, 33], 'make-to-order'], // прочая обрабатывающая промышленность
+  [[41, 43], 'construction'],
+  [[45, 45], 'auto'],
+  [[46, 46], 'distribution'],
+  [[47, 47], 'retail'],
+  [[49, 53], 'logistics'],
+  [[62, 62], 'projects'],
+  [[64, 66], 'finance'],
+  [[68, 68], 'realty'],
+  [[69, 74], 'projects'],
+  [[78, 78], 'hr'],
+  [[86, 86], 'clinics'],
+  [[93, 93], 'leisure'],
+]
+
+/** «46.90» → 'distribution'; неизвестный или пустой код → null (конфигуратор по умолчанию). */
+export function okvedToIndustry(okved) {
+  const m = /^(\d{2})/.exec(String(okved ?? '').trim())
+  if (!m) return null
+  const cls = Number(m[1])
+  const hit = OKVED_INDUSTRY.find(([[from, to]]) => cls >= from && cls <= to)
+  return hit ? hit[1] : null
+}
+
+/** Ссылка в конфигуратор с отраслью компании, если её удалось определить. */
+export function aiTransformUrl(profile) {
+  const id = okvedToIndustry(profile?.okved)
+  return id ? `${LOSS_CTA_URL}#${id}` : LOSS_CTA_URL
 }

@@ -40,13 +40,15 @@ function NumberInput({ f, value, onChange, large }: { f: LossField; value: strin
   )
 }
 
-export default function LossCalculator({ calc, slug, preset, sources }: {
+export default function LossCalculator({ calc, slug, preset, sources, ctaUrl = LOSS_CTA_URL }: {
   calc: LossCalc
   slug: string
   /** Значения полей, подставленные из внешних данных (ИНН). Сменить — перемонтировать через key. */
   preset?: Record<string, number>
   /** Откуда взято значение поля: показывается под полем. */
   sources?: Record<string, string>
+  /** Куда ведёт кнопка: с ИНН — в конфигуратор с отраслью компании (python2node#1206). */
+  ctaUrl?: string
 }) {
   const [values, setValues] = useState(() => initialValues(calc, preset))
   const set = (id: string, v: string) => setValues((s) => ({ ...s, [id]: v }))
@@ -112,7 +114,7 @@ export default function LossCalculator({ calc, slug, preset, sources }: {
               </li>
             ))}
           </ul>
-          <a href={LOSS_CTA_URL} onClick={onCta} className="inline-flex w-full items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all">
+          <a href={ctaUrl} onClick={onCta} className="inline-flex w-full items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all">
             {cta} <ArrowRight size={18} />
           </a>
           <p className="text-sm text-slate-500 dark:text-slate-400 text-center mt-3">

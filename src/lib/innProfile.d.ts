@@ -37,3 +37,5 @@ export function profileToValues(
   profile: InnProfile | null | undefined,
   weeks?: number,
 ): { values: Record<string, number>; facts: InnFact[] }
+export function okvedToIndustry(okved: string | null | undefined): string | null
+export function aiTransformUrl(profile: InnProfile | null | undefined): string
