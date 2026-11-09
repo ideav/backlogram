@@ -92,7 +92,7 @@ const STEPS = [
   { icon: 'CheckCircle2', title: '3. Получаете решение', body: 'Ссылка на готовую базу Интеграм с данными, отчётами и ролями. Демо за 1 день.' },
 ]
 const FACTS = [
-  { icon: 'Database', value: 'до 2 000 000', label: 'записей в одной базе' },
+  { icon: 'Database', value: 'Без лимита', label: 'записей — проверено на сотнях миллионов' },
   { icon: 'Clock', value: '24 часа', label: 'настройка под задачу' },
   { icon: 'KeyRound', value: 'Роли доступа', label: 'кто что видит и меняет' },
   { icon: 'Server', value: 'Россия, on-premise', label: 'данные на вашем сервере' },
