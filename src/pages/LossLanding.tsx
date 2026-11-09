@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, AlertTriangle } from 'lucide-react'
+import { ArrowRight, AlertTriangle, Sparkles } from 'lucide-react'
 import Breadcrumbs from '../components/Breadcrumbs'
 import LossCalculator from '../components/LossCalculator'
 import { CompanyCard, InnForm } from '../components/InnLookup'
@@ -107,6 +107,11 @@ export default function LossLanding({ slug }: { slug: string }) {
         <div className={WRAP}>
           <Breadcrumbs items={crumbs} />
           <p className="text-sm font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-3">{page.kicker}</p>
+          {page.ai && (
+            <a href="#ai" className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full border border-violet-300 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/40 text-sm font-semibold text-violet-700 dark:text-violet-300 hover:bg-violet-100 dark:hover:bg-violet-950/70 transition-colors">
+              <Sparkles size={16} /> {page.ai.badge} <ArrowRight size={14} />
+            </a>
+          )}
           <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5">
             {h1Override ?? page.h1}
@@ -151,6 +156,24 @@ export default function LossLanding({ slug }: { slug: string }) {
           <LossCalculator key={profile?.inn ?? 'default'} calc={page.calc} slug={page.slug} preset={fromInn?.values} sources={sources} ctaUrl={ctaUrl} />
         </div>
       </section>
+
+      {page.ai && (
+        <section id="ai" className={`${SECTION} scroll-mt-24 bg-violet-50/50 dark:bg-violet-950/20`}>
+          <div className={WRAP}>
+            <h2 className={`${H2} flex items-center gap-3`}><Sparkles size={26} className="text-violet-600 dark:text-violet-400 shrink-0" /> {page.ai.title}</h2>
+            <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed -mt-4 mb-8">{page.ai.lead}</p>
+            <div className="grid gap-6 md:grid-cols-3">
+              {page.ai.items.map((a, i) => (
+                <div key={a.title} className={`${CARD} ${i === 0 ? 'border-violet-400 dark:border-violet-700 ring-1 ring-violet-400/40' : ''}`}>
+                  <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${i === 0 ? 'text-violet-700 dark:text-violet-300' : 'text-slate-400 dark:text-slate-500'}`}>{a.freq}</p>
+                  <h3 className="text-lg font-bold mb-2">{a.title}</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{a.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {page.case && (
         <section id="case" className={`${SECTION} scroll-mt-24 bg-slate-50/60 dark:bg-slate-900/30`}>

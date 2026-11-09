@@ -62,6 +62,8 @@ export interface LossLanding {
   calc: LossCalc
   case?: LossCase
   steps?: { title: string; items: { title: string; text: string }[] }
+  /** Как в решении используется ИИ (backlogram#921): от основного к редкому. */
+  ai?: { badge: string; title: string; lead: string; items: { freq: string; title: string; text: string }[] }
   faq?: { q: string; a: string }[]
   final: { title: string; text: string }
   related: { href: string; label: string }[]
