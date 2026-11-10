@@ -1,0 +1,36 @@
+name: bk918
+services:
+  db:
+    image: mysql:8.0
+    command: ["--innodb-buffer-pool-size=134217728","--character-set-server=utf8mb4","--collation-server=utf8mb4_general_ci","--max-allowed-packet=256M","--local-infile=1","--skip-ssl","--default-authentication-plugin=mysql_native_password"]
+    environment:
+      MYSQL_DATABASE: ideav
+      MYSQL_USER: ideav
+      MYSQL_PASSWORD: ideav-local-password
+      MYSQL_ROOT_PASSWORD: root918
+    cpus: 2
+    mem_limit: 2g
+    ports: ["127.0.0.1:13918:3306"]
+    volumes: [db:/var/lib/mysql]
+    healthcheck:
+      test: ["CMD-SHELL","mysqladmin ping -h 127.0.0.1 -uroot -proot918 --silent"]
+      interval: 5s
+      retries: 40
+  app:
+    build: ${CRM_DIR:?path to ideav/crm checkout}
+    depends_on: {db: {condition: service_healthy}}
+    environment:
+      INTEGRAM_DB_HOST: db
+      INTEGRAM_DB_NAME: ideav
+      INTEGRAM_DB_USER: ideav
+      INTEGRAM_DB_PASSWORD: ideav-local-password
+      INTEGRAM_MASTER_PASSWORD: master918
+      INTEGRAM_SALT: salt918
+    ports: ["127.0.0.1:18918:80"]
+    volumes:
+      - .:/bench
+      - ./client.cnf:/etc/mysql/conf.d/zz-nossl.cnf:ro
+      - ${CRM_DIR:?path to ideav/crm checkout}/index.php:/var/www/html/index.php:ro
+      - ${CRM_DIR:?path to ideav/crm checkout}/include:/var/www/html/include:ro
+      - ${CRM_DIR:?path to ideav/crm checkout}/docker/mysql/010-integram-bootstrap.sql:/usr/local/share/integram/010-integram-bootstrap.sql:ro
+volumes: {db: {}}

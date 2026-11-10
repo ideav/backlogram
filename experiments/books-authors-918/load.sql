@@ -1,0 +1,15 @@
+CREATE DATABASE IF NOT EXISTS classic CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE classic;
+DROP TABLE IF EXISTS books; DROP TABLE IF EXISTS author;
+CREATE TABLE `author` (`id` int(11) NOT NULL, `author` varchar(128) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE `books` (`id` int(8) NOT NULL, `name` varchar(256) NOT NULL, `author` int(8) NOT NULL, `pages` int(4) NOT NULL, `year` int(4) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+LOAD DATA LOCAL INFILE '/tmp/classic_author.tsv' INTO TABLE author CHARACTER SET utf8mb4 FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n';
+LOAD DATA LOCAL INFILE '/tmp/classic_books.tsv' INTO TABLE books CHARACTER SET utf8mb4 FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n';
+ALTER TABLE `author` ADD PRIMARY KEY (`id`), ADD KEY `author` (`author`);
+ALTER TABLE `books` ADD PRIMARY KEY (`id`), ADD KEY `name` (`name`(255)), ADD KEY `author` (`author`);
+ALTER TABLE `books` ADD CONSTRAINT `books_ibfk_1` FOREIGN KEY (`author`) REFERENCES `author` (`id`);
+USE ideav;
+DELETE FROM bk WHERE id IN (3010,3011,3012,3013,3014);
+LOAD DATA LOCAL INFILE '/tmp/eav_rows.tsv' INTO TABLE bk CHARACTER SET utf8mb4 FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' (id,t,up,ord,val);
+ANALYZE TABLE bk; ANALYZE TABLE classic.books; ANALYZE TABLE classic.author;
+SELECT table_schema, table_name, table_rows, ROUND((data_length+index_length)/1048576) mb FROM information_schema.tables WHERE table_name IN ('bk','books','author');
