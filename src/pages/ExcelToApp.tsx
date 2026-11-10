@@ -70,7 +70,7 @@ const MAX_FILES = 10
 const ANALYSIS_PRICE = '20 000 ₽'
 
 const PAYMENT_HASH = '#12500'
-const PAYMENT_CHECKOUT_URL = 'https://checkout.tochka.com/cc7f594c-58a5-4ada-8c13-91b678ac2868'
+const PAYMENT_CHECKOUT_URL = 'https://tochkaplace.com/ia/723252cf-4583-4967-83fe-e9630b207f9f'
 
 function isPaymentEmailValid(email: string): boolean {
   return /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/.test(email)

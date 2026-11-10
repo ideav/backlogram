@@ -41,7 +41,7 @@ test('the pay CTA is a two-step Tochka checkout flow (issue #335)', () => {
   assert.match(pageSource, /onClick=\{\(\) => setShowPayForm\(true\)\}/)
   // Step 2: email is collected, validated, then the page redirects to the
   // Tochka checkout link (same pattern as start.html #promoPayButton).
-  assert.match(pageSource, /const PAYMENT_CHECKOUT_URL = 'https:\/\/checkout\.tochka\.com\/cc7f594c-58a5-4ada-8c13-91b678ac2868'/)
+  assert.match(pageSource, /const PAYMENT_CHECKOUT_URL = 'https:\/\/tochkaplace\.com\/ia\/723252cf-4583-4967-83fe-e9630b207f9f'/)
   assert.match(pageSource, /isPaymentEmailValid\(/)
   assert.match(pageSource, /window\.location\.href = PAYMENT_CHECKOUT_URL/)
   // The Telegram contact is no longer the payment CTA.
