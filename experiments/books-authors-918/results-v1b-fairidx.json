@@ -1,0 +1,577 @@
+{
+    "label": "v1b-fairidx",
+    "rounds": 7,
+    "at": "2026-11-09T13:42:29+00:00",
+    "cases": [
+        {
+            "case": "q1 автор %aro%",
+            "rows_classic": 1000,
+            "rows_core": 1000,
+            "rows_core_sql": 1000,
+            "classic_ms": 43,
+            "core_http_ms": 378.5,
+            "core_sql_ms": 251.3,
+            "classic_all": [
+                572.3,
+                26.7,
+                30.3,
+                32.7,
+                48.6,
+                43,
+                79.3
+            ],
+            "core_http_all": [
+                236.4,
+                259.7,
+                612.8,
+                367.8,
+                460.3,
+                391.8,
+                378.5
+            ],
+            "core_sql_all": [
+                151.5,
+                152.9,
+                516.6,
+                246.5,
+                251.3,
+                271,
+                334.1
+            ],
+            "classic_sql": "SELECT author.author, books.name, books.pages, books.year FROM books, author WHERE author.author LIKE '%aro%' AND books.author=author.id LIMIT 1000",
+            "core_sql": "SELECT  a3002.val as 'author',a3003_val as 'book',a3007_val as 'pages',a3009_val as 'year'\r\nFROM bk a3002\r\n  LEFT JOIN (SELECT r3003.t,a3003.val a3003_val,a3007.val a3007_val,a3009.val a3009_val\r\n  FROM bk r3003,bk a3003 \/*USE INDEX (PRIMARY)*\/\r\n   LEFT JOIN bk a3007 ON a3007.up=a3003.id AND a3007.t=3007\r\n   LEFT JOIN bk a3009 ON a3009.up=a3003.id AND a3009.t=3009\r\n    WHERE r3003.up=a3003.id AND r3003.val='3005'  AND a3003.t=3003\r\n   ) a3003 ON a3002.id=a3003.t \r\nWHERE a3002.up!=0 AND a3002.t!=a3002.up AND length(a3002.val)!=0 AND a3002.t=3002  AND a3002.val  LIKE '%aro%'       LIMIT 0,1000"
+        },
+        {
+            "case": "q2 автор Le%",
+            "rows_classic": 1000,
+            "rows_core": 1000,
+            "rows_core_sql": 1000,
+            "classic_ms": 12.8,
+            "core_http_ms": 133.3,
+            "core_sql_ms": 70.6,
+            "classic_all": [
+                459.5,
+                18.7,
+                9.8,
+                8.7,
+                12.8,
+                11.8,
+                20.6
+            ],
+            "core_http_all": [
+                408.9,
+                121.9,
+                356.1,
+                133.3,
+                115.9,
+                98,
+                150.9
+            ],
+            "core_sql_all": [
+                73.9,
+                255,
+                66.4,
+                70.6,
+                48.2,
+                43.8,
+                90.1
+            ],
+            "classic_sql": "SELECT author.author, books.name, books.pages, books.year FROM books, author WHERE author.author LIKE 'Le%' AND books.author=author.id LIMIT 1000",
+            "core_sql": "SELECT  a3002.val as 'author',a3003_val as 'book',a3007_val as 'pages',a3009_val as 'year'\r\nFROM bk a3002\r\n  LEFT JOIN (SELECT r3003.t,a3003.val a3003_val,a3007.val a3007_val,a3009.val a3009_val\r\n  FROM bk r3003,bk a3003 \/*USE INDEX (PRIMARY)*\/\r\n   LEFT JOIN bk a3007 ON a3007.up=a3003.id AND a3007.t=3007\r\n   LEFT JOIN bk a3009 ON a3009.up=a3003.id AND a3009.t=3009\r\n    WHERE r3003.up=a3003.id AND r3003.val='3005'  AND a3003.t=3003\r\n   ) a3003 ON a3002.id=a3003.t \r\nWHERE a3002.up!=0 AND a3002.t!=a3002.up AND length(a3002.val)!=0 AND a3002.t=3002  AND a3002.val  LIKE 'Le%'       LIMIT 0,1000"
+        },
+        {
+            "case": "q2 автор Wij%",
+            "rows_classic": 108,
+            "rows_core": 108,
+            "rows_core_sql": 108,
+            "classic_ms": 2.2,
+            "core_http_ms": 49.4,
+            "core_sql_ms": 7.1,
+            "classic_all": [
+                21.4,
+                2,
+                1.7,
+                2.2,
+                1.9,
+                4.9,
+                3.1
+            ],
+            "core_http_all": [
+                34.7,
+                45.1,
+                48.2,
+                91.5,
+                49.4,
+                53.8,
+                64.6
+            ],
+            "core_sql_all": [
+                4.5,
+                7.1,
+                4.8,
+                61.9,
+                16.9,
+                6.7,
+                9.3
+            ],
+            "classic_sql": "SELECT author.author, books.name, books.pages, books.year FROM books, author WHERE author.author LIKE 'Wij%' AND books.author=author.id LIMIT 1000",
+            "core_sql": "SELECT  a3002.val as 'author',a3003_val as 'book',a3007_val as 'pages',a3009_val as 'year'\r\nFROM bk a3002\r\n  LEFT JOIN (SELECT r3003.t,a3003.val a3003_val,a3007.val a3007_val,a3009.val a3009_val\r\n  FROM bk r3003,bk a3003 \/*USE INDEX (PRIMARY)*\/\r\n   LEFT JOIN bk a3007 ON a3007.up=a3003.id AND a3007.t=3007\r\n   LEFT JOIN bk a3009 ON a3009.up=a3003.id AND a3009.t=3009\r\n    WHERE r3003.up=a3003.id AND r3003.val='3005'  AND a3003.t=3003\r\n   ) a3003 ON a3002.id=a3003.t \r\nWHERE a3002.up!=0 AND a3002.t!=a3002.up AND length(a3002.val)!=0 AND a3002.t=3002  AND a3002.val  LIKE 'Wij%'       LIMIT 0,1000"
+        },
+        {
+            "case": "q2 автор Тяме%",
+            "rows_classic": 66,
+            "rows_core": 66,
+            "rows_core_sql": 66,
+            "classic_ms": 2,
+            "core_http_ms": 55.9,
+            "core_sql_ms": 20.1,
+            "classic_all": [
+                15,
+                1.7,
+                2,
+                1.5,
+                1.6,
+                2.8,
+                2.3
+            ],
+            "core_http_all": [
+                55.2,
+                167,
+                107,
+                96.4,
+                55.9,
+                44.3,
+                39.3
+            ],
+            "core_sql_all": [
+                20.1,
+                43.2,
+                24.6,
+                11.5,
+                20.8,
+                4.2,
+                3.6
+            ],
+            "classic_sql": "SELECT author.author, books.name, books.pages, books.year FROM books, author WHERE author.author LIKE 'Тяме%' AND books.author=author.id LIMIT 1000",
+            "core_sql": "SELECT  a3002.val as 'author',a3003_val as 'book',a3007_val as 'pages',a3009_val as 'year'\r\nFROM bk a3002\r\n  LEFT JOIN (SELECT r3003.t,a3003.val a3003_val,a3007.val a3007_val,a3009.val a3009_val\r\n  FROM bk r3003,bk a3003 \/*USE INDEX (PRIMARY)*\/\r\n   LEFT JOIN bk a3007 ON a3007.up=a3003.id AND a3007.t=3007\r\n   LEFT JOIN bk a3009 ON a3009.up=a3003.id AND a3009.t=3009\r\n    WHERE r3003.up=a3003.id AND r3003.val='3005'  AND a3003.t=3003\r\n   ) a3003 ON a3002.id=a3003.t \r\nWHERE a3002.up!=0 AND a3002.t!=a3002.up AND length(a3002.val)!=0 AND a3002.t=3002  AND a3002.val  LIKE 'Тяме%'       LIMIT 0,1000"
+        },
+        {
+            "case": "q2 автор Мун %",
+            "rows_classic": 495,
+            "rows_core": 495,
+            "rows_core_sql": 495,
+            "classic_ms": 6.4,
+            "core_http_ms": 86.6,
+            "core_sql_ms": 28.1,
+            "classic_all": [
+                163.7,
+                6.4,
+                4.7,
+                4.4,
+                5.8,
+                6.4,
+                8.2
+            ],
+            "core_http_all": [
+                84.2,
+                86.6,
+                324.7,
+                94.3,
+                81.1,
+                75.3,
+                136.2
+            ],
+            "core_sql_all": [
+                28.1,
+                52.3,
+                36.1,
+                20.1,
+                23.8,
+                19.8,
+                39.1
+            ],
+            "classic_sql": "SELECT author.author, books.name, books.pages, books.year FROM books, author WHERE author.author LIKE 'Мун %' AND books.author=author.id LIMIT 1000",
+            "core_sql": "SELECT  a3002.val as 'author',a3003_val as 'book',a3007_val as 'pages',a3009_val as 'year'\r\nFROM bk a3002\r\n  LEFT JOIN (SELECT r3003.t,a3003.val a3003_val,a3007.val a3007_val,a3009.val a3009_val\r\n  FROM bk r3003,bk a3003 \/*USE INDEX (PRIMARY)*\/\r\n   LEFT JOIN bk a3007 ON a3007.up=a3003.id AND a3007.t=3007\r\n   LEFT JOIN bk a3009 ON a3009.up=a3003.id AND a3009.t=3009\r\n    WHERE r3003.up=a3003.id AND r3003.val='3005'  AND a3003.t=3003\r\n   ) a3003 ON a3002.id=a3003.t \r\nWHERE a3002.up!=0 AND a3002.t!=a3002.up AND length(a3002.val)!=0 AND a3002.t=3002  AND a3002.val  LIKE 'Мун %'       LIMIT 0,1000"
+        },
+        {
+            "case": "q2 автор Co %",
+            "rows_classic": 395,
+            "rows_core": 395,
+            "rows_core_sql": 395,
+            "classic_ms": 7.4,
+            "core_http_ms": 84.2,
+            "core_sql_ms": 27.1,
+            "classic_all": [
+                60.6,
+                4.2,
+                4.5,
+                3.7,
+                9.8,
+                7.4,
+                23.8
+            ],
+            "core_http_all": [
+                58.8,
+                57.4,
+                304.4,
+                111.7,
+                84.2,
+                65.4,
+                164
+            ],
+            "core_sql_all": [
+                27.1,
+                206.4,
+                38.8,
+                22.4,
+                16.5,
+                26.1,
+                59
+            ],
+            "classic_sql": "SELECT author.author, books.name, books.pages, books.year FROM books, author WHERE author.author LIKE 'Co %' AND books.author=author.id LIMIT 1000",
+            "core_sql": "SELECT  a3002.val as 'author',a3003_val as 'book',a3007_val as 'pages',a3009_val as 'year'\r\nFROM bk a3002\r\n  LEFT JOIN (SELECT r3003.t,a3003.val a3003_val,a3007.val a3007_val,a3009.val a3009_val\r\n  FROM bk r3003,bk a3003 \/*USE INDEX (PRIMARY)*\/\r\n   LEFT JOIN bk a3007 ON a3007.up=a3003.id AND a3007.t=3007\r\n   LEFT JOIN bk a3009 ON a3009.up=a3003.id AND a3009.t=3009\r\n    WHERE r3003.up=a3003.id AND r3003.val='3005'  AND a3003.t=3003\r\n   ) a3003 ON a3002.id=a3003.t \r\nWHERE a3002.up!=0 AND a3002.t!=a3002.up AND length(a3002.val)!=0 AND a3002.t=3002  AND a3002.val  LIKE 'Co %'       LIMIT 0,1000"
+        },
+        {
+            "case": "q2 автор Te %",
+            "rows_classic": 229,
+            "rows_core": 229,
+            "rows_core_sql": 229,
+            "classic_ms": 2.8,
+            "core_http_ms": 58.6,
+            "core_sql_ms": 18.5,
+            "classic_all": [
+                27.4,
+                2.5,
+                2.4,
+                2.8,
+                2.3,
+                5.9,
+                4.3
+            ],
+            "core_http_all": [
+                46.9,
+                56.7,
+                77.7,
+                63.4,
+                58.6,
+                58.6,
+                72.9
+            ],
+            "core_sql_all": [
+                9.8,
+                106.9,
+                23.3,
+                18.5,
+                11.5,
+                10.5,
+                27
+            ],
+            "classic_sql": "SELECT author.author, books.name, books.pages, books.year FROM books, author WHERE author.author LIKE 'Te %' AND books.author=author.id LIMIT 1000",
+            "core_sql": "SELECT  a3002.val as 'author',a3003_val as 'book',a3007_val as 'pages',a3009_val as 'year'\r\nFROM bk a3002\r\n  LEFT JOIN (SELECT r3003.t,a3003.val a3003_val,a3007.val a3007_val,a3009.val a3009_val\r\n  FROM bk r3003,bk a3003 \/*USE INDEX (PRIMARY)*\/\r\n   LEFT JOIN bk a3007 ON a3007.up=a3003.id AND a3007.t=3007\r\n   LEFT JOIN bk a3009 ON a3009.up=a3003.id AND a3009.t=3009\r\n    WHERE r3003.up=a3003.id AND r3003.val='3005'  AND a3003.t=3003\r\n   ) a3003 ON a3002.id=a3003.t \r\nWHERE a3002.up!=0 AND a3002.t!=a3002.up AND length(a3002.val)!=0 AND a3002.t=3002  AND a3002.val  LIKE 'Te %'       LIMIT 0,1000"
+        },
+        {
+            "case": "q2 автор = Иванов",
+            "rows_classic": 11,
+            "rows_core": 11,
+            "rows_core_sql": 11,
+            "classic_ms": 0.9,
+            "core_http_ms": 33.9,
+            "core_sql_ms": 1.8,
+            "classic_all": [
+                5.1,
+                0.9,
+                0.8,
+                0.8,
+                0.8,
+                0.9,
+                1.4
+            ],
+            "core_http_all": [
+                50.5,
+                33.9,
+                30.1,
+                32.5,
+                42.7,
+                48,
+                29.5
+            ],
+            "core_sql_all": [
+                2.1,
+                3,
+                2.2,
+                1.4,
+                1.8,
+                1.7,
+                1.4
+            ],
+            "classic_sql": "SELECT author.author, books.name, books.pages, books.year FROM books, author WHERE author.author = 'Иванов' AND books.author=author.id LIMIT 1000",
+            "core_sql": "SELECT  a3002.val as 'author',a3003_val as 'book',a3007_val as 'pages',a3009_val as 'year'\r\nFROM bk a3002\r\n  LEFT JOIN (SELECT r3003.t,a3003.val a3003_val,a3007.val a3007_val,a3009.val a3009_val\r\n  FROM bk r3003,bk a3003 \/*USE INDEX (PRIMARY)*\/\r\n   LEFT JOIN bk a3007 ON a3007.up=a3003.id AND a3007.t=3007\r\n   LEFT JOIN bk a3009 ON a3009.up=a3003.id AND a3009.t=3009\r\n    WHERE r3003.up=a3003.id AND r3003.val='3005'  AND a3003.t=3003\r\n   ) a3003 ON a3002.id=a3003.t \r\nWHERE a3002.up!=0 AND a3002.t!=a3002.up AND length(a3002.val)!=0 AND a3002.t=3002  AND a3002.val ='Иванов'       LIMIT 0,1000"
+        },
+        {
+            "case": "q2 автор = Brait",
+            "rows_classic": 6,
+            "rows_core": 6,
+            "rows_core_sql": 6,
+            "classic_ms": 1,
+            "core_http_ms": 37.2,
+            "core_sql_ms": 1.8,
+            "classic_all": [
+                1.9,
+                1,
+                0.9,
+                1.1,
+                0.6,
+                2.3,
+                1
+            ],
+            "core_http_all": [
+                32.6,
+                32.1,
+                41.2,
+                38.7,
+                38.8,
+                37.2,
+                36.7
+            ],
+            "core_sql_all": [
+                2.4,
+                2,
+                1.8,
+                1.6,
+                2,
+                1.6,
+                1.5
+            ],
+            "classic_sql": "SELECT author.author, books.name, books.pages, books.year FROM books, author WHERE author.author = 'Brait' AND books.author=author.id LIMIT 1000",
+            "core_sql": "SELECT  a3002.val as 'author',a3003_val as 'book',a3007_val as 'pages',a3009_val as 'year'\r\nFROM bk a3002\r\n  LEFT JOIN (SELECT r3003.t,a3003.val a3003_val,a3007.val a3007_val,a3009.val a3009_val\r\n  FROM bk r3003,bk a3003 \/*USE INDEX (PRIMARY)*\/\r\n   LEFT JOIN bk a3007 ON a3007.up=a3003.id AND a3007.t=3007\r\n   LEFT JOIN bk a3009 ON a3009.up=a3003.id AND a3009.t=3009\r\n    WHERE r3003.up=a3003.id AND r3003.val='3005'  AND a3003.t=3003\r\n   ) a3003 ON a3002.id=a3003.t \r\nWHERE a3002.up!=0 AND a3002.t!=a3002.up AND length(a3002.val)!=0 AND a3002.t=3002  AND a3002.val ='Brait'       LIMIT 0,1000"
+        },
+        {
+            "case": "q3 книга %лые пар% (автор первым)",
+            "rows_classic": 50,
+            "rows_core": 50,
+            "rows_core_sql": 50,
+            "classic_ms": 48.2,
+            "core_http_ms": 839.5,
+            "core_sql_ms": 796.7,
+            "classic_all": [
+                88,
+                41.2,
+                51.3,
+                38.4,
+                52.3,
+                45.2,
+                48.2
+            ],
+            "core_http_all": [
+                819.2,
+                834.7,
+                801.3,
+                839.5,
+                1042.8,
+                850.5,
+                849.7
+            ],
+            "core_sql_all": [
+                730.4,
+                780.2,
+                798.7,
+                761.4,
+                822.9,
+                866.9,
+                796.7
+            ],
+            "classic_sql": "SELECT author.author, books.name, books.pages, books.year FROM books, author WHERE books.name LIKE '%лые пар%' AND books.author=author.id LIMIT 50",
+            "core_sql": "SELECT  a3002.val as 'author',a3003_val as 'book',a3007_val as 'pages',a3009_val as 'year'\r\nFROM bk a3002\r\n  LEFT JOIN (SELECT r3003.t,a3003.val a3003_val,a3007.val a3007_val,a3009.val a3009_val\r\n  FROM bk r3003,bk a3003 \/*USE INDEX (PRIMARY)*\/\r\n   LEFT JOIN bk a3007 ON a3007.up=a3003.id AND a3007.t=3007\r\n   LEFT JOIN bk a3009 ON a3009.up=a3003.id AND a3009.t=3009\r\n    WHERE r3003.up=a3003.id AND r3003.val='3005'  AND a3003.t=3003\r\n   ) a3003 ON a3002.id=a3003.t \r\nWHERE a3002.up!=0 AND a3002.t!=a3002.up AND length(a3002.val)!=0 AND a3002.t=3002  AND a3003_val  LIKE '%лые пар%'       LIMIT 0,50"
+        },
+        {
+            "case": "q3 книга %лые пар% (книга первой)",
+            "rows_classic": 50,
+            "rows_core": 50,
+            "rows_core_sql": 50,
+            "classic_ms": 53.6,
+            "core_http_ms": 1938.3,
+            "core_sql_ms": 1785,
+            "classic_all": [
+                48.4,
+                42.6,
+                64.3,
+                66.9,
+                64.6,
+                53.6,
+                52
+            ],
+            "core_http_all": [
+                1020.7,
+                1938.3,
+                2111.2,
+                2594.4,
+                2159.6,
+                1394.9,
+                1695.6
+            ],
+            "core_sql_all": [
+                1414.1,
+                1762.7,
+                1810.5,
+                1785,
+                1541.9,
+                1849.9,
+                2019.5
+            ],
+            "classic_sql": "SELECT author.author, books.name, books.pages, books.year FROM books INNER JOIN author ON books.author=author.id WHERE books.name LIKE '%лые пар%' LIMIT 50",
+            "core_sql": "SELECT  a3003.val as 'book',a3002_val as 'author',a3007.val as 'pages',a3009.val as 'year'\r\nFROM bk a3003\r\n   LEFT JOIN bk a3007 ON a3007.up=a3003.id AND a3007.t=3007\r\n   LEFT JOIN bk a3009 ON a3009.up=a3003.id AND a3009.t=3009\r\n  LEFT JOIN (SELECT r3002.up,a3002.val a3002_val\r\n  FROM bk r3002,bk a3002 USE INDEX (PRIMARY)\r\n    WHERE a3002.id=r3002.t  AND a3002.t=3002 \r\n   ) a3002 ON a3002.up=a3003.id\r\nWHERE a3003.up!=0 AND a3003.t!=a3003.up AND length(a3003.val)!=0 AND a3003.t=3003  AND a3003.val  LIKE '%лые пар%'       LIMIT 0,50"
+        },
+        {
+            "case": "q4 страниц=150 и год=1972",
+            "rows_classic": 11,
+            "rows_core": 11,
+            "rows_core_sql": 11,
+            "classic_ms": 1.4,
+            "core_http_ms": 17419.8,
+            "core_sql_ms": 14610.9,
+            "classic_all": [
+                13.7,
+                1.4,
+                1.8,
+                1.3,
+                1.4,
+                1.4,
+                1.3
+            ],
+            "core_http_all": [
+                17605.5,
+                18491.1,
+                17079,
+                16884.2,
+                17039.9,
+                17419.8,
+                21022.7
+            ],
+            "core_sql_all": [
+                15148.9,
+                14326.3,
+                14420.6,
+                14319,
+                14610.9,
+                14987.9,
+                15488
+            ],
+            "classic_sql": "SELECT author.author, books.name, books.pages, books.year FROM books, author WHERE books.pages=150 AND books.year=1972 AND books.author=author.id LIMIT 50",
+            "core_sql": "SELECT  a3003.val as 'book',a3002_val as 'author',a3007.val as 'pages',a3009.val as 'year'\r\nFROM bk a3003\r\n   LEFT JOIN bk a3007 ON a3007.up=a3003.id AND a3007.t=3007\r\n   LEFT JOIN bk a3009 ON a3009.up=a3003.id AND a3009.t=3009\r\n  LEFT JOIN (SELECT r3002.up,a3002.val a3002_val\r\n  FROM bk r3002,bk a3002 USE INDEX (PRIMARY)\r\n    WHERE a3002.id=r3002.t  AND a3002.t=3002 \r\n   ) a3002 ON a3002.up=a3003.id\r\nWHERE a3003.up!=0 AND a3003.t!=a3003.up AND length(a3003.val)!=0 AND a3003.t=3003  AND a3007.val=150   AND a3009.val=1972      LIMIT 0,50"
+        },
+        {
+            "case": "q5 книг по годам",
+            "rows_classic": 76,
+            "rows_core": 76,
+            "rows_core_sql": 76,
+            "classic_ms": 304.2,
+            "core_http_ms": 40517.5,
+            "core_sql_ms": 38190.8,
+            "classic_all": [
+                614.6,
+                353.7,
+                391.6,
+                301.9,
+                295.5,
+                302,
+                304.2
+            ],
+            "core_http_all": [
+                42796.5,
+                44535.1,
+                41493.5,
+                39406.4,
+                40517.5,
+                39078.5,
+                40194.1
+            ],
+            "core_sql_all": [
+                41781.5,
+                42075.4,
+                36807.7,
+                37193.5,
+                38190.8,
+                37708.9,
+                38891
+            ],
+            "classic_sql": "SELECT year, COUNT(*) FROM books GROUP BY year ORDER BY year",
+            "core_sql": "SELECT  a3009.val as 'year',COUNT(a3003.val) as 'books'\r\nFROM bk a3003\r\n   LEFT JOIN bk a3009 ON a3009.up=a3003.id AND a3009.t=3009\r\nWHERE a3003.up!=0 AND a3003.t!=a3003.up AND length(a3003.val)!=0 AND a3003.t=3003  \r\nGROUP BY a3009.val \r\nORDER BY CAST(a3009.val AS DOUBLE) LIMIT 0,200000"
+        },
+        {
+            "case": "q6 сумма страниц по автору",
+            "rows_classic": 142654,
+            "rows_core": 142654,
+            "rows_core_sql": 142654,
+            "classic_ms": 9870.7,
+            "core_http_ms": 64510.3,
+            "core_sql_ms": 60847,
+            "classic_all": [
+                10209.7,
+                9595.8,
+                10179.6,
+                9473.8,
+                9578.3,
+                9870.7,
+                10092.5
+            ],
+            "core_http_all": [
+                61432.8,
+                65388.1,
+                64719.1,
+                61986.3,
+                63036.9,
+                64510.3,
+                72322.3
+            ],
+            "core_sql_all": [
+                59093.7,
+                62406.2,
+                58855,
+                60037.4,
+                60847,
+                63308,
+                67953.6
+            ],
+            "classic_sql": "SELECT author.id, author.author, SUM(books.pages) FROM author LEFT JOIN books ON books.author=author.id GROUP BY author.id, author.author",
+            "core_sql": "SELECT  a3002.id as 'author_id',a3002.val as 'author',SUM(CAST(a3007_val AS DOUBLE)) as 'pages_sum'\r\nFROM bk a3002\r\n  LEFT JOIN (SELECT r3003.t,a3007.val a3007_val\r\n  FROM bk r3003,bk a3003 \/*USE INDEX (PRIMARY)*\/\r\n   LEFT JOIN bk a3007 ON a3007.up=a3003.id AND a3007.t=3007\r\n    WHERE r3003.up=a3003.id AND r3003.val='3005'  AND a3003.t=3003\r\n   ) a3003 ON a3002.id=a3003.t \r\nWHERE a3002.up!=0 AND a3002.t!=a3002.up AND length(a3002.val)!=0 AND a3002.t=3002  \r\nGROUP BY a3002.id, a3002.val   LIMIT 0,200000"
+        },
+        {
+            "case": "q7 топ-10 авторов по числу книг",
+            "rows_classic": 10,
+            "rows_core": 10,
+            "rows_core_sql": 10,
+            "classic_ms": 9312.8,
+            "core_http_ms": 57170.4,
+            "core_sql_ms": 62340.6,
+            "classic_all": [
+                9419.9,
+                9312.8,
+                9093.3,
+                9070.4,
+                6977.1,
+                9859.7,
+                9408
+            ],
+            "core_http_all": [
+                60715.4,
+                63030.3,
+                57170.4,
+                56060.4,
+                57167.8,
+                57070.5,
+                57542.8
+            ],
+            "core_sql_all": [
+                61324.5,
+                60425.9,
+                60819.6,
+                3673961.6,
+                67763.2,
+                62340.6,
+                62455
+            ],
+            "classic_sql": "SELECT author.id, author.author, COUNT(*) c FROM author JOIN books ON books.author=author.id GROUP BY author.id, author.author ORDER BY c DESC LIMIT 10",
+            "core_sql": "SELECT  a3002.id as 'author_id',a3002.val as 'author',COUNT(a3003_val) as 'books'\r\nFROM bk a3002\r\n  LEFT JOIN (SELECT r3003.t,a3003.val a3003_val\r\n  FROM bk r3003,bk a3003 \/*USE INDEX (PRIMARY)*\/\r\n    WHERE r3003.up=a3003.id AND r3003.val='3005'  AND a3003.t=3003\r\n   ) a3003 ON a3002.id=a3003.t \r\nWHERE a3002.up!=0 AND a3002.t!=a3002.up AND length(a3002.val)!=0 AND a3002.t=3002  \r\nGROUP BY a3002.id, a3002.val \r\nORDER BY COUNT(a3003_val) DESC LIMIT 0,10"
+        }
+    ]
+}
