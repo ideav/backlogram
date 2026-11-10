@@ -108,7 +108,7 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.1 }}
                 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-6 md:mb-8"
               >
-<span className="text-blue-500 italic">Интеграм</span> — российский no-code конструктор приложений и баз данных: замена Excel и аналог Airtable для бизнеса
+<span className="text-blue-500 italic">Интеграм</span> — российская платформа для автоматизации бизнеса, которая подстраивается под вас
               </motion.h1>
 
 

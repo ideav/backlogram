@@ -12,14 +12,15 @@ function getHeroSection(source) {
 
 // issue #488 (af.md, блок 1): hero переписан ДОСЛОВНО из af.md под семантическое ядро —
 // бренд + «no-code конструктор приложений и баз данных: замена Excel и аналог Airtable».
+// python2node#1212: H1 сменён на «российская платформа для автоматизации бизнеса,
+// которая подстраивается под вас».
 // Тест пинит новый заголовок и лид (заменил прежний #319-гвард), чтобы копия не «уплыла».
-test('hero H1 is the af.md brand + Excel/Airtable positioning', () => {
+test('hero H1 is the brand + «platform that adapts to you» positioning (p2n#1212)', () => {
   const hero = getHeroSection(homeSource)
   const h1 = hero.match(/<motion\.h1[\s\S]*?<\/motion\.h1>/)
   assert.ok(h1, 'Expected the hero H1 to exist')
   assert.match(h1[0], /Интеграм/)
-  assert.match(h1[0], /конструктор приложений и баз данных/)
-  assert.match(h1[0], /замена Excel и аналог Airtable/)
+  assert.match(h1[0], /российская платформа для автоматизации бизнеса, которая подстраивается под вас/)
 })
 
 test('hero lead paragraph is the af.md «из Excel — приложение за 45 минут» offer', () => {
