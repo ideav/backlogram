@@ -106,10 +106,20 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-6 md:mb-8"
+                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-3 md:mb-4"
               >
 <span className="text-blue-500 italic">Интеграм</span> — российская платформа для автоматизации бизнеса, которая подстраивается под вас
               </motion.h1>
+              {/* p2n#1212: подзаголовок-пояснение к H1; тот же текст — SUBTITLE в scripts/prerender-landing.mjs. */}
+              <motion.p
+                data-hero-subtitle
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.15 }}
+                className="max-w-3xl mx-auto mb-6 md:mb-8 text-lg md:text-xl text-slate-600 dark:text-slate-300 leading-relaxed"
+              >
+                Видите всё, что происходит в бизнесе, управляете сами и меняете систему без программистов
+              </motion.p>
 
 
               {/* #823: выбор маршрута — сразу на первом экране. Три раздела

@@ -77,6 +77,17 @@ test('H1 в статическом снапшоте совпадает с H1 г�
   assert.equal(snapshotH1, H1, 'H1 в снапшоте разошёлся с H1 на странице')
 })
 
+// python2node#1212: подзаголовок под H1 — один текст в React и в снапшоте.
+test('подзаголовок под H1 совпадает в Home.tsx и в снапшоте', () => {
+  const SUBTITLE = 'Видите всё, что происходит в бизнесе, управляете сами и меняете систему без программистов'
+  const reactSub = homeTsx.match(/<motion\.p[^>]*data-hero-subtitle[^>]*>([\s\S]*?)<\/motion\.p>/)
+  assert.ok(reactSub, 'не найден подзаголовок в герое Home.tsx')
+  assert.equal(reactSub[1].replace(/\s+/g, ' ').trim(), SUBTITLE)
+  const snapSub = out.match(/<\/h1>\s*<p class="lp-prerender__subtitle">([\s\S]*?)<\/p>/)
+  assert.ok(snapSub, 'подзаголовок в снапшоте должен идти сразу за H1')
+  assert.equal(snapSub[1].trim(), SUBTITLE)
+})
+
 // ── 3. FAQPage из общего источника ────────────────────────────────────────
 test('FAQ главной — один источник на React и пререндер', () => {
   // 7 вопросов из af.md (блок 13) + 2 добавлены под ключевые кластеры
