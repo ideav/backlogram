@@ -4,6 +4,7 @@ description: "Миллион книг, 143 тысячи авторов, обыч
 pubDate: 2026-11-29
 category: "Технологии"
 author: "Команда Интеграм"
+image: /uploads/knigi-i-avtory-cover.png
 tags:
 - производительность
 - исследования
