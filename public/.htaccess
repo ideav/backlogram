@@ -84,6 +84,10 @@ DirectoryIndex index.html
   # правила безрасширенный путь ушёл бы front controller'ом в движок как имя базы.
   RewriteRule ^(avtomatizaciya-biznesa-s-ii|ii-agenty-dlya-biznesa|vnedrenie-ii-v-biznes|ii-v-1c-bitrix24-amocrm|lokalnyj-ii-dlya-biznesa|ii-dlya-integratorov)/?$ /$1.html [R=301,L]
 
+  # /m/<токен> → персональная ссылка партнёра на материал (partner-link.php).
+  # Без правила путь ушёл бы front controller'ом в движок Интеграма как имя базы «m».
+  RewriteRule ^m/([A-Za-z0-9_-]{16,64})/?$ /partner-link.php?t=$1 [L,QSA]
+
   # Front controller: real files/dirs served as-is; everything else → index.php.
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d

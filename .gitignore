@@ -50,3 +50,5 @@ excel-to-app-queue/
 site-excel/public/order-config.php
 site-mvp/public/order-config.php
 site-finmo/public/order-config.php
+# Partner links data (copy from partner-config.example.php)
+public/partner-config.php
