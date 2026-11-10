@@ -29,7 +29,7 @@ const TITLE = 'Интеграм — no-code конструктор прилож�
 const DESCRIPTION =
   'Из Excel-таблицы — веб-приложение за 45 минут. Реляционные данные, on-premise, права доступа. Российский no-code в реестре отечественного ПО.'
 const H1 =
-  'Интеграм — российский no-code конструктор приложений и баз данных: замена Excel и аналог Airtable для бизнеса'
+  'Интеграм — российская платформа для автоматизации бизнеса, которая подстраивается под вас'
 
 /** Прогоняет пререндер главной в песочнице и отдаёт получившийся dist/index.html. */
 function prerender() {
@@ -75,6 +75,17 @@ test('H1 в статическом снапшоте совпадает с H1 г�
 
   const snapshotH1 = out.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)[1].replace(/\s+/g, ' ').trim()
   assert.equal(snapshotH1, H1, 'H1 в снапшоте разошёлся с H1 на странице')
+})
+
+// python2node#1212: подзаголовок под H1 — один текст в React и в снапшоте.
+test('подзаголовок под H1 совпадает в Home.tsx и в снапшоте', () => {
+  const SUBTITLE = 'Видите всё, что происходит в бизнесе, управляете сами и меняете систему без программистов'
+  const reactSub = homeTsx.match(/<motion\.p[^>]*data-hero-subtitle[^>]*>([\s\S]*?)<\/motion\.p>/)
+  assert.ok(reactSub, 'не найден подзаголовок в герое Home.tsx')
+  assert.equal(reactSub[1].replace(/\s+/g, ' ').trim(), SUBTITLE)
+  const snapSub = out.match(/<\/h1>\s*<p class="lp-prerender__subtitle">([\s\S]*?)<\/p>/)
+  assert.ok(snapSub, 'подзаголовок в снапшоте должен идти сразу за H1')
+  assert.equal(snapSub[1].trim(), SUBTITLE)
 })
 
 // ── 3. FAQPage из общего источника ────────────────────────────────────────

@@ -37,7 +37,7 @@ test('prerender-landing fills #root and injects SEO head tags into dist/index.ht
   assert.match(out, /<div id="root">\s*<article id="lp-prerender"/)
   assert.match(
     out,
-    /<h1[^>]*>Интеграм — российский no-code конструктор приложений и баз данных: замена Excel и аналог Airtable для бизнеса<\/h1>/,
+    /<h1[^>]*>Интеграм — российская платформа для автоматизации бизнеса, которая подстраивается под вас<\/h1>/,
   )
 
   // Representative section headings from Home.tsx are present (wording follows
