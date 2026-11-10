@@ -25,6 +25,7 @@ CRM_DIR=/path/to/crm ./run.sh 7     # 7 раундов на каждый зап�
 | `reports.mjs` | запросы q1–q7 как отчёты ядра |
 | `bench.php` | замерщик: обычная схема (SQL), ядро (HTTP `report/<id>?JSON_KV`) и SQL, который построило ядро (из `TRACE_IT`); медиана по раундам |
 | `results-*.json` | сырые результаты: все прогоны и оба SQL по каждому запросу |
+| `cover.mjs` | обложка статьи (1200×630, SVG + PNG в `blog-v2/public/uploads`); нужен `npm install` в `blog-v2` ради sharp |
 
 ## Результаты
 
