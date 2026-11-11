@@ -47,6 +47,7 @@ const KnowledgeBaseArticle = lazy(() => import('./pages/KnowledgeBaseArticle'))
 const UseCaseLanding = lazy(() => import('./pages/UseCaseLanding'))
 const UseCaseHub = lazy(() => import('./pages/UseCaseHub'))
 const LossLanding = lazy(() => import('./pages/LossLanding'))
+const FocusLanding = lazy(() => import('./pages/FocusLanding'))
 const Privacy = lazy(() => import('./pages/Privacy'))
 const Terms = lazy(() => import('./pages/Terms'))
 // ideav/courses#3: оферты партнёра и адепта, описание взаимодействия.
@@ -291,6 +292,9 @@ export const router = createBrowserRouter([
         { path: `${u.slug}.html`, element: <UseCaseLanding slug={u.slug} /> },
         { path: u.slug, element: <UseCaseLanding slug={u.slug} /> },
       ]),
+      // Один шаблон посадочной для Директа с подменой заголовка (python2node#1233).
+      { path: 'reshenie.html', element: <FocusLanding /> },
+      { path: 'reshenie', element: <FocusLanding /> },
       // Посадочные с калькулятором потерь + служебная /cost-of-inaction (python2node#1203).
       ...LOSS_LANDINGS.flatMap((p) => [
         { path: `${p.slug}.html`, element: <LossLanding slug={p.slug} /> },
