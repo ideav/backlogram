@@ -34,6 +34,8 @@
  *   cluster    шесть посадочных по кластерам запросов (issue #837): склад,
  *              калькуляция, расходы, «Excel не справляется», журналы, ИИ —
  *              по кампании на страницу, поиск по будням днём, максимум кликов
+ *   focus      ideav.ru/reshenie.html?f=<фокус> (issue #933): десять фокусов —
+ *              десять кампаний, H1 из {keyword}, оплата за focus_click
  *
  * Окружение:
  *   DIRECT_TOKEN     OAuth-токен Директа (обязателен для --apply)
@@ -377,6 +379,46 @@ PROFILES.cluster = {
 }
 
 /**
+ * «Фокусы» (backlogram#933): один шаблон ideav.ru/reshenie.html?f=<id> с H1
+ * из {keyword} (PR #931, python2node#1233), десять фокусов — десять кампаний,
+ * как у cluster. Стратегия — та, на которой кабинет крутится с 02.11.2026:
+ * оплата за конверсии по цели focus_click счётчика ideav.ru (GOAL_ID 681041000):
+ * клик «Записаться на разбор», который появляется только после первой кнопки и
+ * засчитывается с проверкой на человека (src/lib/humanGoal.ts, PR #935).
+ * 225 ₽ — как у работающих «· CPA»-копий. Поиск, будни 8:00–20:00.
+ * Якоря посадочной — #case и #lead (src/pages/FocusLanding.tsx); «Все задачи»
+ * ведёт на список фокусов (та же страница без ?f=), «Конфигуратор» — на
+ * FOCUS_CTA_URL.
+ */
+PROFILES.focus = {
+  title: 'Фокус',
+  slug: 'focus',
+  path: '/reshenie.html',
+  goalName: 'focus_click',
+  strategy: 'conversions',
+  cpaRub: 225,
+  weeklyRub: 1500,
+  goalValueRub: 0,
+  clickCeilingRub: { search: 60, network: 15 },
+  campaignPerGroup: true,
+  places: ['search'],
+  shifts: ['day'],
+  days: [1, 2, 3, 4, 5],
+  dayHours: { from: 8, to: 20 },
+  keywordFiles: [marketing('focus.keywords.json')],
+  adsFile: marketing('focus.ads.json'),
+  negativesFile: marketing('focus.negatives.json'),
+  ads: [],
+  sitelinks: [
+    { Title: 'Пример внедрения', Description: 'Обезличенный кейс: с чего начали и что подключили', anchor: 'case' },
+    { Title: 'Обсудить пилот', Description: 'Расскажите о задаче — разберём процесс за час', anchor: 'lead' },
+    { Title: 'Все задачи', Description: 'Склад, заказы, договоры, бюджет, персонал и другие', path: '/reshenie.html' },
+    { Title: 'Конфигуратор', Description: 'Отрасль, решения и смета пилота', path: '/ai-transform/' },
+  ],
+  callouts: ['Пилот за неделю', 'На ваших данных', 'Интеграция с 1С', 'Внедрение по шагам'],
+}
+
+/**
  * Копии кампаний профиля с другой стратегией (02.11.2026): STRATEGY=conversions
  * ставит оплату за конверсии (GOAL_ID, CPA_RUB) профилю с кликами, VARIANT
  * помечает копию — « · <VARIANT>» в имени кампании и «-<variant>» в
@@ -442,7 +484,9 @@ export function href(campaignSlug, siteUrl = cfg.siteUrl, profile = PROFILE, gro
     'utm_content={ad_id}',
     'utm_term={keyword}',
   ].join('&')
-  return `${siteUrl}${group?.path ?? profile.path}?${utm}`
+  // Путь с параметрами (#933: /reshenie.html?f=sklad) — UTM дописываются через &.
+  const target = group?.path ?? profile.path
+  return `${siteUrl}${target}${target.includes('?') ? '&' : '?'}${utm}`
 }
 
 /**
@@ -478,7 +522,8 @@ export function sitelinksFor(campaignSlug, siteUrl = cfg.siteUrl, profile = PROF
   return profile.sitelinks.map(({ anchor, path: linkPath, ...link }) => ({
     ...link,
     ...(anchor === 'shablon' && group?.insideNote ? { Description: group.insideNote } : {}),
-    Href: `${href(campaignSlug, siteUrl, profile, linkPath ? { ...group, path: linkPath } : group)}#${anchor}`,
+    // Без anchor (#933) — ссылка на саму страницу, без якоря.
+    Href: `${href(campaignSlug, siteUrl, profile, linkPath ? { ...group, path: linkPath } : group)}${anchor ? `#${anchor}` : ''}`,
   }))
 }
 
@@ -610,7 +655,9 @@ export function campaignPayload(name, slug, where, shift = 'day', profile = PROF
         Network: where === 'network' ? biddingFor(where, shift, profile) : { BiddingStrategyType: 'SERVING_OFF' },
       },
       CounterIds: { Items: [cfg.counterId] },
-      ...(cfg.goalId ? {
+      // Ценность 0 Директ отбивает («от 0.3 до 300000000», #933); при оплате
+      // за конверсии цель и так задана в стратегии — без ценности поле не шлём.
+      ...(cfg.goalId && cfg.goalValueRub > 0 ? {
         PriorityGoals: {
           Items: [{ GoalId: cfg.goalId, Value: Math.round(cfg.goalValueRub * MICRO) }],
         },
@@ -718,11 +765,23 @@ async function main() {
 
   const calloutIds = await calloutIdsFor(CALLOUTS)
 
+  // Дублей по имени Директ не ловит: повторный --apply завёл бы вторые копии
+  // со всеми фразами. Занятые имена пропускаем (#933).
+  const taken = new Set()
+  if (apply) {
+    const existing = await apiCall('campaigns', 'get', { SelectionCriteria: {}, FieldNames: ['Name', 'State'] }, cfg.token)
+    for (const c of existing?.Campaigns ?? []) if (c.State !== 'ARCHIVED') taken.add(c.Name)
+  }
+
   const groups = groupsFor()
   for (const campaign of campaignsFor()) {
     const { _slug: slug, _autotargeting: autotargeting, _group: onlyGroup, _index: campaignIndex, ...payload } = campaign
     if (process.env.CAMPAIGN_ONLY && !slug.includes(process.env.CAMPAIGN_ONLY)) continue
     console.log(`\n=== ${payload.Name} ===`)
+    if (taken.has(payload.Name)) {
+      console.log('уже есть в кабинете — пропускаю')
+      continue
+    }
 
     const added = await call('campaigns', 'add', { Campaigns: [payload] })
     const [campaignId] = apply ? idsOf(added, 'AddResults') : [`<id ${slug}>`]
