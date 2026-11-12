@@ -221,6 +221,7 @@ if (!defined('INTAKE_BUILD_LOADED')) {
             $body = intake_render_template(intake_mail_app_ready_template(), [
                 'тематика'         => $topic !== '' ? $topic : 'ваша задача из заявки',
                 'app_url'          => $appUrl,
+                'база'             => intake_mail_db_name($appUrl, $login),
                 'admin_login'      => $login,
                 'admin_password'   => $pass,
                 'что_внутри'       => $inside !== '' ? $inside : '— Приложение собрано по вашему файлу: справочники, рабочие места и логика, которую в нём видно.',
