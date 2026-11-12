@@ -653,7 +653,9 @@ export function campaignPayload(name, slug, where, shift = 'day', profile = PROF
         Network: where === 'network' ? biddingFor(where, shift, profile) : { BiddingStrategyType: 'SERVING_OFF' },
       },
       CounterIds: { Items: [cfg.counterId] },
-      ...(cfg.goalId ? {
+      // Ценность 0 Директ отбивает («от 0.3 до 300000000», #933); при оплате
+      // за конверсии цель и так задана в стратегии — без ценности поле не шлём.
+      ...(cfg.goalId && cfg.goalValueRub > 0 ? {
         PriorityGoals: {
           Items: [{ GoalId: cfg.goalId, Value: Math.round(cfg.goalValueRub * MICRO) }],
         },
