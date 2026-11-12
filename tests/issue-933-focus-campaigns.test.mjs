@@ -71,6 +71,8 @@ test('объявления: по три, в лимитах, ссылка на с
         assert.ok((ad[field] ?? '').length <= max, `${g.slug}: ${field} «${ad[field]}» длиннее ${max}`)
       }
       assert.ok(ad.Title.length + ad.Title2.length <= AD_TITLES_TOTAL)
+      // Директ отбивает не-буквы и не-пунктуацию (стрелку «→» в «Партиях», 12.11.2026).
+      for (const field of ['Title', 'Text']) assert.doesNotMatch(ad[field], /[^\p{L}\p{N}\s.,:;!?«»"'()\-—–%₽№+/]/u, `${g.slug}: ${ad[field]}`)
       assert.ok(ad.Href.startsWith(`${site}/reshenie.html?f=${g.slug}&utm_source=yandex&`), ad.Href)
       assert.equal(ad.Href.split('?').length, 2, `${ad.Href}: второй «?»`)
       assert.match(ad.Href, new RegExp(`utm_campaign=${g.utm}&`))
