@@ -1,9 +1,10 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { AlertTriangle, ArrowRight, CheckCircle2, Gauge } from 'lucide-react'
 import LeadForm from '../components/LeadForm'
 import { reachGoal, visitParams } from '../lib/metrika'
+import { reachHumanGoal } from '../lib/humanGoal'
 import { focusIdFromSearch, headlineFromSearch } from '../lib/focusHeadline'
 import {
   FOCUS_CTA_URL, FOCUS_HUB, FOCUS_LANDINGS, FOCUS_PATH, FOCUS_SITE, FOCUS_STEPS, focusById,
@@ -70,6 +71,18 @@ export default function FocusLanding() {
   }, [])
 
   const onCalc = () => reachGoal('focus_calc', { focus: focus?.id ?? 'hub' })
+
+  // Целевая кнопка (#933) появляется только после первой: Директ платит за
+  // focus_click, и до неё не должен дотянуться автомат, жмущий всё на загрузке.
+  const [opened, setOpened] = useState(false)
+  const onOpen = () => {
+    if (!opened) reachGoal('focus_open', { focus: focus?.id })
+    setOpened(true)
+  }
+  const onTarget = () => {
+    reachHumanGoal('focus_click', { focus: focus?.id })
+    document.getElementById('lead')?.scrollIntoView({ behavior: 'smooth' })
+  }
   const contacts = (
     <p className="text-sm text-slate-500 dark:text-slate-400 mt-4 text-center">
       <a href={LOSS_PHONE.href} className="hover:underline">{LOSS_PHONE.text}</a> · <a href={`mailto:${LOSS_EMAIL}`} className="hover:underline">{LOSS_EMAIL}</a>
@@ -117,10 +130,18 @@ export default function FocusLanding() {
           </motion.h1>
           {override && <p className="text-xl font-semibold text-slate-700 dark:text-slate-200 mb-3">{focus.h1}</p>}
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-8">{focus.lead}</p>
-          <div className="flex flex-wrap gap-3">
-            <a href="#lead" className={BTN}>Обсудить пилот <ArrowRight size={18} /></a>
-            <a href="#case" className={BTN2}>Пример внедрения</a>
-          </div>
+          {opened ? (
+            <div className={`${CARD} max-w-xl`}>
+              <p className="font-semibold mb-2">Начнём с разбора процесса</p>
+              <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">{FOCUS_STEPS[0].text} Дальше — пилот на ваших данных за неделю.</p>
+              <button type="button" onClick={onTarget} className={BTN}>Записаться на разбор <ArrowRight size={18} /></button>
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-3">
+              <button type="button" onClick={onOpen} className={BTN}>Обсудить пилот <ArrowRight size={18} /></button>
+              <a href="#case" className={BTN2}>Пример внедрения</a>
+            </div>
+          )}
         </div>
       </section>
 
