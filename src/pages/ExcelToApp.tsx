@@ -70,7 +70,7 @@ const MAX_FILES = 10
 const ANALYSIS_PRICE = '20 000 ₽'
 
 const PAYMENT_HASH = '#12500'
-const PAYMENT_CHECKOUT_URL = 'https://checkout.tochka.com/cc7f594c-58a5-4ada-8c13-91b678ac2868'
+const PAYMENT_CHECKOUT_URL = 'https://tochkaplace.com/ia/723252cf-4583-4967-83fe-e9630b207f9f'
 
 function isPaymentEmailValid(email: string): boolean {
   return /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/.test(email)
@@ -430,7 +430,7 @@ export default function ExcelToApp() {
     },
     {
       label: 'Бюджет на старте',
-      integram: `Демонстрация бесплатно, разбор с ТЗ — ${ANALYSIS_PRICE}`,
+      integram: `Триал 14 дней бесплатно, разбор с ТЗ — ${ANALYSIS_PRICE}`,
       saas: 'от 50 000 ₽ + подписки',
       custom: 'от 1 500 000 ₽',
       winner: 'integram' as const,
@@ -526,7 +526,7 @@ export default function ExcelToApp() {
             <div className="rounded-2xl sm:rounded-3xl border border-blue-500/30 bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/40 dark:to-slate-950 shadow-xl dark:shadow-2xl px-4 py-8 sm:p-10">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 text-blue-500 dark:text-blue-400 text-sm font-medium mb-6">
                 <Clock size={14} />
-                Демонстрация доступна 3 часа
+                Бесплатный триал 14 дней
               </div>
 
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
@@ -534,9 +534,10 @@ export default function ExcelToApp() {
               </h2>
 
               <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-8">
-                Это демонстрация, которую вы можете забрать себе в течение 3 часов за{' '}
-                <span className="font-bold text-slate-900 dark:text-white">12 500 ₽</span>.
-                Ограничение по времени связано с текущим большим наплывом пользователей.
+                Первые 14 дней — бесплатный триал: мы создаём ваши дашборды, а ваш партнёр
+                сопровождает вас и помогает освоиться. После триала базу можно забрать себе за
+                единовременные{' '}
+                <span className="font-bold text-slate-900 dark:text-white">18 500 ₽</span>.
               </p>
 
               <ul className="space-y-4 mb-8">
@@ -564,7 +565,7 @@ export default function ExcelToApp() {
                   className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all inline-flex items-center justify-center gap-2 group"
                 >
                   <Wallet size={18} />
-                  Оплатить 12 500 ₽ и забрать базу
+                  Оплатить 18 500 ₽ и забрать базу
                   <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </button>
               ) : (
@@ -594,7 +595,7 @@ export default function ExcelToApp() {
                     className="mt-4 w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all inline-flex items-center justify-center gap-2 group"
                   >
                     <Wallet size={18} />
-                    Оплатить 12 500 ₽
+                    Оплатить 18 500 ₽
                     <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                   </button>
                 </div>
@@ -652,7 +653,7 @@ export default function ExcelToApp() {
             слов о задаче. Мы превратим их в работающее веб-приложение на платформе
             Интеграм — быстрее, чем вы найдёте фрилансера. На выходе — аналог Excel
             для командной работы: те же данные, но с формами, правами доступа
-            и отчётами. Демонстрация бесплатна.
+            и отчётами. Первые 14 дней — бесплатный триал.
           </motion.p>
 
           <motion.div
