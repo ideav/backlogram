@@ -93,12 +93,18 @@ $confirm = intake_mail_confirm_template();
 check('в письме-подтверждении есть ссылка', str_contains($confirm, '{{confirm_url}}'));
 check('в письме-подтверждении назван срок', str_contains($confirm, '{{ttl_hours}}'));
 $ready = intake_mail_app_ready_template();
-foreach (['{{app_url}}', '{{admin_login}}', '{{admin_password}}', '{{что_внутри}}', '{{цена_разбора}}', '{{вилка_разработки}}'] as $ph) {
+foreach (['{{app_url}}', '{{база}}', '{{admin_login}}', '{{admin_password}}', '{{что_внутри}}', '{{цена_разбора}}', '{{вилка_разработки}}'] as $ph) {
     check("в письме-результате есть $ph", str_contains($ready, $ph));
 }
 // Форма #622: в письме только доступ администратора, остальные пароли — на info.html.
 check('письмо-результат отправляет за паролями ролей на страницу приложения', str_contains($ready, 'главной странице приложения'));
 check('письмо-результат не раздаёт пароли ролей', !str_contains($ready, '{{password}}'));
+// python2node#1235: доступ — теми же полями, что на странице входа.
+check('письмо-результат называет поле «Email / имя пользователя»', str_contains($ready, 'Email / имя пользователя: {{admin_login}}'));
+check('письмо-результат называет поле «База данных»', str_contains($ready, 'База данных: {{база}}'));
+check('база берётся из пути app_url', intake_mail_db_name('https://ideav.ru/db2439457924/', 'x') === 'db2439457924');
+check('база из app_url со страницей', intake_mail_db_name('https://ideav.ru/nteaclub/info.html?x=1', 'x') === 'nteaclub');
+check('без пути база = логин админа', intake_mail_db_name('https://ideav.ru/', 'nteaclub') === 'nteaclub');
 check('тема результата содержит тематику', intake_mail_app_ready_subject('интернет-магазина') === 'Ваше приложение для интернет-магазина готово — Интеграм');
 check('тема результата без тематики не ломается', intake_mail_app_ready_subject('') === 'Ваше приложение готово — Интеграм');
 

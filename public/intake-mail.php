@@ -215,6 +215,18 @@ if (!defined('INTAKE_MAIL_LOADED')) {
         return strtr($template, $replacements);
     }
 
+    /**
+     * Имя базы для письма «приложение готово» — то, что стоит в поле «База
+     * данных» на странице входа (python2node#1235). Берём первый сегмент пути
+     * app_url (https://ideav.ru/<база>/…); не вышло — логин администратора:
+     * сборщик заводит администратора под именем базы.
+     */
+    function intake_mail_db_name(string $appUrl, string $login): string {
+        $path  = (string) parse_url($appUrl, PHP_URL_PATH);
+        $first = explode('/', trim($path, '/'))[0];
+        return preg_match('/^[A-Za-z0-9_]{1,64}$/', $first) ? $first : $login;
+    }
+
     /** Тема письма-подтверждения. */
     function intake_mail_confirm_subject(): string {
         return 'Подтвердите заявку — и мы начнём собирать приложение';
@@ -267,8 +279,9 @@ TEXT;
     /**
      * Письмо «приложение готово» — текст из
      * docs/marketing/email-template-app-ready.md (форма #622).
-     * Плейсхолдеры: {{тематика}}, {{app_url}}, {{admin_login}},
+     * Плейсхолдеры: {{тематика}}, {{app_url}}, {{база}}, {{admin_login}},
      * {{admin_password}}, {{что_внутри}}, {{цена_разбора}}, {{вилка_разработки}}.
+     * Доступ — теми же полями, что на странице входа (python2node#1235).
      */
     function intake_mail_app_ready_template(): string {
         return <<<'TEXT'
@@ -281,9 +294,13 @@ TEXT;
 Ссылка на приложение:
 {{app_url}}
 
-Доступ администратора:
-    логин: {{admin_login}}
-    пароль: {{admin_password}}
+Доступ администратора — на странице входа заполните поля так:
+    База данных: {{база}}
+    Email / имя пользователя: {{admin_login}}
+    Пароль: {{admin_password}}
+
+В поле «Email / имя пользователя» введите именно {{admin_login}}, а не свой
+адрес почты: администратор приложения заведён под этим именем.
 
 На главной странице приложения — описание: что в нём есть, какие роли
 (например, продавец) и под какими логинами войти, чтобы посмотреть приложение

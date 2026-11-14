@@ -20,8 +20,8 @@ export const PARTNER_DOCS_OPERATOR = PRIVACY_OPERATOR
 const UPDATED = '7 ноября 2026 г.'
 const UPDATED_ISO = '2026-11-07'
 // Раздел 14 «Сопровождение клиентов» (утверждён владельцем 10.11.2026) — дата редакции только у оферты партнёра.
-const PARTNER_OFFER_UPDATED = '11 ноября 2026 г.'
-const PARTNER_OFFER_UPDATED_ISO = '2026-11-11'
+const PARTNER_OFFER_UPDATED = '14 ноября 2026 г.'
+const PARTNER_OFFER_UPDATED_ISO = '2026-11-14'
 
 const REQUISITES =
   'Акционерное общество «Интеграм» (АО «Интеграм»), ИНН 9716002710, ОГРН 1247700757590, сайт https://ideav.ru, электронная почта abc@integram.io, телефон +7 (995) 506-01-67.'
