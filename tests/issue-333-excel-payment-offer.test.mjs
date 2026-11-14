@@ -25,23 +25,23 @@ test('the payment offer block carries the #12500 anchor and is focused', () => {
 })
 
 test('the payment offer states all three prices from the email', () => {
-  assert.match(pageSource, /12 500 ₽/) // take the demo now
+  assert.match(pageSource, /18 500 ₽/) // take the base after the trial
   assert.match(pageSource, /28 500 ₽/) // restore the archived base later
   assert.match(pageSource, /1 950 ₽ в месяц/) // cost of ownership
 })
 
-test('the payment offer keeps the 3-hour limited-time framing', () => {
-  assert.match(pageSource, /в течение 3 часов/)
+test('the payment offer states the 14-day trial framing', () => {
+  assert.match(pageSource, /Первые 14 дней — бесплатный триал/)
   assert.match(pageSource, /заархивирована/)
 })
 
 test('the pay CTA is a two-step Tochka checkout flow (issue #335)', () => {
   // Step 1: the CTA button reveals the email field instead of linking to Telegram.
-  assert.match(pageSource, /Оплатить 12 500 ₽ и забрать базу/)
+  assert.match(pageSource, /Оплатить 18 500 ₽ и забрать базу/)
   assert.match(pageSource, /onClick=\{\(\) => setShowPayForm\(true\)\}/)
   // Step 2: email is collected, validated, then the page redirects to the
   // Tochka checkout link (same pattern as start.html #promoPayButton).
-  assert.match(pageSource, /const PAYMENT_CHECKOUT_URL = 'https:\/\/checkout\.tochka\.com\/cc7f594c-58a5-4ada-8c13-91b678ac2868'/)
+  assert.match(pageSource, /const PAYMENT_CHECKOUT_URL = 'https:\/\/tochkaplace\.com\/ia\/723252cf-4583-4967-83fe-e9630b207f9f'/)
   assert.match(pageSource, /isPaymentEmailValid\(/)
   assert.match(pageSource, /window\.location\.href = PAYMENT_CHECKOUT_URL/)
   // The Telegram contact is no longer the payment CTA.

@@ -84,6 +84,10 @@ DirectoryIndex index.html
   # правила безрасширенный путь ушёл бы front controller'ом в движок как имя базы.
   RewriteRule ^(avtomatizaciya-biznesa-s-ii|ii-agenty-dlya-biznesa|vnedrenie-ii-v-biznes|ii-v-1c-bitrix24-amocrm|lokalnyj-ii-dlya-biznesa|ii-dlya-integratorov)/?$ /$1.html [R=301,L]
 
+  # /m/<токен> → персональная ссылка партнёра на материал (partner-link.php).
+  # Без правила путь ушёл бы front controller'ом в движок Интеграма как имя базы «m».
+  RewriteRule ^m/([A-Za-z0-9_-]{16,64})/?$ /partner-link.php?t=$1 [L,QSA]
+
   # База cources → courses (ideav/courses#106): в имени была опечатка, база
   # скопирована под новым именем. Старые адреса портала, его статики и ссылки
   # оплаты ведут на новые; хеш (#/map) браузер сохраняет сам, query — по умолчанию.
