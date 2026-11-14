@@ -84,6 +84,16 @@ DirectoryIndex index.html
   # правила безрасширенный путь ушёл бы front controller'ом в движок как имя базы.
   RewriteRule ^(avtomatizaciya-biznesa-s-ii|ii-agenty-dlya-biznesa|vnedrenie-ii-v-biznes|ii-v-1c-bitrix24-amocrm|lokalnyj-ii-dlya-biznesa|ii-dlya-integratorov)/?$ /$1.html [R=301,L]
 
+  # База cources → courses (ideav/courses#106): в имени была опечатка, база
+  # скопирована под новым именем. Старые адреса портала, его статики и ссылки
+  # оплаты ведут на новые; хеш (#/map) браузер сохраняет сам, query — по умолчанию.
+  # GET/HEAD — 301, прочие методы — 308: POST из открытой старой вкладки не
+  # должен превратиться в GET. Обязано стоять ВЫШЕ front controller.
+  RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$
+  RewriteRule ^(download/)?cources(/.*)?$ /$1courses$2 [R=301,L]
+  RewriteRule ^(download/)?cources(/.*)?$ /$1courses$2 [R=308,L]
+  RewriteRule ^cources-pay\.php$ /courses-pay.php [R=301,L]
+
   # Front controller: real files/dirs served as-is; everything else → index.php.
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
