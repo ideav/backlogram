@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Бесплатный онлайн-эфир для руководителей: что ИИ-агенты уже делают на предприятии и с чего начать. 3 декабря, 11:00 (МСК).">
+<title>Эфир: ИИ-агенты на предприятии — регистрация</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Unbounded:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Страница регистрации эфира — в стиле кластера ai-transform (см. before-after.html):
+   графитовые нейтрали с синим оттенком, синий «сигнал» для действий. */
+:root {
+  --bg: #f4f6f9; --surface: #ffffff; --ink: #18202c; --muted: #5b6676; --line: #d7dde6;
+  --accent: #1f56c4; --accent-soft: #e3ebfb; --accent-ink: #ffffff; --ok: #1d7a4e; --ok-soft: #e0f2e8;
+  --f-display: "Unbounded", "Segoe UI", sans-serif; --f-body: "Onest", "Segoe UI", Arial, sans-serif; --f-mono: "IBM Plex Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg: #11161e; --surface: #18202b; --ink: #e6ebf2; --muted: #9aa6b6; --line: #2c3746;
+  --accent: #6f9cff; --accent-soft: #1d2b47; --accent-ink: #0d1422; --ok: #5fcb92; --ok-soft: #173326; color-scheme: dark } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body); margin: 0; }
+.wrap { max-width: 1020px; margin: 0 auto; padding: 28px 16px 56px; display: grid; gap: 24px; }
+.label { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+h1 { font: 600 clamp(21px, 3.2vw, 30px)/1.18 var(--f-display); margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+.lead { color: var(--muted); max-width: 70ch; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font: 500 13.5px/1.2 var(--f-mono); border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; }
+.chip.solid { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: start; }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: grid; gap: 14px; min-width: 0; }
+h2 { font: 600 18px/1.25 var(--f-body); margin: 0; }
+ol { margin: 0; padding-left: 20px; display: grid; gap: 10px; }
+li::marker { color: var(--accent); font-weight: 600; }
+.note { color: var(--muted); font-size: 13.5px; }
+/* Форма */
+form { display: grid; gap: 12px; }
+.field { display: grid; gap: 4px; }
+.field span { font-size: 13px; color: var(--muted); }
+input, select { width: 100%; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px; font: 500 15px/1.3 var(--f-body); }
+input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+button { background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 8px; padding: 12px 18px; font: 600 15px/1 var(--f-body); cursor: pointer; }
+button:hover { filter: brightness(1.08); }
+button:disabled { opacity: 0.55; cursor: default; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 480px) { .row { grid-template-columns: 1fr; } }
+#captcha-box { min-height: 44px; }
+.msg { border-radius: 8px; padding: 10px 12px; font-size: 14px; display: none; }
+.msg.err { display: block; background: var(--accent-soft); color: var(--ink); }
+.done { display: none; gap: 10px; }
+.done .ok { background: var(--ok-soft); color: var(--ok); border-radius: 8px; padding: 10px 12px; font-weight: 600; }
+footer { display: grid; gap: 6px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--line); padding-top: 16px; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="wrap-header" style="display:grid;gap:10px">
+    <div class="label">Бесплатный онлайн-эфир</div>
+    <h1>ИИ-агенты на предприятии: что уже работает и как начать</h1>
+    <div class="meta">
+      <span class="chip solid">Четверг, 3 декабря 2026</span>
+      <span class="chip">11:00–12:15 (МСК)</span>
+      <span class="chip">75 минут + вопросы</span>
+      <span class="chip">Запись — зарегистрированным</span>
+    </div>
+    <p class="lead">Эфир для руководителей, владельцев процессов и ИТ-специалистов, которые решают, с чего начинать ИИ в компании. Знания об ИИ не нужны: показываем работающую базу, а не слайды.</p>
+  </header>
+
+  <div class="layout">
+    <section class="panel" aria-labelledby="program-h">
+      <h2 id="program-h">Что будет на эфире</h2>
+      <ol>
+        <li><b>Что изменилось.</b> Модели читают документы, заполняют формы, готовят ответы и коммерческие предложения. Что такое агент и где его границы.</li>
+        <li><b>Живая демонстрация на учебном предприятии.</b> Агент разбирает входящий запрос, находит ответ в инструкциях со ссылкой на пункт и готовит черновик. Решение принимает человек.</li>
+        <li><b>Почему пилоты не доходят до работы.</b> Правило, которое мы применяем к каждой задаче: владелец, разрешённые данные, измеримый показатель.</li>
+        <li><b>Как устроена трансформация за квартал.</b> Аудит, обучение команды, сборка решений, буткемп на ваших данных и защита у руководства.</li>
+      </ol>
+      <p class="note">После эфира вы будете знать, что агенты умеют и чего не умеют, как выбрать первую задачу в вашей компании и какой следующий шаг подходит вам. Приводите коллег, которые отвечают за процессы.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="reg-h">
+      <h2 id="reg-h">Регистрация</h2>
+      <form id="reg" novalidate>
+        <div class="field"><span>Имя и фамилия *</span><input name="name" required autocomplete="name"></div>
+        <div class="field"><span>Почта *</span><input name="email" type="email" required autocomplete="email"></div>
+        <div class="row">
+          <div class="field"><span>Телефон</span><input name="phone" type="tel" autocomplete="tel"></div>
+          <div class="field"><span>Компания</span><input name="company" autocomplete="organization"></div>
+        </div>
+        <div class="row">
+          <div class="field"><span>Должность</span><input name="role"></div>
+          <div class="field"><span>Отрасль</span>
+            <select name="industry">
+              <option value="">— выберите —</option>
+              <option>Производство на заказ</option><option>Проектные компании</option>
+              <option>Финансы</option><option>Пищевое производство</option>
+              <option>Автохолдинги</option><option>Спорт и досуг</option>
+              <option>Опт и дистрибуция</option><option>Логистика</option>
+              <option>HR-сервисы</option><option>Недвижимость</option>
+              <option>Розница</option><option>Строительство</option>
+              <option>Фонды и НКО</option><option>Клиники</option>
+              <option>Агро</option><option>Другая</option>
+            </select>
+          </div>
+        </div>
+        <div id="captcha-box"></div>
+        <button type="submit" id="go">Зарегистрироваться</button>
+        <div class="msg err" id="err" role="alert"></div>
+      </form>
+      <div class="done" id="done">
+        <div class="ok">Заявка принята</div>
+        <p class="note" id="done-note">Мы напишем вам на указанную почту: пришлём напоминание и ссылку на эфир. Запись и материалы — после эфира.</p>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div>Вопросы: <a href="mailto:care@integram.io">care@integram.io</a> · <a href="tel:+79955060167">+7 995 506-01-67</a></div>
+    <div><a href="./">Конфигуратор буткемпа: решения для вашей отрасли</a></div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  // Тот же механизм приёма заявок, что под формой на главной и в квизе:
+  // telegram-notify.php (same-origin) — заявка уходит в Telegram владельцу,
+  // у вошедших в Интеграм (cookie idb_*) капчи нет, остальным — SmartCaptcha.
+  var SITEKEY = 'ysc1_2EhhILbwBUoENgVrsbujEEPhih5dgPfh4Rs2WfImcd89ae95';
+  var hasIdb = document.cookie.split(';').some(function (c) { return c.trim().indexOf('idb_') === 0; });
+  var form = document.getElementById('reg');
+  var errBox = document.getElementById('err');
+  var captchaBox = document.getElementById('captcha-box');
+  var go = document.getElementById('go');
+  var widgetId = null;
+  var captchaToken = '';
+
+  function showErr(text) { errBox.textContent = text; errBox.className = 'msg err'; }
+
+  function initCaptcha() {
+    if (hasIdb || widgetId !== null || !window.smartCaptcha || !captchaBox) return;
+    widgetId = window.smartCaptcha.render(captchaBox, {
+      sitekey: SITEKEY,
+      callback: function (token) { captchaToken = token; },
+      'expired-callback': function () { captchaToken = ''; },
+      'error-callback': function () { captchaToken = ''; }
+    });
+  }
+
+  if (!hasIdb) {
+    if (window.smartCaptcha) { initCaptcha(); }
+    else {
+      var s = document.createElement('script');
+      s.src = 'https://smartcaptcha.yandexcloud.net/captcha.js';
+      s.defer = true;
+      s.onload = initCaptcha;
+      document.head.appendChild(s);
+    }
+  } else {
+    captchaBox.style.display = 'none';
+  }
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    errBox.className = 'msg';
+    var name = form.name.value.trim();
+    var email = form.email.value.trim();
+    if (!name || !email || email.indexOf('@') < 1) {
+      showErr('Укажите имя и почту — на неё придёт ссылка на эфир.');
+      return;
+    }
+    if (!hasIdb && !captchaToken) {
+      showErr('Подтвердите, что вы не робот.');
+      return;
+    }
+    var details = [];
+    if (form.phone.value.trim()) details.push('Телефон: ' + form.phone.value.trim());
+    if (form.role.value.trim()) details.push('Должность: ' + form.role.value.trim());
+    if (form.industry.value) details.push('Отрасль: ' + form.industry.value);
+    var payload = {
+      source: 'efir',
+      name: name,
+      contact: email,
+      company: form.company.value.trim(),
+      task: details.join('\n'),
+      captcha_token: captchaToken
+    };
+    go.disabled = true;
+    fetch('/telegram-notify.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function (r) { return r.json(); }).then(function (res) {
+      if (!res || res.ok !== true) throw new Error(res && res.error ? res.error : 'bad response');
+      form.style.display = 'none';
+      document.getElementById('done').style.display = 'grid';
+      var note = document.getElementById('done-note');
+      note.textContent = 'Мы напишем вам на ' + email + ': пришлём напоминание и ссылку на эфир. Запись и материалы — после эфира.';
+    }).catch(function () {
+      go.disabled = false;
+      showErr('Не получилось отправить заявку. Напишите нам: care@integram.io или +7 995 506-01-67 — зарегистрируем вручную.');
+    });
+  });
+})();
+</script>
+</body>
+</html>
