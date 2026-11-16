@@ -298,10 +298,10 @@ if (!defined('EFIR_MAIL_LOADED')) {
                 echo "[dry-run] $kind -> $email\n";
                 continue;
             }
-            // Напоминания без Bcc: копия каждого из сотен писем владельцу не нужна.
+            // Копия Bcc (INTAKE_MAIL_BCC) — и на напоминания: владелец копирует себе все письма эфира.
             $ok = false;
             try {
-                $ok = efir_deliver($kind, $cfg, $email, (string) ($r['name'] ?? ''), '', $mailer);
+                $ok = efir_deliver($kind, $cfg, $email, (string) ($r['name'] ?? ''), null, $mailer);
             } catch (Throwable $e) {
                 error_log('efir-reminders: ' . $e->getMessage());
             }

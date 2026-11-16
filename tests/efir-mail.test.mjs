@@ -49,7 +49,7 @@ test('php -l: efir-mail.php, efir-reminders.php', { skip }, () => {
 })
 
 function run() {
-  const r = spawnSync('php', [join(root, 'tests/fixtures/efir-mail-run.php')], { encoding: 'utf8' })
+  const r = spawnSync('php', [join(root, 'tests/fixtures/efir-mail-run.php')], { encoding: 'utf8', env: { ...process.env, INTAKE_MAIL_BCC: 'copy@example.ru' } })
   assert.equal(r.status, 0, r.stderr)
   return JSON.parse(r.stdout)
 }
@@ -85,14 +85,14 @@ test('обращение по имени: первое слово; странн�
   assert.deepEqual(o.greet, ['Здравствуйте, Анна!', 'Здравствуйте!', 'Здравствуйте!', 'Здравствуйте, Иван!'])
 })
 
-test('напоминания: окна, один раз на почту, dry-run, отказавшиеся, без Bcc', { skip }, () => {
+test('напоминания: окна, один раз на почту, dry-run, отказавшиеся, Bcc по умолчанию', { skip }, () => {
   const o = run()
   assert.equal(o.r_early.kind, null, 'раньше чем за 24 ч — рано')
   assert.equal(o.r_dry.sent, 2)
   assert.equal(o.r_dry_state, false, 'dry-run не пишет учёт')
   assert.equal(o.r24.kind, 'remind24')
   assert.deepEqual(o.r24_to.map((x) => x.toLowerCase()), ['a@example.ru', 'b@example.ru'], 'дубль, отказавшийся и не-почта пропущены')
-  assert.ok(!o.r24_headers.includes('Bcc:'), 'напоминания без Bcc')
+  assert.ok(o.r24_headers.includes('Bcc: copy@example.ru'), 'напоминания с копией Bcc')
   assert.equal(o.r24_again.sent, 0, 'повторный запуск не шлёт дважды')
   assert.equal(o.r24_again_n, 0)
   assert.equal(o.r_gap.kind, null, 'между окнами тишина')
