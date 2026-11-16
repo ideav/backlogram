@@ -12,6 +12,8 @@ header('Content-Type: application/json');
 
 // Общие хелперы (лимиты вложений, sendDocument) — issue #399.
 require_once __DIR__ . '/intake-shared.php';
+// Участники курсов живут в базе ideav.ru/courses (регистрация на эфир пишется и туда).
+require_once __DIR__ . '/courses-register.php';
 
 // ── Same-host verification ────────────────────────────────────────────────────
 // Compare the HTTP_REFERER origin against the current server host.
@@ -217,6 +219,20 @@ if (in_array($source, $REGISTRATION_SOURCES, true)) {
     if (!$ok) {
         error_log("telegram-notify: registration not saved ($source) in $regDir");
     }
+
+    // Запись в базу courses — после ответа посетителю (fastcgi_finish_request), чтобы сеть до
+    // ideav.ru не задерживала форму. Сбой не ломает регистрацию: jsonl и Telegram — запасной путь,
+    // в error_log остаётся строка. Токен не задан — запись отключена.
+    $coursesRecord = [
+        'name' => $name, 'email' => $contact, 'phone' => $phone,
+        'company' => $company, 'role' => $role, 'industry' => $industry,
+    ];
+    register_shutdown_function(function () use ($coursesRecord) {
+        if (function_exists('fastcgi_finish_request')) {
+            fastcgi_finish_request();
+        }
+        courses_register_safe($coursesRecord);
+    });
 }
 
 // ── Доставка через спул (issue #598) ─────────────────────────────────────────
