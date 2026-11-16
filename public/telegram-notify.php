@@ -14,6 +14,8 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/intake-shared.php';
 // Участники курсов живут в базе ideav.ru/courses (регистрация на эфир пишется и туда).
 require_once __DIR__ . '/courses-register.php';
+// Письма участникам эфира: подтверждение сразу после регистрации (напоминания — efir-reminders.php, cron).
+require_once __DIR__ . '/efir-mail.php';
 
 // ── Same-host verification ────────────────────────────────────────────────────
 // Compare the HTTP_REFERER origin against the current server host.
@@ -227,10 +229,14 @@ if (in_array($source, $REGISTRATION_SOURCES, true)) {
         'name' => $name, 'email' => $contact, 'phone' => $phone,
         'company' => $company, 'role' => $role, 'industry' => $industry,
     ];
-    register_shutdown_function(function () use ($coursesRecord) {
+    // Письмо-подтверждение участнику — там же, после ответа и раньше похода в courses: почта локальная
+    // и быстрая, а сеть до ideav.ru может висеть до таймаута. Сбой не ломает регистрацию: строка в error_log.
+    $regMailDir = $regDir;
+    register_shutdown_function(function () use ($coursesRecord, $regMailDir) {
         if (function_exists('fastcgi_finish_request')) {
             fastcgi_finish_request();
         }
+        efir_send_confirmation($regMailDir, $coursesRecord);
         courses_register_safe($coursesRecord);
     });
 }

@@ -27,6 +27,8 @@ h1 { font: 600 clamp(21px, 3.2vw, 30px)/1.18 var(--f-display); margin: 0; text-w
 .lead { color: var(--muted); max-width: 70ch; }
 .meta { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { font: 500 13.5px/1.2 var(--f-mono); border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; }
+a.chip { color: inherit; text-decoration: none; }
+a.chip { color: inherit; text-decoration: none; }
 .chip.solid { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: start; }
 @media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); } }
@@ -67,6 +69,7 @@ a:hover { text-decoration: underline; }
       <span class="chip">11:00–12:15 (МСК)</span>
       <span class="chip">75 минут + вопросы</span>
       <span class="chip">Запись — зарегистрированным</span>
+      <a class="chip" href="efir-2026-12-03.ics" download>Добавить в календарь (.ics)</a>
     </div>
     <p class="lead">Эфир для руководителей, владельцев процессов и ИТ-специалистов, которые решают, с чего начинать ИИ в компании. Знания об ИИ не нужны: показываем работающую базу, а не слайды.</p>
   </header>
@@ -114,7 +117,7 @@ a:hover { text-decoration: underline; }
       </form>
       <div class="done" id="done">
         <div class="ok">Заявка принята</div>
-        <p class="note" id="done-note">Мы напишем вам на указанную почту: пришлём напоминание и ссылку на эфир. Запись и материалы — после эфира.</p>
+        <p class="note" id="done-note">Мы напишем вам на указанную почту: письмо с датой и ссылкой на эфир уже в пути, напомним за сутки и за час. Запись и материалы — после эфира. <a href="efir-2026-12-03.ics" download>Добавить в календарь (.ics)</a></p>
       </div>
     </section>
   </div>
@@ -206,7 +209,12 @@ a:hover { text-decoration: underline; }
       form.style.display = 'none';
       document.getElementById('done').style.display = 'grid';
       var note = document.getElementById('done-note');
-      note.textContent = 'Мы напишем вам на ' + email + ': пришлём напоминание и ссылку на эфир. Запись и материалы — после эфира.';
+      note.textContent = 'Мы напишем вам на ' + email + ': письмо с датой и ссылкой на эфир уже в пути, напомним за сутки и за час. Запись и материалы — после эфира. ';
+      var cal = document.createElement('a');
+      cal.href = 'efir-2026-12-03.ics';
+      cal.download = '';
+      cal.textContent = 'Добавить в календарь (.ics)';
+      note.appendChild(cal);
     }).catch(function (e) {
       go.disabled = false;
       // Токен капчи одноразовый: сервер его уже проверил (и «сжёг»),

@@ -29,7 +29,7 @@ test('efir.html: поля по отдельности, сброс капчи, п
 })
 
 test('php -l: новые и изменённые PHP-файлы', { skip: !hasPhp && 'php не найден в PATH' }, () => {
-  for (const f of ['public/intake-shared.php', 'public/courses-register.php', 'public/telegram-notify.php', 'public/registrations-export.php']) {
+  for (const f of ['public/intake-shared.php', 'public/courses-register.php', 'public/telegram-notify.php', 'public/registrations-export.php', 'public/efir-mail.php', 'public/efir-reminders.php']) {
     const out = spawnSync('php', ['-l', join(root, f)], { encoding: 'utf8' })
     assert.equal(out.status, 0, out.stdout + out.stderr)
   }
@@ -68,7 +68,7 @@ test('e2e: регистрация → список участников → CSV'
   const mockLog = join(workdir, 'mock.log')
   const webroot = join(workdir, 'public')
   mkdirSync(webroot, { recursive: true })
-  for (const f of ['telegram-notify.php', 'intake-shared.php', 'courses-register.php', 'registrations-export.php']) {
+  for (const f of ['telegram-notify.php', 'intake-shared.php', 'courses-register.php', 'registrations-export.php', 'efir-mail.php', 'intake-mail.php']) {
     cpSync(join(root, 'public', f), join(webroot, f))
   }
   writeFileSync(join(webroot, 'telegram-config.php'), `<?php
@@ -80,7 +80,7 @@ define('TELEGRAM_API_BASE', 'http://127.0.0.1:${mockPort}');
     env: { ...process.env, MOCK_LOG: mockLog },
     stdio: 'ignore',
   })
-  const appProc = spawn('php', ['-S', `127.0.0.1:${appPort}`, '-t', webroot], { stdio: 'ignore' })
+  const appProc = spawn('php', ['-S', `127.0.0.1:${appPort}`, '-t', webroot], { stdio: 'ignore', env: { ...process.env, INTAKE_MAIL_TRANSPORT: 'file', INTAKE_MAIL_FILE: join(workdir, 'mail.jsonl') } })
   const post = (body) => fetch(`http://127.0.0.1:${appPort}/telegram-notify.php`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Referer: `http://127.0.0.1:${appPort}/ai-transform/efir.html` },

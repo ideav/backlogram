@@ -22,3 +22,4 @@
 *.woff binary
 *.woff2 binary
 *.xlsx binary
+public/ai-transform/*.ics -text
