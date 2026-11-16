@@ -79,3 +79,15 @@ define('SMARTCAPTCHA_SERVER_KEY',   'ysc2_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 // define('NOTIFY_ALLOWED_EXT',       'xlsx,xls,csv,ods,doc,docx,pdf,png,jpg,jpeg,txt');
 //                                                        // extensions for the CTA form
 //                                                        // (telegram-notify.php → sendDocument)
+
+// ── Регистрация на эфир → база ideav.ru/courses (courses-register.php) ───────
+// Сервисный токен базы courses (админ-роль, X-Authorization). Держать ТОЛЬКО в окружении
+// или в этом файле на сервере, не в репозитории. Не задан — запись в courses отключена,
+// регистрации остаются в jsonl и Telegram.
+//
+// define('COURSES_TOKEN',        'токен-базы-courses');
+// define('COURSES_BASE_URL',     'https://ideav.ru');   // по умолчанию
+// define('COURSES_DB',           'courses');            // по умолчанию
+// define('COURSES_EFIR_COURSE',  'efir');               // Заявка.Курс; по умолчанию efir
+// define('COURSES_TIMEOUT',      '4');                  // общий бюджет запросов, секунд
+// define('COURSES_STUDENT_ROLE_ID', '541');             // id роли «Ученик»; иначе ищется по имени
