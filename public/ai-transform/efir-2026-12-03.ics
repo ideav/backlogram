@@ -1,0 +1,23 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Integram//Efir//RU
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:efir-20261203@ideav.ru
+DTSTAMP:20261103T080000Z
+DTSTART:20261203T080000Z
+DTEND:20261203T091500Z
+SUMMARY:Эфир «ИИ-агенты на предприятии»
+DESCRIPTION:Онлайн-эфир «ИИ-агенты на предприя
+ тии». Подключение: https://telemost.yandex.ru/j/81637970749
+ 787\nСтраница эфира: https://ideav.ru/ai-transform/efir.html
+LOCATION:https://telemost.yandex.ru/j/81637970749787
+URL:https://telemost.yandex.ru/j/81637970749787
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Через 30 минут эфир «ИИ-агенты на пр
+ едприятии»
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+END:VCALENDAR
