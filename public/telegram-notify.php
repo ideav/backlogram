@@ -73,6 +73,14 @@ $company = trim($data['company'] ?? '');
 $contact = trim($data['contact'] ?? '');
 $task    = trim($data['task']    ?? '');
 $source  = trim($data['source']  ?? '');
+// Поля регистрации (эфир): идут своими строками, а не под «Задачей».
+$phone    = trim($data['phone']    ?? '');
+$role     = trim($data['role']     ?? '');
+$industry = trim($data['industry'] ?? '');
+
+// Источники-регистрации: заявка ещё и пишется в список участников
+// (intake_registration_append) — по нему рассылаются напоминания и ссылка.
+$REGISTRATION_SOURCES = ['efir'];
 
 // Человекочитаемые названия источников заявки (по какой странице/форме пришла).
 $SOURCE_LABELS = [
@@ -183,10 +191,33 @@ if ($source_label !== '') $lines[] = "🔖 *Источник:* " . esc($source_l
 if ($name !== '')    $lines[] = "👤 *Имя:* " . esc($name);
 if ($company !== '') $lines[] = "🏢 *Компания:* " . esc($company);
 if ($contact !== '') $lines[] = "📬 *Контакт:* " . esc($contact);
+if ($phone !== '')    $lines[] = "📞 *Телефон:* " . esc($phone);
+if ($role !== '')     $lines[] = "💼 *Должность:* " . esc($role);
+if ($industry !== '') $lines[] = "🏭 *Отрасль:* " . esc($industry);
 if ($task !== '')    $lines[] = "📝 *Задача:*\n" . esc($task);
 if ($attachments)    $lines[] = "📎 *Файлы:* " . esc(count($attachments) . ' шт — придут следом');
 
 $message = implode("\n", $lines);
+
+// ── Список участников (регистрации) ──────────────────────────────────────────
+// Пишется до доставки в Telegram: уведомление может застрять в спуле, а
+// участник в списке должен быть сразу. Не записалось — заявка всё равно
+// уходит в Telegram, а сбой виден в журнале ошибок PHP.
+if (in_array($source, $REGISTRATION_SOURCES, true)) {
+    $regDir = intake_registrations_dir();
+    $ok = intake_registration_append($regDir, $source, [
+        'time'     => date('c'),
+        'name'     => $name,
+        'email'    => $contact,
+        'phone'    => $phone,
+        'company'  => $company,
+        'role'     => $role,
+        'industry' => $industry,
+    ]);
+    if (!$ok) {
+        error_log("telegram-notify: registration not saved ($source) in $regDir");
+    }
+}
 
 // ── Доставка через спул (issue #598) ─────────────────────────────────────────
 // Канал до Telegram-прокси нестабилен (теряет большинство TCP-соединений),

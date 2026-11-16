@@ -411,4 +411,56 @@ if (!defined('INTAKE_SHARED_LOADED')) {
         }
         @rmdir($dir);
     }
+
+    // ── Списки регистраций (эфиры и т. п.) ────────────────────────────────────
+    //  Заявка в Telegram — уведомление, а не список: файл спула удаляется
+    //  после доставки. Для регистраций на событие нужен список участников
+    //  (рассылка напоминаний и ссылки), поэтому каждая регистрация ещё и
+    //  дописывается строкой JSON в <источник>.jsonl — вне вебрута.
+
+    /** Каталог списков регистраций — рядом с вебрутом, не внутри. */
+    function intake_registrations_dir(): string {
+        $configured = intake_config('REGISTRATIONS_DIR');
+        if ($configured !== null) {
+            return rtrim($configured, '/');
+        }
+        $root = (string) ($_SERVER['DOCUMENT_ROOT'] ?? '');
+        $root = $root !== '' ? $root : __DIR__;
+        return rtrim(dirname($root), '/') . '/registrations';
+    }
+
+    /** Дописать регистрацию в <dir>/<source>.jsonl. false — не записалось. */
+    function intake_registration_append(string $dir, string $source, array $record): bool {
+        if (!preg_match('/^[a-z0-9-]{1,40}$/', $source)) {
+            return false;
+        }
+        if (!is_dir($dir) && !@mkdir($dir, 0700, true) && !is_dir($dir)) {
+            return false;
+        }
+        $line = json_encode($record, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        if ($line === false) {
+            return false;
+        }
+        return @file_put_contents($dir . '/' . $source . '.jsonl', $line . "\n", FILE_APPEND | LOCK_EX) !== false;
+    }
+
+    /**
+     * Прочитать список: одна строка на почту (без учёта регистра), поля —
+     * из последней регистрации, время — первой; порядок — по первой.
+     *
+     * @return array<int, array<string, string>>
+     */
+    function intake_registrations_read(string $file): array {
+        $byEmail = [];
+        foreach (@file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [] as $line) {
+            $r = json_decode($line, true);
+            if (!is_array($r) || trim((string) ($r['email'] ?? '')) === '') {
+                continue;
+            }
+            $key = mb_strtolower(trim((string) $r['email']));
+            $first = $byEmail[$key]['time'] ?? (string) ($r['time'] ?? '');
+            $byEmail[$key] = array_merge($byEmail[$key] ?? [], array_map('strval', $r), ['time' => $first]);
+        }
+        return array_values($byEmail);
+    }
 }

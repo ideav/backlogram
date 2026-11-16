@@ -170,7 +170,7 @@ a:hover { text-decoration: underline; }
     errBox.className = 'msg';
     var name = form.name.value.trim();
     var email = form.email.value.trim();
-    if (!name || !email || email.indexOf('@') < 1) {
+    if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
       showErr('Укажите имя и почту — на неё придёт ссылка на эфир.');
       return;
     }
@@ -178,16 +178,16 @@ a:hover { text-decoration: underline; }
       showErr('Подтвердите, что вы не робот.');
       return;
     }
-    var details = [];
-    if (form.phone.value.trim()) details.push('Телефон: ' + form.phone.value.trim());
-    if (form.role.value.trim()) details.push('Должность: ' + form.role.value.trim());
-    if (form.industry.value) details.push('Отрасль: ' + form.industry.value);
+    // Поля — по отдельности: сервер пишет их в список участников
+    // и своими строками в Telegram (а не под «Задачей»).
     var payload = {
       source: 'efir',
       name: name,
       contact: email,
+      phone: form.phone.value.trim(),
       company: form.company.value.trim(),
-      task: details.join('\n'),
+      role: form.role.value.trim(),
+      industry: form.industry.value,
       captcha_token: captchaToken
     };
     go.disabled = true;
@@ -195,15 +195,26 @@ a:hover { text-decoration: underline; }
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
-    }).then(function (r) { return r.json(); }).then(function (res) {
-      if (!res || res.ok !== true) throw new Error(res && res.error ? res.error : 'bad response');
+    }).then(function (r) {
+      return r.json().catch(function () { return null; });
+    }).then(function (res) {
+      if (!res || res.ok !== true) {
+        var e = new Error('bad response');
+        e.serverText = res && res.error;
+        throw e;
+      }
       form.style.display = 'none';
       document.getElementById('done').style.display = 'grid';
       var note = document.getElementById('done-note');
       note.textContent = 'Мы напишем вам на ' + email + ': пришлём напоминание и ссылку на эфир. Запись и материалы — после эфира.';
-    }).catch(function () {
+    }).catch(function (e) {
       go.disabled = false;
-      showErr('Не получилось отправить заявку. Напишите нам: care@integram.io или +7 995 506-01-67 — зарегистрируем вручную.');
+      // Токен капчи одноразовый: сервер его уже проверил (и «сжёг»),
+      // без сброса повторная отправка упрётся в «капча не пройдена».
+      captchaToken = '';
+      if (widgetId !== null && window.smartCaptcha) window.smartCaptcha.reset(widgetId);
+      var fallback = 'Напишите нам: care@integram.io или +7 995 506-01-67 — зарегистрируем вручную.';
+      showErr(e && e.serverText ? e.serverText + ' ' + fallback : 'Не получилось отправить заявку. ' + fallback);
     });
   });
 })();
