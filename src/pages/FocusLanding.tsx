@@ -83,6 +83,8 @@ export default function FocusLanding() {
     reachHumanGoal('focus_click', { focus: focus?.id })
     document.getElementById('lead')?.scrollIntoView({ behavior: 'smooth' })
   }
+  // Заявка тоже целевая конверсия кампаний «Фокус» и тоже только от человека.
+  const onLead = () => reachHumanGoal('focus_click', { focus: focus?.id ?? 'hub', via: 'lead' })
   const contacts = (
     <p className="text-sm text-slate-500 dark:text-slate-400 mt-4 text-center">
       <a href={LOSS_PHONE.href} className="hover:underline">{LOSS_PHONE.text}</a> · <a href={`mailto:${LOSS_EMAIL}`} className="hover:underline">{LOSS_EMAIL}</a>
@@ -111,7 +113,7 @@ export default function FocusLanding() {
         <section id="lead" className={`${SECTION} scroll-mt-24`}>
           <div className={WRAP}>
             <h2 className={`${H2} text-center`}>Расскажите о задаче</h2>
-            <LeadForm source={source} />
+            <LeadForm source={source} onSent={onLead} />
             {contacts}
           </div>
         </section>
@@ -224,7 +226,7 @@ export default function FocusLanding() {
       <section id="lead" className={`${SECTION} scroll-mt-24`}>
         <div className={WRAP}>
           <h2 className={`${H2} text-center`}>Обсудим пилот на ваших данных</h2>
-          <LeadForm source={source} />
+          <LeadForm source={source} onSent={onLead} />
           {contacts}
         </div>
       </section>
