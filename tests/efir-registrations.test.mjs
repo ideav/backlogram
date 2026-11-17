@@ -120,3 +120,14 @@ define('TELEGRAM_API_BASE', 'http://127.0.0.1:${mockPort}');
     rmSync(workdir, { recursive: true, force: true })
   }
 })
+
+// Счётчик и цель эфира (efir_reg 682028305): 16.11.2026 жили патчем efir.html на сервере,
+// перенесены в репозиторий по ideav/crm#5496.
+test('efir.html: счётчик Метрики и цель efir_reg только после успешной регистрации', () => {
+  assert.match(page, /mc\.yandex\.ru\/metrika\/tag\.js\?id=108758829/)
+  assert.match(page, /ym\(108758829, 'init'/)
+  const ok = page.indexOf("if (!res || res.ok !== true)")
+  const goal = page.indexOf("ym(108758829, 'reachGoal', 'efir_reg')")
+  assert.ok(ok > 0 && goal > ok && goal < page.indexOf('.catch(function (e)', ok), 'efir_reg — в ветке успеха')
+  assert.doesNotMatch(page, /window\.fetch\s*=/, 'без перехвата fetch')
+})

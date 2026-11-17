@@ -27,3 +27,16 @@ test('focus_click уходит только через проверку на ч�
 test('в пререндере целевой кнопки нет', () => {
   assert.doesNotMatch(prerender, /focus_click|Записаться на разбор/)
 })
+
+// Заявка с «Фокуса» — тоже focus_click (Директ платит за неё; 16.11.2026 жило патчем
+// reshenie.html на сервере, перенесено в сборку по ideav/crm#5496).
+test('успешная заявка с «Фокуса» засчитывает focus_click через проверку на человека', () => {
+  const form = readFileSync(new URL('../src/components/LeadForm.tsx', import.meta.url), 'utf8')
+  const ok = form.indexOf("if (json.ok) {")
+  const sent = form.indexOf('onSent?.()', ok)
+  assert.ok(ok > 0 && sent > ok && sent < form.indexOf('} else {', ok), 'onSent зовётся только при json.ok')
+  const forms = page.match(/<LeadForm [^>]*\/>/g)
+  assert.ok(forms.length >= 2)
+  for (const f of forms) assert.match(f, /onSent=\{onLead\}/)
+  assert.match(page, /const onLead = \(\) => reachHumanGoal\('focus_click', \{ focus: focus\?\.id \?\? 'hub', via: 'lead' \}\)/)
+})

@@ -49,7 +49,8 @@ function hasIdbCookie(): boolean {
   return document.cookie.split(';').some(c => c.trimStart().startsWith('idb_'))
 }
 
-export default function LeadForm({ source }: { source?: string }) {
+// onSent — колбэк успешной отправки: страница засчитывает свою цель (focus_click на «Фокусе»).
+export default function LeadForm({ source, onSent }: { source?: string; onSent?: () => void }) {
   const [formState, setFormState] = React.useState<FormState>('idle')
   const [errorMsg, setErrorMsg]   = React.useState('')
   const [consentChecked, setConsentChecked] = React.useState(false)
@@ -150,6 +151,7 @@ export default function LeadForm({ source }: { source?: string }) {
         // (source), либо кнопка раздела привела на форму главной.
         reachGoal('lead', { source: source ?? leadSource('home') })
         forgetLeadFrom()
+        onSent?.()
         form.reset()
         setAttachedFiles([])
         setCaptchaToken('')
