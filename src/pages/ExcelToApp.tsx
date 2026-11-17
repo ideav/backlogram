@@ -449,6 +449,20 @@ export default function ExcelToApp() {
       custom: 'Очередь в бэклог',
       winner: 'integram' as const,
     },
+    {
+      label: 'Сервер, вход, бэкапы, обновления',
+      integram: 'Уже есть: пустая база под проект — за пару минут',
+      saas: 'У вендора, но интеграции — внедренцу',
+      custom: 'Развернуть проект: ≈ 55–110 ч ИТ до рабочего состояния',
+      winner: 'integram' as const,
+    },
+    {
+      label: 'Сопровождение в месяц',
+      integram: 'от 1 950 ₽, правки — сами в чате',
+      saas: '≈ 4 800–8 800 ₽ + внедренец на правки',
+      custom: '≈ 16 000–40 000 ₽: разработчик и админ',
+      winner: 'integram' as const,
+    },
   ]
 
   const securityFeatures = [
