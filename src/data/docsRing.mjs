@@ -7,6 +7,7 @@
 // достаточно добавить сюда — она появится во всех «См. также».
 
 export const DOCS_RING = [
+  { href: '/help.html', name: 'Помощь', hint: 'как сделать по шагам' },
   { href: '/api.html', name: 'Справочник API', hint: 'команды ядра и curl' },
   { href: '/queries.html', name: 'Запросы', hint: 'отчёты и данные одним адресом' },
   { href: '/triggers.html', name: 'Триггеры кнопок', hint: 'действие по событию записи' },

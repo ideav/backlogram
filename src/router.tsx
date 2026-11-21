@@ -36,6 +36,7 @@ const TriggerDocs = lazy(() => import('./pages/TriggerDocs'))
 const ProcDocs = lazy(() => import('./pages/ProcDocs'))
 // backlogram#802: запросы — движок отчётов: адрес, форматы, параметры.
 const QueryDocs = lazy(() => import('./pages/QueryDocs'))
+const HelpCenter = lazy(() => import('./pages/HelpCenter'))
 // backlogram#798: шаблонизатор — HTML рабочих мест и вставка данных.
 const TemplaterDocs = lazy(() => import('./pages/TemplaterDocs'))
 const DbTemplates = lazy(() => import('./pages/DbTemplates'))
@@ -232,6 +233,15 @@ export const router = createBrowserRouter([
       {
         path: 'stored-procedures',
         element: <ProcDocs />,
+      },
+      // backlogram#946 (эпик ideav/crm#5603): сайт помощи — консультант и все приёмы по шагам.
+      {
+        path: 'help.html',
+        element: <HelpCenter />,
+      },
+      {
+        path: 'help',
+        element: <HelpCenter />,
       },
       // backlogram#802: запросы — движок отчётов: адрес, форматы, параметры.
       {

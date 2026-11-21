@@ -49,8 +49,8 @@ test('страница «Запросы» покрывает движок: ад�
 test('кольцо: /queries.html вместо статьи базы знаний, у stored-procedures появилось «См. также»', () => {
   assert.ok(DOCS_RING.some((d) => d.href === '/queries.html'))
   assert.ok(!DOCS_RING.some((d) => d.href.includes('knowledge-base')), 'кольцо не должно вести в базу знаний')
-  // Порядок кольца: api → queries → triggers → stored-procedures → templater.
-  assert.deepEqual(docsRingFor('/stored-procedures.html').map((d) => d.href), ['/templater.html', '/api.html', '/queries.html', '/triggers.html'])
+  // Порядок кольца: help (#946) → api → queries → triggers → stored-procedures → templater.
+  assert.deepEqual(docsRingFor('/stored-procedures.html').map((d) => d.href), ['/templater.html', '/help.html', '/api.html', '/queries.html', '/triggers.html'])
   assert.ok(docsRingHtml('/queries.html').includes('docs-see-also'))
   // Кольцо на странице процедур — и в React, и в пререндере.
   assert.match(procPage, /DocsSeeAlso path=\{PROC_META\.path\}/)

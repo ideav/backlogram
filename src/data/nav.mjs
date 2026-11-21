@@ -87,7 +87,8 @@ export const footerNavGroups = [
     // кликают, остальное свёрнуто под «Ещё…» (`more: true`). Свёрнутые ссылки
     // остаются в DOM — для краулера и статического блока ничего не теряется.
     links: [
-      { name: 'Документация', href: 'https://help.integram.io/', external: true, icon: 'external' },
+      // backlogram#946: своя помощь вместо старой help.integram.io.
+      { name: 'Помощь', href: '/help.html' },
       { name: 'База знаний', href: '/knowledge-base.html' },
       { name: 'Решения вместо Excel', href: '/resheniya.html' },
       { name: 'Интеграм vs Битрикс24 / AmoCRM', href: '/sravnenie-s-bitrix-amocrm.html' },

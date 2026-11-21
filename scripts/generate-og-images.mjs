@@ -55,6 +55,7 @@ const { API_META } = await import('../src/data/apiDocs.mjs')
 const { TRIGGER_META } = await import('../src/data/triggerDocs.mjs')
 const { PROC_META } = await import('../src/data/procDocs.mjs')
 const { QUERY_META } = await import('../src/data/queryDocs.mjs')
+const { HELP_META } = await import('../src/data/helpCenter.mjs')
 const { TEMPLATER_META } = await import('../src/data/templaterDocs.mjs')
 const { DBT_META } = await import('../src/data/dbTemplates.mjs')
 const { nbspText } = await import('../src/lib/typography.mjs')
@@ -375,6 +376,13 @@ const landingCards = [
     eyebrow: 'API · для разработчиков',
     title: nbspText(API_META.h1),
     subtitle: nbspText(API_META.description),
+  },
+  // backlogram#946: сайт помощи — ссылку показывают клиенту на встрече.
+  {
+    slug: 'help',
+    eyebrow: 'Помощь · по шагам',
+    title: nbspText(HELP_META.h1),
+    subtitle: nbspText(HELP_META.description),
   },
   // backlogram#802: запросы — движок отчётов для разработчиков.
   {

@@ -291,6 +291,12 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://ideav.ru/help.html</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://ideav.ru/shablony-reshenij.html</loc>
     <lastmod>2026-11-02</lastmod>
     <changefreq>monthly</changefreq>
