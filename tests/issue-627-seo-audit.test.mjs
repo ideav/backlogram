@@ -41,7 +41,8 @@ test('каждый URL карты сайта достижим по ссылке 
   // отраслевые лендинги и прочее — из блока staticNavLinks().
   const linked = new Set(staticNavLinks().map((l) => l.href))
   const orphans = sitemapPaths.filter(
-    (p) => !linked.has(p) && !p.startsWith('/knowledge-base/') && p !== '/',
+    // Разделы помощи /help/<id>.html линкуются с хаба /help.html (#961).
+    (p) => !linked.has(p) && !p.startsWith('/knowledge-base/') && !p.startsWith('/help/') && p !== '/',
   )
   assert.deepEqual(
     orphans,

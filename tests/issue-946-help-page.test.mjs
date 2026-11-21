@@ -65,7 +65,9 @@ const PAGE_ANCHORS = {
   '/templater.html': anchorsOf(TEMPLATER_SECTIONS),
   '/triggers.html': anchorsOf(TRIGGER_SECTIONS),
   '/stored-procedures.html': anchorsOf(PROC_SECTIONS),
-  '/help.html': new Set(['basics', 'consultant', ...HELP_SECTIONS.map((s) => s.id), ...HELP_ARTICLES.map((a) => a.id)]),
+  // С #961 приёмы живут на страницах разделов, на хабе — ликбез и оглавление.
+  '/help.html': new Set(['basics', 'consultant', 'sections', ...HELP_SECTIONS.map((s) => s.id)]),
+  ...Object.fromEntries(HELP_SECTIONS.map((s) => [s.path, new Set(s.articles.map((a) => a.id))])),
 }
 const KB_SLUGS = new Set([...read('src/data/knowledgeBase.ts').matchAll(/slug: '([^']+)'/g)].map((m) => m[1]))
 const SITE_PAGES = new Set(
@@ -143,7 +145,7 @@ test('страница подключена: роут, сборка, .htaccess, 
   assert.ok(HELP_META.description.length <= 160)
 })
 
-test('пререндер кладёт ликбез и все статьи в HTML', () => {
+test('пререндер кладёт ликбез в хаб, а каждую статью — на страницу её раздела', () => {
   const work = mkdtempSync(resolve(tmpdir(), 'help-prerender-'))
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
@@ -158,5 +160,12 @@ test('пререндер кладёт ликбез и все статьи в HTM
   const html = readFileSync(out, 'utf8')
   assert.match(html, /<link rel="canonical" href="https:\/\/ideav\.ru\/help\.html"/)
   assert.match(html, /id="basics"/)
-  for (const a of HELP_ARTICLES) assert.ok(html.includes(`id="${a.id}"`), `нет статьи ${a.id} в снапшоте`)
+  for (const s of HELP_SECTIONS) {
+    const page = readFileSync(resolve(work, 'dist', s.path.slice(1)), 'utf8')
+    for (const a of s.articles) {
+      assert.ok(page.includes(`id="${a.id}"`), `нет статьи ${a.id} на ${s.path}`)
+      assert.ok(html.includes(`href="${s.path}#${a.id}"`), `хаб не ссылается на ${a.id}`)
+      assert.ok(!html.includes(`id="${a.id}"`), `текст ${a.id} продублирован на хабе`)
+    }
+  }
 })

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 import { HELP_META, HELP_SECTIONS, HELP_ARTICLES } from '../src/data/helpCenter.mjs'
 
 // backlogram#959: SEO/GEO-проверка /help.html — свежесть, разметка разделов,
-// разделы с якорями в llms.txt.
+// разделы в llms.txt. С #961 хаб — CollectionPage, разделы — свои страницы.
 
 const repo = fileURLToPath(new URL('..', import.meta.url))
 const read = (p) => readFileSync(resolve(repo, p), 'utf8')
@@ -27,7 +27,7 @@ function prerender() {
 
 const html = prerender()
 const ld = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1])
-const article = ld['@graph'].find((n) => n['@type'] === 'TechArticle')
+const hub = ld['@graph'].find((n) => n['@type'] === 'CollectionPage')
 
 test('даты в HELP_META — ISO, обновление не раньше публикации', () => {
   assert.match(HELP_META.published, /^\d{4}-\d{2}-\d{2}$/)
@@ -35,17 +35,13 @@ test('даты в HELP_META — ISO, обновление не раньше пу
   assert.ok(HELP_META.updated >= HELP_META.published)
 })
 
-test('TechArticle: даты, картинка, о чём страница, разделы с якорями', () => {
-  assert.equal(article.datePublished, HELP_META.published)
-  assert.equal(article.dateModified, HELP_META.updated)
-  assert.equal(article.image, 'https://ideav.ru/og/help.png')
-  assert.equal(article.about.alternateName, 'Integram')
-  const urls = article.hasPart.map((p) => p.url)
-  assert.ok(urls.includes('https://ideav.ru/help.html#basics'))
-  for (const s of HELP_SECTIONS) {
-    assert.ok(urls.includes(`https://ideav.ru/help.html#${s.id}`), `нет раздела ${s.id} в hasPart`)
-    assert.ok(html.includes(`<section id="${s.id}">`), `нет якоря ${s.id} в снапшоте`)
-  }
+test('разметка хаба: даты, картинка, о чём страница, разделы', () => {
+  assert.equal(hub.datePublished, HELP_META.published)
+  assert.equal(hub.dateModified, HELP_META.updated)
+  assert.equal(hub.image, 'https://ideav.ru/og/help.png')
+  assert.equal(hub.about.alternateName, 'Integram')
+  const urls = hub.hasPart.map((p) => p.url)
+  for (const s of HELP_SECTIONS) assert.ok(urls.includes(`https://ideav.ru${s.path}`), `нет раздела ${s.id} в hasPart`)
   assert.ok(!JSON.stringify(ld).includes('`'), 'обратные кавычки разметки протекли в JSON-LD')
 })
 
@@ -54,9 +50,9 @@ test('видимая строка свежести совпадает с dateMod
   assert.match(read('src/pages/HelpCenter.tsx'), /dateTime=\{HELP_META\.updated\}/)
 })
 
-test('llms.txt ведёт на каждый раздел помощи по якорю', () => {
+test('llms.txt ведёт на страницу каждого раздела помощи', () => {
   const llms = read('public/llms.txt')
   for (const s of HELP_SECTIONS) {
-    assert.ok(llms.includes(`](https://ideav.ru/help.html#${s.id}):`), `llms.txt: нет раздела ${s.id}`)
+    assert.ok(llms.includes(`](https://ideav.ru${s.path}):`), `llms.txt: нет раздела ${s.id}`)
   }
 })

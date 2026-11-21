@@ -37,11 +37,14 @@ test('«См. также» в снапшоте несёт target, ссылка �
 
 test('SPA и пререндер помощи подключают хелпер ко всем внешним ссылкам статей', () => {
   const tsx = readFileSync(new URL('../src/pages/HelpCenter.tsx', import.meta.url), 'utf8')
-  assert.match(tsx, /<a href=\{l\.href\} \{\.\.\.pageLinkProps\(l\.href, HELP_META\.path\)\}/)
+  // С #961 статья рисуется на странице раздела — текущий путь приходит пропом.
+  assert.match(tsx, /<a href=\{l\.href\} \{\.\.\.pageLinkProps\(l\.href, path\)\}/)
   const api = readFileSync(new URL('../src/pages/ApiDocs.tsx', import.meta.url), 'utf8')
   assert.match(api, /<a href=\{block\.link\.href\} \{\.\.\.pageLinkProps\(/)
   const see = readFileSync(new URL('../src/components/DocsSeeAlso.tsx', import.meta.url), 'utf8')
   assert.match(see, /\{\.\.\.pageLinkProps\(d\.href, path\)\}/)
   const pre = readFileSync(new URL('../scripts/prerender-help.mjs', import.meta.url), 'utf8')
-  assert.equal((pre.match(/pageLinkAttrs\((?:b\.link|l)\.href, PATH\)/g) || []).length, 2)
+  // Ссылки статей и заметок идут через один хелпер link() → pageLinkAttrs (#961).
+  assert.match(pre, /const link = \(href, text, path\) => `<a href="\$\{escape\(href\)\}"\$\{pageLinkAttrs\(href, path\)\}>/)
+  assert.equal((pre.match(/link\((?:b\.link|l)\.href, (?:b\.link|l)\.text, path\)/g) || []).length, 2)
 })

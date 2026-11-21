@@ -13,7 +13,16 @@ export interface HelpArticle {
   links?: HelpLink[]
 }
 export interface HelpFlatArticle extends HelpArticle { sectionId: string; sectionTitle: string }
-export interface HelpSection { id: string; title: string; lead: string; articles: HelpArticle[] }
+export interface HelpSection {
+  id: string
+  title: string
+  lead: string
+  articles: HelpArticle[]
+  /** Страница раздела /help/<id>.html и её мета (#961). */
+  path: string
+  pageTitle: string
+  description: string
+}
 export interface HelpIntroBlock {
   id: string
   title: string
@@ -32,3 +41,6 @@ export const HELP_INTRO: HelpIntro
 export const HELP_SECTIONS: HelpSection[]
 export const HELP_ARTICLES: HelpFlatArticle[]
 export const HELP_SAMPLE_QUESTIONS: string[]
+export function helpSectionPath(id: string): string
+export function helpSectionOf(anchor: string): string | null
+export function helpHref(href: string): string
