@@ -36,7 +36,7 @@
 
 export const SITE = 'https://ideav.ru'
 export const SANDBOX_URL = 'https://ideav.ru/start.html#reg'
-export const DOCS_URL = 'https://help.integram.io/'
+export const DOCS_URL = '/help.html'
 export const CONTACTS = {
   telegram: { label: '@qdmadept', href: 'https://t.me/qdmadept' },
   email: { label: 'abc@integram.io', href: 'mailto:abc@integram.io' },
@@ -502,7 +502,7 @@ export const SITE_SECTIONS = [
         h2: 'Подробнее по теме',
         links: [
           { title: 'Справочник API', body: 'Все команды с примерами curl: от авторизации до запросов с формулами.', href: '/api.html' },
-          { title: 'Документация платформы', body: 'Полное руководство пользователя и администратора.', href: DOCS_URL, external: true },
+          { title: 'Документация платформы', body: 'Полное руководство пользователя и администратора.', href: DOCS_URL },
           { title: 'ИИ для интеграторов', body: 'Как отвечать клиентам «да» на семь вопросов об ИИ-проекте и показать это вживую.', href: '/ii-dlya-integratorov.html' },
           { title: 'Шаблоны решений', body: 'Готовые базы, которые создаются в Личном кабинете за один шаг, и как зафиксировать шаблоном свою.', href: '/shablony-reshenij.html' },
           { title: 'Токены', body: 'Как считается стоимость работы платформы — по объёму, а не за пользователя.', href: '/tokens.html' },

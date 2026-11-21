@@ -75,6 +75,8 @@ DirectoryIndex index.html
   RewriteRule ^templater/?$ /templater.html [R=301,L]
   # /shablony-reshenij → /shablony-reshenij.html (ideav/crm#5364): каталог шаблонов баз.
   RewriteRule ^shablony-reshenij/?$ /shablony-reshenij.html [R=301,L]
+  # /help → /help.html (backlogram#946): сайт помощи. Без правила /help/ ловит движок как базу.
+  RewriteRule ^help/?$ /help.html [R=301,L]
   # /queries → /queries.html (backlogram#802): справочник запросов.
   RewriteRule ^queries/?$ /queries.html [R=301,L]
 

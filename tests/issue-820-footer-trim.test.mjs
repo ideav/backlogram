@@ -21,7 +21,7 @@ test('на виду то, что кликают по Метрике: RUTUBE, д�
   const shown = resources.links.filter((l) => !l.more).map((l) => l.href)
   for (const href of [
     'https://rutube.ru/channel/41204904/videos/',
-    'https://help.integram.io/',
+    '/help.html',
     '/knowledge-base.html',
     '/sravnenie-s-bitrix-amocrm.html',
   ]) {
