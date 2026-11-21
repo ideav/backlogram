@@ -95,7 +95,7 @@ test('ссылки статей ведут на живые страницы и �
 
 test('клиенты обезличены, секретов нет', () => {
   const text = JSON.stringify({ HELP_INTRO, HELP_SECTIONS }).toLowerCase()
-  for (const name of ['sportzania', 'спортзани', 'xcom', 'timepad', 'petfood', 'петфуд', 'паклайн', 'pakline', 'upsound', 'promprib', 'промприбор', 'arenavladimir', 'спз']) {
+  for (const name of ['sportzania', 'спортзани', 'xcom', 'timepad', 'petfood', 'петфуд', 'паклайн', 'pakline', 'upsound', 'promprib', 'промприбор', 'arenavladimir', 'спз', 'r7ohr', 'finmo', 'ateh', 'db1341', 'db3130', 'pilots', 'ideav.online', 'adeptetalon', 'x2a']) {
     assert.ok(!text.includes(name), `в тексте помощи клиент «${name}»`)
   }
   // Адреса баз — только учебные.

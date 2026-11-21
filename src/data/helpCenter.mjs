@@ -15,6 +15,8 @@ import { SECTION as access } from './help/access.mjs'
 import { SECTION as automation } from './help/automation.mjs'
 import { SECTION as api } from './help/api.mjs'
 import { SECTION as recipes } from './help/recipes.mjs'
+// Приёмы из рабочих баз (backlogram#955), обезличенные; разложены по id раздела.
+import { PRACTICE } from './help/practice.mjs'
 
 export { HELP_INTRO }
 
@@ -30,7 +32,10 @@ export const HELP_META = {
 }
 
 /** Порядок разделов на странице. Рецепты — первыми: с них начинают на встрече. */
-export const HELP_SECTIONS = [recipes, structure, data, queries, templater, access, automation, api]
+export const HELP_SECTIONS = [recipes, structure, data, queries, templater, access, automation, api].map((s) => ({
+  ...s,
+  articles: [...s.articles, ...(PRACTICE[s.id] ?? [])],
+}))
 
 /** Плоский список статей с привязкой к разделу — для поиска и консультанта. */
 export const HELP_ARTICLES = HELP_SECTIONS.flatMap((s) =>
