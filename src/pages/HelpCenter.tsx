@@ -7,6 +7,7 @@ import { HELP_META, HELP_INTRO, HELP_SECTIONS, HELP_ARTICLES, HELP_SAMPLE_QUESTI
 import type { HelpArticle, HelpFlatArticle } from '../data/helpCenter'
 import { buildIndex, consult, search } from '../lib/helpSearch'
 import type { HelpAnswer } from '../lib/helpSearch'
+import { pageLinkProps } from '../data/pageTarget'
 
 const SITE = 'https://ideav.ru'
 const LEVEL: Record<string, string> = { start: 'в интерфейсе', pro: 'для разработчика' }
@@ -191,7 +192,7 @@ function Article({ a }: { a: HelpArticle }) {
       {a.links?.length ? (
         <p className="text-sm text-slate-500 dark:text-slate-400">
           Подробнее: {a.links.map((l, i) => (
-            <span key={l.href}>{i > 0 && ' · '}<a href={l.href} className="text-blue-600 dark:text-blue-400 hover:underline">{l.text}</a></span>
+            <span key={l.href}>{i > 0 && ' · '}<a href={l.href} {...pageLinkProps(l.href, HELP_META.path)} className="text-blue-600 dark:text-blue-400 hover:underline">{l.text}</a></span>
           ))}
         </p>
       ) : null}
