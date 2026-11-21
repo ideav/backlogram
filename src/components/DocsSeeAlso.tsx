@@ -1,4 +1,5 @@
 import { docsRingFor } from '../data/docsRing'
+import { pageLinkProps } from '../data/pageTarget'
 
 /**
  * «См. также» в начале страницы документации (backlogram#798): остальные
@@ -12,6 +13,7 @@ export default function DocsSeeAlso({ path }: { path: string }) {
         <a
           key={d.href}
           href={d.href}
+          {...pageLinkProps(d.href, path)}
           title={d.hint}
           className="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-500 transition-colors"
         >

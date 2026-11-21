@@ -17,6 +17,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { HELP_META, HELP_INTRO, HELP_SECTIONS } from '../src/data/helpCenter.mjs'
 import { docsRingHtml } from '../src/data/docsRing.mjs'
+import { pageLinkAttrs } from '../src/data/pageTarget.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -49,7 +50,7 @@ function blockHtml(b) {
     case 'p':
       return `<p>${inline(b.text)}</p>`
     case 'note':
-      return `<p class="api-prerender__note">${inline(b.text)}${b.link ? ` <a href="${escape(b.link.href)}">${escape(b.link.text)}</a>` : ''}</p>`
+      return `<p class="api-prerender__note">${inline(b.text)}${b.link ? ` <a href="${escape(b.link.href)}"${pageLinkAttrs(b.link.href, PATH)}>${escape(b.link.text)}</a>` : ''}</p>`
     case 'list':
       return `<ul>${b.items.map((i) => `<li>${inline(i)}</li>`).join('')}</ul>`
     case 'code':
@@ -103,7 +104,7 @@ const articleHtml = (a) => `
       <p>${inline(a.summary)}</p>
       ${a.steps?.length ? `<ol>${a.steps.map((s) => `<li>${inline(s)}</li>`).join('')}</ol>` : ''}
       ${(a.blocks ?? []).map(blockHtml).join('\n      ')}
-      ${a.links?.length ? `<p>Подробнее: ${a.links.map((l) => `<a href="${escape(l.href)}">${escape(l.text)}</a>`).join(' · ')}</p>` : ''}
+      ${a.links?.length ? `<p>Подробнее: ${a.links.map((l) => `<a href="${escape(l.href)}"${pageLinkAttrs(l.href, PATH)}>${escape(l.text)}</a>`).join(' · ')}</p>` : ''}
     </article>`
 
 const sectionsHtml = HELP_SECTIONS.map(

@@ -1,3 +1,5 @@
+import { pageLinkAttrs } from './pageTarget.mjs'
+
 // Кольцо «См. также» страниц документации (backlogram#798).
 //
 // Каждая страница справочника показывает в начале ссылки на остальные — по
@@ -25,6 +27,6 @@ export function docsRingFor(path) {
 /** Та же полоса для статических снапшотов (без JS). */
 export function docsRingHtml(path) {
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
-  const links = docsRingFor(path).map((d) => `<a href="${esc(d.href)}">${esc(d.name)}</a>`).join(' · ')
+  const links = docsRingFor(path).map((d) => `<a href="${esc(d.href)}"${pageLinkAttrs(d.href, path)}>${esc(d.name)}</a>`).join(' · ')
   return `<nav class="docs-see-also" aria-label="См. также"><span>См. также:</span> ${links}</nav>`
 }

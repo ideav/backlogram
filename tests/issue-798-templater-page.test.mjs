@@ -111,5 +111,6 @@ test('пререндеры несут «См. также» в шапке; templa
   }
   const api = prerender('prerender-api.mjs', 'api.html')
   assert.ok(api.includes('<article id="templater">'))
-  assert.ok(api.includes('<a href="/templater.html">'))
+  // crm#5609: ссылка на другую страницу несёт именованную вкладку
+  assert.match(api, /<a href="\/templater\.html"(?: target="templater")?>/)
 })
