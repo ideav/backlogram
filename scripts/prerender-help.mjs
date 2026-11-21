@@ -3,10 +3,10 @@
  * Post-build prerender for the help center (the SPA route
  * `/help.html`, backlogram#946, epic ideav/crm#5603).
  *
- * Как prerender-api.mjs: SPA отдаёт пустой <div id="root"></div>, а справочник
- * запросов должен быть в самом HTTP-ответе — его читают краулеры, клиенты без
- * JS и ИИ-агенты. Текст берётся из src/data/queryDocs.mjs — того же
- * источника, что питает src/pages/QueryDocs.tsx.
+ * Как prerender-api.mjs: SPA отдаёт пустой <div id="root"></div>, а сайт
+ * помощи должен быть в самом HTTP-ответе — его читают краулеры, клиенты без
+ * JS и ИИ-агенты. Текст берётся из src/data/helpCenter.mjs — того же
+ * источника, что питает src/pages/HelpCenter.tsx.
  *
  * Должен выполняться ПОСЛЕ vite build и ДО prerender-landing.mjs: он читает
  * ещё чистый dist/index.html (пререндер главной перезаписывает index.html
@@ -18,6 +18,7 @@ import { fileURLToPath } from 'node:url'
 import { HELP_META, HELP_INTRO, HELP_SECTIONS } from '../src/data/helpCenter.mjs'
 import { docsRingHtml } from '../src/data/docsRing.mjs'
 import { pageLinkAttrs } from '../src/data/pageTarget.mjs'
+import { humanDate } from '../src/lib/dates.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -45,6 +46,9 @@ function inline(text) {
     .join('')
 }
 
+/** Текст без разметки обратных кавычек — для JSON-LD. */
+const plain = (text) => String(text ?? '').replace(/`/g, '')
+
 function blockHtml(b) {
   switch (b.t) {
     case 'p':
@@ -69,6 +73,7 @@ function blockHtml(b) {
 //  (консультант и поиск — только в SPA; здесь ликбез, оглавление и статьи)
 // ───────────────────────────────────────────────────────────────────────────
 const LEVEL = { start: 'в интерфейсе', pro: 'для разработчика' }
+const ARTICLE_COUNT = HELP_SECTIONS.reduce((n, s) => n + s.articles.length, 0)
 
 const tocHtml = [
   `<li><a href="#basics">Что такое Интеграм</a></li>`,
@@ -126,6 +131,7 @@ const bodyHtml = `
     <p class="api-prerender__eyebrow">Помощь по шагам</p>
     <h1>${escape(HELP_META.h1)}</h1>
     ${HELP_INTRO.lead.map((p) => `<p class="api-prerender__lead">${inline(p)}</p>`).join('\n    ')}
+    <p class="api-prerender__label">${ARTICLE_COUNT} приёмов по шагам · обновлено <time datetime="${HELP_META.updated}">${humanDate(HELP_META.updated)}</time></p>
     ${docsRingHtml(PATH)}
   </header>
   <nav class="api-prerender__toc" aria-label="Оглавление">
@@ -186,9 +192,34 @@ const jsonLd = {
       name: HELP_META.title,
       description: HELP_META.description,
       inLanguage: 'ru',
-      isPartOf: { '@id': `${SITE}/#website` },
+      // Свежесть и картинка — сигналы для сниппета и ИИ-выдачи (backlogram#959).
+      datePublished: HELP_META.published,
+      dateModified: HELP_META.updated,
+      image: ogImage,
+      mainEntityOfPage: canonical,
+      isPartOf: { '@type': 'WebSite', '@id': `${SITE}/#website`, name: PUBLISHER, url: `${SITE}/` },
+      author: { '@type': 'Organization', name: PUBLISHER, url: `${SITE}/` },
       publisher: { '@type': 'Organization', name: PUBLISHER, url: `${SITE}/` },
+      about: {
+        '@type': 'SoftwareApplication',
+        name: PUBLISHER,
+        alternateName: 'Integram',
+        applicationCategory: 'BusinessApplication',
+        url: `${SITE}/`,
+      },
       keywords: HELP_META.keywords,
+      // Разделы с якорями: страница одна и длинная, по ним ИИ-ответ может
+      // сослаться на нужное место, а не на шапку.
+      hasPart: [
+        { '@type': 'WebPageElement', '@id': `${canonical}#basics`, name: 'Что такое Интеграм', url: `${canonical}#basics` },
+        ...HELP_SECTIONS.map((s) => ({
+          '@type': 'WebPageElement',
+          '@id': `${canonical}#${s.id}`,
+          name: s.title,
+          description: plain(s.lead),
+          url: `${canonical}#${s.id}`,
+        })),
+      ],
     },
     {
       '@type': 'BreadcrumbList',

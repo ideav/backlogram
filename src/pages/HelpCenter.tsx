@@ -8,6 +8,7 @@ import type { HelpArticle, HelpFlatArticle } from '../data/helpCenter'
 import { buildIndex, consult, search } from '../lib/helpSearch'
 import type { HelpAnswer } from '../lib/helpSearch'
 import { pageLinkProps } from '../data/pageTarget'
+import { humanDate } from '../lib/dates'
 
 const SITE = 'https://ideav.ru'
 const LEVEL: Record<string, string> = { start: 'в интерфейсе', pro: 'для разработчика' }
@@ -249,7 +250,7 @@ export default function HelpCenter() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumbs items={[{ name: 'Интеграм', to: '/' }, { name: 'Помощь', to: HELP_META.path }]} />
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 text-blue-600 dark:text-blue-400 text-sm font-medium mb-5">
-            <LifeBuoy size={14} /> {total} приёмов по шагам
+            <LifeBuoy size={14} /> {total} приёмов по шагам · обновлено <time dateTime={HELP_META.updated}>{humanDate(HELP_META.updated)}</time>
           </div>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5">{HELP_META.h1}</h1>
           <div className="space-y-3 max-w-4xl">

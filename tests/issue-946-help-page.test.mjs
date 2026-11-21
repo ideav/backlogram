@@ -149,6 +149,8 @@ test('пререндер кладёт ликбез и все статьи в HTM
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
   cpSync(resolve(repo, 'scripts/prerender-help.mjs'), resolve(work, 'scripts/prerender-help.mjs'))
   cpSync(resolve(repo, 'src/data'), resolve(work, 'src/data'), { recursive: true })
+  // Подпись «обновлено» пререндер берёт из src/lib/dates.mjs (#959).
+  cpSync(resolve(repo, 'src/lib/dates.mjs'), resolve(work, 'src/lib/dates.mjs'))
   writeFileSync(resolve(work, 'dist/index.html'), read('index.html'))
   execFileSync('node', ['scripts/prerender-help.mjs'], { cwd: work })
   const out = resolve(work, 'dist/help.html')

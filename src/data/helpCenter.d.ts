@@ -27,7 +27,7 @@ export interface HelpIntro {
   glossary: { term: string; text: string }[]
 }
 
-export const HELP_META: { path: string; title: string; h1: string; description: string; keywords: string }
+export const HELP_META: { path: string; title: string; h1: string; published: string; updated: string; description: string; keywords: string }
 export const HELP_INTRO: HelpIntro
 export const HELP_SECTIONS: HelpSection[]
 export const HELP_ARTICLES: HelpFlatArticle[]
