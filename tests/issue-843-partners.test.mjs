@@ -18,13 +18,15 @@ test('meta: путь, H1, description ≤ 160 знаков', () => {
   assert.equal(pt.PARTNERS_META.path, '/partners.html')
   assert.match(pt.PARTNERS_META.h1, /Партнёрам/)
   assert.ok(pt.PARTNERS_META.description.length <= 160, `description ${pt.PARTNERS_META.description.length} > 160`)
-  assert.match(pt.PARTNERS_META.description, /30%/)
+  assert.match(pt.PARTNERS_META.description, /15%/)
+  assert.doesNotMatch(pt.PARTNERS_META.description, /30%/)
   assert.match(pt.PARTNERS_META.description, /40%/)
 })
 
 test('условия программы перенесены без потерь', () => {
   const money = pt.MONEY.cards.map((c) => `${c.big ?? ''} ${c.p}`).join(' ')
-  assert.match(money, /30%/)
+  assert.match(money, /15%/)
+  assert.doesNotMatch(money, /30%/)
   assert.match(money, /40%/)
   assert.match(money, /590 000 ₽/)
   assert.match(money, /236 000 ₽/)
