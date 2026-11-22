@@ -101,6 +101,15 @@ export function Block({ block }: { block: ApiBlock }) {
           </table>
         </div>
       )
+    case 'img':
+      return (
+        <figure>
+          <img src={block.src} alt={block.alt} loading="lazy" className="w-full rounded-xl border border-slate-200 dark:border-slate-800" />
+          {block.caption && (
+            <figcaption className="mt-1.5 text-sm text-slate-500 dark:text-slate-400"><Inline text={block.caption} /></figcaption>
+          )}
+        </figure>
+      )
   }
 }
 

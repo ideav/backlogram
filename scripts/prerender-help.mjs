@@ -72,6 +72,10 @@ function blockHtml(b, path) {
       return `<table><thead><tr>${b.head.map((h) => `<th>${escape(h)}</th>`).join('')}</tr></thead><tbody>${b.rows
         .map((r) => `<tr>${r.map((c) => `<td>${inline(c)}</td>`).join('')}</tr>`)
         .join('')}</tbody></table>`
+    case 'img':
+      return `<figure class="api-prerender__figure"><img src="${escape(b.src)}" alt="${escape(b.alt)}" loading="lazy" />${
+        b.caption ? `<figcaption>${inline(b.caption)}</figcaption>` : ''
+      }</figure>`
     default:
       throw new Error(`prerender-help: неизвестный блок ${b.t}`)
   }
@@ -123,6 +127,13 @@ const STYLE = `<style>
   #${ID} .api-prerender__lead { font-size: 1.05rem; color: #475569; }
   #${ID} .api-prerender__label { font-size: 0.8rem; color: #64748b; margin-bottom: 0; }
   #${ID} .api-prerender__note { border-left: 3px solid #f59e0b; padding-left: 0.75rem; }
+  #${ID} .api-prerender__figure { margin: 0.75rem 0; }
+  #${ID} .api-prerender__figure img { max-width: 100%; border: 1px solid #e2e8f0;
+    border-radius: 0.75rem; height: auto; }
+  #${ID} .api-prerender__figure figcaption { font-size: 0.85rem; color: #64748b;
+    margin-top: 0.375rem; }
+  .dark #${ID} .api-prerender__figure img { border-color: #334155; }
+  .dark #${ID} .api-prerender__figure figcaption { color: #94a3b8; }
   #${ID} .docs-see-also { font-size: 0.92rem; margin: 1rem 0 0; }
   #${ID} .docs-see-also span { color: #64748b; }
   #${ID} .api-prerender__footer { margin-top: 2rem; padding-top: 1.5rem;
