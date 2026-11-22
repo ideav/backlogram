@@ -46,5 +46,6 @@ test('SPA и пререндер помощи подключают хелпер �
   const pre = readFileSync(new URL('../scripts/prerender-help.mjs', import.meta.url), 'utf8')
   // Ссылки статей и заметок идут через один хелпер link() → pageLinkAttrs (#961).
   assert.match(pre, /const link = \(href, text, path\) => `<a href="\$\{escape\(href\)\}"\$\{pageLinkAttrs\(href, path\)\}>/)
-  assert.equal((pre.match(/link\((?:b\.link|l)\.href, (?:b\.link|l)\.text, path\)/g) || []).length, 2)
+  // Ссылки статей, заметок и плашки «агенты» (crm#5626).
+  assert.equal((pre.match(/link\((?:b\.link|l)\.href, (?:b\.link|l)\.text, path\)/g) || []).length, 3)
 })

@@ -63,12 +63,12 @@ export const SECTION = {
       ],
       blocks: [
         { t: 'p', text: 'То же по API. Кроме заголовка нужны кука `idb_mydb`, поля `token` и `_xsrf`; без куки сервер отвечает `InvalidToken`.' },
-        { t: 'code', lang: 'bash', code: `curl -sS -H "X-Authorization: $TOKEN" -b "idb_mydb=$TOKEN" \\
+        { api: true, t: 'code', lang: 'bash', code: `curl -sS -H "X-Authorization: $TOKEN" -b "idb_mydb=$TOKEN" \\
   -F templates=1 -F add_path= -F upload=Загрузить -F rewrite=1 \\
   -F "_xsrf=$XSRF" -F "token=$TOKEN" \\
   -F userfile=@orders.html \\
   "https://ideav.ru/mydb/dir_admin/"` },
-        { t: 'note', text: 'Для файла в подпапке `add_path` указывайте в адресе запроса (`…/dir_admin/?download=1&add_path=/css`): в теле POST ядро его игнорирует, и файл молча уедет в корень. Если папки нет, менеджер тоже работает с корнем: создайте её заранее. После загрузки проверьте результат чтением `gf=<имя>`.' },
+        { api: true, t: 'note', text: 'Для файла в подпапке `add_path` указывайте в адресе запроса (`…/dir_admin/?download=1&add_path=/css`): в теле POST ядро его игнорирует, и файл молча уедет в корень. Если папки нет, менеджер тоже работает с корнем: создайте её заранее. После загрузки проверьте результат чтением `gf=<имя>`.' },
       ],
       links: [{ href: '/api.html#files', text: 'API: файловый менеджер' }, { href: '/templater.html#where', text: 'Шаблонизатор: где лежат шаблоны' }],
     },
@@ -106,7 +106,7 @@ export const SECTION = {
       ],
       blocks: [
         { t: 'p', text: 'То же по API: меню — подчинённая таблица роли (тип 151). Название — реквизит `t151`, адрес — `t153`, иконка — `t391` (HTML-тег; передавайте через `--form-string`, иначе curl ломает значение).' },
-        { t: 'code', lang: 'bash', code: `curl -s -H "X-Authorization: $TOKEN" -d "_xsrf=$XSRF" -d "up=<id роли>" \\
+        { api: true, t: 'code', lang: 'bash', code: `curl -s -H "X-Authorization: $TOKEN" -d "_xsrf=$XSRF" -d "up=<id роли>" \\
   -d "t151=Заказы" -d "t153=orders" "https://ideav.ru/mydb/_m_new/151?JSON=1"` },
         { t: 'note', text: 'Пользователь видит меню своей роли; доступ к данным определяют права роли, а не наличие пункта в меню.' },
       ],

@@ -1,5 +1,8 @@
 import type { ApiBlock } from './apiDocs'
 
+/** Блок приёма; api: true — тот же шаг через API, выводится отдельной рамкой «для агента» (#5626). */
+export type HelpBlock = ApiBlock & { api?: boolean }
+
 export interface HelpLink { href: string; text: string }
 export interface HelpArticle {
   id: string
@@ -9,7 +12,7 @@ export interface HelpArticle {
   level?: 'start' | 'pro'
   summary: string
   steps?: string[]
-  blocks?: ApiBlock[]
+  blocks?: HelpBlock[]
   links?: HelpLink[]
 }
 export interface HelpFlatArticle extends HelpArticle { sectionId: string; sectionTitle: string }
@@ -32,6 +35,7 @@ export interface HelpIntroBlock {
 }
 export interface HelpIntro {
   lead: string[]
+  agents: { title: string; text: string; links: HelpLink[] }
   blocks: HelpIntroBlock[]
   glossary: { term: string; text: string }[]
 }
@@ -44,3 +48,6 @@ export const HELP_SAMPLE_QUESTIONS: string[]
 export function helpSectionPath(id: string): string
 export function helpSectionOf(anchor: string): string | null
 export function helpHref(href: string): string
+export const HELP_API_TITLE: string
+export function helpLevelLabel(a: HelpArticle): string
+export function helpSplitBlocks(a: HelpArticle): { ui: HelpBlock[]; api: HelpBlock[] }

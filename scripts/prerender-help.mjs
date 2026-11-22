@@ -19,7 +19,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { HELP_META, HELP_INTRO, HELP_SECTIONS } from '../src/data/helpCenter.mjs'
+import { HELP_API_TITLE, helpLevelLabel, helpSplitBlocks, HELP_META, HELP_INTRO, HELP_SECTIONS } from '../src/data/helpCenter.mjs'
 import { docsRingHtml } from '../src/data/docsRing.mjs'
 import { pageLinkAttrs } from '../src/data/pageTarget.mjs'
 import { humanDate } from '../src/lib/dates.mjs'
@@ -32,7 +32,6 @@ const PUBLISHER = 'Интеграм'
 const HUB = HELP_META.path
 const HUB_URL = `${SITE}${HUB}`
 const ID = 'help-prerender'
-const LEVEL = { start: 'в интерфейсе', pro: 'для разработчика' }
 const ARTICLE_COUNT = HELP_SECTIONS.reduce((n, s) => n + s.articles.length, 0)
 
 function escape(s) {
@@ -82,15 +81,20 @@ function blockHtml(b, path) {
 }
 
 /** Приём на странице раздела: заголовок второго уровня, сразу ответ, потом шаги. */
-const articleHtml = (a, path) => `
+const articleHtml = (a, path, { ui, api } = helpSplitBlocks(a)) => `
     <article id="${a.id}">
       <h2>${escape(a.title)}</h2>
-      ${a.level ? `<p class="api-prerender__label">${escape(LEVEL[a.level] ?? a.level)}</p>` : ''}
+      ${a.level ? `<p class="api-prerender__label">${escape(helpLevelLabel(a))}</p>` : ''}
       <p>${inline(a.summary)}</p>
       ${a.steps?.length ? `<ol>${a.steps.map((s) => `<li>${inline(s)}</li>`).join('')}</ol>` : ''}
-      ${(a.blocks ?? []).map((b) => blockHtml(b, path)).join('\n      ')}
+      ${ui.map((b) => blockHtml(b, path)).join('\n      ')}
+      ${api.length ? `<section class="api-prerender__api"><p class="api-prerender__label">${escape(HELP_API_TITLE)}</p>${api.map((b) => blockHtml(b, path)).join('\n      ')}</section>` : ''}
       ${a.links?.length ? `<p>Подробнее: ${a.links.map((l) => link(l.href, l.text, path)).join(' · ')}</p>` : ''}
     </article>`
+
+/** Плашка «работу делают ИИ-агенты» в начале хаба и раздела (#5626). */
+const agentsHtml = (path) =>
+  `<aside class="api-prerender__agents"><p><strong>${escape(HELP_INTRO.agents.title)}.</strong> ${inline(HELP_INTRO.agents.text)}</p><p>${HELP_INTRO.agents.links.map((l) => link(l.href, l.text, path)).join(' · ')}</p></aside>`
 
 const freshness = (count) =>
   `<p class="api-prerender__label">${count} приёмов по шагам · обновлено <time datetime="${HELP_META.updated}">${humanDate(HELP_META.updated)}</time></p>`
@@ -127,6 +131,9 @@ const STYLE = `<style>
   #${ID} .api-prerender__lead { font-size: 1.05rem; color: #475569; }
   #${ID} .api-prerender__label { font-size: 0.8rem; color: #64748b; margin-bottom: 0; }
   #${ID} .api-prerender__note { border-left: 3px solid #f59e0b; padding-left: 0.75rem; }
+  #${ID} .api-prerender__agents { border: 1px solid #a7f3d0; background: #ecfdf5; border-radius: 0.75rem; padding: 0.75rem 1rem; margin: 0.75rem 0; }
+  .dark #${ID} .api-prerender__agents { border-color: #065f46; background: transparent; }
+  #${ID} .api-prerender__api { border: 1px dashed #cbd5e1; border-radius: 0.75rem; padding: 0.75rem 1rem; margin: 0.75rem 0; }
   #${ID} .api-prerender__figure { margin: 0.75rem 0; }
   #${ID} .api-prerender__figure img { max-width: 100%; border: 1px solid #e2e8f0;
     border-radius: 0.75rem; height: auto; }
@@ -193,6 +200,7 @@ const hubBody = `
     </nav>
     <p class="api-prerender__eyebrow">Помощь по шагам</p>
     <h1>${escape(HELP_META.h1)}</h1>
+    ${agentsHtml(HUB)}
     ${HELP_INTRO.lead.map((p) => `<p class="api-prerender__lead">${inline(p)}</p>`).join('\n    ')}
     ${freshness(ARTICLE_COUNT)}
     ${docsRingHtml(HUB)}
@@ -263,6 +271,7 @@ function sectionBody(s) {
     </nav>
     <p class="api-prerender__eyebrow">Помощь по шагам</p>
     <h1>${escape(s.title)}</h1>
+    ${agentsHtml(s.path)}
     <p class="api-prerender__lead">${inline(s.lead)}</p>
     ${freshness(s.articles.length)}
     <p>Другие разделы: ${others.map((x) => `<a href="${x.path}">${escape(x.title)}</a>`).join(' · ')} · <a href="${HUB}">консультант и поиск</a></p>

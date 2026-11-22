@@ -221,7 +221,7 @@ export const SECTION = {
         'Скопируйте ссылку — это готовый срез, который можно отправить коллеге или поставить на кнопку.',
       ],
       blocks: [
-        { t: 'code', lang: 'bash', code: '# страница отчёта для человека\nhttps://ideav.ru/mydb/report/951?FR_Дата=01.10.2026&TO_Дата=31.10.2026\n# те же данные для кода\ncurl -s -H "X-Authorization: $TOKEN" "https://ideav.ru/mydb/report/951?JSON_KV&FR_Статус=Новый"' },
+        { api: true, t: 'code', lang: 'bash', code: '# страница отчёта для человека\nhttps://ideav.ru/mydb/report/951?FR_Дата=01.10.2026&TO_Дата=31.10.2026\n# те же данные для кода\ncurl -s -H "X-Authorization: $TOKEN" "https://ideav.ru/mydb/report/951?JSON_KV&FR_Статус=Новый"' },
         { t: 'list', items: [
           'Внешние фильтры перекрывают постоянные фильтры колонки.',
           'Для открытого интервала по дате или числу добавьте оператор в значение (`>`, `<`): без него `FR_` — точное совпадение и даст 0 строк.',

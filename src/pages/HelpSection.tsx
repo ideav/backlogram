@@ -7,7 +7,7 @@ import { HELP_META, HELP_SECTIONS, HELP_ARTICLES } from '../data/helpCenter'
 import { buildIndex } from '../lib/helpSearch'
 import { humanDate } from '../lib/dates'
 import NotFound from './NotFound'
-import { Article, Toc, applyHelpMeta } from './HelpCenter'
+import { AgentsNote, Article, Toc, applyHelpMeta } from './HelpCenter'
 
 /**
  * Раздел помощи — /help/<id>.html (backlogram#961): все приёмы раздела по шагам.
@@ -40,6 +40,7 @@ export default function HelpSection() {
             <LifeBuoy size={14} /> {s.articles.length} приёмов по шагам · обновлено <time dateTime={HELP_META.updated}>{humanDate(HELP_META.updated)}</time>
           </div>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5">{s.title}</h1>
+          <AgentsNote path={s.path} />
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-4xl"><Inline text={s.lead} /></p>
           <p className="mt-5 text-sm text-slate-500 dark:text-slate-400">
             Другие разделы:{' '}

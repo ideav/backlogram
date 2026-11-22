@@ -6,7 +6,8 @@ import { fileURLToPath } from 'node:url'
 import { HELP_SECTIONS } from '../src/data/helpCenter.mjs'
 
 // ideav/crm#5614: у популярных приёмов помощи есть скриншоты. Блок
-// { t: 'img', src, alt, caption? } ссылается на PNG в public/help-img/.
+// { t: 'img', src, alt, caption? } ссылается на файл в public/help-img/: с crm#5626 —
+// SVG-схемы из scripts/generate-help-schemes.mjs.
 
 const repo = fileURLToPath(new URL('..', import.meta.url))
 
@@ -27,14 +28,14 @@ test('img-блоки помощи ссылаются на существующи
     const file = resolve(repo, 'public', b.src.replace(/^\//, ''))
     assert.ok(existsSync(file), `${b.article}: нет файла ${b.src}`)
     const size = statSync(file).size
-    assert.ok(size > 5 * 1024, `${b.article}: ${b.src} подозрительно мал (${size} байт)`)
-    assert.ok(size < 700 * 1024, `${b.article}: ${b.src} тяжёлый (${size} байт), сожми PNG`)
+    assert.ok(size > 2 * 1024, `${b.article}: ${b.src} подозрительно мал (${size} байт)`)
+    assert.ok(size < 700 * 1024, `${b.article}: ${b.src} тяжёлый (${size} байт)`)
     assert.ok(b.alt && b.alt.length >= 10, `${b.article}: пустой или короткий alt у ${b.src}`)
     assert.ok(!/https?:/.test(b.src), `${b.article}: src должен быть локальным — ${b.src}`)
   }
 })
 
-test('у популярного приёма 1–3 скриншота, файл не переиспользуется в одной статье', () => {
+test('у популярного приёма 1–3 картинки, файл не переиспользуется в одной статье', () => {
   const perArticle = new Map()
   for (const b of imgBlocks) {
     const arr = perArticle.get(b.article) ?? []
@@ -45,9 +46,9 @@ test('у популярного приёма 1–3 скриншота, файл 
     assert.ok(srcs.length <= 3, `${article}: ${srcs.length} скриншотов — лимит 1–3 (crm#5614)`)
     assert.equal(new Set(srcs).size, srcs.length, `${article}: один и тот же скриншот дважды`)
   }
-  // Каждый файл использован хотя бы в одной статье и реально PNG.
+  // Картинки помощи — SVG-схемы одного стиля (crm#5626).
   for (const b of imgBlocks) {
-    assert.ok(/\.png$/.test(b.src), `${b.article}: не PNG — ${b.src}`)
+    assert.ok(/\.svg$/.test(b.src), `${b.article}: не SVG-схема — ${b.src}`)
   }
 })
 
