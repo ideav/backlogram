@@ -72,6 +72,7 @@ function fileForLoc(loc) {
 before(() => {
   mkdirSync(dist, { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
+  cpSync(resolve(repo, 'scripts/lib/root-main.mjs'), resolve(work, 'scripts/lib/root-main.mjs'))
   cpSync(
     resolve(repo, 'scripts/prerender-knowledge-base.mjs'),
     resolve(work, 'scripts/prerender-knowledge-base.mjs'),

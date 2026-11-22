@@ -14,6 +14,7 @@ function makeWorkspace(prefix) {
   const work = mkdtempSync(resolve(tmpdir(), prefix))
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
+  cpSync(resolve(repo, 'scripts/lib/root-main.mjs'), resolve(work, 'scripts/lib/root-main.mjs'))
   cpSync(resolve(repo, 'scripts/prerender-excel-to-app.mjs'), resolve(work, 'scripts/prerender-excel-to-app.mjs'))
   cpSync(landingScript, resolve(work, 'scripts/prerender-landing.mjs'))
   // Пререндер главной читает данные из src/data (usecases + FAQ) — без них
@@ -48,7 +49,7 @@ test('prerender-excel-to-app writes a crawlable dist/excel-to-app.html', () => {
 
   // #root carries a crawlable H1 with the offer.
   assert.doesNotMatch(out, /<div id="root"><\/div>/, '#root must not be left empty')
-  assert.match(out, /<div id="root">\s*<article id="etl-prerender"/)
+  assert.match(out, /<div id="root">\s*<main>\s*<article id="etl-prerender"/)
   assert.match(out, /<h1[^>]*>Загрузите ваши Excel — получите приложение<\/h1>/)
 
   // Representative step headings + FAQ.

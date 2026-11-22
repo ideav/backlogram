@@ -17,6 +17,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { TRIGGER_META, TRIGGER_INTRO, TRIGGER_SECTIONS } from '../src/data/triggerDocs.mjs'
 import { docsRingHtml } from '../src/data/docsRing.mjs'
+import { EMPTY_ROOT, rootWithMain } from './lib/root-main.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -225,7 +226,7 @@ const html = source
   .replace('</head>', `    ${headTags}\n  </head>`)
   // Функция замены: в тексте справочника есть `$`, который строковая замена
   // прочла бы как ссылку на группу.
-  .replace('<div id="root"></div>', () => `<div id="root">${bodyHtml}</div>`)
+  .replace(EMPTY_ROOT, rootWithMain(bodyHtml))
 
 const outPath = resolve(dist, 'triggers.html')
 writeFileSync(outPath, html)

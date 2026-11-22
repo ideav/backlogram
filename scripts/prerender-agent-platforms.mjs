@@ -27,6 +27,7 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { EMPTY_ROOT, rootWithMain } from './lib/root-main.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -310,7 +311,7 @@ const html = source
     `<meta name="description" content="${escape(metaDescription)}" />`,
   )
   .replace('</head>', `    ${headTags}\n  </head>`)
-  .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`)
+  .replace(EMPTY_ROOT, rootWithMain(bodyHtml))
 
 const outPath = resolve(dist, 'agent-platforms.html')
 writeFileSync(outPath, html)

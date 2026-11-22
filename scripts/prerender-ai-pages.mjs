@@ -18,6 +18,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { AI_PAGES, AI_HUB, SITE, TRY_URL, PRICED_SERVICE_IDS } from '../src/data/aiPages.mjs'
 import { SERVICES, formatPrice } from '../src/data/services.mjs'
+import { EMPTY_ROOT, rootWithMain } from './lib/root-main.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const dist = resolve(__dirname, '..', 'dist')
@@ -100,7 +101,7 @@ function write(slug, page, headTags, bodyHtml) {
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${escape(page.seoTitle)}</title>`)
     .replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${escape(page.metaDescription)}" />`)
     .replace('</head>', `    ${headTags}\n  </head>`)
-    .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`)
+    .replace(EMPTY_ROOT, rootWithMain(bodyHtml))
   writeFileSync(resolve(dist, `${slug}.html`), html)
   console.log(`✓ ai page prerendered → dist/${slug}.html (${html.length} bytes)`)
 }

@@ -24,6 +24,7 @@ import { BLOG_URL, visibleBlogPosts } from '../src/data/blogPosts.mjs'
 import { HOME_FAQ } from '../src/data/home-faq.mjs'
 import { HOME_CASE_SCREENSHOTS } from '../src/data/home-cases.mjs'
 import { SITE_SECTIONS } from '../src/data/siteSections.mjs'
+import { EMPTY_ROOT, rootWithMain } from './lib/root-main.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -373,7 +374,7 @@ if (!source.includes('<div id="root"></div>')) {
 
 const html = source
   .replace('</head>', `    ${headTags}\n  </head>`)
-  .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`)
+  .replace(EMPTY_ROOT, rootWithMain(bodyHtml))
 
 writeFileSync(indexPath, html)
 console.log(`✓ landing prerendered → dist/index.html (${html.length} bytes)`)

@@ -22,6 +22,7 @@ function makeWorkspace(prefix) {
   const work = mkdtempSync(resolve(tmpdir(), prefix))
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
+  cpSync(resolve(repo, 'scripts/lib/root-main.mjs'), resolve(work, 'scripts/lib/root-main.mjs'))
   cpSync(resolve(repo, 'scripts/prerender-triggers.mjs'), resolve(work, 'scripts/prerender-triggers.mjs'))
   cpSync(resolve(repo, 'src/data'), resolve(work, 'src/data'), { recursive: true })
   writeFileSync(resolve(work, 'dist/index.html'), indexHtml)
@@ -88,7 +89,7 @@ test('prerender-triggers пишет crawlable dist/triggers.html со всем �
   const out = readFileSync(outPath, 'utf8')
 
   assert.doesNotMatch(out, /<div id="root"><\/div>/)
-  assert.match(out, /<div id="root">\s*<article id="triggers-prerender"/)
+  assert.match(out, /<div id="root">\s*<main>\s*<article id="triggers-prerender"/)
   assert.match(out, /<link rel="canonical" href="https:\/\/ideav\.ru\/triggers\.html" \/>/)
   const title = out.match(/<title>([\s\S]*?)<\/title>/)[1]
   assert.equal(title, TRIGGER_META.title)

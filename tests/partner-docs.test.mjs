@@ -62,6 +62,7 @@ test('prerender-partner-docs пишет три crawlable страницы и н�
   const work = mkdtempSync(resolve(tmpdir(), 'partner-docs-'))
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
+  cpSync(resolve(repo, 'scripts/lib/root-main.mjs'), resolve(work, 'scripts/lib/root-main.mjs'))
   cpSync(resolve(repo, 'scripts/prerender-partner-docs.mjs'), resolve(work, 'scripts/prerender-partner-docs.mjs'))
   cpSync(resolve(repo, 'src/data'), resolve(work, 'src/data'), { recursive: true })
   writeFileSync(resolve(work, 'dist/index.html'), indexHtml)
@@ -70,7 +71,7 @@ test('prerender-partner-docs пишет три crawlable страницы и н�
 
   for (const d of Object.values(PARTNER_DOCS)) {
     const out = readFileSync(resolve(work, 'dist', d.meta.path.slice(1)), 'utf8')
-    assert.match(out, /<div id="root">\s*<article id="pd-prerender"/)
+    assert.match(out, /<div id="root">\s*<main>\s*<article id="pd-prerender"/)
     assert.ok(out.includes(`<h1 itemprop="headline">${d.meta.h1}</h1>`), d.key)
     assert.ok(out.includes(`<link rel="canonical" href="https://ideav.ru${d.meta.path}" />`), d.key)
     assert.match(out, /"@type":"WebPage"/)

@@ -37,6 +37,7 @@ function makeWorkspace(prefix) {
   const work = mkdtempSync(resolve(tmpdir(), prefix))
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
+  cpSync(resolve(repo, 'scripts/lib/root-main.mjs'), resolve(work, 'scripts/lib/root-main.mjs'))
   cpSync(resolve(repo, 'scripts/prerender-privacy.mjs'), resolve(work, 'scripts/prerender-privacy.mjs'))
   cpSync(resolve(repo, 'scripts/prerender-landing.mjs'), resolve(work, 'scripts/prerender-landing.mjs'))
   // Оба пререндера читают данные из src/data — без них песочница падает на
@@ -105,7 +106,7 @@ test('prerender-privacy пишет crawlable dist/privacy.html с текстом
 
   // #root несёт статический документ, а не пустую SPA-оболочку.
   assert.doesNotMatch(out, /<div id="root"><\/div>/, '#root не должен остаться пустым')
-  assert.match(out, /<div id="root">\s*<article id="pv-prerender"/)
+  assert.match(out, /<div id="root">\s*<main>\s*<article id="pv-prerender"/)
   assert.match(out, /<h1[^>]*>Политика обработки персональных данных<\/h1>/)
 
   // Собственный <title> и описание в лимитах выдачи.
