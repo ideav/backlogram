@@ -6,7 +6,8 @@
  * вкладке с именем целевой страницы: `/api.html#schema-json` → `target="api"`.
  * Повторный клик по любой ссылке на /api.html попадает в ту же вкладку.
  *
- * Без target остаются якоря своей страницы, mailto:/tel:/javascript:.
+ * Без target остаются якоря своей страницы, mailto:/tel:/javascript: и
+ * переходы внутри сайта помощи (/help.html ↔ /help/<раздел>.html).
  * Общий для React (src/pages/*) и пререндера (scripts/prerender-*.mjs).
  */
 
@@ -27,9 +28,14 @@ export function pageTarget(href, currentPath) {
   const own = SITE_HOSTS.has(url.hostname)
   const path = url.pathname.replace(/\/index\.html$/, '/')
   if (own && currentPath != null && samePath(path, currentPath)) return null
+  // Хаб /help.html и страницы разделов /help/<id>.html — один сайт помощи
+  // (backlogram#961): по нему ходят в той же вкладке.
+  if (own && currentPath != null && isHelp(path) && isHelp(currentPath)) return null
   const slug = path.replace(/^\/+|\/+$/g, '').replace(/\.html$/, '') || 'index'
   return own ? slug : `${url.hostname}/${slug}`
 }
+
+const isHelp = (p) => /^\/help(\.html$|\/)/.test(String(p))
 
 function samePath(a, b) {
   const norm = (p) => String(p).replace(/\/index\.html$/, '/').replace(/\/+$/, '') || '/'

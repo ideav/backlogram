@@ -1,31 +1,39 @@
 #!/usr/bin/env node
 /**
- * Post-build prerender for the help center (the SPA route
- * `/help.html`, backlogram#946, epic ideav/crm#5603).
+ * Post-build prerender for the help center: хаб `/help.html` (backlogram#946,
+ * эпик ideav/crm#5603) и страницы разделов `/help/<id>.html` (backlogram#961).
  *
- * Как prerender-api.mjs: SPA отдаёт пустой <div id="root"></div>, а справочник
- * запросов должен быть в самом HTTP-ответе — его читают краулеры, клиенты без
- * JS и ИИ-агенты. Текст берётся из src/data/queryDocs.mjs — того же
- * источника, что питает src/pages/QueryDocs.tsx.
+ * Как prerender-api.mjs: SPA отдаёт пустой <div id="root"></div>, а сайт
+ * помощи должен быть в самом HTTP-ответе — его читают краулеры, клиенты без
+ * JS и ИИ-агенты. Текст берётся из src/data/helpCenter.mjs — того же
+ * источника, что питает src/pages/HelpCenter.tsx и src/pages/HelpSection.tsx.
+ *
+ * Хаб — ликбез и оглавление со ссылками на разделы; сами приёмы живут только
+ * на страницах разделов (одна страница на 374 приёма не ранжировалась, #959).
+ * Старые адреса `/help.html#<приём>` уводит на раздел скрипт в <head> хаба.
  *
  * Должен выполняться ПОСЛЕ vite build и ДО prerender-landing.mjs: он читает
  * ещё чистый dist/index.html (пререндер главной перезаписывает index.html
  * последним).
  */
-import { readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { HELP_META, HELP_INTRO, HELP_SECTIONS } from '../src/data/helpCenter.mjs'
 import { docsRingHtml } from '../src/data/docsRing.mjs'
 import { pageLinkAttrs } from '../src/data/pageTarget.mjs'
+import { humanDate } from '../src/lib/dates.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
 const dist = resolve(root, 'dist')
 const SITE = 'https://ideav.ru'
 const PUBLISHER = 'Интеграм'
-const PATH = HELP_META.path
+const HUB = HELP_META.path
+const HUB_URL = `${SITE}${HUB}`
 const ID = 'help-prerender'
+const LEVEL = { start: 'в интерфейсе', pro: 'для разработчика' }
+const ARTICLE_COUNT = HELP_SECTIONS.reduce((n, s) => n + s.articles.length, 0)
 
 function escape(s) {
   return String(s ?? '').replace(/[&<>"']/g, (c) => ({
@@ -45,12 +53,17 @@ function inline(text) {
     .join('')
 }
 
-function blockHtml(b) {
+/** Текст без разметки обратных кавычек — для JSON-LD. */
+const plain = (text) => String(text ?? '').replace(/`/g, '')
+
+const link = (href, text, path) => `<a href="${escape(href)}"${pageLinkAttrs(href, path)}>${escape(text)}</a>`
+
+function blockHtml(b, path) {
   switch (b.t) {
     case 'p':
       return `<p>${inline(b.text)}</p>`
     case 'note':
-      return `<p class="api-prerender__note">${inline(b.text)}${b.link ? ` <a href="${escape(b.link.href)}"${pageLinkAttrs(b.link.href, PATH)}>${escape(b.link.text)}</a>` : ''}</p>`
+      return `<p class="api-prerender__note">${inline(b.text)}${b.link ? ` ${link(b.link.href, b.link.text, path)}` : ''}</p>`
     case 'list':
       return `<ul>${b.items.map((i) => `<li>${inline(i)}</li>`).join('')}</ul>`
     case 'code':
@@ -64,88 +77,37 @@ function blockHtml(b) {
   }
 }
 
-// ───────────────────────────────────────────────────────────────────────────
-//  Статический снапшот — тот же текст, что рендерит src/pages/HelpCenter.tsx
-//  (консультант и поиск — только в SPA; здесь ликбез, оглавление и статьи)
-// ───────────────────────────────────────────────────────────────────────────
-const LEVEL = { start: 'в интерфейсе', pro: 'для разработчика' }
-
-const tocHtml = [
-  `<li><a href="#basics">Что такое Интеграм</a></li>`,
-  ...HELP_SECTIONS.map(
-    (s) =>
-      `<li><a href="#${s.id}">${escape(s.title)}</a><ul>${s.articles
-        .map((a) => `<li><a href="#${a.id}">${escape(a.title)}</a></li>`)
-        .join('')}</ul></li>`,
-  ),
-].join('')
-
-const introHtml = `
-  <section id="basics">
-    <h2>Что такое Интеграм</h2>${HELP_INTRO.blocks
-      .map(
-        (b) => `
-    <section id="basics-${b.id}">
-      <h3>${escape(b.title)}</h3>
-      ${(b.paras ?? []).map((p) => `<p>${inline(p)}</p>`).join('')}
-      ${b.layers ? `<dl>${b.layers.map((l) => `<dt>${escape(l.name)}</dt><dd>${inline(l.text)}</dd>`).join('')}</dl>` : ''}
-      ${b.points ? `<ul>${b.points.map((p) => `<li>${inline(p)}</li>`).join('')}</ul>` : ''}
-    </section>`,
-      )
-      .join('')}
-    <h3>Словарик терминов</h3>
-    <dl>${HELP_INTRO.glossary.map((g) => `<dt>${escape(g.term)}</dt><dd>${inline(g.text)}</dd>`).join('')}</dl>
-  </section>`
-
-const articleHtml = (a) => `
+/** Приём на странице раздела: заголовок второго уровня, сразу ответ, потом шаги. */
+const articleHtml = (a, path) => `
     <article id="${a.id}">
-      <h3>${escape(a.title)}</h3>
+      <h2>${escape(a.title)}</h2>
       ${a.level ? `<p class="api-prerender__label">${escape(LEVEL[a.level] ?? a.level)}</p>` : ''}
       <p>${inline(a.summary)}</p>
       ${a.steps?.length ? `<ol>${a.steps.map((s) => `<li>${inline(s)}</li>`).join('')}</ol>` : ''}
-      ${(a.blocks ?? []).map(blockHtml).join('\n      ')}
-      ${a.links?.length ? `<p>Подробнее: ${a.links.map((l) => `<a href="${escape(l.href)}"${pageLinkAttrs(l.href, PATH)}>${escape(l.text)}</a>`).join(' · ')}</p>` : ''}
+      ${(a.blocks ?? []).map((b) => blockHtml(b, path)).join('\n      ')}
+      ${a.links?.length ? `<p>Подробнее: ${a.links.map((l) => link(l.href, l.text, path)).join(' · ')}</p>` : ''}
     </article>`
 
-const sectionsHtml = HELP_SECTIONS.map(
-  (s) => `
-  <section id="${s.id}">
-    <h2>${escape(s.title)}</h2>
-    <p>${inline(s.lead)}</p>${s.articles.map(articleHtml).join('')}
-  </section>`,
-).join('')
+const freshness = (count) =>
+  `<p class="api-prerender__label">${count} приёмов по шагам · обновлено <time datetime="${HELP_META.updated}">${humanDate(HELP_META.updated)}</time></p>`
 
-const canonical = `${SITE}${PATH}`
-
-const bodyHtml = `
-<article id="${ID}">
-  <header>
-    <nav class="api-prerender__crumbs" aria-label="Хлебные крошки">
-      <a href="/">Интеграм</a> / <span>Помощь</span>
-    </nav>
-    <p class="api-prerender__eyebrow">Помощь по шагам</p>
-    <h1>${escape(HELP_META.h1)}</h1>
-    ${HELP_INTRO.lead.map((p) => `<p class="api-prerender__lead">${inline(p)}</p>`).join('\n    ')}
-    ${docsRingHtml(PATH)}
-  </header>
-  <nav class="api-prerender__toc" aria-label="Оглавление">
-    <ol>${tocHtml}</ol>
-  </nav>${introHtml}${sectionsHtml}
+const footerHtml = `
   <footer class="api-prerender__footer">
     <p>
       <a href="/">На главную</a> ·
+      <a href="${HUB}">Помощь</a> ·
       <a href="/api.html">Справочник API</a> ·
       <a href="/queries.html">Запросы</a> ·
       <a href="/templater.html">Шаблонизатор</a> ·
       <a href="/knowledge-base.html">База знаний</a>
     </p>
-  </footer>
-</article>
-<style>
+  </footer>`
+
+const STYLE = `<style>
   #${ID} { max-width: 60rem; margin: 0 auto; padding: 4rem 1rem 2rem;
     font-family: ui-sans-serif, system-ui, sans-serif; color: #1e293b; }
   #${ID} h1 { font-size: 2.2rem; line-height: 1.15; margin: 0.5rem 0 0.75rem; }
-  #${ID} h2 { font-size: 1.6rem; margin: 2.5rem 0 1rem; }
+  #${ID} h2 { font-size: 1.5rem; margin: 2.25rem 0 0.75rem; }
   #${ID} h3 { font-size: 1.2rem; margin: 1.75rem 0 0.5rem; }
   #${ID} p, #${ID} li { line-height: 1.65; margin: 0.4rem 0; }
   #${ID} a { color: #2563eb; }
@@ -171,60 +133,175 @@ const bodyHtml = `
   .dark #${ID} th, .dark #${ID} td { border-color: #334155; }
 </style>`
 
+const about = {
+  '@type': 'SoftwareApplication',
+  name: PUBLISHER,
+  alternateName: 'Integram',
+  applicationCategory: 'BusinessApplication',
+  url: `${SITE}/`,
+}
+const org = { '@type': 'Organization', name: PUBLISHER, url: `${SITE}/` }
+
 // ───────────────────────────────────────────────────────────────────────────
-//  Structured data: TechArticle + BreadcrumbList
+//  Хаб /help.html: ликбез и оглавление разделов (без текста приёмов)
 // ───────────────────────────────────────────────────────────────────────────
-const ogImage = `${SITE}/og/help.png`
-const jsonLd = {
+const introHtml = `
+  <section id="basics">
+    <h2>Что такое Интеграм</h2>${HELP_INTRO.blocks
+      .map(
+        (b) => `
+    <section id="basics-${b.id}">
+      <h3>${escape(b.title)}</h3>
+      ${(b.paras ?? []).map((p) => `<p>${inline(p)}</p>`).join('')}
+      ${b.layers ? `<dl>${b.layers.map((l) => `<dt>${escape(l.name)}</dt><dd>${inline(l.text)}</dd>`).join('')}</dl>` : ''}
+      ${b.points ? `<ul>${b.points.map((p) => `<li>${inline(p)}</li>`).join('')}</ul>` : ''}
+    </section>`,
+      )
+      .join('')}
+    <h3>Словарик терминов</h3>
+    <dl>${HELP_INTRO.glossary.map((g) => `<dt>${escape(g.term)}</dt><dd>${inline(g.text)}</dd>`).join('')}</dl>
+  </section>`
+
+const hubSectionsHtml = `
+  <section id="sections">
+    <h2>Разделы помощи</h2>${HELP_SECTIONS.map(
+      (s) => `
+    <section id="${s.id}">
+      <h3><a href="${s.path}">${escape(s.title)}</a></h3>
+      <p>${inline(s.lead)}</p>
+      <ul>${s.articles.map((a) => `<li><a href="${s.path}#${a.id}">${escape(a.title)}</a></li>`).join('')}</ul>
+    </section>`,
+    ).join('')}
+  </section>`
+
+const hubBody = `
+<article id="${ID}">
+  <header>
+    <nav class="api-prerender__crumbs" aria-label="Хлебные крошки">
+      <a href="/">Интеграм</a> / <span>Помощь</span>
+    </nav>
+    <p class="api-prerender__eyebrow">Помощь по шагам</p>
+    <h1>${escape(HELP_META.h1)}</h1>
+    ${HELP_INTRO.lead.map((p) => `<p class="api-prerender__lead">${inline(p)}</p>`).join('\n    ')}
+    ${freshness(ARTICLE_COUNT)}
+    ${docsRingHtml(HUB)}
+  </header>
+  <nav class="api-prerender__toc" aria-label="Оглавление">
+    <ol><li><a href="#basics">Что такое Интеграм</a></li>${HELP_SECTIONS.map((s) => `<li><a href="${s.path}">${escape(s.title)}</a> (${s.articles.length})</li>`).join('')}</ol>
+  </nav>${introHtml}${hubSectionsHtml}${footerHtml}
+</article>
+${STYLE}`
+
+const hubJsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
     {
-      '@type': 'TechArticle',
-      '@id': `${canonical}#article`,
-      url: canonical,
-      headline: HELP_META.h1,
+      '@type': 'CollectionPage',
+      '@id': `${HUB_URL}#page`,
+      url: HUB_URL,
       name: HELP_META.title,
+      headline: HELP_META.h1,
       description: HELP_META.description,
       inLanguage: 'ru',
-      isPartOf: { '@id': `${SITE}/#website` },
-      publisher: { '@type': 'Organization', name: PUBLISHER, url: `${SITE}/` },
+      // Свежесть и картинка — сигналы для сниппета и ИИ-выдачи (backlogram#959).
+      datePublished: HELP_META.published,
+      dateModified: HELP_META.updated,
+      image: `${SITE}/og/help.png`,
+      isPartOf: { '@type': 'WebSite', '@id': `${SITE}/#website`, name: PUBLISHER, url: `${SITE}/` },
+      author: org,
+      publisher: org,
+      about,
       keywords: HELP_META.keywords,
+      // Разделы — отдельные страницы (backlogram#961).
+      hasPart: HELP_SECTIONS.map((s) => ({
+        '@type': 'TechArticle',
+        '@id': `${SITE}${s.path}#article`,
+        url: `${SITE}${s.path}`,
+        name: s.title,
+        description: s.description,
+      })),
     },
     {
       '@type': 'BreadcrumbList',
-      '@id': `${canonical}#breadcrumb`,
+      '@id': `${HUB_URL}#breadcrumb`,
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Интеграм', item: `${SITE}/` },
-        { '@type': 'ListItem', position: 2, name: 'Помощь', item: canonical },
+        { '@type': 'ListItem', position: 2, name: 'Помощь', item: HUB_URL },
       ],
     },
   ],
 }
 
-const headTags = [
-  `<link rel="canonical" href="${escape(canonical)}" />`,
-  `<meta property="og:type" content="article" />`,
-  `<meta property="og:url" content="${escape(canonical)}" />`,
-  `<meta property="og:title" content="${escape(HELP_META.title)}" />`,
-  `<meta property="og:description" content="${escape(HELP_META.description)}" />`,
-  `<meta property="og:image" content="${escape(ogImage)}" />`,
-  `<meta property="og:image:width" content="1200" />`,
-  `<meta property="og:image:height" content="630" />`,
-  `<meta property="og:locale" content="ru_RU" />`,
-  `<meta property="og:site_name" content="${PUBLISHER}" />`,
-  `<meta name="twitter:card" content="summary_large_image" />`,
-  `<meta name="twitter:title" content="${escape(HELP_META.title)}" />`,
-  `<meta name="twitter:description" content="${escape(HELP_META.description)}" />`,
-  `<meta name="twitter:image" content="${escape(ogImage)}" />`,
-  `<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`,
-].join('\n    ')
+/**
+ * Старые адреса /help.html#<приём> и /help.html#<раздел> (внешние ссылки,
+ * закладки) → страница раздела. Якорь сервер не видит — только браузер.
+ */
+const sectionIds = HELP_SECTIONS.map((s) => s.id).join('|')
+const hubRedirect = `<script>(function(){var h=decodeURIComponent(location.hash.slice(1));var m=/^(${sectionIds})(?:-|$)/.exec(h);if(m)location.replace('/help/'+m[1]+'.html'+location.search+(h===m[1]?'':'#'+h))})()</script>`
 
 // ───────────────────────────────────────────────────────────────────────────
-//  Write dist/help.html from the clean SPA shell
+//  Страница раздела /help/<id>.html: все приёмы раздела по шагам
 // ───────────────────────────────────────────────────────────────────────────
-const indexPath = resolve(dist, 'index.html')
-const source = readFileSync(indexPath, 'utf8')
+function sectionBody(s) {
+  const others = HELP_SECTIONS.filter((x) => x.id !== s.id)
+  return `
+<article id="${ID}">
+  <header>
+    <nav class="api-prerender__crumbs" aria-label="Хлебные крошки">
+      <a href="/">Интеграм</a> / <a href="${HUB}">Помощь</a> / <span>${escape(s.title)}</span>
+    </nav>
+    <p class="api-prerender__eyebrow">Помощь по шагам</p>
+    <h1>${escape(s.title)}</h1>
+    <p class="api-prerender__lead">${inline(s.lead)}</p>
+    ${freshness(s.articles.length)}
+    <p>Другие разделы: ${others.map((x) => `<a href="${x.path}">${escape(x.title)}</a>`).join(' · ')} · <a href="${HUB}">консультант и поиск</a></p>
+  </header>
+  <nav class="api-prerender__toc" aria-label="Оглавление">
+    <ol>${s.articles.map((a) => `<li><a href="#${a.id}">${escape(a.title)}</a></li>`).join('')}</ol>
+  </nav>${s.articles.map((a) => articleHtml(a, s.path)).join('')}${footerHtml}
+</article>
+${STYLE}`
+}
 
+function sectionJsonLd(s) {
+  const url = `${SITE}${s.path}`
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'TechArticle',
+        '@id': `${url}#article`,
+        url,
+        headline: s.title,
+        name: s.pageTitle,
+        description: s.description,
+        inLanguage: 'ru',
+        datePublished: HELP_META.published,
+        dateModified: HELP_META.updated,
+        image: `${SITE}/og/help-${s.id}.png`,
+        isPartOf: { '@id': `${HUB_URL}#page` },
+        author: org,
+        publisher: org,
+        about,
+        abstract: plain(s.lead),
+      },
+      {
+        '@type': 'BreadcrumbList',
+        '@id': `${url}#breadcrumb`,
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Интеграм', item: `${SITE}/` },
+          { '@type': 'ListItem', position: 2, name: 'Помощь', item: HUB_URL },
+          { '@type': 'ListItem', position: 3, name: s.title, item: url },
+        ],
+      },
+    ],
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+//  Запись страниц из чистой оболочки SPA
+// ───────────────────────────────────────────────────────────────────────────
+const source = readFileSync(resolve(dist, 'index.html'), 'utf8')
 if (source.includes('id="lp-prerender"')) {
   console.error(
     '✗ prerender-help: dist/index.html already carries the landing snapshot — run this BEFORE prerender-landing.mjs',
@@ -236,21 +313,61 @@ if (!source.includes('<div id="root"></div>')) {
   process.exit(1)
 }
 
-const html = source
-  .replace(/<title>[\s\S]*?<\/title>/, `<title>${escape(HELP_META.title)}</title>`)
-  .replace(
-    /<meta name="description"[^>]*>/,
-    `<meta name="description" content="${escape(HELP_META.description)}" />`,
-  )
-  .replace(
-    /<meta name="keywords"[^>]*>/,
-    `<meta name="keywords" content="${escape(HELP_META.keywords)}" />`,
-  )
-  .replace('</head>', `    ${headTags}\n  </head>`)
-  // Функция замены: в тексте справочника есть `$`, который строковая замена
-  // прочла бы как ссылку на группу.
-  .replace('<div id="root"></div>', () => `<div id="root">${bodyHtml}</div>`)
+function page({ path, title, description, ogImage, jsonLd, body, extraHead = '' }) {
+  const canonical = `${SITE}${path}`
+  const headTags = [
+    extraHead,
+    `<link rel="canonical" href="${escape(canonical)}" />`,
+    `<meta property="og:type" content="article" />`,
+    `<meta property="og:url" content="${escape(canonical)}" />`,
+    `<meta property="og:title" content="${escape(title)}" />`,
+    `<meta property="og:description" content="${escape(description)}" />`,
+    `<meta property="og:image" content="${escape(ogImage)}" />`,
+    `<meta property="og:image:width" content="1200" />`,
+    `<meta property="og:image:height" content="630" />`,
+    `<meta property="og:locale" content="ru_RU" />`,
+    `<meta property="og:site_name" content="${PUBLISHER}" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
+    `<meta name="twitter:title" content="${escape(title)}" />`,
+    `<meta name="twitter:description" content="${escape(description)}" />`,
+    `<meta name="twitter:image" content="${escape(ogImage)}" />`,
+    `<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`,
+  ]
+    .filter(Boolean)
+    .join('\n    ')
+  return source
+    .replace(/<title>[\s\S]*?<\/title>/, `<title>${escape(title)}</title>`)
+    .replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${escape(description)}" />`)
+    .replace(/<meta name="keywords"[^>]*>/, `<meta name="keywords" content="${escape(HELP_META.keywords)}" />`)
+    .replace('</head>', `    ${headTags}\n  </head>`)
+    // Функция замены: в тексте приёмов есть `$`, который строковая замена
+    // прочла бы как ссылку на группу.
+    .replace('<div id="root"></div>', () => `<div id="root">${body}</div>`)
+}
 
-const outPath = resolve(dist, 'help.html')
-writeFileSync(outPath, html)
-console.log(`✓ help prerendered → dist/help.html (${html.length} bytes)`)
+const hubHtml = page({
+  path: HUB,
+  title: HELP_META.title,
+  description: HELP_META.description,
+  ogImage: `${SITE}/og/help.png`,
+  jsonLd: hubJsonLd,
+  body: hubBody,
+  // Редирект — до всего остального, чтобы не грузить хаб зря.
+  extraHead: hubRedirect,
+})
+writeFileSync(resolve(dist, 'help.html'), hubHtml)
+console.log(`✓ help prerendered → dist/help.html (${hubHtml.length} bytes)`)
+
+mkdirSync(resolve(dist, 'help'), { recursive: true })
+for (const s of HELP_SECTIONS) {
+  const html = page({
+    path: s.path,
+    title: s.pageTitle,
+    description: s.description,
+    ogImage: `${SITE}/og/help-${s.id}.png`,
+    jsonLd: sectionJsonLd(s),
+    body: sectionBody(s),
+  })
+  writeFileSync(resolve(dist, s.path.slice(1)), html)
+  console.log(`✓ help prerendered → dist${s.path} (${html.length} bytes)`)
+}

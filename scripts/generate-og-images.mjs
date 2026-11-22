@@ -55,7 +55,7 @@ const { API_META } = await import('../src/data/apiDocs.mjs')
 const { TRIGGER_META } = await import('../src/data/triggerDocs.mjs')
 const { PROC_META } = await import('../src/data/procDocs.mjs')
 const { QUERY_META } = await import('../src/data/queryDocs.mjs')
-const { HELP_META } = await import('../src/data/helpCenter.mjs')
+const { HELP_META, HELP_SECTIONS } = await import('../src/data/helpCenter.mjs')
 const { TEMPLATER_META } = await import('../src/data/templaterDocs.mjs')
 const { DBT_META } = await import('../src/data/dbTemplates.mjs')
 const { nbspText } = await import('../src/lib/typography.mjs')
@@ -384,6 +384,13 @@ const landingCards = [
     title: nbspText(HELP_META.h1),
     subtitle: nbspText(HELP_META.description),
   },
+  // backlogram#961: страницы разделов помощи /help/<id>.html → og/help-<id>.png.
+  ...HELP_SECTIONS.map((s) => ({
+    slug: `help-${s.id}`,
+    eyebrow: 'Помощь · по шагам',
+    title: nbspText(s.title),
+    subtitle: nbspText(s.description),
+  })),
   // backlogram#802: запросы — движок отчётов для разработчиков.
   {
     slug: 'queries',

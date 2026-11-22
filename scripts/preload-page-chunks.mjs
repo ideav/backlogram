@@ -100,6 +100,7 @@ function htmlFiles(dir) {
 function routeFor(routes, rel) {
   if (routes.has(rel)) return routes.get(rel)
   if (/^knowledge-base\/[^/]+\.html$/.test(rel)) return 'KnowledgeBaseArticle'
+  if (/^help\/[^/]+\.html$/.test(rel)) return 'HelpSection'
   return null
 }
 

@@ -37,6 +37,7 @@ const ProcDocs = lazy(() => import('./pages/ProcDocs'))
 // backlogram#802: запросы — движок отчётов: адрес, форматы, параметры.
 const QueryDocs = lazy(() => import('./pages/QueryDocs'))
 const HelpCenter = lazy(() => import('./pages/HelpCenter'))
+const HelpSection = lazy(() => import('./pages/HelpSection'))
 // backlogram#798: шаблонизатор — HTML рабочих мест и вставка данных.
 const TemplaterDocs = lazy(() => import('./pages/TemplaterDocs'))
 const DbTemplates = lazy(() => import('./pages/DbTemplates'))
@@ -242,6 +243,11 @@ export const router = createBrowserRouter([
       {
         path: 'help',
         element: <HelpCenter />,
+      },
+      // backlogram#961: страницы разделов помощи /help/<id>.html.
+      {
+        path: 'help/:section',
+        element: <HelpSection />,
       },
       // backlogram#802: запросы — движок отчётов: адрес, форматы, параметры.
       {
