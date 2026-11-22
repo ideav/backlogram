@@ -12,6 +12,8 @@ export const DOCS_RING = [
   { href: '/help.html', name: 'Помощь', hint: 'как сделать по шагам' },
   { href: '/api.html', name: 'Справочник API', hint: 'команды ядра и curl' },
   { href: '/queries.html', name: 'Запросы', hint: 'отчёты и данные одним адресом' },
+  // Нагрузочный тест стенда hlt (crm#5267, #5283): страница из crm docs/hlt-stand, не SPA (crm#5632).
+  { href: '/sizing.html', name: 'Нагрузочный тест', hint: 'замеры стенда и подбор сервера' },
   { href: '/triggers.html', name: 'Триггеры кнопок', hint: 'действие по событию записи' },
   { href: '/stored-procedures.html', name: 'Хранимые процедуры', hint: 'запрос, который пишет данные' },
   { href: '/templater.html', name: 'Шаблонизатор', hint: 'HTML рабочих мест' },
