@@ -19,6 +19,7 @@ export type ApiBlock =
   | { t: 'list'; items: string[] }
   | { t: 'code'; lang: 'bash' | 'json' | 'text'; label?: string; code: string }
   | { t: 'table'; head: string[]; rows: string[][] }
+  | { t: 'img'; src: string; alt: string; caption?: string }
 
 export interface ApiTopic {
   /** Якорь темы: /api.html#<id>. */

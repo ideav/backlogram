@@ -43,7 +43,7 @@ test('ликбез: что это, архитектура, применение,
 
 test('у каждой статьи: уникальный id-якорь, задача, ответ, шаги, формулировки вопроса', () => {
   const seen = new Set(['basics', 'consultant', ...HELP_SECTIONS.map((s) => s.id)])
-  const BLOCKS = new Set(['p', 'note', 'list', 'code', 'table'])
+  const BLOCKS = new Set(['p', 'note', 'list', 'code', 'table', 'img'])
   for (const a of HELP_ARTICLES) {
     assert.match(a.id, /^[a-z0-9]+(-[a-z0-9]+)*$/, `плохой id ${a.id}`)
     assert.ok(a.id.startsWith(`${a.sectionId}-`), `${a.id}: префикс раздела ${a.sectionId}`)
