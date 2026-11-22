@@ -822,7 +822,7 @@ export const SECTION = {
       ],
       blocks: [
         { t: 'p', text: 'Для автоматизации команда `_new_db` кабинета `my`: `db` — имя, `template` — шаблон, обычно `RU`.' },
-        { t: 'code', lang: 'bash', code: 'curl -s -H "X-Authorization: $TOKEN" "https://ideav.ru/my/_new_db/?JSON=1&db=apiman&template=RU"\n# {"status": "Ok", "id": 221756}' },
+        { api: true, t: 'code', lang: 'bash', code: 'curl -s -H "X-Authorization: $TOKEN" "https://ideav.ru/my/_new_db/?JSON=1&db=apiman&template=RU"\n# {"status": "Ok", "id": 221756}' },
         { t: 'note', text: 'Число баз на аккаунте ограничено тарифом: кабинет не даёт создать больше трёх баз на младшем тарифе, тариф меняется в разделе «Тариф».' },
       ],
       links: [
@@ -938,7 +938,7 @@ export const SECTION = {
       ],
       blocks: [
         { t: 'p', text: 'То же по API: `GET /<база>/journal?JSON`. Режим `mode=log` — запросы, `mode=sql` — изменения. Фильтры: `user`, `id` (история одной записи), `rid`, `op`, `since`, `until`, `where`, `limit`, `cursor`.' },
-        { t: 'code', lang: 'bash', code: '# история одной записи\ncurl -s -H "X-Authorization: $TOKEN" "https://ideav.ru/mydb/journal?JSON&mode=sql&id=5231"' },
+        { api: true, t: 'code', lang: 'bash', code: '# история одной записи\ncurl -s -H "X-Authorization: $TOKEN" "https://ideav.ru/mydb/journal?JSON&mode=sql&id=5231"' },
         { t: 'list', items: [
           'запросы ИИ записываются с логином вида `ivanov~ai`, задачи ИИ-чата — по полю `ai_job`;',
           'пароли, токены и xsrf в журнал не попадают;',

@@ -6,7 +6,7 @@
 // Разделы лежат в src/data/help/<id>.mjs по формату src/data/help/SCHEMA.md;
 // новый раздел — файл + строка в HELP_SECTIONS.
 
-import { HELP_INTRO } from './help/intro.mjs'
+import { HELP_INTRO as INTRO } from './help/intro.mjs'
 import { SECTION as structure } from './help/structure.mjs'
 import { SECTION as data } from './help/data.mjs'
 import { SECTION as queries } from './help/queries.mjs'
@@ -18,7 +18,6 @@ import { SECTION as recipes } from './help/recipes.mjs'
 // Приёмы из рабочих баз (backlogram#955), обезличенные; разложены по id раздела.
 import { PRACTICE } from './help/practice.mjs'
 
-export { HELP_INTRO }
 
 export const HELP_META = {
   path: '/help.html',
@@ -27,7 +26,7 @@ export const HELP_META = {
   // Даты для datePublished/dateModified и строки «Обновлено» (backlogram#959):
   // updated двигать при содержательной правке разделов, не при каждой сборке.
   published: '2026-11-21',
-  updated: '2026-11-21',
+  updated: '2026-11-22',
   // До ~158 символов — пиксельный лимит сниппета (issue #516).
   description:
     'Как сделать в Интеграме (Integram) структуру, запросы, шаблоны, роли, кнопки и интеграции — по шагам, с примерами. Консультант и поиск по всем приёмам.',
@@ -136,3 +135,25 @@ export const HELP_SAMPLE_QUESTIONS = [
   'загрузить данные из Excel',
   'подключить ИИ-агента к базе',
 ]
+
+/**
+ * Подпись уровня приёма (#5626). У приёма «в интерфейсе» вызовы API вынесены в блоки
+ * с `api: true` — подпись говорит, что они есть, а не выдаёт curl за кнопку интерфейса.
+ */
+export const HELP_API_TITLE = 'То же через API — для ИИ-агента или разработчика'
+export function helpLevelLabel(a) {
+  if (a.level === 'pro') return 'для разработчика'
+  if (a.level !== 'start') return a.level ?? ''
+  return a.blocks?.some((b) => b.api) ? 'в интерфейсе · есть API' : 'в интерфейсе'
+}
+/** Блоки приёма: интерфейсные отдельно от API-шагов (порядок внутри групп сохраняется). */
+export function helpSplitBlocks(a) {
+  const blocks = a.blocks ?? []
+  return { ui: blocks.filter((b) => !b.api), api: blocks.filter((b) => b.api) }
+}
+
+/** Ликбез хаба; ссылки плашки «агенты» — на страницы разделов (#5626). */
+export const HELP_INTRO = {
+  ...INTRO,
+  agents: { ...INTRO.agents, links: INTRO.agents.links.map((l) => ({ ...l, href: helpHref(l.href) })) },
+}

@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { LifeBuoy, MessageCircleQuestion, Search, Sparkles } from 'lucide-react'
+import { Bot, LifeBuoy, MessageCircleQuestion, Search, Sparkles } from 'lucide-react'
 import Breadcrumbs from '../components/Breadcrumbs'
 import DocsSeeAlso from '../components/DocsSeeAlso'
 import { Block, Inline } from './ApiDocs'
-import { HELP_META, HELP_INTRO, HELP_SECTIONS, HELP_ARTICLES, HELP_SAMPLE_QUESTIONS, helpSectionOf, helpSectionPath } from '../data/helpCenter'
+import { HELP_API_TITLE, helpLevelLabel, helpSplitBlocks, HELP_META, HELP_INTRO, HELP_SECTIONS, HELP_ARTICLES, HELP_SAMPLE_QUESTIONS, helpSectionOf, helpSectionPath } from '../data/helpCenter'
 import type { HelpArticle, HelpFlatArticle } from '../data/helpCenter'
 import { buildIndex, consult, search } from '../lib/helpSearch'
 import type { HelpAnswer } from '../lib/helpSearch'
@@ -11,7 +11,25 @@ import { pageLinkProps } from '../data/pageTarget'
 import { humanDate } from '../lib/dates'
 
 const SITE = 'https://ideav.ru'
-const LEVEL: Record<string, string> = { start: 'в интерфейсе', pro: 'для разработчика' }
+
+/** Плашка в начале страницы: работу делают ИИ-агенты, страница — образец для них (#5626). */
+export function AgentsNote({ path }: { path: string }) {
+  const n = HELP_INTRO.agents
+  return (
+    <aside className="mb-6 max-w-4xl rounded-2xl border border-emerald-500/30 bg-emerald-50/70 dark:bg-emerald-500/5 p-4 md:p-5 flex gap-3">
+      <Bot size={22} className="shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
+      <div className="space-y-1.5">
+        <div className="font-semibold text-slate-800 dark:text-slate-100">{n.title}</div>
+        <p className="text-slate-700 dark:text-slate-200 leading-relaxed"><Inline text={n.text} /></p>
+        <p className="text-sm">
+          {n.links.map((l, i) => (
+            <span key={l.href}>{i > 0 && ' · '}<a href={l.href} {...pageLinkProps(l.href, path)} className="text-blue-600 dark:text-blue-400 hover:underline">{l.text}</a></span>
+          ))}
+        </p>
+      </div>
+    </aside>
+  )
+}
 
 export function Steps({ steps }: { steps?: string[] }) {
   if (!steps?.length) return null
@@ -181,15 +199,22 @@ export function Toc({ index, onPick, openId }: { index: ReturnType<typeof buildI
 }
 
 export function Article({ a, path }: { a: HelpArticle; path: string }) {
+  const { ui, api } = helpSplitBlocks(a)
   return (
     <article id={a.id} className="scroll-mt-32 lg:scroll-mt-24 space-y-4 rounded-2xl border border-slate-200 dark:border-slate-800 p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="text-xl font-semibold">{a.title}</h2>
-        {a.level && <span className="text-xs rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-slate-500 dark:text-slate-400">{LEVEL[a.level] ?? a.level}</span>}
+        {a.level && <span className="text-xs rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-slate-500 dark:text-slate-400">{helpLevelLabel(a)}</span>}
       </div>
       <p className="text-slate-700 dark:text-slate-200 leading-relaxed"><Inline text={a.summary} /></p>
       <Steps steps={a.steps} />
-      {a.blocks?.map((block, i) => <Block key={i} block={block} />)}
+      {ui.map((block, i) => <Block key={i} block={block} />)}
+      {api.length > 0 && (
+        <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/50 p-4 space-y-3">
+          <div className="text-sm font-semibold text-slate-600 dark:text-slate-300">{HELP_API_TITLE}</div>
+          {api.map((block, i) => <Block key={i} block={block} />)}
+        </div>
+      )}
       {a.links?.length ? (
         <p className="text-sm text-slate-500 dark:text-slate-400">
           Подробнее: {a.links.map((l, i) => (
@@ -266,6 +291,7 @@ export default function HelpCenter() {
             <LifeBuoy size={14} /> {total} приёмов по шагам · обновлено <time dateTime={HELP_META.updated}>{humanDate(HELP_META.updated)}</time>
           </div>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5">{HELP_META.h1}</h1>
+          <AgentsNote path={HELP_META.path} />
           <div className="space-y-3 max-w-4xl">
             {HELP_INTRO.lead.map((p, i) => (
               <p key={i} className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed"><Inline text={p} /></p>
