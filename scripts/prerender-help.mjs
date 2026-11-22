@@ -362,7 +362,10 @@ function page({ path, title, description, ogImage, jsonLd, body, extraHead = '' 
     .replace('</head>', `    ${headTags}\n  </head>`)
     // Функция замены: в тексте приёмов есть `$`, который строковая замена
     // прочла бы как ссылку на группу.
-    .replace('<div id="root"></div>', () => `<div id="root">${body}</div>`)
+    // <main> — основной контент для экстракторов ИИ-поиска: меню inject-static-nav
+    // встаёт перед ним первым ребёнком #root (backlogram#969). createRoot всё равно
+    // заменяет содержимое #root целиком, гидратации нет.
+    .replace('<div id="root"></div>', () => `<div id="root"><main>${body}</main></div>`)
 }
 
 const hubHtml = page({
