@@ -15,6 +15,7 @@ import { SECTION as access } from './help/access.mjs'
 import { SECTION as automation } from './help/automation.mjs'
 import { SECTION as api } from './help/api.mjs'
 import { SECTION as recipes } from './help/recipes.mjs'
+import { SECTION as onprem } from './help/onprem.mjs'
 // Приёмы из рабочих баз (backlogram#955), обезличенные; разложены по id раздела.
 import { PRACTICE } from './help/practice.mjs'
 
@@ -81,13 +82,18 @@ const SECTION_SEO = {
     description:
       'API Интеграма (Integram): первый вызов, токен для интеграции, чтение и запись записей, коннекторы к Битрикс24, 1С и Google Sheets, ИИ-агенты — по шагам.',
   },
+  onprem: {
+    pageTitle: 'Своя установка Интеграма (on-premise): договор, бэкапы',
+    description:
+      'Интеграм (Integram) на своём сервере: право по договору, кто сопровождает платформу, установка, резервные копии по расписанию, перенос базы из облака.',
+  },
 }
 
 /** Адрес страницы раздела. */
 export const helpSectionPath = (id) => `/help/${id}.html`
 
 /** Порядок разделов. Рецепты — первыми: с них начинают на встрече. */
-const ORDER = [recipes, structure, data, queries, templater, access, automation, api]
+const ORDER = [recipes, structure, data, queries, templater, access, automation, api, onprem]
 
 /** id раздела, которому принадлежит якорь (id приёма начинается с «<раздел>-»), или null. */
 export function helpSectionOf(anchor) {

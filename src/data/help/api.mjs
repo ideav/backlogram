@@ -748,7 +748,10 @@ export const SECTION = {
         { t: 'p', text: 'Ручной вариант: скопируйте `.env.docker.example` в `.env.local`, заполните `INTEGRAM_MASTER_PASSWORD`, `INTEGRAM_DB_PASSWORD`, `INTEGRAM_DB_ROOT_PASSWORD`, `INTEGRAM_SALT`, создайте сертификат и выполните `docker compose --env-file .env.local up -d --build`.' },
         { t: 'note', text: 'Пароли БД из .env.local MariaDB применяет только при создании пустого тома. Если старый том есть, а .env.local новый, приложение будет перезапускаться с ошибкой 1045: верните прежний .env.local или удалите том вместе с данными (`INTEGRAM_RESET_DB=1 bash scripts/install-local-docker.sh`).' },
       ],
-      links: [{ href: '/knowledge-base/18-on-premise-procurement', text: 'База знаний: закупка on-premise' }],
+      links: [
+        { href: '/knowledge-base/18-on-premise-procurement', text: 'База знаний: закупка on-premise' },
+        { href: '/help.html#onprem-why-safe', text: 'Помощь: своя установка (on-premise)' },
+      ],
     },
     {
       id: 'api-docker-update-backup',
