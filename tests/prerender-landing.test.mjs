@@ -24,6 +24,7 @@ test('prerender-landing fills #root and injects SEO head tags into dist/index.ht
   const work = mkdtempSync(resolve(tmpdir(), 'lp-prerender-'))
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
+  cpSync(resolve(repo, 'scripts/lib/root-main.mjs'), resolve(work, 'scripts/lib/root-main.mjs'))
   cpSync(resolve(repo, 'scripts/prerender-landing.mjs'), resolve(work, 'scripts/prerender-landing.mjs'))
   cpSync(resolve(repo, 'src/data'), resolve(work, 'src/data'), { recursive: true })
   writeFileSync(resolve(work, 'dist/index.html'), indexHtml)
@@ -34,7 +35,7 @@ test('prerender-landing fills #root and injects SEO head tags into dist/index.ht
 
   // Assert: #root is no longer empty and carries a crawlable H1 with the brand.
   assert.doesNotMatch(out, /<div id="root"><\/div>/, '#root must not be left empty')
-  assert.match(out, /<div id="root">\s*<article id="lp-prerender"/)
+  assert.match(out, /<div id="root">\s*<main>\s*<article id="lp-prerender"/)
   assert.match(
     out,
     /<h1[^>]*>Интеграм — российская платформа для автоматизации бизнеса, которая подстраивается под вас<\/h1>/,
@@ -72,6 +73,7 @@ test('prerender-landing is idempotent (safe to run twice)', () => {
   const work = mkdtempSync(resolve(tmpdir(), 'lp-prerender-idem-'))
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
+  cpSync(resolve(repo, 'scripts/lib/root-main.mjs'), resolve(work, 'scripts/lib/root-main.mjs'))
   cpSync(resolve(repo, 'scripts/prerender-landing.mjs'), resolve(work, 'scripts/prerender-landing.mjs'))
   cpSync(resolve(repo, 'src/data'), resolve(work, 'src/data'), { recursive: true })
   writeFileSync(resolve(work, 'dist/index.html'), indexHtml)

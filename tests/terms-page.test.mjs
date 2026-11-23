@@ -25,6 +25,7 @@ function makeWorkspace(prefix) {
   const work = mkdtempSync(resolve(tmpdir(), prefix))
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
+  cpSync(resolve(repo, 'scripts/lib/root-main.mjs'), resolve(work, 'scripts/lib/root-main.mjs'))
   cpSync(resolve(repo, 'scripts/prerender-terms.mjs'), resolve(work, 'scripts/prerender-terms.mjs'))
   cpSync(resolve(repo, 'scripts/prerender-landing.mjs'), resolve(work, 'scripts/prerender-landing.mjs'))
   // Оба пререндера читают данные из src/data — без них песочница падает на
@@ -91,7 +92,7 @@ test('prerender-terms пишет crawlable dist/terms.html с текстом с�
   const out = readFileSync(outPath, 'utf8')
 
   assert.doesNotMatch(out, /<div id="root"><\/div>/, '#root не должен остаться пустым')
-  assert.match(out, /<div id="root">\s*<article id="tm-prerender"/)
+  assert.match(out, /<div id="root">\s*<main>\s*<article id="tm-prerender"/)
   assert.match(out, /<h1[^>]*>Соглашение об использовании сервиса<\/h1>/)
 
   // Собственный title и описание в лимитах выдачи.

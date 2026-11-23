@@ -36,6 +36,7 @@ function prerender() {
   const work = mkdtempSync(resolve(tmpdir(), 'issue-495-'))
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
+  cpSync(resolve(repo, 'scripts/lib/root-main.mjs'), resolve(work, 'scripts/lib/root-main.mjs'))
   cpSync(resolve(repo, 'scripts/prerender-landing.mjs'), resolve(work, 'scripts/prerender-landing.mjs'))
   cpSync(resolve(repo, 'src/data'), resolve(work, 'src/data'), { recursive: true })
   writeFileSync(resolve(work, 'dist/index.html'), indexHtml)

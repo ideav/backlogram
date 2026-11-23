@@ -149,6 +149,7 @@ test('пререндер кладёт ликбез в хаб, а каждую с
   const work = mkdtempSync(resolve(tmpdir(), 'help-prerender-'))
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
+  cpSync(resolve(repo, 'scripts/lib/root-main.mjs'), resolve(work, 'scripts/lib/root-main.mjs'))
   cpSync(resolve(repo, 'scripts/prerender-help.mjs'), resolve(work, 'scripts/prerender-help.mjs'))
   cpSync(resolve(repo, 'src/data'), resolve(work, 'src/data'), { recursive: true })
   // Подпись «обновлено» пререндер берёт из src/lib/dates.mjs (#959).

@@ -18,6 +18,7 @@ import {
   LOSS_DEFAULT_CTA, LOSS_DEFAULT_RESULT_LABEL,
 } from '../src/data/lossLandings.mjs'
 import { computeLoss, defaultValues, formatPct, formatRub } from '../src/lib/lossCalc.mjs'
+import { EMPTY_ROOT, rootWithMain } from './lib/root-main.mjs'
 
 const dist = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'dist')
 const OG_IMAGE = `${LOSS_SITE}/og/knowledge-base.png`
@@ -143,7 +144,7 @@ for (const p of LOSS_LANDINGS) {
     // У служебной страницы robots заменяется, а не дописывается: два тега index/noindex противоречат друг другу.
     .replace(/<meta name="robots"[^>]*>/, (m) => (p.indexable ? m : '<meta name="robots" content="noindex, nofollow" />'))
     .replace('</head>', () => `    ${headFor(p, canonical)}\n  </head>`)
-    .replace('<div id="root"></div>', () => `<div id="root">${bodyFor(p)}</div>`)
+    .replace(EMPTY_ROOT, rootWithMain(bodyFor(p)))
   writeFileSync(resolve(dist, `${p.slug}.html`), html)
   console.log(`✓ loss landing prerendered → dist/${p.slug}.html${p.indexable ? '' : ' (noindex)'}`)
 }

@@ -20,6 +20,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { USE_CASES, HUB, SITE } from '../src/data/usecases.mjs'
 import { LOSS_INDEXABLE } from '../src/data/lossLandings.mjs'
+import { EMPTY_ROOT, rootWithMain } from './lib/root-main.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -110,7 +111,7 @@ function write(slug, seoTitle, metaDescription, headTags, bodyHtml) {
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${escape(seoTitle)}</title>`)
     .replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${escape(metaDescription)}" />`)
     .replace('</head>', `    ${headTags}\n  </head>`)
-    .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`)
+    .replace(EMPTY_ROOT, rootWithMain(bodyHtml))
   const outPath = resolve(dist, `${slug}.html`)
   writeFileSync(outPath, html)
   console.log(`✓ usecase prerendered → dist/${slug}.html (${html.length} bytes)`)

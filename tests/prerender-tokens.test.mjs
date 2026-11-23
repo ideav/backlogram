@@ -17,6 +17,7 @@ function makeWorkspace(prefix) {
   const work = mkdtempSync(resolve(tmpdir(), prefix))
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
+  cpSync(resolve(repo, 'scripts/lib/root-main.mjs'), resolve(work, 'scripts/lib/root-main.mjs'))
   cpSync(resolve(repo, 'scripts/prerender-tokens.mjs'), resolve(work, 'scripts/prerender-tokens.mjs'))
   cpSync(landingScript, resolve(work, 'scripts/prerender-landing.mjs'))
   // Пререндер главной читает данные из src/data (usecases + FAQ) — без них
@@ -51,7 +52,7 @@ test('prerender-tokens writes a crawlable dist/tokens.html with its own, non-hom
 
   // #root carries a crawlable, unique H1.
   assert.doesNotMatch(out, /<div id="root"><\/div>/, '#root must not be left empty')
-  assert.match(out, /<div id="root">\s*<article id="tk-prerender"/)
+  assert.match(out, /<div id="root">\s*<main>\s*<article id="tk-prerender"/)
   assert.match(out, /<h1[^>]*>Токены Интеграма — оплата за реальные действия<\/h1>/)
 
   // The whole point of #418: /tokens.html must not share the home page <title>.

@@ -21,6 +21,7 @@ function prerender() {
   const work = mkdtempSync(resolve(tmpdir(), 'db-templates-prerender-'))
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
+  cpSync(resolve(repo, 'scripts/lib/root-main.mjs'), resolve(work, 'scripts/lib/root-main.mjs'))
   cpSync(resolve(repo, 'scripts/prerender-db-templates.mjs'), resolve(work, 'scripts/prerender-db-templates.mjs'))
   cpSync(resolve(repo, 'src/data'), resolve(work, 'src/data'), { recursive: true })
   writeFileSync(resolve(work, 'dist/index.html'), indexHtml)
@@ -74,7 +75,7 @@ test('страницы нет в кольце «См. также» справо�
 
 test('пререндер несёт каталог, шаги, ограничения и мета-теги', () => {
   const out = prerender()
-  assert.match(out, /<div id="root">\s*<article id="db-templates-prerender"/)
+  assert.match(out, /<div id="root">\s*<main>\s*<article id="db-templates-prerender"/)
   assert.match(out, /<link rel="canonical" href="https:\/\/ideav\.ru\/shablony-reshenij\.html" \/>/)
   assert.match(out, /<title>[^<]*Шаблоны решений/)
   assert.ok(out.includes(`content="${DBT_META.description}"`))

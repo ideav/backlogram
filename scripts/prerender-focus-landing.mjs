@@ -11,6 +11,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { FOCUS_HUB, FOCUS_LANDINGS, FOCUS_PATH, FOCUS_SITE } from '../src/data/focusLandings.mjs'
+import { EMPTY_ROOT, rootWithMain } from './lib/root-main.mjs'
 
 const dist = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'dist')
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }
@@ -60,7 +61,7 @@ const html = source
   // Один тег robots: дописанный рядом с index, follow противоречил бы ему.
   .replace(/<meta name="robots"[^>]*>/, () => '<meta name="robots" content="noindex, nofollow" />')
   .replace('</head>', () => `    <link rel="canonical" href="${esc(canonical)}" />\n  </head>`)
-  .replace('<div id="root"></div>', () => `<div id="root">${body}</div>`)
+  .replace(EMPTY_ROOT, rootWithMain(body))
 if (!html.includes('noindex, nofollow')) {
   console.error('✗ prerender-focus-landing: в dist/index.html нет meta robots — noindex не поставлен')
   process.exit(1)

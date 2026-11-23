@@ -17,6 +17,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { PARTNER_DOCS, PARTNER_DOCS_OPERATOR as OP } from '../src/data/partner-docs.mjs'
+import { EMPTY_ROOT, rootWithMain } from './lib/root-main.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const dist = resolve(__dirname, '..', 'dist')
@@ -167,7 +168,7 @@ for (const doc of Object.values(PARTNER_DOCS)) {
     .replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${escape(m.description)}" />`)
     .replace(/<meta name="keywords"[^>]*>/, `<meta name="keywords" content="${escape(m.keywords)}" />`)
     .replace('</head>', `    ${headTags}\n  </head>`)
-    .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`)
+    .replace(EMPTY_ROOT, rootWithMain(bodyHtml))
 
   const file = m.path.replace(/^\//, '')
   writeFileSync(resolve(dist, file), html)

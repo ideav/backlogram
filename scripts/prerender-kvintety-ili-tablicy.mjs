@@ -41,6 +41,7 @@ import {
   hoursLabel,
 } from '../src/data/quintetsQuiz.mjs'
 import { freshnessLine } from '../src/lib/dates.mjs'
+import { EMPTY_ROOT, rootWithMain } from './lib/root-main.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -383,7 +384,7 @@ const html = source
     `<meta name="keywords" content="${escape(QUIZ_META.keywords)}" />`,
   )
   .replace('</head>', `    ${headTags}\n  </head>`)
-  .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`)
+  .replace(EMPTY_ROOT, rootWithMain(bodyHtml))
 
 const outPath = resolve(dist, 'kvintety-ili-tablicy.html')
 writeFileSync(outPath, html)

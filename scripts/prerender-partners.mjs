@@ -14,6 +14,7 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { EMPTY_ROOT, rootWithMain } from './lib/root-main.mjs'
 import {
   PARTNERS_META,
   HERO_LEAD,
@@ -190,7 +191,7 @@ const html = source
   .replace(/<title>[\s\S]*?<\/title>/, `<title>${escape(PARTNERS_META.title)}</title>`)
   .replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${escape(PARTNERS_META.description)}" />`)
   .replace('</head>', `    ${headTags}\n  </head>`)
-  .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`)
+  .replace(EMPTY_ROOT, rootWithMain(bodyHtml))
 
 writeFileSync(resolve(dist, 'partners.html'), html)
 console.log(`✓ partners prerendered → dist/partners.html (${html.length} bytes)`)

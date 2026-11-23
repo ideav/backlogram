@@ -26,6 +26,7 @@ function makeWorkspace(prefix) {
   const work = mkdtempSync(resolve(tmpdir(), prefix))
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
+  cpSync(resolve(repo, 'scripts/lib/root-main.mjs'), resolve(work, 'scripts/lib/root-main.mjs'))
   cpSync(
     resolve(repo, 'scripts/prerender-alexey-semenov.mjs'),
     resolve(work, 'scripts/prerender-alexey-semenov.mjs'),
@@ -65,7 +66,7 @@ test('prerender writes a crawlable dist/alexey-semenov.html with its own, non-ho
   const out = readFileSync(outPath, 'utf8')
 
   assert.doesNotMatch(out, /<div id="root"><\/div>/, '#root must not be left empty')
-  assert.match(out, /<div id="root">\s*<article id="as-prerender"/)
+  assert.match(out, /<div id="root">\s*<main>\s*<article id="as-prerender"/)
   assert.match(out, /<h1[^>]*>Алексей Семёнов<\/h1>/)
 
   const title = out.match(/<title>([\s\S]*?)<\/title>/)[1]

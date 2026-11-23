@@ -20,6 +20,7 @@ test('landing prerender exposes the registry notice to no-JS clients', () => {
   const work = mkdtempSync(resolve(tmpdir(), 'lp-registry-notice-'))
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
+  cpSync(resolve(repo, 'scripts/lib/root-main.mjs'), resolve(work, 'scripts/lib/root-main.mjs'))
   cpSync(resolve(repo, 'scripts/prerender-landing.mjs'), resolve(work, 'scripts/prerender-landing.mjs'))
   // Пререндер главной читает данные из src/data (usecases + FAQ) — без них
   // песочница падает на ERR_MODULE_NOT_FOUND (issue #495).

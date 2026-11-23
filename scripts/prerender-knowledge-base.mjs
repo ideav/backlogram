@@ -38,6 +38,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { build } from 'esbuild'
 import { humanDate } from '../src/lib/dates.mjs'
+import { EMPTY_ROOT, rootWithMain } from './lib/root-main.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -219,7 +220,7 @@ function patchHtml({ title, description, ogTitle, ogDescription, canonical, ogTy
         : ''
     )
     .replace('</head>', `    ${tags}\n  </head>`)
-    .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`)
+    .replace(EMPTY_ROOT, rootWithMain(bodyHtml))
 
   return html
 }

@@ -23,6 +23,7 @@ import { HELP_API_TITLE, helpLevelLabel, helpSplitBlocks, HELP_META, HELP_INTRO,
 import { docsRingHtml } from '../src/data/docsRing.mjs'
 import { pageLinkAttrs } from '../src/data/pageTarget.mjs'
 import { humanDate } from '../src/lib/dates.mjs'
+import { EMPTY_ROOT, rootWithMain } from './lib/root-main.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -365,7 +366,7 @@ function page({ path, title, description, ogImage, jsonLd, body, extraHead = '' 
     // <main> — основной контент для экстракторов ИИ-поиска: меню inject-static-nav
     // встаёт перед ним первым ребёнком #root (backlogram#969). createRoot всё равно
     // заменяет содержимое #root целиком, гидратации нет.
-    .replace('<div id="root"></div>', () => `<div id="root"><main>${body}</main></div>`)
+    .replace(EMPTY_ROOT, rootWithMain(body))
 }
 
 const hubHtml = page({

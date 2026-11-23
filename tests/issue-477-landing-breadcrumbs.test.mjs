@@ -64,6 +64,7 @@ test('prerender emits BreadcrumbList JSON-LD into dist/excel-to-app.html', () =>
   const work = mkdtempSync(resolve(tmpdir(), 'bc-prerender-'))
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
+  cpSync(resolve(repo, 'scripts/lib/root-main.mjs'), resolve(work, 'scripts/lib/root-main.mjs'))
   cpSync(
     resolve(repo, 'scripts/prerender-excel-to-app.mjs'),
     resolve(work, 'scripts/prerender-excel-to-app.mjs'),

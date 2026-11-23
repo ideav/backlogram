@@ -43,6 +43,7 @@ function makeWorkspace(prefix) {
   const work = mkdtempSync(resolve(tmpdir(), prefix))
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
+  cpSync(resolve(repo, 'scripts/lib/root-main.mjs'), resolve(work, 'scripts/lib/root-main.mjs'))
   cpSync(
     resolve(repo, 'scripts/prerender-kvintety-ili-tablicy.mjs'),
     resolve(work, 'scripts/prerender-kvintety-ili-tablicy.mjs'),
@@ -281,7 +282,7 @@ test('prerender пишет crawlable dist/kvintety-ili-tablicy.html со все�
   const out = readFileSync(outPath, 'utf8')
 
   assert.doesNotMatch(out, /<div id="root"><\/div>/, '#root не должен остаться пустым')
-  assert.match(out, /<div id="root">\s*<article id="qz-prerender"/)
+  assert.match(out, /<div id="root">\s*<main>\s*<article id="qz-prerender"/)
   // H1 собран из тех же строк, что в React-странице, — целиком он равен QUIZ_META.h1.
   const h1 = out.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)[1].replace(/<[^>]+>/g, '')
   assert.equal(h1, QUIZ_META.h1)

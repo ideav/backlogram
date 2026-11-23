@@ -18,6 +18,7 @@ function makeWorkspace(prefix) {
   const work = mkdtempSync(resolve(tmpdir(), prefix))
   mkdirSync(resolve(work, 'dist'), { recursive: true })
   mkdirSync(resolve(work, 'scripts'), { recursive: true })
+  cpSync(resolve(repo, 'scripts/lib/root-main.mjs'), resolve(work, 'scripts/lib/root-main.mjs'))
   cpSync(resolve(repo, 'scripts/prerender-agent-platforms.mjs'), resolve(work, 'scripts/prerender-agent-platforms.mjs'))
   cpSync(resolve(repo, 'scripts/prerender-landing.mjs'), resolve(work, 'scripts/prerender-landing.mjs'))
   // Пререндер главной читает данные из src/data (usecases + FAQ) — без них
@@ -114,7 +115,7 @@ test('prerender-agent-platforms writes a crawlable dist/agent-platforms.html', (
 
   // #root carries a crawlable H1 and competitor headings.
   assert.doesNotMatch(out, /<div id="root"><\/div>/, '#root must not be left empty')
-  assert.match(out, /<div id="root">\s*<article id="ap-prerender"/)
+  assert.match(out, /<div id="root">\s*<main>\s*<article id="ap-prerender"/)
   assert.match(out, /Retool \+ Retool AI/)
   assert.match(out, /Microsoft Power Platform \+ Copilot/)
   assert.match(out, /NocoDB/)
