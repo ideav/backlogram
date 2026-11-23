@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { LifeBuoy } from 'lucide-react'
 import Breadcrumbs from '../components/Breadcrumbs'
 import { Inline } from './ApiDocs'
-import { HELP_META, HELP_SECTIONS, HELP_ARTICLES } from '../data/helpCenter'
+import { HELP_META, HELP_SECTIONS, HELP_ARTICLES, helpCountLabel } from '../data/helpCenter'
 import { buildIndex } from '../lib/helpSearch'
 import { humanDate } from '../lib/dates'
 import NotFound from './NotFound'
@@ -37,7 +37,7 @@ export default function HelpSection() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumbs items={[{ name: 'Интеграм', to: '/' }, { name: 'Помощь', to: HELP_META.path }, { name: s.title, to: s.path }]} />
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 text-blue-600 dark:text-blue-400 text-sm font-medium mb-5">
-            <LifeBuoy size={14} /> {s.articles.length} приёмов по шагам · обновлено <time dateTime={HELP_META.updated}>{humanDate(HELP_META.updated)}</time>
+            <LifeBuoy size={14} /> {helpCountLabel(s.articles.length)} по шагам · обновлено <time dateTime={HELP_META.updated}>{humanDate(HELP_META.updated)}</time>
           </div>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5">{s.title}</h1>
           <AgentsNote path={s.path} />

@@ -20,6 +20,14 @@ import { SECTION as onprem } from './help/onprem.mjs'
 import { PRACTICE } from './help/practice.mjs'
 
 
+/** «381 приём», «42 приёма», «13 приёмов» — согласование с числом (crm#5671). */
+export function helpCountLabel(n) {
+  const m = n % 100
+  const k = n % 10
+  const word = m > 10 && m < 20 ? 'приёмов' : k === 1 ? 'приём' : k >= 2 && k <= 4 ? 'приёма' : 'приёмов'
+  return `${n} ${word}`
+}
+
 export const HELP_META = {
   path: '/help.html',
   title: 'Помощь по Интеграму (Integram): как сделать по шагам',
