@@ -19,7 +19,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { HELP_API_TITLE, helpLevelLabel, helpSplitBlocks, HELP_META, HELP_INTRO, HELP_SECTIONS } from '../src/data/helpCenter.mjs'
+import { HELP_API_TITLE, helpLevelLabel, helpSplitBlocks, HELP_META, HELP_INTRO, HELP_SECTIONS, helpCountLabel } from '../src/data/helpCenter.mjs'
 import { docsRingHtml } from '../src/data/docsRing.mjs'
 import { pageLinkAttrs } from '../src/data/pageTarget.mjs'
 import { humanDate } from '../src/lib/dates.mjs'
@@ -98,7 +98,7 @@ const agentsHtml = (path) =>
   `<aside class="api-prerender__agents"><p><strong>${escape(HELP_INTRO.agents.title)}.</strong> ${inline(HELP_INTRO.agents.text)}</p><p>${HELP_INTRO.agents.links.map((l) => link(l.href, l.text, path)).join(' · ')}</p></aside>`
 
 const freshness = (count) =>
-  `<p class="api-prerender__label">${count} приёмов по шагам · обновлено <time datetime="${HELP_META.updated}">${humanDate(HELP_META.updated)}</time></p>`
+  `<p class="api-prerender__label">${helpCountLabel(count)} по шагам · обновлено <time datetime="${HELP_META.updated}">${humanDate(HELP_META.updated)}</time></p>`
 
 const footerHtml = `
   <footer class="api-prerender__footer">

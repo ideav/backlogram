@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { HELP_META, HELP_SECTIONS, HELP_ARTICLES } from '../src/data/helpCenter.mjs'
+import { HELP_META, HELP_SECTIONS, HELP_ARTICLES, helpCountLabel } from '../src/data/helpCenter.mjs'
 
 // backlogram#959: SEO/GEO-проверка /help.html — свежесть, разметка разделов,
 // разделы в llms.txt. С #961 хаб — CollectionPage, разделы — свои страницы.
@@ -47,7 +47,7 @@ test('разметка хаба: даты, картинка, о чём стра�
 })
 
 test('видимая строка свежести совпадает с dateModified', () => {
-  assert.match(html, new RegExp(`${HELP_ARTICLES.length} приёмов по шагам · обновлено <time datetime="${HELP_META.updated}">`))
+  assert.match(html, new RegExp(`${helpCountLabel(HELP_ARTICLES.length)} по шагам · обновлено <time datetime="${HELP_META.updated}">`))
   assert.match(read('src/pages/HelpCenter.tsx'), /dateTime=\{HELP_META\.updated\}/)
 })
 

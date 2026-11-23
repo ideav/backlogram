@@ -40,6 +40,9 @@ export interface HelpIntro {
   glossary: { term: string; text: string }[]
 }
 
+/** «381 приём», «42 приёма», «13 приёмов» (crm#5671). */
+export function helpCountLabel(n: number): string
+
 export const HELP_META: { path: string; title: string; h1: string; published: string; updated: string; description: string; keywords: string }
 export const HELP_INTRO: HelpIntro
 export const HELP_SECTIONS: HelpSection[]

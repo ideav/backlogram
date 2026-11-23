@@ -3,7 +3,7 @@ import { Bot, LifeBuoy, MessageCircleQuestion, Search, Sparkles } from 'lucide-r
 import Breadcrumbs from '../components/Breadcrumbs'
 import DocsSeeAlso from '../components/DocsSeeAlso'
 import { Block, Inline } from './ApiDocs'
-import { HELP_API_TITLE, helpLevelLabel, helpSplitBlocks, HELP_META, HELP_INTRO, HELP_SECTIONS, HELP_ARTICLES, HELP_SAMPLE_QUESTIONS, helpSectionOf, helpSectionPath } from '../data/helpCenter'
+import { HELP_API_TITLE, helpLevelLabel, helpSplitBlocks, HELP_META, HELP_INTRO, HELP_SECTIONS, HELP_ARTICLES, HELP_SAMPLE_QUESTIONS, helpCountLabel, helpSectionOf, helpSectionPath } from '../data/helpCenter'
 import type { HelpArticle, HelpFlatArticle } from '../data/helpCenter'
 import { buildIndex, consult, search } from '../lib/helpSearch'
 import type { HelpAnswer } from '../lib/helpSearch'
@@ -288,7 +288,7 @@ export default function HelpCenter() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumbs items={[{ name: 'Интеграм', to: '/' }, { name: 'Помощь', to: HELP_META.path }]} />
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 text-blue-600 dark:text-blue-400 text-sm font-medium mb-5">
-            <LifeBuoy size={14} /> {total} приёмов по шагам · обновлено <time dateTime={HELP_META.updated}>{humanDate(HELP_META.updated)}</time>
+            <LifeBuoy size={14} /> {helpCountLabel(total)} по шагам · обновлено <time dateTime={HELP_META.updated}>{humanDate(HELP_META.updated)}</time>
           </div>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5">{HELP_META.h1}</h1>
           <AgentsNote path={HELP_META.path} />
