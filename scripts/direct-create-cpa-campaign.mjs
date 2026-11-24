@@ -55,7 +55,8 @@
  *                    например network — досоздать сети, если Директ оборвал прогон
  */
 
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
@@ -419,6 +420,42 @@ PROFILES.focus = {
 }
 
 /**
+ * «Решения» (backlogram#1017): по кампании на карточку каталога ideav.ru/solutions/<slug>
+ * и одна на сам каталог. В кампании две группы (поле `campaign` у группы в
+ * solutions.keywords.json): запросы про систему — 3 объявления, запросы про задачу —
+ * ещё 2, итого 5 (больше трёх в группе Директ не держит). Платим за sol_lead —
+ * заявку с портала, отправленную человеком (crm#5698, защита в download/solutions/app.js).
+ * Картинка объявления — фото карточки (docs/marketing/solutions-images/<кампания>.jpg).
+ */
+PROFILES.solutions = {
+  title: 'Решения',
+  slug: 'sol',
+  path: '/solutions/catalog',
+  goalName: 'sol_lead',
+  strategy: 'conversions',
+  cpaRub: 150,
+  weeklyRub: 1500,
+  goalValueRub: 0,
+  clickCeilingRub: { search: 60, network: 15 },
+  campaignPerGroup: true,
+  places: ['search'],
+  shifts: ['day'],
+  days: [1, 2, 3, 4, 5],
+  dayHours: { from: 8, to: 20 },
+  keywordFiles: [marketing('solutions.keywords.json')],
+  adsFile: marketing('solutions.ads.json'),
+  negativesFile: marketing('solutions.negatives.json'),
+  imagesDir: marketing('solutions-images'),
+  ads: [],
+  sitelinks: [
+    { Title: 'Оставить заявку', Description: 'Покажем демо и подстроим решение под вашу задачу', anchor: '/apply' },
+    { Title: 'Каталог решений', Description: 'WFM, BI, MDM, Service Desk, MES и другие системы', path: '/solutions/catalog' },
+    { Title: 'ИИ-трансформация', Description: 'Как ИИ подстраивает систему под процессы компании', path: '/ai-transform/' },
+  ],
+  callouts: ['Под вас за 1 день', 'Работает поверх 1С', 'Демо по заявке', 'Ваши правила и данные'],
+}
+
+/**
  * Копии кампаний профиля с другой стратегией (02.11.2026): STRATEGY=conversions
  * ставит оплату за конверсии (GOAL_ID, CPA_RUB) профилю с кликами, VARIANT
  * помечает копию — « · <VARIANT>» в имени кампании и «-<variant>» в
@@ -676,6 +713,9 @@ export function campaignPayload(name, slug, where, shift = 'day', profile = PROF
  * по четыре на каждую группу фраз: в имени кампании роль из имени группы
  * (до двоеточия), в `_group` — slug группы, в `_index` — номер внутри четвёрки.
  */
+/** Кампания группы: своё поле `campaign` (несколько групп в одной кампании, #1017) или slug. */
+export const campaignKey = group => group.campaign ?? group.slug
+
 export function campaignsFor(profile = PROFILE) {
   const where = { search: 'поиск', network: 'сети' }
   const shift = { day: 'день', night: 'ночь' }
@@ -688,8 +728,11 @@ export function campaignsFor(profile = PROFILE) {
   if (!profile.campaignPerGroup) return four(profile.title, profile.slug)
   // keepNegatives (#806): общий минус «личный» резал «личная карточка сиз» —
   // группа перечисляет слова общего списка, которые ей не применять.
-  return groupsFor(profile).flatMap(group =>
-    four(`${profile.title} ${group.name.split(':')[0].toLowerCase()}`, `${profile.slug}-${group.slug}`, { _group: group.slug })
+  // Поле `campaign` (#1017) собирает несколько групп в одну кампанию: имя, посадочная
+  // и минус-слова — от первой группы, `_group` — ключ кампании (см. campaignKey).
+  const firstOfCampaign = groupsFor(profile).filter((g, i, all) => all.findIndex(x => campaignKey(x) === campaignKey(g)) === i)
+  return firstOfCampaign.flatMap(group =>
+    four(`${profile.title} ${group.name.split(':')[0].toLowerCase()}`, `${profile.slug}-${campaignKey(group)}`, { _group: campaignKey(group) })
       .map(campaign => {
         const keep = group.keepNegatives ?? []
         const items = campaign.NegativeKeywords?.Items.filter(word => !keep.includes(word))
@@ -707,7 +750,19 @@ async function call(service, method, params) {
     // видно всю цепочку запросов, а не только первый.
     return { dryRun: true }
   }
-  return apiCall(service, method, params, cfg.token)
+  // «Сервис временно недоступен» (#933, #1017) Директ отдаёт пачками посреди создания
+  // кампании; без повтора остаётся недособранная кампания. Запрос при этом иногда
+  // всё же применён: 24.11.2026 повтор adgroups.add дал две пустые группы-дубля.
+  // После --apply сверять кабинет (группы без фраз и объявлений — удалить).
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await apiCall(service, method, params, cfg.token)
+    } catch (error) {
+      if (attempt >= 5 || !/временно недоступен/i.test(error.message)) throw error
+      console.log(`  ${service}.${method}: Директ временно недоступен, повтор ${attempt} через ${attempt * 15} с`)
+      await new Promise(resolve => setTimeout(resolve, attempt * 15000))
+    }
+  }
 }
 
 /** Из ответа Директа достаёт id, попутно показывая предупреждения. */
@@ -726,6 +781,43 @@ function idsOf(result, key) {
  * живом EDIT_CAMPAIGNS — тогда кампании создаются без уточнений, их можно
  * добавить в интерфейсе.
  */
+/**
+ * Картинка объявлений группы (#1017): `<imagesDir>/<group.image ?? кампания>.jpg`.
+ * Без imagesDir у профиля или без файла — объявление уходит без картинки.
+ */
+export function imageFileFor(group, profile = PROFILE) {
+  if (!profile.imagesDir || !group) return null
+  const file = path.join(profile.imagesDir, `${group.image ?? campaignKey(group)}.jpg`)
+  return existsSync(file) ? file : null
+}
+
+/** Имя картинки в библиотеке Директа: файл и 8 знаков md5 — перерисованная картинка получит новое имя. */
+export function imageNameFor(file) {
+  return `${path.basename(file)}#${createHash('md5').update(readFileSync(file)).digest('hex').slice(0, 8)}`
+}
+
+/** Хеши картинок в библиотеке кабинета: что уже есть — берём, чего нет — грузим (adimages.add). */
+async function imageHashesFor(files) {
+  const hashByName = {}
+  if (!files.length) return hashByName
+  const names = Object.fromEntries(files.map(f => [imageNameFor(f), f]))
+  if (!apply) {
+    for (const name of Object.keys(names)) hashByName[name] = `<hash ${name}>`
+    return hashByName
+  }
+  const existing = (await apiCall('adimages', 'get', { SelectionCriteria: {}, FieldNames: ['AdImageHash', 'Name'] }, cfg.token))?.AdImages ?? []
+  for (const img of existing) if (names[img.Name]) hashByName[img.Name] = img.AdImageHash
+  for (const [name, file] of Object.entries(names)) {
+    if (hashByName[name]) continue
+    const res = await call('adimages', 'add', { AdImages: [{ ImageData: readFileSync(file).toString('base64'), Name: name }] })
+    const r = res?.AddResults?.[0]
+    if (!r?.AdImageHash) throw new Error(`картинка ${name} не загружена: ${JSON.stringify(r?.Errors ?? res)}`)
+    hashByName[name] = r.AdImageHash
+    console.log(`картинка ${name} → ${r.AdImageHash}`)
+  }
+  return hashByName
+}
+
 async function calloutIdsFor(texts) {
   if (!apply) {
     await call('adextensions', 'add', { AdExtensions: texts.map(CalloutText => ({ Callout: { CalloutText } })) })
@@ -774,6 +866,8 @@ async function main() {
   }
 
   const groups = groupsFor()
+  const imageFiles = [...new Set(groups.map(g => imageFileFor(g)).filter(Boolean))]
+  const imageHash = await imageHashesFor(imageFiles)
   for (const campaign of campaignsFor()) {
     const { _slug: slug, _autotargeting: autotargeting, _group: onlyGroup, _index: campaignIndex, ...payload } = campaign
     if (process.env.CAMPAIGN_ONLY && !slug.includes(process.env.CAMPAIGN_ONLY)) continue
@@ -790,12 +884,14 @@ async function main() {
 
     // Набор быстрых ссылок свой на кампанию: в ссылках её UTM. У профилей
     // с кампанией на группу группа известна — в ссылках её посадочная.
-    const group = onlyGroup ? groups.find(g => g.slug === onlyGroup) : undefined
+    const group = onlyGroup ? groups.find(g => campaignKey(g) === onlyGroup) : undefined
     const setAdded = await call('sitelinks', 'add', { SitelinksSets: [{ Sitelinks: sitelinksFor(slug, cfg.siteUrl, PROFILE, group) }] })
     const [sitelinkSetId] = apply ? idsOf(setAdded, 'AddResults') : [`<id ссылок ${slug}>`]
     if (!sitelinkSetId) throw new Error('быстрые ссылки не созданы — см. ошибку выше')
 
-    for (const group of groups.filter(g => !onlyGroup || g.slug === onlyGroup)) {
+    for (const group of groups.filter(g => !onlyGroup || campaignKey(g) === onlyGroup)) {
+      const imageFile = imageFileFor(group)
+      const image = imageFile ? { AdImageHash: imageHash[imageNameFor(imageFile)] } : {}
       const groupPayload = {
         Name: `${group.name}`,
         CampaignId: campaignId,
@@ -816,7 +912,7 @@ async function main() {
       const adsAdded = await call('ads', 'add', {
         Ads: adsFor(slug, cfg.siteUrl, PROFILE, group, campaignIndex).map(ad => ({
           AdGroupId: groupId,
-          TextAd: { ...ad, SitelinkSetId: sitelinkSetId, ...(calloutIds.length ? { AdExtensionIds: calloutIds } : {}) },
+          TextAd: { ...ad, ...image, SitelinkSetId: sitelinkSetId, ...(calloutIds.length ? { AdExtensionIds: calloutIds } : {}) },
         })),
       })
       if (apply) idsOf(adsAdded, 'AddResults')
