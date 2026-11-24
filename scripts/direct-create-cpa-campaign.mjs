@@ -750,7 +750,19 @@ async function call(service, method, params) {
     // видно всю цепочку запросов, а не только первый.
     return { dryRun: true }
   }
-  return apiCall(service, method, params, cfg.token)
+  // «Сервис временно недоступен» (#933, #1017) Директ отдаёт пачками посреди создания
+  // кампании; без повтора остаётся недособранная кампания. Запрос при этом иногда
+  // всё же применён: 24.11.2026 повтор adgroups.add дал две пустые группы-дубля.
+  // После --apply сверять кабинет (группы без фраз и объявлений — удалить).
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await apiCall(service, method, params, cfg.token)
+    } catch (error) {
+      if (attempt >= 5 || !/временно недоступен/i.test(error.message)) throw error
+      console.log(`  ${service}.${method}: Директ временно недоступен, повтор ${attempt} через ${attempt * 15} с`)
+      await new Promise(resolve => setTimeout(resolve, attempt * 15000))
+    }
+  }
 }
 
 /** Из ответа Директа достаёт id, попутно показывая предупреждения. */
