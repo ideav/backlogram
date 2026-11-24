@@ -166,6 +166,12 @@ test('скрипт пререндера ставит цели воронки и�
     assert.ok(prerender.includes(`'${goal}'`), `цель ${goal} не найдена в tplScript`)
   }
   assert.ok(prerender.includes('assertTplPages'), 'данные tpl-страниц проверяются до отрисовки')
+  // tpl_download — оплачиваемая цель Директа: та же отсечка автоматов, что у
+  // looksHuman() главной (жест + 2,5 с + не webdriver), и не больше раза за визит.
+  assert.ok(prerender.includes(`'tpl_download_blocked'`), 'клик без проверки на человека уходит в tpl_download_blocked')
+  assert.ok(prerender.includes('if(v.isTrusted)hg=true'), 'учитываются только настоящие жесты')
+  assert.ok(prerender.includes('!hg||w<2500||navigator.webdriver'), 'отсечка как у looksHuman()')
+  assert.ok(prerender.includes("sessionStorage.setItem(dk,'1')"), 'одно скачивание за визит')
   const vite = read('../site-excel/vite.config.ts')
   assert.ok(vite.includes('loadTplPages'), 'tpl-страницы попадают в sitemap')
 })
