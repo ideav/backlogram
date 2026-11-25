@@ -338,6 +338,7 @@ export default function SiteSection({ slug }: { slug: string }) {
           <div className="mt-8 flex flex-wrap gap-3">
             <Cta cta={page.cta} primary onClick={() => trackSectionCta(page.slug, page.cta, 'top')} />
             <Cta cta={page.cta2} />
+            {page.cta3 && <Cta cta={page.cta3} />}
           </div>
         </div>
       </section>
