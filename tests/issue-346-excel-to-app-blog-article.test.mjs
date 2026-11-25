@@ -52,8 +52,10 @@ test('Excel to app article incorporates the issue 351 editorial improvements', (
   const post = readFileSync(postPath, 'utf8')
 
   // 1. The human role inside the 45 minutes is made transparent.
-  assert.match(post, /### Где в этих 45 минутах участвует человек/)
-  assert.match(post, /оператором Интеграма/)
+  // #1025: проверяет сам агент, человек подсказывает то, чего ещё не сказал.
+  assert.match(post, /### Кто проверяет результат за эти 45 минут/)
+  assert.match(post, /сам проверяет результат/)
+  assert.doesNotMatch(post, /оператором Интеграма/)
 
   // 2. It states what does NOT migrate from Excel (formulas, VBA, conditional formatting).
   assert.match(post, /макросы VBA/)
