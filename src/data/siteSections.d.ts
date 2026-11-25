@@ -78,6 +78,8 @@ export interface SiteSection {
   lead: string
   cta: SectionCta
   cta2: SectionCta
+  /** Необязательная третья кнопка hero (#1026). */
+  cta3?: SectionCta
   blocks: SectionBlock[]
   faq: { q: string; a: string }[]
 }

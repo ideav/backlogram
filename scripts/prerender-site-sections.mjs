@@ -57,7 +57,7 @@ const PRERENDER_STYLE = `
   .dark #section-prerender .section-lead, .dark #section-prerender .section-footer { color: #94a3b8; }
 </style>`
 
-const link = (l) => `<a href="${escape(l.href)}"${l.external ? ' rel="noopener"' : ''}>${escape(l.title ?? l.text)}</a>`
+const link = (l) => `<a href="${escape(l.href)}"${l.external ? ' target="_blank" rel="noopener noreferrer"' : ''}>${escape(l.title ?? l.text)}</a>`
 
 function write(slug, page, headTags, bodyHtml) {
   const source = readFileSync(resolve(dist, 'index.html'), 'utf8')
@@ -164,7 +164,7 @@ for (const page of SITE_SECTIONS) {
     <p class="section-eyebrow">${escape(page.badge)}</p>
     <h1>${escape(`${page.h1} ${page.h1accent}`)}</h1>
     <p class="section-lead">${escape(page.lead)}</p>
-    <p>${link(page.cta)} · ${link(page.cta2)}</p>
+    <p>${link(page.cta)} · ${link(page.cta2)}${page.cta3 ? ` · ${link(page.cta3)}` : ''}</p>
   </header>
   ${blocksHtml}
   <section id="faq">
