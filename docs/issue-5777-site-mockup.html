@@ -12,7 +12,6 @@
 :root{
   --cbg:#f3f4f7; --cfg:#1b1f27; --cmut:#5d6573; --cline:#d9dde5; --ccard:#ffffff;
   --sys:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
-  --logo:#c8392b;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--cbg:#0f1217;--cfg:#e8ebf0;--cmut:#9aa3b2;--cline:#2a303b;--ccard:#171b22;color-scheme:dark}}
 :root[data-theme="dark"]{--cbg:#0f1217;--cfg:#e8ebf0;--cmut:#9aa3b2;--cline:#2a303b;--ccard:#171b22;color-scheme:dark}
@@ -69,8 +68,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 /* header */
 .hdr{border-bottom:1px solid var(--line);background:var(--surf)}
 .hdr .in{display:flex;align-items:center;gap:14px 20px;padding-block:14px;flex-wrap:wrap}
-.logo{display:flex;align-items:center;gap:10px;font-family:var(--hf);font-weight:700;font-size:19px;color:var(--ink)}
-.logo i{width:32px;height:32px;border-radius:8px;background:var(--logo);color:#fff;font:700 18px/32px var(--sys);text-align:center;font-style:normal}
+.site .logo{display:flex;align-items:center;color:var(--ink)}
+.logo .lg{height:26px;width:auto;display:block}
 .nav{display:flex;gap:6px 18px;flex-wrap:wrap;font-size:15px}
 .nav a{color:var(--ink);text-decoration:none}
 .nav a:hover,.nav a.on{color:var(--link)}
@@ -163,7 +162,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 <div class="stage"><div class="frame"><div class="site" id="site">
 
 <header class="hdr"><div class="in">
-  <div class="logo"><i>И</i>Интеграм</div>
+  <a class="logo" href="#"><svg class="lg" viewBox="0 0 783.56 133.33" fill="currentColor" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Интеграм"><polygon fill="#307fe2" points="116.92 41.15 108.17 50.57 123.11 66.66 74.45 118.53 12.68 98.54 12.68 34.79 74.45 14.8 85.63 26.99 94.46 17.68 78.14 0 0 25.29 0 108.04 78.14 133.33 140.69 66.66 116.92 41.15" /><polygon fill="#307fe2" points="85.74 92.18 94.48 82.76 79.55 66.67 128.21 14.8 189.97 34.79 189.97 98.54 128.21 118.53 117 106.31 108.17 115.63 124.51 133.33 202.65 108.05 202.65 25.29 124.51 0 61.96 66.67 85.74 92.18" /><polygon points="257.87 78.16 257.87 35.33 246.14 35.33 246.14 98.44 255.61 98.44 292.13 55.62 292.13 98.44 303.85 98.44 303.85 35.33 294.38 35.33 257.87 78.16" /><polygon points="360.18 56.62 326.82 56.62 326.82 35.33 315.1 35.33 315.1 98.44 326.82 98.44 326.82 67.44 360.18 67.44 360.18 98.44 371.9 98.44 371.9 35.33 360.18 35.33 360.18 56.62" /><polygon points="379.55 46.15 402.09 46.15 402.09 98.44 413.81 98.44 413.81 46.15 436.35 46.15 436.35 35.33 379.55 35.33 379.55 46.15" /><polygon points="444 98.44 498.1 98.44 498.1 87.63 455.72 87.63 455.72 67.34 487.73 67.34 487.73 56.52 455.72 56.52 455.72 46.15 498.1 46.15 498.1 35.33 444 35.33 444 98.44" /><path d="M713.36,117.63h-58.6v63.11h11.72V160.45l25.24-2.25c13.53-1.17,21.64-9.46,21.64-19.83Zm-11.72,20.29c0,6.76-5.41,9-10.37,9.46l-24.79,2.26V128.45h35.16Z" transform="translate(-82.14 -82.3)" /><polygon points="775.9 35.33 763.28 35.33 742.99 78.16 722.71 35.33 710.09 35.33 702.42 98.44 714.14 98.44 719.55 53.37 735.78 87.63 750.21 87.63 766.43 53.37 771.84 98.44 783.57 98.44 775.9 35.33" /><polygon points="507.55 98.44 519.27 98.44 519.27 86.04 519.27 78.16 519.27 67.34 519.27 46.15 554.43 46.15 566.15 46.15 566.15 35.33 507.55 35.33 507.55 98.44" /><path d="M730.93,117.63l-21.64,63.11h12.17l6.94-19.83.21-.64h31.8l.23.64h0l6.77,19.83h12.17L758,117.63Zm.67,32.74,7.9-21.92h9.91l6.51,19.13,1,2.79Z" transform="translate(-82.14 -82.3)" /></svg></a>
   <nav class="nav" aria-label="Разделы">
     <a href="#" class="on">Заменить Excel</a><a href="#">Автоматизация</a><a href="#">Разработчикам</a><a href="#">Услуги и цены</a><a href="#">База знаний</a>
   </nav>
@@ -291,7 +290,7 @@ const T=[
  {n:'7. Два тона',d:'Jost. Сливовые заголовки, янтарное выделение',hf:'Jost',hw:700,ls:'0',m:'color',
   L:{bg:'#fdf9ff',surf:'#ffffff',surf2:'#f6ecfb',ink:'#2a1f33',hink:'#5b1a8a',sub:'#6e5a7e',line:'#eadcf2',line2:'#d6c2e3',primary:'#5b1a8a',pfg:'#ffffff',link:'#7a2bb5',acc:'#f28c00',soft:'#fff0d9',softfg:'#8a4e00',bad:'#c62828'},
   D:{bg:'#1c1026',surf:'#251634',surf2:'#20132d',ink:'#efe6f7',hink:'#d8b4fe',sub:'#b8a3c8',line:'#3a2650',line2:'#52386e',primary:'#ffb84d',pfg:'#1c1026',link:'#e3c4ff',acc:'#ffb84d',soft:'#46301a',softfg:'#ffcc80',bad:'#ff6b6b'}},
- {n:'8. Красный логотипа',d:'Inter Tight. Ночной синий, выделение красным логотипа',hf:'Inter Tight',hw:800,ls:'-.025em',m:'color',
+ {n:'8. Красный',d:'Inter Tight. Ночной синий, выделение красным',hf:'Inter Tight',hw:800,ls:'-.025em',m:'color',
   L:{...NL,primary:'#c8392b',pfg:'#ffffff',link:'#b8321f',acc:'#c8392b',soft:'#fbe5e2',softfg:'#9c2c20'},
   D:{...ND,primary:'#e2483a',pfg:'#ffffff',link:'#ff7b6c',acc:'#ff5a48',soft:'#3d1f23',softfg:'#ff9b8f'}},
  {n:'9. Синий с красной чертой',d:'Commissioner. Синее выделение с красной чертой',hf:'Commissioner',hw:800,m:'under',
@@ -300,7 +299,7 @@ const T=[
  {n:'10. Ночное небо',d:'IBM Plex Sans. Градиент от синего к голубому',hf:'IBM Plex Sans',hw:700,m:'grad',
   L:{...NL,bg:'#f5f8ff',surf2:'#eaf1ff',ink:'#16294d',sub:'#4a5a7a',line:'#dde6f5',primary:'#16294d',pfg:'#ffffff',link:'#1d4ed8',acc:'#1d4ed8',acc2:'#0ea5e9',soft:'#e0f2fe',softfg:'#0369a1'},
   D:{...ND,bg:'#0b1222',surf:'#111b30',surf2:'#0e172a',primary:'#2563eb',pfg:'#ffffff',link:'#7fc4ff',acc:'#60a5fa',acc2:'#38e0ff',soft:'#0f2c47',softfg:'#7fd4ff'}},
- {n:'11. Плашка «И»',d:'Montserrat. Белое слово на красной плашке, как в логотипе',hf:'Montserrat',hw:800,ls:'-.02em',m:'block',
+ {n:'11. Красная плашка',d:'Montserrat. Белое слово на красной плашке',hf:'Montserrat',hw:800,ls:'-.02em',m:'block',
   L:{...NL,primary:'#10182a',pfg:'#ffffff',link:'#b8321f',acc:'#c8392b',accfg:'#ffffff',soft:'#fbe5e2',softfg:'#9c2c20'},
   D:{...ND,primary:'#e2483a',pfg:'#ffffff',link:'#ff7b6c',acc:'#e2483a',accfg:'#ffffff',soft:'#3d1f23',softfg:'#ff9b8f'}},
  {n:'12. Синий маркер',d:'Exo 2. Выделение голубой полосой маркера',hf:'Exo 2',hw:700,m:'marker',
