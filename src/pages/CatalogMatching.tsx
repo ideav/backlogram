@@ -379,7 +379,7 @@ export default function CatalogMatching() {
             className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5"
           >
             {CM_META.h1.slice(0, -CM_META.h1Accent.length)}
-            <span className="text-blue-500">{CM_META.h1Accent}</span>
+            {CM_META.h1Accent}
           </motion.h1>
 
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">{CM_META.lead}</p>

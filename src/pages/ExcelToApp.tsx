@@ -544,7 +544,7 @@ export default function ExcelToApp() {
               </div>
 
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
-                Заберите свою базу данных, <span className="text-blue-500 italic">созданную ИИ</span>
+                Заберите свою базу данных, созданную ИИ
               </h2>
 
               <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-8">
@@ -654,7 +654,7 @@ export default function ExcelToApp() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8"
           >
-            Загрузите ваши Excel — <span className="text-blue-500 italic">получите приложение</span>
+            Загрузите ваши Excel — получите приложение
           </motion.h1>
 
           <motion.p

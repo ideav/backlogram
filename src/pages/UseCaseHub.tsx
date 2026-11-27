@@ -63,7 +63,7 @@ export default function UseCaseHub() {
           />
           <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5">
-            {HUB.h1} <span className="text-blue-500">{HUB.h1accent}</span>
+            {HUB.h1} {HUB.h1accent}
           </motion.h1>
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">{HUB.lead}</p>
         </div>
