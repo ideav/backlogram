@@ -7,6 +7,7 @@
 
 require __DIR__ . '/../../public/intake-shared.php';
 require __DIR__ . '/../../public/intake-queue.php';
+require __DIR__ . '/../../public/intake-publish.php';
 
 $failures = 0;
 function check(string $label, bool $cond): void {
@@ -84,6 +85,14 @@ putenv('INTAKE_TEST_FLAG');
 
 // ── intake_encode_path ────────────────────────────────────────────────────────
 check('encode path keeps slashes', intake_encode_path('orders/a b/c.xlsx') === 'orders/a%20b/c.xlsx');
+
+// ── Заголовок заявки (excel2app#34: «Дашборд собственника (…)» не доходил) ──
+$hd = 'Дашборд собственника (Битрикс24, 1С, Google-таблицы)';
+$tgMsg = intake_build_telegram_message($hd, 'Юля', '', 'a@m2018.ru', 'тема', [], '');
+check('telegram heading escaped for MarkdownV2', str_contains($tgMsg, '\(Битрикс24, 1С, Google\-таблицы\)'));
+check('telegram heading has no raw parens', !str_contains($tgMsg, ' (Битрикс24'));
+$issueBody = intake_build_issue_body($hd, 'Юля', '', 'a@m2018.ru', 'тема', [], 'id1');
+check('issue body keeps heading', str_contains($issueBody, '## Новая заявка «' . $hd . '»'));
 
 if ($failures > 0) {
     fwrite(STDERR, "$failures assertion(s) failed\n");
