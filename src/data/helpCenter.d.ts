@@ -37,7 +37,6 @@ export interface HelpIntro {
   lead: string[]
   agents: { title: string; text: string; links: HelpLink[] }
   blocks: HelpIntroBlock[]
-  glossary: { term: string; text: string }[]
 }
 
 /** «381 приём», «42 приёма», «13 приёмов» (crm#5671). */

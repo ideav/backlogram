@@ -177,8 +177,7 @@ const introHtml = `
     </section>`,
       )
       .join('')}
-    <h3>Словарик терминов</h3>
-    <dl>${HELP_INTRO.glossary.map((g) => `<dt>${escape(g.term)}</dt><dd>${inline(g.text)}</dd>`).join('')}</dl>
+    <p class="help-glossary-link">Незнакомое слово — в ${link('/slovar-terminov.html', 'словаре терминов', HUB)}: все термины сайта, справки и каталога решений.</p>
   </section>`
 
 const hubSectionsHtml = `
