@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Заголовки ideav.ru</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=Geologica:wght@400;800&family=Onest:wght@400;800&family=Manrope:wght@400;800&family=Playfair+Display:ital,wght@1,700&family=Rubik:wght@400;700&family=Golos+Text:wght@400;800&family=Jost:wght@400;700&display=swap">
+<style>
+/* Layout: page chrome follows the viewer theme; each variant is shown on a fixed light and a fixed dark panel, like the site in both modes. */
+:root{
+  --bg:#f6f7f9; --fg:#1b1f27; --muted:#5d6573; --line:#dfe3ea; --card:#ffffff;
+  --sys:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#11141a;--fg:#e8ebf0;--muted:#9aa3b2;--line:#262c36;--card:#181c24;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#11141a;--fg:#e8ebf0;--muted:#9aa3b2;--line:#262c36;--card:#181c24;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--sys);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px}
+.wrap{max-width:1120px;margin:0 auto;display:grid;gap:28px}
+header h1{font:700 28px/1.2 var(--sys);margin:0 0 6px}
+header p{margin:0;color:var(--muted);max-width:68ch}
+.ref{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.ref div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-width:0}
+.ref small{display:block;color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.ref b{font:700 22px/1.2 var(--sys)}
+.v{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:14px}
+.vhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.vhead h2{margin:0;font:700 18px/1.3 var(--sys)}
+.vhead span{color:var(--muted);font-size:13px}
+.chips{display:flex;gap:6px;margin-left:auto}
+.chips i{width:18px;height:18px;border-radius:50%;border:1px solid var(--line);display:block}
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:760px){.panels{grid-template-columns:1fr}}
+.p{border-radius:10px;padding:26px 22px;display:grid;gap:14px;min-width:0;background:var(--pbg);color:var(--ink)}
+.p .h{margin:0;font-family:var(--hf);font-weight:var(--hw);font-size:clamp(24px,3.2vw,34px);line-height:1.15;letter-spacing:var(--ls,-.01em);text-wrap:balance}
+.p .h.s{font-size:clamp(19px,2.3vw,24px)}
+.p p{margin:0;font-family:var(--bf);font-size:15px;color:var(--sub);max-width:46ch}
+.p button{justify-self:start;font:600 14px/1 var(--bf);border:0;border-radius:8px;padding:11px 16px;background:var(--btn);color:var(--btnfg);cursor:pointer}
+.p button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.a{color:var(--acc)}
+
+/* 1 Маркер */
+.v1{--hf:'Unbounded',var(--sys);--bf:'Unbounded',var(--sys);--hw:700;--ls:-.02em}
+.v1 .l{--pbg:#fffdf6;--ink:#14213d;--sub:#4a5470;--acc:#14213d;--mk:#ffc93c;--btn:#14213d;--btnfg:#ffc93c}
+.v1 .d{--pbg:#101828;--ink:#f5f1e8;--sub:#b7bfd0;--acc:#101828;--mk:#ffc93c;--btn:#ffc93c;--btnfg:#101828}
+.v1 .a{background:linear-gradient(transparent 8%,var(--mk) 8%,var(--mk) 92%,transparent 92%);padding:0 .12em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.v1 .p p{font-family:var(--sys)}
+/* 2 Коралл */
+.v2{--hf:'Geologica',var(--sys);--bf:'Geologica',var(--sys);--hw:800}
+.v2 .l{--pbg:#f3faf8;--ink:#0b3c49;--sub:#3f6670;--acc:#ff5a36;--btn:#ff5a36;--btnfg:#fff}
+.v2 .d{--pbg:#0a2a33;--ink:#e6f4f1;--sub:#9cc0c6;--acc:#ff7a59;--btn:#ff7a59;--btnfg:#0a2a33}
+/* 3 Закат */
+.v3{--hf:'Onest',var(--sys);--bf:'Onest',var(--sys);--hw:800}
+.v3 .l{--pbg:#fff8f3;--ink:#1f1a2e;--sub:#5b5468;--g1:#ff6a00;--g2:#e8127c;--acc:#e8127c;--btn:#1f1a2e;--btnfg:#fff}
+.v3 .d{--pbg:#1a1424;--ink:#fff;--sub:#c3b9cf;--g1:#ff8a3d;--g2:#ff4fa3;--acc:#ff4fa3;--btn:#ff8a3d;--btnfg:#1a1424}
+.v3 .a{background:linear-gradient(90deg,var(--g1),var(--g2));-webkit-background-clip:text;background-clip:text;color:transparent}
+/* 4 Журнал */
+.v4{--hf:'Manrope',var(--sys);--bf:'Manrope',var(--sys);--hw:800}
+.v4 .l{--pbg:#ffffff;--ink:#111827;--sub:#4b5563;--acc:#d7263d;--btn:#d7263d;--btnfg:#fff}
+.v4 .d{--pbg:#14161c;--ink:#f3f4f6;--sub:#a5abb6;--acc:#ff5c6c;--btn:#ff5c6c;--btnfg:#14161c}
+.v4 .a{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:700;letter-spacing:0}
+/* 5 Плашка */
+.v5{--hf:'Rubik',var(--sys);--bf:'Rubik',var(--sys);--hw:700}
+.v5 .l{--pbg:#f7f8fa;--ink:#1d2433;--sub:#525b6c;--blk:#00a676;--blkfg:#fff;--acc:#00a676;--btn:#1d2433;--btnfg:#fff}
+.v5 .d{--pbg:#0f1520;--ink:#f1f5f9;--sub:#a3adbd;--blk:#19d39a;--blkfg:#062a1d;--acc:#19d39a;--btn:#19d39a;--btnfg:#062a1d}
+.v5 .a{background:var(--blk);color:var(--blkfg);padding:0 .18em;border-radius:.12em;display:inline-block;transform:rotate(-1.5deg);line-height:1.1}
+/* 6 Волна */
+.v6{--hf:'Golos Text',var(--sys);--bf:'Golos Text',var(--sys);--hw:800}
+.v6 .l{--pbg:#faf8ff;--ink:#2a1e5c;--sub:#5d5486;--acc:#e4007c;--wv:#ffb000;--btn:#2a1e5c;--btnfg:#fff}
+.v6 .d{--pbg:#18123a;--ink:#ede9fe;--sub:#b4abd8;--acc:#ff3d9a;--wv:#ffc233;--btn:#ff3d9a;--btnfg:#18123a}
+.v6 .a{text-decoration:underline wavy var(--wv);text-decoration-thickness:.07em;text-underline-offset:.18em;text-decoration-skip-ink:none}
+/* 7 Два тона */
+.v7{--hf:'Jost',var(--sys);--bf:'Jost',var(--sys);--hw:700;--ls:0}
+.v7 .l{--pbg:#fdf9ff;--ink:#5b1a8a;--sub:#6e5a7e;--acc:#f28c00;--btn:#5b1a8a;--btnfg:#fff}
+.v7 .d{--pbg:#1c1026;--ink:#d8b4fe;--sub:#b8a3c8;--acc:#ffb84d;--btn:#ffb84d;--btnfg:#1c1026}
+@media (prefers-reduced-motion:no-preference){.p button{transition:transform .15s}.p button:hover{transform:translateY(-1px)}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Варианты заголовков для ideav.ru</h1>
+    <p>Семь вариантов к задаче crm#5777. В каждом свой шрифт и своя гамма, и у каждого есть выделенная часть заголовка. Вариант показан на двух настоящих заголовках сайта, в светлой и тёмной теме. Кнопка показывает, как гамма ложится на остальную страницу.</p>
+  </header>
+
+  <div class="ref">
+    <div><small>Было на сайте</small><b>Словарь <span style="color:#3b82f6">терминов</span></b></div>
+    <div><small>Сейчас в PR #1037 (одним цветом)</small><b>Словарь терминов</b></div>
+  </div>
+
+  <div id="list" class="wrap" style="gap:20px"></div>
+</div>
+
+<script>
+const V=[
+ ['v1','1. Маркер','Unbounded. Тёмно-синий текст, выделенное слово на жёлтой полосе маркера',['#14213d','#ffc93c','#fffdf6']],
+ ['v2','2. Коралл и морская волна','Geologica. Тёмно-бирюзовый текст, коралловое выделение',['#0b3c49','#ff5a36','#f3faf8']],
+ ['v3','3. Закат','Onest. Выделение градиентом от оранжевого к малиновому',['#1f1a2e','#ff6a00','#e8127c']],
+ ['v4','4. Журнальный','Manrope и курсив Playfair Display. Выделение другим шрифтом, малиновым цветом',['#111827','#d7263d','#ffffff']],
+ ['v5','5. Плашка','Rubik. Выделенное слово на зелёной плашке, чуть повёрнутой',['#1d2433','#00a676','#f7f8fa']],
+ ['v6','6. Волна','Golos Text. Индиго, выделение фуксией с жёлтым волнистым подчёркиванием',['#2a1e5c','#e4007c','#ffb000']],
+ ['v7','7. Два тона','Jost. Весь заголовок цветной: сливовый плюс янтарное выделение',['#5b1a8a','#f28c00','#fdf9ff']],
+];
+const panel=c=>`<div class="p ${c}">
+  <div class="h">Словарь <span class="a">терминов</span></div>
+  <div class="h s">ИИ-агент собирает и ведёт приложение <span class="a">под ключ</span></div>
+  <p>235 терминов со всего сайта и каталога решений, простыми словами.</p>
+  <button type="button">Попробовать бесплатно</button></div>`;
+document.getElementById('list').innerHTML=V.map(([k,t,d,c])=>`<section class="v ${k}">
+  <div class="vhead"><h2>${t}</h2><span>${d}</span><div class="chips">${c.map(x=>`<i style="background:${x}"></i>`).join('')}</div></div>
+  <div class="panels">${panel('l')}${panel('d')}</div></section>`).join('');
+</script>
+</body>
+</html>
