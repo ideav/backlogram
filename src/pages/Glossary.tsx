@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { BookA, Search } from 'lucide-react'
 import Breadcrumbs from '../components/Breadcrumbs'
+import DocsSeeAlso from '../components/DocsSeeAlso'
+import { humanDate } from '../lib/dates'
 import {
   GLOSSARY_META,
   GLOSSARY_INTRO,
@@ -54,7 +56,7 @@ export default function Glossary() {
   useEffect(() => {
     document.title = GLOSSARY_META.title
     const canonical = `${SITE}${GLOSSARY_META.path}`
-    const ogImage = `${SITE}/og/knowledge-base.png`
+    const ogImage = `${SITE}/og/slovar-terminov.png`
     setMetaTag('meta[name="description"]', 'name', 'description', GLOSSARY_META.description)
     setMetaTag('meta[name="keywords"]', 'name', 'keywords', GLOSSARY_META.keywords)
     setMetaTag('meta[property="og:type"]', 'property', 'og:type', 'article')
@@ -90,12 +92,14 @@ export default function Glossary() {
           />
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 text-blue-600 dark:text-blue-400 text-sm font-medium mb-5">
             <BookA size={14} />
-            {GLOSSARY_TERMS.length} терминов
+            {GLOSSARY_TERMS.length} терминов · обновлено{' '}
+            <time dateTime={GLOSSARY_META.updated}>{humanDate(GLOSSARY_META.updated)}</time>
           </div>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5">
             Словарь <span className="text-blue-500">терминов</span>
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl">{GLOSSARY_INTRO}</p>
+          <DocsSeeAlso path={GLOSSARY_META.path} />
         </div>
       </section>
 

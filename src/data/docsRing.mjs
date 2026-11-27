@@ -10,6 +10,8 @@ import { pageLinkAttrs } from './pageTarget.mjs'
 
 export const DOCS_RING = [
   { href: '/help.html', name: 'Помощь', hint: 'как сделать по шагам' },
+  // backlogram#1032: словарь терминов — все слова справки, API и каталога решений.
+  { href: '/slovar-terminov.html', name: 'Словарь терминов', hint: 'что значит слово' },
   { href: '/api.html', name: 'Справочник API', hint: 'команды ядра и curl' },
   { href: '/queries.html', name: 'Запросы', hint: 'отчёты и данные одним адресом' },
   // Нагрузочный тест стенда hlt (crm#5267, #5283): страница из crm docs/hlt-stand, не SPA (crm#5632).

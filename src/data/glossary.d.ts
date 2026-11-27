@@ -6,6 +6,9 @@ export interface GlossaryMeta {
   title: string
   description: string
   keywords: string
+  /** ISO-даты для datePublished / dateModified. */
+  published: string
+  updated: string
 }
 
 export interface GlossaryGroup {
