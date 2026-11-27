@@ -234,6 +234,8 @@ export const SITE_SECTIONS = [
     // #827: форма заявки — на самой странице раздела, без перехода на главную.
     cta: { text: 'Обсудить пилотный проект', href: '#zayavka' },
     cta2: { text: 'Оценить проект за 2 минуты', href: '/quiz.html' },
+    // #1030: третья кнопка hero — страница ИИ-трансформации «до/после», в новой вкладке.
+    cta3: { text: 'ИИ-трансформация', href: 'https://ideav.ru/ai-transform/before-after.html', external: true },
     blocks: [
       {
         type: 'features',
