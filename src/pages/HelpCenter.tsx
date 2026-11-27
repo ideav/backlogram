@@ -7,6 +7,18 @@ import { HELP_API_TITLE, helpLevelLabel, helpSplitBlocks, HELP_META, HELP_INTRO,
 import type { HelpArticle, HelpFlatArticle } from '../data/helpCenter'
 import { buildIndex, consult, search } from '../lib/helpSearch'
 import type { HelpAnswer } from '../lib/helpSearch'
+import { fetchQueryVector, hybridConsult, loadVectors, HELP_VECTORS_URL } from '../lib/helpVectors'
+import type { HelpVectors } from '../lib/helpVectors'
+
+// Векторы статей грузятся один раз, при первом вопросе консультанту (backlogram#1039).
+let vectorsOnce: Promise<HelpVectors | null> | null = null
+function articleVectors(): Promise<HelpVectors | null> {
+  vectorsOnce ??= fetch(HELP_VECTORS_URL)
+    .then((r) => (r.ok ? r.json() : null))
+    .then((json) => (json ? loadVectors(json, HELP_ARTICLES) : null))
+    .catch(() => null)
+  return vectorsOnce
+}
 import { pageLinkProps } from '../data/pageTarget'
 import { humanDate } from '../lib/dates'
 
@@ -45,6 +57,7 @@ export function Consultant({ index }: { index: ReturnType<typeof buildIndex> }) 
   const [q, setQ] = useState('')
   const [asked, setAsked] = useState('')
   const [answer, setAnswer] = useState<HelpAnswer | null>(null)
+  const latest = useRef('')
 
   const ask = (text: string) => {
     const v = text.trim()
@@ -52,6 +65,12 @@ export function Consultant({ index }: { index: ReturnType<typeof buildIndex> }) 
     setQ(v)
     setAsked(v)
     setAnswer(consult(index, v))
+    // Сначала мгновенный текстовый ответ, затем — уточнённый по смыслу, если сервер ответил.
+    latest.current = v
+    Promise.all([articleVectors(), fetchQueryVector(v)]).then(([av, qv]) => {
+      if (latest.current !== v || !av?.vectors.size || !qv || qv.model !== av.model) return
+      setAnswer(hybridConsult(index, v, qv.vec, av.vectors))
+    })
     const url = new URL(window.location.href)
     url.searchParams.set('q', v)
     url.hash = ''
