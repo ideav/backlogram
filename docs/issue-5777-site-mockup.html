@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Макет стиля ideav.ru</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&family=Geologica:wght@400;600;800&family=Onest:wght@400;600;800&family=Manrope:wght@400;600;800&family=Playfair+Display:ital,wght@1,700&family=Rubik:wght@400;600;700&family=Golos+Text:wght@400;600;800&family=Jost:wght@400;600;700&family=Inter+Tight:wght@400;600;800&family=Commissioner:wght@400;600;800&family=IBM+Plex+Sans:wght@400;600;700&family=Montserrat:wght@400;600;800&family=Exo+2:wght@400;600;700&family=Fira+Sans:wght@400;600;800&family=Raleway:wght@300;400;600;800&family=Mulish:wght@400;600;800&family=Alegreya+Sans:wght@400;700;800&family=PT+Sans:wght@400;700&display=swap">
+<style>
+/* Layout: sticky control bar on top (follows viewer theme); below it one full site mock whose tokens are swapped by the chosen variant and its own light/dark switch. */
+:root{
+  --cbg:#f3f4f7; --cfg:#1b1f27; --cmut:#5d6573; --cline:#d9dde5; --ccard:#ffffff;
+  --sys:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  --logo:#c8392b;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--cbg:#0f1217;--cfg:#e8ebf0;--cmut:#9aa3b2;--cline:#2a303b;--ccard:#171b22;color-scheme:dark}}
+:root[data-theme="dark"]{--cbg:#0f1217;--cfg:#e8ebf0;--cmut:#9aa3b2;--cline:#2a303b;--ccard:#171b22;color-scheme:dark}
+body{background:var(--cbg);color:var(--cfg);font:14px/1.5 var(--sys)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--ccard)}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ccard);border-bottom:1px solid var(--cline);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px}
+.bar-in{max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.bar b{font-size:14px}
+.bar select,.bar button{font:inherit;color:var(--cfg);background:var(--cbg);border:1px solid var(--cline);border-radius:8px;padding:6px 10px;cursor:pointer}
+.bar select{max-width:100%;min-width:0}
+.bar .seg{display:inline-flex;border:1px solid var(--cline);border-radius:8px;overflow:hidden}
+.bar .seg button{border:0;border-radius:0;background:transparent}
+.bar .seg button[aria-pressed="true"]{background:var(--cfg);color:var(--ccard)}
+.bar label{display:inline-flex;align-items:center;gap:6px;color:var(--cmut)}
+.bar .desc{flex-basis:100%;color:var(--cmut);font-size:13px}
+.bar :focus-visible{outline:2px solid var(--cfg);outline-offset:2px}
+.stage{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.frame{max-width:1200px;margin:0 auto;border:1px solid var(--cline);border-radius:14px;overflow:hidden}
+
+/* ---- site mock: every color comes from the variant tokens ---- */
+.site{--hf:var(--sys);--bfnt:var(--sys);--hw:800;--ls:-.01em;background:var(--bg);color:var(--ink);font-family:var(--bfnt);font-size:16px;line-height:1.6}
+.site.bodyfont{--bfnt:var(--hf)}
+.site *{box-sizing:border-box}
+.site .in{max-width:1080px;margin:0 auto;padding-inline:24px}
+.site h1,.site h2,.site h3{font-family:var(--hf);font-weight:var(--hw);letter-spacing:var(--ls);color:var(--hink,var(--ink));margin:0;text-wrap:balance;line-height:1.15}
+.site h1{font-size:clamp(30px,4.6vw,52px)}
+.site h2{font-size:clamp(24px,3vw,36px)}
+.site h3{font-size:19px;line-height:1.3}
+.site p{margin:0}
+.site a{color:var(--link);text-underline-offset:.2em;text-decoration-thickness:1px}
+.site a:hover{text-decoration-thickness:2px}
+.site :focus-visible{outline:3px solid var(--link);outline-offset:2px}
+.site .sub{color:var(--sub)}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 15px/1 var(--bfnt);border-radius:10px;padding:14px 20px;border:1px solid transparent;text-decoration:none!important;cursor:pointer}
+.btn-p{background:var(--primary);color:var(--pfg)!important}
+.btn-p:hover{filter:brightness(1.08)}
+.btn-s{background:transparent;color:var(--ink)!important;border-color:var(--line2)}
+.btn-s:hover{border-color:var(--ink)}
+.btn-t{padding-inline:6px;color:var(--link)!important}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--soft);color:var(--softfg);font-weight:600;font-size:13px;border-radius:999px;padding:5px 12px}
+.stack>.pill{justify-self:start}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+
+/* heading accent treatments */
+.site .a{color:var(--acc)}
+.site[data-m="marker"] .a{color:var(--acc);background:linear-gradient(transparent 48%,var(--acc2) 48%,var(--acc2) 92%,transparent 92%);padding:0 .1em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.site[data-m="block"] .a{background:var(--acc);color:var(--accfg);padding:0 .18em;border-radius:.14em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.site[data-m="grad"] .a{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.site[data-m="wavy"] .a{text-decoration:underline wavy var(--acc2);text-decoration-thickness:.07em;text-underline-offset:.18em;text-decoration-skip-ink:none}
+.site[data-m="under"] .a{text-decoration:underline solid var(--acc2);text-decoration-thickness:.11em;text-underline-offset:.16em;text-decoration-skip-ink:none}
+.site[data-m="serif"] .a{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:700;letter-spacing:0}
+.site[data-m="weight"] .a{font-weight:800}
+
+/* header */
+.hdr{border-bottom:1px solid var(--line);background:var(--surf)}
+.hdr .in{display:flex;align-items:center;gap:14px 20px;padding-block:14px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--hf);font-weight:700;font-size:19px;color:var(--ink)}
+.logo i{width:32px;height:32px;border-radius:8px;background:var(--logo);color:#fff;font:700 18px/32px var(--sys);text-align:center;font-style:normal}
+.nav{display:flex;gap:6px 18px;flex-wrap:wrap;font-size:15px}
+.nav a{color:var(--ink);text-decoration:none}
+.nav a:hover,.nav a.on{color:var(--link)}
+.hdr .act{margin-left:auto;display:flex;gap:8px}
+.hdr .btn{padding:10px 16px;font-size:14px}
+
+/* sections */
+.sec{padding-block:64px}
+.sec.tint{background:var(--surf2)}
+.stack{display:grid;gap:18px}
+.hero{padding-block:72px 64px}
+.hero .lead{font-size:19px;max-width:56ch}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.reg{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--sub)}
+.reg b{color:var(--ink)}
+.crumbs{font-size:14px;color:var(--sub);display:flex;gap:8px;flex-wrap:wrap}
+.crumbs a{color:var(--sub);text-decoration:none}
+.crumbs a:hover{color:var(--link)}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+@media (max-width:820px){.grid3{grid-template-columns:1fr}}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:24px;display:grid;gap:12px;align-content:start;min-width:0}
+.card.feat{border-color:var(--primary);box-shadow:0 0 0 1px var(--primary)}
+.ico{width:44px;height:44px;border-radius:10px;background:var(--soft);color:var(--softfg);display:grid;place-items:center}
+.ico svg{width:22px;height:22px}
+.price{font-family:var(--hf);font-weight:var(--hw);font-size:30px;color:var(--hink,var(--ink));font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line2);border-radius:999px;padding:7px 14px;font-size:14px;color:var(--ink);background:var(--surf);cursor:pointer;font-family:var(--bfnt)}
+.chip[aria-pressed="true"]{background:var(--primary);color:var(--pfg);border-color:var(--primary)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surf)}
+.tbl table{border-collapse:collapse;width:100%;min-width:520px;font-size:15px}
+.tbl th,.tbl td{padding:14px 18px;text-align:left;border-bottom:1px solid var(--line)}
+.tbl tr:last-child td{border-bottom:0}
+.tbl th{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);font-weight:600}
+.tbl td.y{font-weight:600}
+.note{display:flex;gap:14px;align-items:flex-start;background:var(--soft);color:var(--softfg);border-radius:12px;padding:16px 18px;font-size:15px}
+.note svg{flex:none;width:20px;height:20px;margin-top:2px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:40px;align-items:start}
+@media (max-width:820px){.two{grid-template-columns:1fr}}
+.form{display:grid;gap:14px}
+.fld{display:grid;gap:6px;font-size:14px;font-weight:600}
+.fld input,.fld select,.fld textarea{font:400 15px/1.4 var(--bfnt);color:var(--ink);background:var(--surf);border:1px solid var(--line2);border-radius:10px;padding:12px 14px;width:100%}
+.fld textarea{min-height:90px;resize:vertical}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--link);box-shadow:0 0 0 3px var(--soft)}
+.fld.err input{border-color:var(--bad)}
+.fld .msg{font-weight:400;color:var(--bad);font-size:13px}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--sub)}
+.chk input{accent-color:var(--primary);width:18px;height:18px;margin-top:2px;flex:none}
+.ok{color:var(--softfg);background:var(--soft);border-radius:10px;padding:10px 14px;font-size:14px}
+.site details{border-bottom:1px solid var(--line);padding-block:16px}
+.site summary{cursor:pointer;font-weight:600;font-size:17px;list-style:none;display:flex;justify-content:space-between;gap:16px}
+.site summary::-webkit-details-marker{display:none}
+.site summary::after{content:"+";color:var(--link);font-size:22px;line-height:1}
+.site details[open] summary::after{content:"\2212"}
+.site details p{margin-top:10px;color:var(--sub)}
+.post{text-decoration:none!important;color:var(--ink)!important}
+.post .thumb{aspect-ratio:16/9;max-width:100%;border-radius:10px;background:linear-gradient(135deg,var(--soft),var(--surf2));display:grid;place-items:center;color:var(--softfg);font-family:var(--hf);font-weight:var(--hw);font-size:28px}
+.post h3{font-size:17px}
+.post:hover h3{color:var(--link)}
+.cta{background:var(--band);color:var(--bandfg)}
+.site .cta h2{color:var(--bandfg)}
+.site .cta .sub{color:var(--bandsub)}
+.ftr{border-top:1px solid var(--line);background:var(--surf);font-size:14px}
+.ftr .cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;padding-block:40px}
+@media (max-width:820px){.ftr .cols{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ftr h4{margin:0 0 10px;font:600 13px/1.4 var(--bfnt);text-transform:uppercase;letter-spacing:.06em;color:var(--sub)}
+.ftr ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.site .ftr a{color:var(--ink);text-decoration:none}
+.site .ftr a:hover{color:var(--link)}
+.ftr .legal{border-top:1px solid var(--line);padding-block:18px;display:flex;flex-wrap:wrap;gap:8px 20px;color:var(--sub)}
+.site .ftr .legal a{color:var(--sub)}
+@media (max-width:600px){.site .in{padding-inline:16px}.sec{padding-block:44px}.hero{padding-block:44px}.hdr .act{margin-left:0}}
+@media (prefers-reduced-motion:no-preference){.btn,.chip{transition:filter .15s,border-color .15s}}
+</style>
+</head>
+<body>
+
+<div class="bar"><div class="bar-in">
+  <b>Макет ideav.ru</b>
+  <button type="button" id="prev" aria-label="Предыдущий вариант">←</button>
+  <select id="pick" aria-label="Вариант"></select>
+  <button type="button" id="next" aria-label="Следующий вариант">→</button>
+  <div class="seg" role="group" aria-label="Тема макета">
+    <button type="button" id="th-l" aria-pressed="true">Светлая</button>
+    <button type="button" id="th-d" aria-pressed="false">Тёмная</button>
+  </div>
+  <label><input type="checkbox" id="bf"> Шрифт варианта и для текста</label>
+  <div class="desc" id="desc"></div>
+</div></div>
+
+<div class="stage"><div class="frame"><div class="site" id="site">
+
+<header class="hdr"><div class="in">
+  <div class="logo"><i>И</i>Интеграм</div>
+  <nav class="nav" aria-label="Разделы">
+    <a href="#" class="on">Заменить Excel</a><a href="#">Автоматизация</a><a href="#">Разработчикам</a><a href="#">Услуги и цены</a><a href="#">База знаний</a>
+  </nav>
+  <div class="act"><a class="btn btn-s" href="#">Войти</a><a class="btn btn-p" href="#">Попробовать</a></div>
+</div></header>
+
+<section class="hero"><div class="in stack">
+  <span class="pill"><span class="dot"></span>Автоматизация без программистов</span>
+  <h1>Интеграм — российская платформа для автоматизации бизнеса, которая <span class="a">подстраивается под вас</span></h1>
+  <p class="lead sub">Видите всё, что происходит в бизнесе, управляете сами и меняете систему без программистов</p>
+  <div class="row">
+    <a class="btn btn-p" href="#">Мне нужно заменить Excel</a>
+    <a class="btn btn-s" href="#">Мне нужна автоматизация бизнеса</a>
+    <a class="btn btn-t" href="#">Я разработчик или интегратор →</a>
+  </div>
+  <div class="reg"><span class="pill">Реестр Минцифры</span>В реестре отечественного ПО, <b>запись №30872</b></div>
+</div></section>
+
+<section class="sec tint"><div class="in stack" style="gap:28px">
+  <nav class="crumbs" aria-label="Путь"><a href="#">Главная</a><span>/</span><a href="#">Решения</a><span>/</span><span>Учёт заявок</span></nav>
+  <h2>Масштабируемые информационные системы <span class="a">без кода</span></h2>
+  <div class="grid3">
+    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 10h16M10 4v16"/></svg></div><h3>Загрузить Excel — получить приложение</h3><p class="sub">Таблицы превращаются в базу с формами, правами и отчётами.</p><a href="#">Подробнее →</a></div>
+    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6l4 2"/><circle cx="12" cy="13" r="8"/></svg></div><h3>Изменения без релиза</h3><p class="sub">Новое поле или отчёт появляется сразу, без выкладки и простоя.</p><a href="#">Подробнее →</a></div>
+    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="7" rx="1.5"/><rect x="4" y="13" width="16" height="7" rx="1.5"/><path d="M8 7.5h.01M8 16.5h.01"/></svg></div><h3>On-premise и реестр Минцифры</h3><p class="sub">Ставится на ваш сервер, данные остаются в вашем контуре.</p><a href="#">Подробнее →</a></div>
+  </div>
+  <div class="stack" style="gap:10px">
+    <p class="sub">Готовые решения под задачу</p>
+    <div class="chips" id="chips">
+      <button type="button" class="chip" aria-pressed="true">Учёт заявок</button><button type="button" class="chip" aria-pressed="false">Складской учёт</button><button type="button" class="chip" aria-pressed="false">CRM: учёт клиентов</button><button type="button" class="chip" aria-pressed="false">Платёжный календарь</button><button type="button" class="chip" aria-pressed="false">Кадровый учёт</button><button type="button" class="chip" aria-pressed="false">Учёт договоров</button>
+    </div>
+  </div>
+</div></section>
+
+<section class="sec"><div class="in stack" style="gap:28px">
+  <h2>Услуги и <span class="a">цены</span></h2>
+  <div class="grid3">
+    <div class="card"><span class="pill" style="justify-self:start">С чего начать</span><h3>Демонстрация из вашего Excel</h3><div class="price">Бесплатно</div><p class="sub">Показываем приложение, собранное из вашего файла.</p><a class="btn btn-s" href="#" style="justify-self:start">Загрузить файл</a></div>
+    <div class="card feat"><span class="pill" style="justify-self:start">Чаще выбирают</span><h3>Разбор процесса по ИИ-приложению</h3><div class="price">20 000 ₽</div><p class="sub">Разбираем процесс и пишем ТЗ на приложение.</p><a class="btn btn-p" href="#" style="justify-self:start">Заказать разбор</a></div>
+    <div class="card"><span class="pill" style="justify-self:start">Облако</span><h3>Работа в облаке</h3><div class="price">от 1 950 ₽/мес</div><p class="sub">Приложение на нашем сервере, без своей инфраструктуры.</p><a class="btn btn-s" href="#" style="justify-self:start">Подробнее</a></div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Excel</th><th>Интеграм</th></tr></thead>
+    <tbody>
+      <tr><td>Объём</td><td>1 048 576 строк на лист</td><td class="y">База данных без лимита листа</td></tr>
+      <tr><td>Доступ</td><td>На файл целиком</td><td class="y">На таблицы, строки и поля</td></tr>
+      <tr><td>Где работать</td><td>Файл на компьютере</td><td class="y">В браузере и с телефона</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v5h1"/></svg><p>Все цены, включая пилотный проект и локальную лицензию, есть на странице <a href="#">«Услуги и цены»</a>.</p></div>
+</div></section>
+
+<section class="sec tint"><div class="in two">
+  <div class="stack">
+    <h2>Частые <span class="a">вопросы</span></h2>
+    <div>
+      <details open><summary>Нужен ли программист?</summary><p>Нет. Таблицы, формы и отчёты настраиваются в интерфейсе, программист нужен только для сложных интеграций.</p></details>
+      <details><summary>Можно поставить на свой сервер?</summary><p>Да, Интеграм ставится on-premise, данные остаются у вас.</p></details>
+      <details><summary>Сколько стоит начать?</summary><p>Демонстрация из вашего Excel бесплатна, разбор процесса стоит 20 000 ₽.</p></details>
+    </div>
+  </div>
+  <form class="card form" id="form" novalidate>
+    <h3>Оставить заявку</h3>
+    <label class="fld" for="f-name">Имя<input id="f-name" value="Анна"></label>
+    <label class="fld err" for="f-contact">Телефон или Telegram<input id="f-contact" value="+7 995"><span class="msg">Номер неполный: нужно 10 цифр после +7</span></label>
+    <label class="fld" for="f-need">Что нужно<select id="f-need"><option>Заменить Excel</option><option>Автоматизировать процесс</option><option>Интеграция с 1С или Битрикс24</option></select></label>
+    <label class="fld" for="f-text">Задача<textarea id="f-text">Учёт заявок ведём в трёх таблицах, хотим одну базу.</textarea></label>
+    <label class="chk" for="f-ok"><input type="checkbox" id="f-ok" checked><span>Согласен на <a href="#">обработку персональных данных</a></span></label>
+    <button class="btn btn-p" type="submit" style="justify-self:start">Отправить заявку</button>
+    <p class="ok" id="f-done" hidden>Это макет, заявка никуда не отправлена.</p>
+  </form>
+</div></section>
+
+<section class="sec"><div class="in stack" style="gap:28px">
+  <div class="stack" style="gap:8px"><h2>Свежее в <span class="a">блоге</span></h2><p class="sub">Разборы проектов, кейсы заказчиков и то, как устроена платформа изнутри.</p></div>
+  <div class="grid3">
+    <a class="post stack" href="#" style="gap:12px"><div class="thumb">Склад</div><span class="pill" style="justify-self:start">Разбор</span><h3>Учёт склада в Google Таблицах: шаблон, ограничения и переход</h3></a>
+    <a class="post stack" href="#" style="gap:12px"><div class="thumb">CRM</div><span class="pill" style="justify-self:start">Разбор</span><h3>CRM в Excel: когда хватит, а когда пора переходить</h3></a>
+    <a class="post stack" href="#" style="gap:12px"><div class="thumb">ИИ</div><span class="pill" style="justify-self:start">Технология</span><h3>Память ИИ-агента: нужна ли векторная БД или хватит Postgres</h3></a>
+  </div>
+  <a href="#">Перейти в блог →</a>
+</div></section>
+
+<section class="sec cta"><div class="in stack" style="gap:16px;justify-items:start">
+  <h2>Загрузите ваши Excel — <span class="a">получите приложение</span></h2>
+  <p class="sub">Демонстрация на ваших данных бесплатна.</p>
+  <a class="btn btn-p" href="#">Загрузить Excel</a>
+</div></section>
+
+<footer class="ftr"><div class="in">
+  <div class="cols">
+    <div><h4>Продукт</h4><ul><li><a href="#">Excel → приложение</a></li><li><a href="#">Шаблоны решений</a></li><li><a href="#">Токены</a></li></ul></div>
+    <div><h4>Документация</h4><ul><li><a href="#">API для разработчиков</a></li><li><a href="#">Запросы</a></li><li><a href="#">Словарь терминов</a></li></ul></div>
+    <div><h4>Решения</h4><ul><li><a href="#">Учёт заявок</a></li><li><a href="#">Складской учёт</a></li><li><a href="#">Платёжный календарь</a></li></ul></div>
+    <div><h4>Связь</h4><ul><li><a href="#">Telegram @qdmadept</a></li><li><a href="#">abc@integram.io</a></li><li><a href="#">+7 (995) 506-01-67</a></li></ul></div>
+  </div>
+  <div class="legal"><a href="#">Правила использования</a><a href="#">Обработка персональных данных</a><a href="#">Партнёрам</a><span>Реестровая запись №30872</span></div>
+</div></footer>
+
+</div></div></div>
+
+<script>
+// Neutral sets (bg, surf, surf2, ink, sub, line, line2) shared by brand variants
+const NL={bg:'#ffffff',surf:'#ffffff',surf2:'#f4f6fa',ink:'#10182a',sub:'#4b5568',line:'#e3e6ed',line2:'#c9cfdb',bad:'#c62828'};
+const ND={bg:'#10182a',surf:'#162036',surf2:'#131c30',ink:'#f8fafc',sub:'#a3aec2',line:'#26314a',line2:'#3a4766',bad:'#ff6b6b'};
+const T=[
+ {n:'1. Маркер',d:'Unbounded. Тёмно-синий, выделение жёлтым маркером',hf:'Unbounded',hw:700,ls:'-.02em',m:'marker',
+  L:{bg:'#fffdf6',surf:'#ffffff',surf2:'#fff6d8',ink:'#14213d',sub:'#4a5470',line:'#ece4cc',line2:'#d8cda9',primary:'#14213d',pfg:'#ffc93c',link:'#1f3a8a',acc:'#14213d',acc2:'#ffc93c',soft:'#fff1bf',softfg:'#5a4300',bad:'#c62828'},
+  D:{bg:'#101828',surf:'#172238',surf2:'#131d31',ink:'#f5f1e8',sub:'#b7bfd0',line:'#26324a',line2:'#3a4866',primary:'#ffc93c',pfg:'#101828',link:'#ffd667',acc:'#101828',acc2:'#ffc93c',soft:'#3a3214',softfg:'#ffd667',bad:'#ff6b6b'}},
+ {n:'2. Коралл и морская волна',d:'Geologica. Тёмно-бирюзовый, коралловое выделение',hf:'Geologica',hw:800,m:'color',
+  L:{bg:'#f3faf8',surf:'#ffffff',surf2:'#e5f3ef',ink:'#0b3c49',sub:'#3f6670',line:'#d3e6e1',line2:'#b5d1ca',primary:'#e64a2a',pfg:'#ffffff',link:'#b8361a',acc:'#ff5a36',soft:'#ffe4dc',softfg:'#9a2f17',bad:'#c62828'},
+  D:{bg:'#0a2a33',surf:'#0f3641',surf2:'#0c303a',ink:'#e6f4f1',sub:'#9cc0c6',line:'#1d4a55',line2:'#2c6070',primary:'#ff7a59',pfg:'#0a2a33',link:'#ff9a80',acc:'#ff7a59',soft:'#4a2a24',softfg:'#ffb39f',bad:'#ff6b6b'}},
+ {n:'3. Закат',d:'Onest. Выделение градиентом от оранжевого к малиновому',hf:'Onest',hw:800,m:'grad',
+  L:{bg:'#fff8f3',surf:'#ffffff',surf2:'#ffeee2',ink:'#1f1a2e',sub:'#5b5468',line:'#f0e0d6',line2:'#dcc6b9',primary:'#1f1a2e',pfg:'#ffffff',link:'#c2185b',acc:'#ff6a00',acc2:'#e8127c',soft:'#ffe3ef',softfg:'#a3104f',bad:'#c62828'},
+  D:{bg:'#1a1424',surf:'#231b31',surf2:'#1f182b',ink:'#ffffff',sub:'#c3b9cf',line:'#362a48',line2:'#4b3b62',primary:'#ff8a3d',pfg:'#1a1424',link:'#ff7ab8',acc:'#ff8a3d',acc2:'#ff4fa3',soft:'#43213a',softfg:'#ff9ccb',bad:'#ff6b6b'}},
+ {n:'4. Журнальный',d:'Manrope, выделение малиновым курсивом Playfair Display',hf:'Manrope',hw:800,m:'serif',
+  L:{bg:'#ffffff',surf:'#ffffff',surf2:'#faf5f5',ink:'#111827',sub:'#4b5563',line:'#ece4e4',line2:'#d6cccc',primary:'#d7263d',pfg:'#ffffff',link:'#b91c32',acc:'#d7263d',soft:'#fde4e7',softfg:'#9f1a2c',bad:'#c62828'},
+  D:{bg:'#14161c',surf:'#1b1e26',surf2:'#181a21',ink:'#f3f4f6',sub:'#a5abb6',line:'#2c3039',line2:'#40454f',primary:'#ff5c6c',pfg:'#14161c',link:'#ff8591',acc:'#ff5c6c',soft:'#3d1f25',softfg:'#ff9aa4',bad:'#ff6b6b'}},
+ {n:'5. Плашка',d:'Rubik. Выделенное слово на зелёной плашке',hf:'Rubik',hw:700,m:'block',
+  L:{bg:'#f7f8fa',surf:'#ffffff',surf2:'#eaf7f1',ink:'#1d2433',sub:'#525b6c',line:'#e1e5ec',line2:'#c8ced9',primary:'#1d2433',pfg:'#ffffff',link:'#047857',acc:'#00a676',accfg:'#ffffff',soft:'#d9f5e9',softfg:'#05603f',bad:'#c62828'},
+  D:{bg:'#0f1520',surf:'#161e2c',surf2:'#122422',ink:'#f1f5f9',sub:'#a3adbd',line:'#243042',line2:'#36465e',primary:'#19d39a',pfg:'#062a1d',link:'#4ee6b4',acc:'#19d39a',accfg:'#062a1d',soft:'#12392d',softfg:'#6ff0c4',bad:'#ff6b6b'}},
+ {n:'6. Волна',d:'Golos Text. Индиго, фуксия с жёлтой волной',hf:'Golos Text',hw:800,m:'wavy',
+  L:{bg:'#faf8ff',surf:'#ffffff',surf2:'#f1ecff',ink:'#2a1e5c',sub:'#5d5486',line:'#e5defa',line2:'#cdc3ee',primary:'#2a1e5c',pfg:'#ffffff',link:'#c4006a',acc:'#e4007c',acc2:'#ffb000',soft:'#ffe0f0',softfg:'#a0005a',bad:'#c62828'},
+  D:{bg:'#18123a',surf:'#211a4a',surf2:'#1c1542',ink:'#ede9fe',sub:'#b4abd8',line:'#342a68',line2:'#4a3e8a',primary:'#ff3d9a',pfg:'#18123a',link:'#ff7cbc',acc:'#ff3d9a',acc2:'#ffc233',soft:'#47204f',softfg:'#ff9ccc',bad:'#ff6b6b'}},
+ {n:'7. Два тона',d:'Jost. Сливовые заголовки, янтарное выделение',hf:'Jost',hw:700,ls:'0',m:'color',
+  L:{bg:'#fdf9ff',surf:'#ffffff',surf2:'#f6ecfb',ink:'#2a1f33',hink:'#5b1a8a',sub:'#6e5a7e',line:'#eadcf2',line2:'#d6c2e3',primary:'#5b1a8a',pfg:'#ffffff',link:'#7a2bb5',acc:'#f28c00',soft:'#fff0d9',softfg:'#8a4e00',bad:'#c62828'},
+  D:{bg:'#1c1026',surf:'#251634',surf2:'#20132d',ink:'#efe6f7',hink:'#d8b4fe',sub:'#b8a3c8',line:'#3a2650',line2:'#52386e',primary:'#ffb84d',pfg:'#1c1026',link:'#e3c4ff',acc:'#ffb84d',soft:'#46301a',softfg:'#ffcc80',bad:'#ff6b6b'}},
+ {n:'8. Красный логотипа',d:'Inter Tight. Ночной синий, выделение красным логотипа',hf:'Inter Tight',hw:800,ls:'-.025em',m:'color',
+  L:{...NL,primary:'#c8392b',pfg:'#ffffff',link:'#b8321f',acc:'#c8392b',soft:'#fbe5e2',softfg:'#9c2c20'},
+  D:{...ND,primary:'#e2483a',pfg:'#ffffff',link:'#ff7b6c',acc:'#ff5a48',soft:'#3d1f23',softfg:'#ff9b8f'}},
+ {n:'9. Синий с красной чертой',d:'Commissioner. Синее выделение с красной чертой',hf:'Commissioner',hw:800,m:'under',
+  L:{...NL,surf2:'#f7f9fc',primary:'#2563eb',pfg:'#ffffff',link:'#1d4ed8',acc:'#2563eb',acc2:'#c8392b',soft:'#e0eaff',softfg:'#1d4ed8'},
+  D:{...ND,primary:'#3b82f6',pfg:'#ffffff',link:'#7fb0ff',acc:'#60a5fa',acc2:'#ff5a48',soft:'#1c2c55',softfg:'#9cc2ff'}},
+ {n:'10. Ночное небо',d:'IBM Plex Sans. Градиент от синего к голубому',hf:'IBM Plex Sans',hw:700,m:'grad',
+  L:{...NL,bg:'#f5f8ff',surf2:'#eaf1ff',ink:'#16294d',sub:'#4a5a7a',line:'#dde6f5',primary:'#16294d',pfg:'#ffffff',link:'#1d4ed8',acc:'#1d4ed8',acc2:'#0ea5e9',soft:'#e0f2fe',softfg:'#0369a1'},
+  D:{...ND,bg:'#0b1222',surf:'#111b30',surf2:'#0e172a',primary:'#2563eb',pfg:'#ffffff',link:'#7fc4ff',acc:'#60a5fa',acc2:'#38e0ff',soft:'#0f2c47',softfg:'#7fd4ff'}},
+ {n:'11. Плашка «И»',d:'Montserrat. Белое слово на красной плашке, как в логотипе',hf:'Montserrat',hw:800,ls:'-.02em',m:'block',
+  L:{...NL,primary:'#10182a',pfg:'#ffffff',link:'#b8321f',acc:'#c8392b',accfg:'#ffffff',soft:'#fbe5e2',softfg:'#9c2c20'},
+  D:{...ND,primary:'#e2483a',pfg:'#ffffff',link:'#ff7b6c',acc:'#e2483a',accfg:'#ffffff',soft:'#3d1f23',softfg:'#ff9b8f'}},
+ {n:'12. Синий маркер',d:'Exo 2. Выделение голубой полосой маркера',hf:'Exo 2',hw:700,m:'marker',
+  L:{...NL,primary:'#2563eb',pfg:'#ffffff',link:'#1d4ed8',acc:'#10182a',acc2:'#bfdbfe',soft:'#e0eaff',softfg:'#1d4ed8'},
+  D:{...ND,primary:'#3b82f6',pfg:'#ffffff',link:'#7fb0ff',acc:'#ffffff',acc2:'#2563eb',soft:'#1c2c55',softfg:'#9cc2ff'}},
+ {n:'13. Синий и красный',d:'Fira Sans. Синие заголовки, красное выделение',hf:'Fira Sans',hw:800,m:'color',
+  L:{...NL,surf2:'#f7f9fc',hink:'#1d4ed8',primary:'#c8392b',pfg:'#ffffff',link:'#1d4ed8',acc:'#c8392b',soft:'#e0eaff',softfg:'#1d4ed8'},
+  D:{...ND,bg:'#0d1424',hink:'#7fb0ff',primary:'#e2483a',pfg:'#ffffff',link:'#7fb0ff',acc:'#ff6a58',soft:'#1c2c55',softfg:'#9cc2ff'}},
+ {n:'14. Тонкий и жирный',d:'Raleway. Тонкий текст заголовка, выделение жирным',hf:'Raleway',hw:300,m:'weight',
+  L:{...NL,ink:'#16294d',sub:'#4a5a7a',primary:'#16294d',pfg:'#ffffff',link:'#1d4ed8',acc:'#2563eb',soft:'#e0eaff',softfg:'#1d4ed8'},
+  D:{...ND,ink:'#dbe4f3',sub:'#9fb0cc',primary:'#e2483a',pfg:'#ffffff',link:'#7fb0ff',acc:'#ff5a48',soft:'#3d1f23',softfg:'#ff9b8f'}},
+ {n:'15. Изумруд',d:'Mulish. Ночной синий, изумрудное выделение',hf:'Mulish',hw:800,ls:'-.02em',m:'color',
+  L:{...NL,primary:'#047857',pfg:'#ffffff',link:'#047857',acc:'#059669',soft:'#d1fae5',softfg:'#065f46'},
+  D:{...ND,primary:'#34d399',pfg:'#062a1d',link:'#6ee7b7',acc:'#34d399',soft:'#0f3b30',softfg:'#6ee7b7'}},
+ {n:'16. Бирюзовый маркер',d:'Alegreya Sans. Выделение бирюзовой полосой маркера',hf:'Alegreya Sans',hw:800,m:'marker',
+  L:{...NL,primary:'#10182a',pfg:'#ffffff',link:'#0f766e',acc:'#10182a',acc2:'#99f6e4',soft:'#ccfbf1',softfg:'#115e59'},
+  D:{...ND,primary:'#2dd4bf',pfg:'#10182a',link:'#5eead4',acc:'#ffffff',acc2:'#0f766e',soft:'#0f3b3a',softfg:'#5eead4'}},
+ {n:'17. Вода и лес',d:'PT Sans. Градиент от бирюзового к зелёному, красная кнопка',hf:'PT Sans',hw:700,m:'grad',
+  L:{...NL,bg:'#f6fbfa',surf2:'#e9f6f3',ink:'#16294d',sub:'#4a5a7a',line:'#d9ebe6',primary:'#c8392b',pfg:'#ffffff',link:'#0e7490',acc:'#0e7490',acc2:'#10b981',soft:'#cffafe',softfg:'#155e75'},
+  D:{...ND,bg:'#0d1626',surf:'#13203a',surf2:'#10202c',primary:'#e2483a',pfg:'#ffffff',link:'#67e8f9',acc:'#22d3ee',acc2:'#34d399',soft:'#0f3442',softfg:'#67e8f9'}},
+];
+const site=document.getElementById('site'), pick=document.getElementById('pick'), cta=site.querySelector('.cta');
+pick.innerHTML=T.map((t,i)=>`<option value="${i}">${t.n}</option>`).join('');
+let cur=0, dark=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches;
+function vars(el,o){for(const k in o) el.style.setProperty('--'+k,o[k]); if(!o.hink) el.style.removeProperty('--hink'); if(!o.accfg) el.style.setProperty('--accfg','#ffffff');}
+function apply(){
+  const t=T[cur], P=dark?t.D:t.L;
+  site.style.cssText=''; cta.style.cssText='';
+  site.style.setProperty('--hf',`'${t.hf}',var(--sys)`); site.style.setProperty('--hw',t.hw); site.style.setProperty('--ls',t.ls||'-.01em');
+  site.dataset.m=t.m; vars(site,P);
+  // CTA band: the variant's dark palette on the light page, a deeper shade on the dark page
+  const B=t.D; vars(cta,{...B,bg:B.bg}); cta.style.setProperty('--band',dark?B.surf:B.bg); cta.style.setProperty('--bandfg',B.hink||B.ink); cta.style.setProperty('--bandsub',B.sub);
+  pick.value=cur; document.getElementById('desc').textContent=t.d+(t.m==='color'?'':'');
+  document.getElementById('th-l').setAttribute('aria-pressed',!dark); document.getElementById('th-d').setAttribute('aria-pressed',dark);
+  try{history.replaceState(null,'','#v'+(cur+1))}catch(e){}
+}
+function fromHash(){const m=/^#v(\d+)$/.exec(location.hash); if(m){const i=+m[1]-1; if(i>=0&&i<T.length) cur=i;}}
+fromHash(); apply();
+pick.addEventListener('change',()=>{cur=+pick.value;apply()});
+document.getElementById('prev').onclick=()=>{cur=(cur+T.length-1)%T.length;apply()};
+document.getElementById('next').onclick=()=>{cur=(cur+1)%T.length;apply()};
+document.getElementById('th-l').onclick=()=>{dark=false;apply()};
+document.getElementById('th-d').onclick=()=>{dark=true;apply()};
+document.getElementById('bf').onchange=e=>site.classList.toggle('bodyfont',e.target.checked);
+window.addEventListener('hashchange',()=>{fromHash();apply()});
+document.getElementById('chips').addEventListener('click',e=>{const b=e.target.closest('.chip'); if(!b) return; for(const c of e.currentTarget.children) c.setAttribute('aria-pressed',c===b)});
+document.getElementById('form').addEventListener('submit',e=>{e.preventDefault();document.getElementById('f-done').hidden=false});
+site.querySelectorAll('a[href="#"]').forEach(a=>a.addEventListener('click',e=>e.preventDefault()));
+</script>
+</body>
+</html>
