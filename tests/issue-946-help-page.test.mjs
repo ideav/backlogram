@@ -38,7 +38,8 @@ test('ликбез: что это, архитектура, применение,
   assert.ok(HELP_INTRO.lead.length >= 1)
   const ids = HELP_INTRO.blocks.map((b) => b.id)
   for (const id of ['what', 'architecture', 'uses']) assert.ok(ids.includes(id), `нет блока ${id}`)
-  assert.ok(HELP_INTRO.glossary.length >= 8)
+  // #1032: словарик переехал на /slovar-terminov.html — его держит tests/issue-1032-glossary.test.mjs.
+  assert.equal(HELP_INTRO.glossary, undefined)
 })
 
 test('у каждой статьи: уникальный id-якорь, задача, ответ, шаги, формулировки вопроса', () => {

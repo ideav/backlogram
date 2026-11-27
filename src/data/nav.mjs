@@ -89,6 +89,8 @@ export const footerNavGroups = [
     links: [
       // backlogram#946: своя помощь вместо старой help.integram.io.
       { name: 'Помощь', href: '/help.html' },
+      // backlogram#1032: словарь терминов — все слова сайта и каталога решений.
+      { name: 'Словарь терминов', href: '/slovar-terminov.html', more: true },
       { name: 'База знаний', href: '/knowledge-base.html' },
       { name: 'Решения вместо Excel', href: '/resheniya.html' },
       { name: 'Интеграм vs Битрикс24 / AmoCRM', href: '/sravnenie-s-bitrix-amocrm.html' },

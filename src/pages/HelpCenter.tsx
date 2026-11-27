@@ -346,17 +346,11 @@ export default function HelpCenter() {
                   </div>
                 ))}
               </div>
-              <details className="mt-6 rounded-2xl border border-slate-200 dark:border-slate-800 p-5">
-                <summary className="cursor-pointer font-semibold flex items-center gap-2"><MessageCircleQuestion size={16} /> Словарик терминов</summary>
-                <dl className="mt-4 grid gap-3 sm:grid-cols-2">
-                  {HELP_INTRO.glossary.map((g) => (
-                    <div key={g.term}>
-                      <dt className="font-medium text-slate-800 dark:text-slate-100">{g.term}</dt>
-                      <dd className="text-sm text-slate-600 dark:text-slate-300"><Inline text={g.text} /></dd>
-                    </div>
-                  ))}
-                </dl>
-              </details>
+              {/* backlogram#1032: словарик переехал на отдельную страницу и пополнен терминами всего сайта. */}
+              <a href="/slovar-terminov.html" className="mt-6 flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 font-semibold hover:border-blue-500/60 hover:text-blue-600 dark:hover:text-blue-400">
+                <MessageCircleQuestion size={16} /> Словарь терминов
+                <span className="font-normal text-sm text-slate-500 dark:text-slate-400">— все слова сайта, справки и каталога решений</span>
+              </a>
             </section>
 
             {/* Разделы — отдельные страницы (#961); на хабе только оглавление. */}
