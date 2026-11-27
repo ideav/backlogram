@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Bot, LifeBuoy, MessageCircleQuestion, Search, Sparkles } from 'lucide-react'
+import { Bot, LifeBuoy, MessageCircleQuestion, Search, Sparkles, X } from 'lucide-react'
 import Breadcrumbs from '../components/Breadcrumbs'
 import DocsSeeAlso from '../components/DocsSeeAlso'
 import { Block, Inline } from './ApiDocs'
@@ -25,10 +25,26 @@ import { humanDate } from '../lib/dates'
 const SITE = 'https://ideav.ru'
 
 /** Плашка в начале страницы: работу делают ИИ-агенты, страница — образец для них (#5626). */
+// Закрыли один раз — больше не показываем ни на хабе, ни в разделах (backlogram#1041).
+export const AGENTS_NOTE_KEY = 'help-agents-note-closed'
+function agentsNoteClosed(): boolean {
+  try { return localStorage.getItem(AGENTS_NOTE_KEY) === '1' } catch { return false }
+}
+
 export function AgentsNote({ path }: { path: string }) {
   const n = HELP_INTRO.agents
+  const [closed, setClosed] = useState(agentsNoteClosed)
+  if (closed) return null
+  const close = () => {
+    try { localStorage.setItem(AGENTS_NOTE_KEY, '1') } catch { /* приватный режим — скрываем до перезагрузки */ }
+    setClosed(true)
+  }
   return (
-    <aside className="mb-6 max-w-4xl rounded-2xl border border-emerald-500/30 bg-emerald-50/70 dark:bg-emerald-500/5 p-4 md:p-5 flex gap-3">
+    <aside className="relative mb-6 max-w-4xl rounded-2xl border border-emerald-500/30 bg-emerald-50/70 dark:bg-emerald-500/5 p-4 pr-11 md:p-5 md:pr-12 flex gap-3">
+      <button type="button" onClick={close} aria-label="Закрыть" title="Закрыть"
+        className="absolute top-2 right-2 p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-emerald-100 dark:text-slate-400 dark:hover:text-slate-100 dark:hover:bg-emerald-500/10">
+        <X size={18} />
+      </button>
       <Bot size={22} className="shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
       <div className="space-y-1.5">
         <div className="font-semibold text-slate-800 dark:text-slate-100">{n.title}</div>
