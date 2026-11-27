@@ -363,6 +363,13 @@ const landingCards = [
     title: nbspText(ERP_META.h1),
     subtitle: nbspText(ERP_META.description),
   },
+  // backlogram#1032: словарь терминов — своя карточка вместо общей базы знаний.
+  {
+    slug: 'slovar-terminov',
+    eyebrow: 'Глоссарий · справка · каталог решений',
+    title: 'Словарь терминов',
+    subtitle: nbspText('Реквизит, квинтет, маска, ERP, WFM, MDM, МСФО — короткие определения слов со всего сайта и ссылки на страницы, где они разобраны.'),
+  },
   // #843: партнёрская программа — ссылку пересылают внедренцам.
   {
     slug: 'partners',

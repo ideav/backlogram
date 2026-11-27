@@ -18,6 +18,8 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { EMPTY_ROOT, rootWithMain } from './lib/root-main.mjs'
+import { docsRingHtml } from '../src/data/docsRing.mjs'
+import { humanDate } from '../src/lib/dates.mjs'
 import {
   GLOSSARY_META,
   GLOSSARY_INTRO,
@@ -84,9 +86,10 @@ const bodyHtml = `
     <nav class="gl-prerender__crumbs" aria-label="Хлебные крошки">
       <a href="/">Интеграм</a> / <a href="/help.html">Помощь</a> / <span>Словарь терминов</span>
     </nav>
-    <p class="gl-prerender__eyebrow">${GLOSSARY_TERMS.length} терминов</p>
+    <p class="gl-prerender__eyebrow">${GLOSSARY_TERMS.length} терминов · обновлено <time datetime="${GLOSSARY_META.updated}">${humanDate(GLOSSARY_META.updated)}</time></p>
     <h1>Словарь терминов</h1>
     <p class="gl-prerender__lead">${escape(GLOSSARY_INTRO)}</p>
+    ${docsRingHtml(PATH)}
   </header>
   <nav class="gl-prerender__index" aria-label="Алфавитный указатель">${indexHtml}</nav>
 ${lettersHtml}
@@ -115,6 +118,7 @@ ${lettersHtml}
   #gl-prerender .gl-prerender__eyebrow { text-transform: uppercase; letter-spacing: 0.1em;
     font-size: 0.72rem; color: #3b82f6; font-weight: 700; margin: 0; }
   #gl-prerender .gl-prerender__lead { font-size: 1.05rem; color: #475569; max-width: 50rem; }
+  #gl-prerender .docs-see-also { font-size: 0.9rem; margin-top: 1rem; }
   #gl-prerender .gl-prerender__index { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.5rem 0; }
   #gl-prerender .gl-prerender__footer { margin-top: 2rem; padding-top: 1.5rem;
     border-top: 1px solid #e2e8f0; font-size: 0.92rem; color: #475569; }
@@ -123,10 +127,25 @@ ${lettersHtml}
   .dark #gl-prerender .gl-prerender__lead, .dark #gl-prerender .gl-prerender__footer { color: #94a3b8; }
 </style>`
 
-const ogImage = `${SITE}/og/knowledge-base.png`
+const ogImage = `${SITE}/og/slovar-terminov.png`
 const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
+    {
+      '@type': 'WebPage',
+      '@id': `${canonical}#webpage`,
+      url: canonical,
+      name: GLOSSARY_META.title,
+      description: GLOSSARY_META.description,
+      inLanguage: 'ru',
+      datePublished: GLOSSARY_META.published,
+      dateModified: GLOSSARY_META.updated,
+      isPartOf: { '@id': `${SITE}/#website` },
+      publisher: { '@id': `${SITE}/#organization` },
+      breadcrumb: { '@id': `${canonical}#breadcrumb` },
+      primaryImageOfPage: { '@type': 'ImageObject', url: ogImage, width: 1200, height: 630 },
+      mainEntity: { '@id': `${canonical}#termset` },
+    },
     {
       '@type': 'DefinedTermSet',
       '@id': `${canonical}#termset`,
@@ -134,7 +153,9 @@ const jsonLd = {
       name: 'Словарь терминов Интеграма',
       description: GLOSSARY_META.description,
       inLanguage: 'ru',
-      isPartOf: { '@id': `${SITE}/#website` },
+      datePublished: GLOSSARY_META.published,
+      dateModified: GLOSSARY_META.updated,
+      isPartOf: { '@id': `${canonical}#webpage` },
       publisher: { '@id': `${SITE}/#organization` },
       hasDefinedTerm: GLOSSARY_TERMS.map((t) => ({
         '@type': 'DefinedTerm',
@@ -168,6 +189,8 @@ const headTags = [
   `<meta property="og:image:width" content="1200" />`,
   `<meta property="og:image:height" content="630" />`,
   `<meta property="og:locale" content="ru_RU" />`,
+  `<meta property="article:published_time" content="${GLOSSARY_META.published}" />`,
+  `<meta property="article:modified_time" content="${GLOSSARY_META.updated}" />`,
   `<meta property="og:site_name" content="${PUBLISHER}" />`,
   `<meta name="twitter:card" content="summary_large_image" />`,
   `<meta name="twitter:title" content="${escape(GLOSSARY_META.title)}" />`,

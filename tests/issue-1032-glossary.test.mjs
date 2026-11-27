@@ -70,3 +70,29 @@ test('поиск: по имени, синониму и без учёта ё', ()
   assert.ok(glossaryMatches(t, ''))
   assert.ok(!glossaryMatches(t, 'ERP'))
 })
+
+// SEO/GEO-аудит живой страницы 27.11.2026: то, чем словарь уступал соседям.
+test('SEO: своя OG-картинка, даты, WebPage + DefinedTermSet, короткий description', () => {
+  const pre = read('scripts/prerender-glossary.mjs')
+  assert.ok(pre.includes('/og/slovar-terminov.png'))
+  assert.ok(read('src/pages/Glossary.tsx').includes('/og/slovar-terminov.png'))
+  assert.ok(readFileSync(new URL('../public/og/slovar-terminov.png', import.meta.url)).length > 1000)
+  assert.match(GLOSSARY_META.updated, /^\d{4}-\d{2}-\d{2}$/)
+  assert.match(GLOSSARY_META.published, /^\d{4}-\d{2}-\d{2}$/)
+  for (const s of ["'@type': 'WebPage'", 'mainEntity', 'dateModified', 'article:modified_time', 'docsRingHtml(PATH)']) {
+    assert.ok(pre.includes(s), `нет ${s} в пререндере`)
+  }
+  assert.ok(GLOSSARY_META.description.length <= 160, `description ${GLOSSARY_META.description.length} символов`)
+  assert.ok(GLOSSARY_META.title.length <= 70, `title ${GLOSSARY_META.title.length} символов`)
+})
+
+test('GEO: в синонимах нет внутренних идентификаторов ядра', () => {
+  for (const t of GLOSSARY_TERMS) {
+    for (const a of t.aka || []) assert.doesNotMatch(a, /^(t\d+|_|\/)|^[a-z]+_[a-z]+$/, `${t.term}: синоним ${a}`)
+  }
+})
+
+test('словарь в кольце «См. также» документации — ссылки со всех справочников', async () => {
+  const { DOCS_RING } = await import('../src/data/docsRing.mjs')
+  assert.ok(DOCS_RING.some((d) => d.href === GLOSSARY_META.path))
+})
