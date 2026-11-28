@@ -451,7 +451,7 @@ export default function ExcelConstructor() {
             className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-3"
           >
             Конструктор приложений{' '}
-            <span className="text-blue-500">вместо Excel</span>
+            вместо Excel
           </motion.h1>
 
           <p className="text-xl md:text-2xl font-bold text-slate-700 dark:text-slate-200 mb-5">

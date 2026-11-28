@@ -96,7 +96,7 @@ export default function Glossary() {
             <time dateTime={GLOSSARY_META.updated}>{humanDate(GLOSSARY_META.updated)}</time>
           </div>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5">
-            Словарь <span className="text-blue-500">терминов</span>
+            Словарь терминов
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl">{GLOSSARY_INTRO}</p>
           <DocsSeeAlso path={GLOSSARY_META.path} />

@@ -70,7 +70,7 @@ export default function Privacy() {
           </div>
 
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
-            Политика обработки <span className="text-blue-500">персональных данных</span>
+            Политика обработки персональных данных
           </h1>
 
           <p className="text-sm text-slate-400 dark:text-slate-500 mb-5">

@@ -323,7 +323,7 @@ export default function InformationSystem() {
             transition={{ duration: 0.5 }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5"
           >
-            Информационная система (ИС): <span className="text-blue-500">что это простыми словами</span>
+            Информационная система (ИС): что это простыми словами
           </motion.h1>
 
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">

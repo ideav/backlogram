@@ -108,7 +108,7 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.1 }}
                 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-3 md:mb-4"
               >
-<span className="text-blue-500 italic">Интеграм</span> — российская платформа для автоматизации бизнеса, которая подстраивается под вас
+Интеграм — российская платформа для автоматизации бизнеса, которая подстраивается под вас
               </motion.h1>
               {/* p2n#1212: подзаголовок-пояснение к H1; тот же текст — SUBTITLE в scripts/prerender-landing.mjs. */}
               <motion.p

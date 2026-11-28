@@ -221,7 +221,7 @@ export default function KvintetyIliTablicy() {
             className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5"
           >
             {h1Head}
-            <span className="text-blue-500">{QUIZ_META.h1Accent}</span>
+            {QUIZ_META.h1Accent}
           </motion.h1>
 
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl">

@@ -217,7 +217,7 @@ export default function BitrixAmoComparison() {
             className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5"
           >
             Интеграм vs Битрикс24 и AmoCRM:{' '}
-            <span className="text-blue-500">что нельзя поменять в коробке</span>
+            что нельзя поменять в коробке
           </motion.h1>
 
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">

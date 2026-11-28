@@ -255,7 +255,7 @@ export default function UseCaseLanding({ slug }: { slug: string }) {
           </div>
           <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5">
-            {uc.h1} <span className="text-blue-500">{uc.h1accent}</span>
+            {uc.h1} {uc.h1accent}
           </motion.h1>
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-8">{uc.lead}</p>
           <a href="#zayavka" className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all">

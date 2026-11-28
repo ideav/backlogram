@@ -149,7 +149,7 @@ export default function AiLanding({ slug }: { slug: string }) {
           )}
           <p className="uppercase tracking-widest text-xs font-bold text-blue-500 mb-3">{page.badge}</p>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-6">
-            {page.h1} <span className="text-blue-600 dark:text-blue-400">{page.h1accent}</span>
+            {page.h1} {page.h1accent}
           </h1>
           <p className="text-lg text-slate-500 dark:text-slate-400 leading-relaxed max-w-4xl">{page.lead}</p>
           <div className="mt-8 flex flex-wrap gap-3">

@@ -89,7 +89,7 @@ export default function Terms() {
           </div>
 
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5">
-            Соглашение об использовании <span className="text-blue-500">сервиса</span>
+            Соглашение об использовании сервиса
           </h1>
 
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
