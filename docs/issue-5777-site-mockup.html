@@ -89,6 +89,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .site[data-img="tone"] .hbg img{filter:grayscale(1) contrast(1.05);opacity:.5}
 .site[data-img="tone"] .hbg .tint{display:block}
 .site[data-img="none"] .hbg{display:none}
+.site[data-o="1"] h1,.site[data-o="1"] h2,.site[data-o="1"] .cta h2{color:#ffffff;-webkit-text-stroke:.075em #0b0f17;paint-order:stroke fill}
+.site[data-o="1"] h1 .a,.site[data-o="1"] h2 .a{color:#ffffff}
 .hero .lead{font-size:19px;max-width:56ch}
 .row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
 .reg{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--sub)}
@@ -281,6 +283,9 @@ const T=[
  {n:'Синяя плашка',d:'Rubik. Выделенное слово на синей плашке с лёгким градиентом, синий логотипа #307fe2',hf:'Rubik',hw:700,m:'blockg',
   L:{bg:'#f7f8fa',surf:'#ffffff',surf2:'#edf3fc',ink:'#1d2433',sub:'#525b6c',line:'#e1e5ec',line2:'#c8ced9',primary:'#2a6fd6',pgrad:'linear-gradient(135deg,#3b8cf0,#2361cf)',pfg:'#ffffff',link:'#1f5fc4',acc:'#3b8cf0',acc2:'#2361cf',accfg:'#ffffff',soft:'#e3eefc',softfg:'#1a4f9c',bad:'#c62828'},
   D:{bg:'#0f1520',surf:'#161e2c',surf2:'#131c2e',ink:'#f1f5f9',sub:'#a3adbd',line:'#243042',line2:'#36465e',primary:'#3b82f6',pgrad:'linear-gradient(135deg,#4f9bff,#2f6fe0)',pfg:'#ffffff',link:'#8cbcff',acc:'#4f9bff',acc2:'#2f6fe0',accfg:'#ffffff',soft:'#16294a',softfg:'#9cc5ff',bad:'#ff6b6b'}},
+ {n:'Синяя плашка, буквы с обводкой',d:'Как 1, но H1 и H2 белыми буквами с чёрной обводкой',hf:'Rubik',hw:700,m:'blockg',outline:true,
+  L:{bg:'#f7f8fa',surf:'#ffffff',surf2:'#edf3fc',ink:'#1d2433',sub:'#525b6c',line:'#e1e5ec',line2:'#c8ced9',primary:'#2a6fd6',pgrad:'linear-gradient(135deg,#3b8cf0,#2361cf)',pfg:'#ffffff',link:'#1f5fc4',acc:'#3b8cf0',acc2:'#2361cf',accfg:'#ffffff',soft:'#e3eefc',softfg:'#1a4f9c',bad:'#c62828'},
+  D:{bg:'#0f1520',surf:'#161e2c',surf2:'#131c2e',ink:'#f1f5f9',sub:'#a3adbd',line:'#243042',line2:'#36465e',primary:'#3b82f6',pgrad:'linear-gradient(135deg,#4f9bff,#2f6fe0)',pfg:'#ffffff',link:'#8cbcff',acc:'#4f9bff',acc2:'#2f6fe0',accfg:'#ffffff',soft:'#16294a',softfg:'#9cc5ff',bad:'#ff6b6b'}},
  {n:'Глубокая синяя плашка',d:'Rubik. Та же плашка, но глубокий кобальтовый синий, мимо оттенков Tailwind',hf:'Rubik',hw:700,m:'blockg',
   L:{bg:'#f7f8fa',surf:'#ffffff',surf2:'#eef3f9',ink:'#1d2433',sub:'#525b6c',line:'#e1e5ec',line2:'#c8ced9',primary:'#0e559f',pgrad:'linear-gradient(135deg,#1262b8,#0a3f80)',pfg:'#ffffff',link:'#0d4f99',acc:'#1262b8',acc2:'#0a3f80',accfg:'#ffffff',soft:'#e2ecf7',softfg:'#0a3f80',bad:'#c62828'},
   D:{bg:'#0f1520',surf:'#161e2c',surf2:'#131c2e',ink:'#f1f5f9',sub:'#a3adbd',line:'#243042',line2:'#36465e',primary:'#2a6fc0',pgrad:'linear-gradient(135deg,#2a6fc0,#174a8c)',pfg:'#ffffff',link:'#8fbdf0',acc:'#2a6fc0',acc2:'#174a8c',accfg:'#ffffff',soft:'#14294a',softfg:'#9fc6f2',bad:'#ff6b6b'}},
@@ -350,7 +355,7 @@ function apply(){
   const t=T[cur], P=dark?t.D:t.L;
   site.style.cssText=''; cta.style.cssText=''; hero.style.cssText=''; hdr.style.cssText='';
   site.style.setProperty('--hf',`'${t.hf}',var(--sys)`); site.style.setProperty('--hw',t.hw); site.style.setProperty('--ls',t.ls||'-.01em');
-  site.dataset.m=t.m; vars(site,P);
+  site.dataset.m=t.m; site.dataset.o=t.outline?'1':''; vars(site,P);
   // CTA band: the variant's dark palette on the light page, a deeper shade on the dark page
   const B=t.D; vars(cta,{...B,bg:B.bg}); cta.style.setProperty('--band',dark?B.surf:B.bg); cta.style.setProperty('--bandfg',B.hink||B.ink); cta.style.setProperty('--bandsub',B.sub);
   // optional: dark header + first screen on the light page
