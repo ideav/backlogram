@@ -108,6 +108,7 @@ test('end-to-end: form upload creates issue, attaches file, notifies Telegram', 
       TELEGRAM_CHAT_ID: '123',
       TELEGRAM_API_BASE: `http://127.0.0.1:${mockPort}`,
       INTAKE_RATE_LIMIT_DIR: join(workdir, 'rl'),
+      NOTIFY_SPOOL_DIR: join(workdir, 'tg-spool'),
       // Этот тест — про сам шаг публикации, поэтому double opt-in выключен.
       INTAKE_CONFIRM_REQUIRED: '0',
     },
@@ -179,6 +180,7 @@ test('end-to-end: catalog-matching source uses its own wording and accepts two f
       TELEGRAM_CHAT_ID: '123',
       TELEGRAM_API_BASE: `http://127.0.0.1:${mockPort}`,
       INTAKE_RATE_LIMIT_DIR: join(workdir, 'rl'),
+      NOTIFY_SPOOL_DIR: join(workdir, 'tg-spool'),
     },
     stdio: 'ignore',
   })
@@ -232,6 +234,7 @@ test('end-to-end: missing contact is rejected with 400', async () => {
       GITHUB_TOKEN: 'test-token',
       GITHUB_ISSUE_REPO: 'mock/repo',
       INTAKE_RATE_LIMIT_DIR: join(workdir, 'rl'),
+      NOTIFY_SPOOL_DIR: join(workdir, 'tg-spool'),
     },
     stdio: 'ignore',
   })

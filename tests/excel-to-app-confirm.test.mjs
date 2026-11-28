@@ -105,6 +105,7 @@ async function startStand(extraEnv = {}) {
     TELEGRAM_CHAT_ID: '123',
     TELEGRAM_API_BASE: `http://127.0.0.1:${mockPort}`,
     INTAKE_RATE_LIMIT_DIR: join(workdir, 'rl'),
+    NOTIFY_SPOOL_DIR: join(workdir, 'tg-spool'),
     INTAKE_QUEUE_DIR: queueDir,
     INTAKE_MAIL_TRANSPORT: 'file',
     INTAKE_MAIL_FILE: mailLog,

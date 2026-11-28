@@ -95,15 +95,33 @@ if (!defined('INTAKE_PUBLISH_LOADED')) {
         $issueUrl    = (string) ($issueResult['body']['html_url'] ?? '');
         $issueNumber = $issueResult['body']['number'] ?? null;
 
-        // ── Telegram (best effort: уже принятую заявку не роняем) ────────────
+        // ── Telegram (уже принятую заявку не роняем) ─────────────────────────
+        // Канал до Telegram-прокси нестабилен (#598): уведомление сначала
+        // ложится в спул, недоставленное добирает cron (tg-deliver.php).
+        // Раньше здесь была одна попытка без записи — сбой терял уведомление.
         $telegramSent = false;
         $botToken = (string) intake_config('TELEGRAM_BOT_TOKEN', '');
         $chatId   = (string) intake_config('TELEGRAM_CHAT_ID', '');
         if ($botToken !== '' && $chatId !== '') {
-            $tgBase  = (string) intake_config('TELEGRAM_API_BASE', 'https://api.telegram.org');
             $message = intake_build_telegram_message($sourceLabel, $name, $company, $contact, $topic, $attachmentLinks, $issueUrl, (bool) ($order['confirmed'] ?? false));
-            $tg = intake_telegram_send_message($botToken, $chatId, $message, $tgBase);
-            $telegramSent = $tg['ok'];
+            $saved = intake_spool_save(intake_spool_dir(), [
+                'text'       => $message,
+                'parse_mode' => 'MarkdownV2',
+                'caption'    => '',
+            ], []);
+            if ($saved !== null) {
+                $telegramSent = intake_spool_deliver($saved);
+                if ($telegramSent) {
+                    intake_spool_cleanup($saved);
+                }
+            } else {
+                $tgBase = (string) intake_config('TELEGRAM_API_BASE', 'https://api.telegram.org');
+                $tg = intake_telegram_send_message($botToken, $chatId, $message, $tgBase);
+                $telegramSent = $tg['ok'];
+            }
+            if (!$telegramSent) {
+                error_log('intake-publish: telegram not delivered for ' . $requestId . ($saved !== null ? ' (spooled)' : ''));
+            }
         }
 
         return [
@@ -118,7 +136,8 @@ if (!defined('INTAKE_PUBLISH_LOADED')) {
 
     /** Текст issue (Markdown). */
     function intake_build_issue_body(string $heading, string $name, string $company, string $contact, string $topic, array $attachments, string $requestId, bool $confirmed = false): string {
-        $lines = ["## Новая заявка «$heading»", ''];
+        // {$heading}: без фигурных скобок PHP берёт «»» в имя переменной (байты ≥0x80 допустимы).
+        $lines = ["## Новая заявка «{$heading}»", ''];
         if ($name !== '')    $lines[] = "- **Имя:** $name";
         if ($company !== '') $lines[] = "- **Компания:** $company";
         if ($contact !== '') $lines[] = "- **Контакт:** $contact";
@@ -149,7 +168,9 @@ if (!defined('INTAKE_PUBLISH_LOADED')) {
     /** Текст уведомления в Telegram (MarkdownV2). */
     function intake_build_telegram_message(string $heading, string $name, string $company, string $contact, string $topic, array $attachments, string $issueUrl, bool $confirmed = false): string {
         $e = 'intake_escape_markdown';
-        $lines = ['*Новая заявка «' . $heading . '»*'];
+        // Заголовок экранируется: «Дашборд собственника (Битрикс24, …)» со скобками
+        // Telegram отклонял (400 can't parse entities) — заявка не доходила.
+        $lines = ['*Новая заявка «' . $e($heading) . '»*'];
         if ($confirmed) {
             $lines[] = '✅ ' . $e('адрес подтверждён — можно запускать сборку');
         }
