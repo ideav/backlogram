@@ -81,7 +81,14 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .sec{padding-block:64px}
 .sec.tint{background:var(--surf2)}
 .stack{display:grid;gap:18px}
-.hero{padding-block:72px 64px;background:var(--bg)}
+.hero{padding-block:72px 64px;background:var(--bg);position:relative;isolation:isolate;overflow:hidden}
+.hbg{position:absolute;inset:0;z-index:-1;pointer-events:none}
+.hbg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:.35}
+.hbg .tint{position:absolute;inset:0;background:linear-gradient(120deg,var(--acc),var(--acc2,var(--acc)));mix-blend-mode:color;display:none}
+.hbg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 72%,transparent) 48%,color-mix(in srgb,var(--bg) 20%,transparent) 100%)}
+.site[data-img="tone"] .hbg img{filter:grayscale(1) contrast(1.05);opacity:.5}
+.site[data-img="tone"] .hbg .tint{display:block}
+.site[data-img="none"] .hbg{display:none}
 .hero .lead{font-size:19px;max-width:56ch}
 .row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
 .reg{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--sub)}
@@ -157,6 +164,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     <button type="button" id="th-d" aria-pressed="false">Тёмная</button>
   </div>
   <label><input type="checkbox" id="bf"> Шрифт варианта и для текста</label>
+  <select id="img" aria-label="Картинка первого экрана"><option value="tone">Картинка в гамме варианта</option><option value="orig">Картинка как сейчас</option><option value="none">Без картинки</option></select>
   <div class="desc" id="desc"></div>
 </div></div>
 
@@ -170,7 +178,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   <div class="act"><a class="btn btn-s" href="#">Войти</a><a class="btn btn-p" href="#">Попробовать</a></div>
 </div></header>
 
-<section class="hero"><div class="in stack">
+<section class="hero"><div class="hbg" aria-hidden="true"><img src="issue-5777-hero.webp" alt=""><div class="tint"></div></div><div class="in stack">
   <span class="pill"><span class="dot"></span>Автоматизация без программистов</span>
   <h1>Интеграм — российская платформа для автоматизации бизнеса, которая <span class="a">подстраивается под вас</span></h1>
   <p class="lead sub">Видите всё, что происходит в бизнесе, управляете сами и меняете систему без программистов</p>
@@ -358,6 +366,8 @@ document.getElementById('prev').onclick=()=>{cur=(cur+T.length-1)%T.length;apply
 document.getElementById('next').onclick=()=>{cur=(cur+1)%T.length;apply()};
 document.getElementById('th-l').onclick=()=>{dark=false;apply()};
 document.getElementById('th-d').onclick=()=>{dark=true;apply()};
+site.dataset.img='tone';
+document.getElementById('img').onchange=e=>{site.dataset.img=e.target.value};
 document.getElementById('bf').onchange=e=>site.classList.toggle('bodyfont',e.target.checked);
 window.addEventListener('hashchange',()=>{fromHash();apply()});
 document.getElementById('chips').addEventListener('click',e=>{const b=e.target.closest('.chip'); if(!b) return; for(const c of e.currentTarget.children) c.setAttribute('aria-pressed',c===b)});
