@@ -46,7 +46,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .site :focus-visible{outline:3px solid var(--link);outline-offset:2px}
 .site .sub{color:var(--sub)}
 .btn{display:inline-flex;align-items:center;gap:8px;font:600 15px/1 var(--bfnt);border-radius:10px;padding:14px 20px;border:1px solid transparent;text-decoration:none!important;cursor:pointer}
-.btn-p{background:var(--primary);color:var(--pfg)!important}
+.btn-p{background:var(--pgrad,var(--primary));color:var(--pfg)!important}
 .btn-p:hover{filter:brightness(1.08)}
 .btn-s{background:transparent;color:var(--ink)!important;border-color:var(--line2)}
 .btn-s:hover{border-color:var(--ink)}
@@ -59,6 +59,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .site .a{color:var(--acc)}
 .site[data-m="marker"] .a{color:var(--acc);background:linear-gradient(transparent 48%,var(--acc2) 48%,var(--acc2) 92%,transparent 92%);padding:0 .1em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .site[data-m="block"] .a{background:var(--acc);color:var(--accfg);padding:0 .18em;border-radius:.14em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.site[data-m="blockg"] .a{background:linear-gradient(135deg,var(--acc),var(--acc2));color:var(--accfg);padding:0 .18em;border-radius:.14em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .site[data-m="grad"] .a{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
 .site[data-m="wavy"] .a{text-decoration:underline wavy var(--acc2);text-decoration-thickness:.07em;text-underline-offset:.18em;text-decoration-skip-ink:none}
 .site[data-m="under"] .a{text-decoration:underline solid var(--acc2);text-decoration-thickness:.11em;text-underline-offset:.16em;text-decoration-skip-ink:none}
@@ -269,62 +270,65 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 const NL={bg:'#ffffff',surf:'#ffffff',surf2:'#f4f6fa',ink:'#10182a',sub:'#4b5568',line:'#e3e6ed',line2:'#c9cfdb',bad:'#c62828'};
 const ND={bg:'#10182a',surf:'#162036',surf2:'#131c30',ink:'#f8fafc',sub:'#a3aec2',line:'#26314a',line2:'#3a4766',bad:'#ff6b6b'};
 const T=[
- {n:'1. Маркер',d:'Unbounded. Тёмно-синий, выделение жёлтым маркером',hf:'Unbounded',hw:700,ls:'-.02em',m:'marker',
+ {n:'Синяя плашка',d:'Rubik. Выделенное слово на синей плашке с лёгким градиентом, синий логотипа #307fe2',hf:'Rubik',hw:700,m:'blockg',
+  L:{bg:'#f7f8fa',surf:'#ffffff',surf2:'#edf3fc',ink:'#1d2433',sub:'#525b6c',line:'#e1e5ec',line2:'#c8ced9',primary:'#2a6fd6',pgrad:'linear-gradient(135deg,#3b8cf0,#2361cf)',pfg:'#ffffff',link:'#1f5fc4',acc:'#3b8cf0',acc2:'#2361cf',accfg:'#ffffff',soft:'#e3eefc',softfg:'#1a4f9c',bad:'#c62828'},
+  D:{bg:'#0f1520',surf:'#161e2c',surf2:'#131c2e',ink:'#f1f5f9',sub:'#a3adbd',line:'#243042',line2:'#36465e',primary:'#3b82f6',pgrad:'linear-gradient(135deg,#4f9bff,#2f6fe0)',pfg:'#ffffff',link:'#8cbcff',acc:'#4f9bff',acc2:'#2f6fe0',accfg:'#ffffff',soft:'#16294a',softfg:'#9cc5ff',bad:'#ff6b6b'}},
+ {n:'Маркер',d:'Unbounded. Тёмно-синий, выделение жёлтым маркером',hf:'Unbounded',hw:700,ls:'-.02em',m:'marker',
   L:{bg:'#fffdf6',surf:'#ffffff',surf2:'#fff6d8',ink:'#14213d',sub:'#4a5470',line:'#ece4cc',line2:'#d8cda9',primary:'#14213d',pfg:'#ffc93c',link:'#1f3a8a',acc:'#14213d',acc2:'#ffc93c',soft:'#fff1bf',softfg:'#5a4300',bad:'#c62828'},
   D:{bg:'#101828',surf:'#172238',surf2:'#131d31',ink:'#f5f1e8',sub:'#b7bfd0',line:'#26324a',line2:'#3a4866',primary:'#ffc93c',pfg:'#101828',link:'#ffd667',acc:'#101828',acc2:'#ffc93c',soft:'#3a3214',softfg:'#ffd667',bad:'#ff6b6b'}},
- {n:'2. Коралл и морская волна',d:'Geologica. Тёмно-бирюзовый, коралловое выделение',hf:'Geologica',hw:800,m:'color',
+ {n:'Коралл и морская волна',d:'Geologica. Тёмно-бирюзовый, коралловое выделение',hf:'Geologica',hw:800,m:'color',
   L:{bg:'#f3faf8',surf:'#ffffff',surf2:'#e5f3ef',ink:'#0b3c49',sub:'#3f6670',line:'#d3e6e1',line2:'#b5d1ca',primary:'#e64a2a',pfg:'#ffffff',link:'#b8361a',acc:'#ff5a36',soft:'#ffe4dc',softfg:'#9a2f17',bad:'#c62828'},
   D:{bg:'#0a2a33',surf:'#0f3641',surf2:'#0c303a',ink:'#e6f4f1',sub:'#9cc0c6',line:'#1d4a55',line2:'#2c6070',primary:'#ff7a59',pfg:'#0a2a33',link:'#ff9a80',acc:'#ff7a59',soft:'#4a2a24',softfg:'#ffb39f',bad:'#ff6b6b'}},
- {n:'3. Закат',d:'Onest. Выделение градиентом от оранжевого к малиновому',hf:'Onest',hw:800,m:'grad',
+ {n:'Закат',d:'Onest. Выделение градиентом от оранжевого к малиновому',hf:'Onest',hw:800,m:'grad',
   L:{bg:'#fff8f3',surf:'#ffffff',surf2:'#ffeee2',ink:'#1f1a2e',sub:'#5b5468',line:'#f0e0d6',line2:'#dcc6b9',primary:'#1f1a2e',pfg:'#ffffff',link:'#c2185b',acc:'#ff6a00',acc2:'#e8127c',soft:'#ffe3ef',softfg:'#a3104f',bad:'#c62828'},
   D:{bg:'#1a1424',surf:'#231b31',surf2:'#1f182b',ink:'#ffffff',sub:'#c3b9cf',line:'#362a48',line2:'#4b3b62',primary:'#ff8a3d',pfg:'#1a1424',link:'#ff7ab8',acc:'#ff8a3d',acc2:'#ff4fa3',soft:'#43213a',softfg:'#ff9ccb',bad:'#ff6b6b'}},
- {n:'4. Журнальный',d:'Manrope, выделение малиновым курсивом Playfair Display',hf:'Manrope',hw:800,m:'serif',
+ {n:'Журнальный',d:'Manrope, выделение малиновым курсивом Playfair Display',hf:'Manrope',hw:800,m:'serif',
   L:{bg:'#ffffff',surf:'#ffffff',surf2:'#faf5f5',ink:'#111827',sub:'#4b5563',line:'#ece4e4',line2:'#d6cccc',primary:'#d7263d',pfg:'#ffffff',link:'#b91c32',acc:'#d7263d',soft:'#fde4e7',softfg:'#9f1a2c',bad:'#c62828'},
   D:{bg:'#14161c',surf:'#1b1e26',surf2:'#181a21',ink:'#f3f4f6',sub:'#a5abb6',line:'#2c3039',line2:'#40454f',primary:'#ff5c6c',pfg:'#14161c',link:'#ff8591',acc:'#ff5c6c',soft:'#3d1f25',softfg:'#ff9aa4',bad:'#ff6b6b'}},
- {n:'5. Плашка',d:'Rubik. Выделенное слово на зелёной плашке',hf:'Rubik',hw:700,m:'block',
+ {n:'Плашка',d:'Rubik. Выделенное слово на зелёной плашке',hf:'Rubik',hw:700,m:'block',
   L:{bg:'#f7f8fa',surf:'#ffffff',surf2:'#eaf7f1',ink:'#1d2433',sub:'#525b6c',line:'#e1e5ec',line2:'#c8ced9',primary:'#1d2433',pfg:'#ffffff',link:'#047857',acc:'#00a676',accfg:'#ffffff',soft:'#d9f5e9',softfg:'#05603f',bad:'#c62828'},
   D:{bg:'#0f1520',surf:'#161e2c',surf2:'#122422',ink:'#f1f5f9',sub:'#a3adbd',line:'#243042',line2:'#36465e',primary:'#19d39a',pfg:'#062a1d',link:'#4ee6b4',acc:'#19d39a',accfg:'#062a1d',soft:'#12392d',softfg:'#6ff0c4',bad:'#ff6b6b'}},
- {n:'6. Волна',d:'Golos Text. Индиго, фуксия с жёлтой волной',hf:'Golos Text',hw:800,m:'wavy',
+ {n:'Волна',d:'Golos Text. Индиго, фуксия с жёлтой волной',hf:'Golos Text',hw:800,m:'wavy',
   L:{bg:'#faf8ff',surf:'#ffffff',surf2:'#f1ecff',ink:'#2a1e5c',sub:'#5d5486',line:'#e5defa',line2:'#cdc3ee',primary:'#2a1e5c',pfg:'#ffffff',link:'#c4006a',acc:'#e4007c',acc2:'#ffb000',soft:'#ffe0f0',softfg:'#a0005a',bad:'#c62828'},
   D:{bg:'#18123a',surf:'#211a4a',surf2:'#1c1542',ink:'#ede9fe',sub:'#b4abd8',line:'#342a68',line2:'#4a3e8a',primary:'#ff3d9a',pfg:'#18123a',link:'#ff7cbc',acc:'#ff3d9a',acc2:'#ffc233',soft:'#47204f',softfg:'#ff9ccc',bad:'#ff6b6b'}},
- {n:'7. Два тона',d:'Jost. Сливовые заголовки, янтарное выделение',hf:'Jost',hw:700,ls:'0',m:'color',
+ {n:'Два тона',d:'Jost. Сливовые заголовки, янтарное выделение',hf:'Jost',hw:700,ls:'0',m:'color',
   L:{bg:'#fdf9ff',surf:'#ffffff',surf2:'#f6ecfb',ink:'#2a1f33',hink:'#5b1a8a',sub:'#6e5a7e',line:'#eadcf2',line2:'#d6c2e3',primary:'#5b1a8a',pfg:'#ffffff',link:'#7a2bb5',acc:'#f28c00',soft:'#fff0d9',softfg:'#8a4e00',bad:'#c62828'},
   D:{bg:'#1c1026',surf:'#251634',surf2:'#20132d',ink:'#efe6f7',hink:'#d8b4fe',sub:'#b8a3c8',line:'#3a2650',line2:'#52386e',primary:'#ffb84d',pfg:'#1c1026',link:'#e3c4ff',acc:'#ffb84d',soft:'#46301a',softfg:'#ffcc80',bad:'#ff6b6b'}},
- {n:'8. Красный',d:'Inter Tight. Ночной синий, выделение красным',hf:'Inter Tight',hw:800,ls:'-.025em',m:'color',
+ {n:'Красный',d:'Inter Tight. Ночной синий, выделение красным',hf:'Inter Tight',hw:800,ls:'-.025em',m:'color',
   L:{...NL,primary:'#c8392b',pfg:'#ffffff',link:'#b8321f',acc:'#c8392b',soft:'#fbe5e2',softfg:'#9c2c20'},
   D:{...ND,primary:'#e2483a',pfg:'#ffffff',link:'#ff7b6c',acc:'#ff5a48',soft:'#3d1f23',softfg:'#ff9b8f'}},
- {n:'9. Синий с красной чертой',d:'Commissioner. Синее выделение с красной чертой',hf:'Commissioner',hw:800,m:'under',
+ {n:'Синий с красной чертой',d:'Commissioner. Синее выделение с красной чертой',hf:'Commissioner',hw:800,m:'under',
   L:{...NL,surf2:'#f7f9fc',primary:'#2563eb',pfg:'#ffffff',link:'#1d4ed8',acc:'#2563eb',acc2:'#c8392b',soft:'#e0eaff',softfg:'#1d4ed8'},
   D:{...ND,primary:'#3b82f6',pfg:'#ffffff',link:'#7fb0ff',acc:'#60a5fa',acc2:'#ff5a48',soft:'#1c2c55',softfg:'#9cc2ff'}},
- {n:'10. Ночное небо',d:'IBM Plex Sans. Градиент от синего к голубому',hf:'IBM Plex Sans',hw:700,m:'grad',
+ {n:'Ночное небо',d:'IBM Plex Sans. Градиент от синего к голубому',hf:'IBM Plex Sans',hw:700,m:'grad',
   L:{...NL,bg:'#f5f8ff',surf2:'#eaf1ff',ink:'#16294d',sub:'#4a5a7a',line:'#dde6f5',primary:'#16294d',pfg:'#ffffff',link:'#1d4ed8',acc:'#1d4ed8',acc2:'#0ea5e9',soft:'#e0f2fe',softfg:'#0369a1'},
   D:{...ND,bg:'#0b1222',surf:'#111b30',surf2:'#0e172a',primary:'#2563eb',pfg:'#ffffff',link:'#7fc4ff',acc:'#60a5fa',acc2:'#38e0ff',soft:'#0f2c47',softfg:'#7fd4ff'}},
- {n:'11. Красная плашка',d:'Montserrat. Белое слово на красной плашке',hf:'Montserrat',hw:800,ls:'-.02em',m:'block',
+ {n:'Красная плашка',d:'Montserrat. Белое слово на красной плашке',hf:'Montserrat',hw:800,ls:'-.02em',m:'block',
   L:{...NL,primary:'#10182a',pfg:'#ffffff',link:'#b8321f',acc:'#c8392b',accfg:'#ffffff',soft:'#fbe5e2',softfg:'#9c2c20'},
   D:{...ND,primary:'#e2483a',pfg:'#ffffff',link:'#ff7b6c',acc:'#e2483a',accfg:'#ffffff',soft:'#3d1f23',softfg:'#ff9b8f'}},
- {n:'12. Синий маркер',d:'Exo 2. Выделение голубой полосой маркера',hf:'Exo 2',hw:700,m:'marker',
+ {n:'Синий маркер',d:'Exo 2. Выделение голубой полосой маркера',hf:'Exo 2',hw:700,m:'marker',
   L:{...NL,primary:'#2563eb',pfg:'#ffffff',link:'#1d4ed8',acc:'#10182a',acc2:'#bfdbfe',soft:'#e0eaff',softfg:'#1d4ed8'},
   D:{...ND,primary:'#3b82f6',pfg:'#ffffff',link:'#7fb0ff',acc:'#ffffff',acc2:'#2563eb',soft:'#1c2c55',softfg:'#9cc2ff'}},
- {n:'13. Синий и красный',d:'Fira Sans. Синие заголовки, красное выделение',hf:'Fira Sans',hw:800,m:'color',
+ {n:'Синий и красный',d:'Fira Sans. Синие заголовки, красное выделение',hf:'Fira Sans',hw:800,m:'color',
   L:{...NL,surf2:'#f7f9fc',hink:'#1d4ed8',primary:'#c8392b',pfg:'#ffffff',link:'#1d4ed8',acc:'#c8392b',soft:'#e0eaff',softfg:'#1d4ed8'},
   D:{...ND,bg:'#0d1424',hink:'#7fb0ff',primary:'#e2483a',pfg:'#ffffff',link:'#7fb0ff',acc:'#ff6a58',soft:'#1c2c55',softfg:'#9cc2ff'}},
- {n:'14. Тонкий и жирный',d:'Raleway. Тонкий текст заголовка, выделение жирным',hf:'Raleway',hw:300,m:'weight',
+ {n:'Тонкий и жирный',d:'Raleway. Тонкий текст заголовка, выделение жирным',hf:'Raleway',hw:300,m:'weight',
   L:{...NL,ink:'#16294d',sub:'#4a5a7a',primary:'#16294d',pfg:'#ffffff',link:'#1d4ed8',acc:'#2563eb',soft:'#e0eaff',softfg:'#1d4ed8'},
   D:{...ND,ink:'#dbe4f3',sub:'#9fb0cc',primary:'#e2483a',pfg:'#ffffff',link:'#7fb0ff',acc:'#ff5a48',soft:'#3d1f23',softfg:'#ff9b8f'}},
- {n:'15. Изумруд',d:'Mulish. Ночной синий, изумрудное выделение',hf:'Mulish',hw:800,ls:'-.02em',m:'color',
+ {n:'Изумруд',d:'Mulish. Ночной синий, изумрудное выделение',hf:'Mulish',hw:800,ls:'-.02em',m:'color',
   L:{...NL,primary:'#047857',pfg:'#ffffff',link:'#047857',acc:'#059669',soft:'#d1fae5',softfg:'#065f46'},
   D:{...ND,primary:'#34d399',pfg:'#062a1d',link:'#6ee7b7',acc:'#34d399',soft:'#0f3b30',softfg:'#6ee7b7'}},
- {n:'16. Бирюзовый маркер',d:'Alegreya Sans. Выделение бирюзовой полосой маркера',hf:'Alegreya Sans',hw:800,m:'marker',
+ {n:'Бирюзовый маркер',d:'Alegreya Sans. Выделение бирюзовой полосой маркера',hf:'Alegreya Sans',hw:800,m:'marker',
   L:{...NL,primary:'#10182a',pfg:'#ffffff',link:'#0f766e',acc:'#10182a',acc2:'#99f6e4',soft:'#ccfbf1',softfg:'#115e59'},
   D:{...ND,primary:'#2dd4bf',pfg:'#10182a',link:'#5eead4',acc:'#ffffff',acc2:'#0f766e',soft:'#0f3b3a',softfg:'#5eead4'}},
- {n:'17. Вода и лес',d:'PT Sans. Градиент от бирюзового к зелёному, красная кнопка',hf:'PT Sans',hw:700,m:'grad',
+ {n:'Вода и лес',d:'PT Sans. Градиент от бирюзового к зелёному, красная кнопка',hf:'PT Sans',hw:700,m:'grad',
   L:{...NL,bg:'#f6fbfa',surf2:'#e9f6f3',ink:'#16294d',sub:'#4a5a7a',line:'#d9ebe6',primary:'#c8392b',pfg:'#ffffff',link:'#0e7490',acc:'#0e7490',acc2:'#10b981',soft:'#cffafe',softfg:'#155e75'},
   D:{...ND,bg:'#0d1626',surf:'#13203a',surf2:'#10202c',primary:'#e2483a',pfg:'#ffffff',link:'#67e8f9',acc:'#22d3ee',acc2:'#34d399',soft:'#0f3442',softfg:'#67e8f9'}},
 ];
 const site=document.getElementById('site'), pick=document.getElementById('pick'), cta=site.querySelector('.cta');
-pick.innerHTML=T.map((t,i)=>`<option value="${i}">${t.n}</option>`).join('');
+pick.innerHTML=T.map((t,i)=>`<option value="${i}">${i+1}. ${t.n}</option>`).join('');
 let cur=0, dark=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches;
-function vars(el,o){for(const k in o) el.style.setProperty('--'+k,o[k]); if(!o.hink) el.style.removeProperty('--hink'); if(!o.accfg) el.style.setProperty('--accfg','#ffffff');}
+function vars(el,o){for(const k in o) el.style.setProperty('--'+k,o[k]); if(!o.pgrad) el.style.removeProperty('--pgrad'); if(!o.hink) el.style.removeProperty('--hink'); if(!o.accfg) el.style.setProperty('--accfg','#ffffff');}
 function apply(){
   const t=T[cur], P=dark?t.D:t.L;
   site.style.cssText=''; cta.style.cssText='';
